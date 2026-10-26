@@ -10,13 +10,14 @@ import { PageActions } from '@/components/page-actions'
 export function WriteActions() {
 	const { loading, mode, form, loadBlogForEdit, originalSlug, updateForm } = useWriteStore()
 	const { openPreview } = usePreviewStore()
-	const { isAuth, onChoosePrivateKey, onPublish, onDelete } = usePublish()
+	const { isAuth, importing, onChoosePrivateKey, onPublish, onDelete } = usePublish()
 	const [saving, setSaving] = useState(false)
 	const keyInputRef = useRef<HTMLInputElement>(null)
 	const mdInputRef = useRef<HTMLInputElement>(null)
 	const router = useRouter()
 
 	const handleImportOrPublish = () => {
+		if (loading || importing) return
 		if (!isAuth) {
 			keyInputRef.current?.click()
 		} else {
@@ -35,7 +36,7 @@ export function WriteActions() {
 		}
 	}
 
-	const buttonText = isAuth ? (mode === 'edit' ? '更新' : '发布') : '导入密钥'
+	const buttonText = importing ? '私钥处理中…' : isAuth ? (mode === 'edit' ? '更新' : '发布') : '导入密钥'
 
 	const handleDelete = () => {
 		if (!isAuth) {
@@ -76,8 +77,8 @@ export function WriteActions() {
 				className='hidden'
 				onChange={async e => {
 					const f = e.target.files?.[0]
+					e.currentTarget.value = ''
 					if (f) await onChoosePrivateKey(f)
-					if (e.currentTarget) e.currentTarget.value = ''
 				}}
 			/>
 			<input ref={mdInputRef} type='file' accept='.md' className='hidden' onChange={handleMdFileChange} />
@@ -137,7 +138,7 @@ export function WriteActions() {
 					whileHover={{ scale: 1.05 }}
 					whileTap={{ scale: 0.95 }}
 					className='brand-btn px-6'
-					disabled={loading}
+					disabled={loading || importing}
 					onClick={handleImportOrPublish}>
 					{buttonText}
 				</motion.button>

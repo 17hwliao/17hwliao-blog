@@ -16,9 +16,8 @@ import ShortLineSVG from '@/svgs/short-line.svg'
 import { useBlogIndex, type BlogIndexItem } from '@/hooks/use-blog-index'
 import { useCategories } from '@/hooks/use-categories'
 import { useReadArticles } from '@/hooks/use-read-articles'
-import { useAuthStore } from '@/hooks/use-auth'
+import { isPrivateKeyBusy, useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
-import { readFileAsText } from '@/lib/file-utils'
 import { cn } from '@/lib/utils'
 import { saveBlogEdits } from './services/save-blog-edits'
 import { Check } from 'lucide-react'
@@ -31,7 +30,8 @@ export default function BlogPage() {
 	const { items, loading, error, retry } = useBlogIndex()
 	const { categories: categoriesFromServer } = useCategories()
 	const { isRead } = useReadArticles()
-	const { isAuth, setPrivateKey } = useAuthStore()
+	const { isAuth, importPrivateKey, keyStatus } = useAuthStore()
+	const importing = isPrivateKeyBusy(keyStatus)
 	const { siteContent } = useConfigStore()
 	const hideEditButton = siteContent.hideEditButton ?? false
 	const enableCategories = siteContent.enableCategories ?? false
@@ -280,25 +280,19 @@ export default function BlogPage() {
 	}, [items, editableItems, categoryList, categoriesFromServer])
 
 	const handleSaveClick = useCallback(() => {
+		if (saving || isPrivateKeyBusy(useAuthStore.getState().keyStatus)) return
 		if (!isAuth) {
 			keyInputRef.current?.click()
 			return
 		}
 		void handleSave()
-	}, [handleSave, isAuth])
+	}, [handleSave, isAuth, saving])
 
 	const handlePrivateKeySelection = useCallback(
 		async (file: File) => {
-			try {
-				const pem = await readFileAsText(file)
-				setPrivateKey(pem)
-				toast.success('密钥导入成功，请再次点击保存')
-			} catch (error) {
-				console.error(error)
-				toast.error('读取密钥失败')
-			}
+			await importPrivateKey(file)
 		},
-		[setPrivateKey]
+		[importPrivateKey]
 	)
 
 	useEffect(() => {
@@ -324,8 +318,8 @@ export default function BlogPage() {
 				className='hidden'
 				onChange={async e => {
 					const f = e.target.files?.[0]
+					e.currentTarget.value = ''
 					if (f) await handlePrivateKeySelection(f)
-					if (e.currentTarget) e.currentTarget.value = ''
 				}}
 			/>
 
@@ -510,8 +504,8 @@ export default function BlogPage() {
 							className='rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600 transition-colors disabled:opacity-60'>
 							删除(已选:{selectedCount}篇)
 						</motion.button>
-						<motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSaveClick} disabled={saving} className='brand-btn px-6'>
-							{saving ? '保存中...' : buttonText}
+						<motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSaveClick} disabled={saving || importing} className='brand-btn px-6'>
+							{saving ? '保存中...' : importing ? '私钥处理中…' : buttonText}
 						</motion.button>
 					</>
 				) : (

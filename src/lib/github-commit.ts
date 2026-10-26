@@ -1,5 +1,5 @@
 import { toast } from 'sonner'
-import { getAuthToken } from '@/lib/auth'
+import { useAuthStore } from '@/hooks/use-auth'
 import { GITHUB_CONFIG } from '@/consts'
 import {
 	createBlob,
@@ -40,7 +40,7 @@ export async function commitFiles<T = void>(options: CommitFilesOptions<T>): Pro
 	const { message, successMessage = '发布成功！', prepare } = options
 	const { OWNER: owner, REPO: repo, BRANCH: branch } = GITHUB_CONFIG
 
-	const token = await getAuthToken()
+	const token = await useAuthStore.getState().getAuthToken()
 
 	toast.info('正在获取分支信息...')
 	const refData = await getRef(token, owner, repo, `heads/${branch}`)

@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Plus, Trash2, X } from 'lucide-react'
 import { DialogModal } from '@/components/dialog-modal'
 import { useConfigStore, type SiteContent } from '../stores/config-store'
-import { useAuthStore } from '@/hooks/use-auth'
+import { isPrivateKeyBusy, useAuthStore } from '@/hooks/use-auth'
+import { PrivateKeyFeedback } from '@/components/private-key-feedback'
 import { GITHUB_CONFIG } from '@/consts'
 import { pushSiteContent } from '../services/push-site-content'
 import { FaviconAvatarUpload } from './site-settings/favicon-avatar-upload'
@@ -12,7 +13,8 @@ import type { FileItem } from './site-settings/types'
 
 export default function ConfigDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
 	const { siteContent, cardStyles, setSiteContent } = useConfigStore()
-	const { isAuth, setPrivateKey } = useAuthStore()
+	const { isAuth, importPrivateKey, keyStatus } = useAuthStore()
+	const importing = isPrivateKeyBusy(keyStatus)
 	const [form, setForm] = useState<SiteContent>(siteContent)
 	const [snapshot, setSnapshot] = useState('')
 	const [favicon, setFavicon] = useState<FileItem | null>(null)
@@ -44,7 +46,7 @@ export default function ConfigDialog({ open, onClose }: { open: boolean; onClose
 		[avatar]
 	)
 	const close = () => {
-		if (saveLock.current) return
+		if (saveLock.current || importing) return
 		if ((JSON.stringify(form) !== snapshot || favicon || avatar) && !window.confirm('放弃尚未应用的设置修改？')) return
 		onClose()
 	}
@@ -102,7 +104,7 @@ export default function ConfigDialog({ open, onClose }: { open: boolean; onClose
 					<p className='eyebrow'>PREFERENCES</p>
 					<h2>网站设置</h2>
 				</div>
-				<button onClick={close} className='icon-button' aria-label='关闭设置' disabled={saving}>
+				<button onClick={close} className='icon-button' aria-label='关闭设置' disabled={saving || importing}>
 					<X size={20} />
 				</button>
 			</div>
@@ -204,6 +206,10 @@ export default function ConfigDialog({ open, onClose }: { open: boolean; onClose
 						</label>
 					</div>
 				</section>
+				<section className='settings-section'>
+					<h3>私钥授权</h3>
+					<PrivateKeyFeedback allowImport />
+				</section>
 				{!configured && <p className='settings-hint'>可先应用到本次预览。保存到仓库需配置自己的 GitHub 仓库和 GitHub App。</p>}
 				{error && (
 					<p className='form-error' role='alert'>
@@ -214,7 +220,7 @@ export default function ConfigDialog({ open, onClose }: { open: boolean; onClose
 			<div className='settings-footer'>
 				<span>预览修改在刷新后恢复。</span>
 				<div>
-					<button onClick={apply} disabled={saving} className='button-light'>
+					<button onClick={apply} disabled={saving || importing} className='button-light'>
 						应用预览
 					</button>
 					<button
@@ -224,9 +230,9 @@ export default function ConfigDialog({ open, onClose }: { open: boolean; onClose
 								else keyInput.current?.click()
 							}
 						}}
-						disabled={saving || !configured}
+						disabled={saving || importing || !configured}
 						className='button-dark'>
-						{saving ? '保存中…' : '保存到仓库'}
+						{saving ? '保存中…' : importing ? '私钥处理中…' : '保存到仓库'}
 					</button>
 				</div>
 			</div>
@@ -239,11 +245,8 @@ export default function ConfigDialog({ open, onClose }: { open: boolean; onClose
 					const file = e.target.files?.[0]
 					e.currentTarget.value = ''
 					if (!file) return
-					try {
-						await setPrivateKey(await file.text())
+					if (await importPrivateKey(file)) {
 						await save()
-					} catch {
-						setError('密钥文件读取失败，请重新选择。')
 					}
 				}}
 			/>

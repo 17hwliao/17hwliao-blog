@@ -54,7 +54,9 @@ pnpm build
 
 ### GitHub 保存与站点地址
 
-本地浏览、写作预览不需要私钥。启用远程保存时，将 `.env.example` 复制为 `.env.local`，填写自己的 GitHub App ID 与仓库配置，私钥由页面文件选择入口使用。
+本地浏览、写作预览不需要私钥。`src/config/github.json` 保存本博客的公开默认配置：仓库 `17hwliao/17hwliao-blog`、分支 `main`、GitHub App ID `5475190`；Vercel 未设置同名环境变量时也能使用这些配置。私钥由页面文件选择入口使用，不放入源码或部署环境。
+
+如需覆盖默认配置，可在本地 `.env.local` 或 Vercel 项目设置中填写 `NEXT_PUBLIC_GITHUB_OWNER`、`NEXT_PUBLIC_GITHUB_REPO`、`NEXT_PUBLIC_GITHUB_BRANCH` 和 `NEXT_PUBLIC_GITHUB_APP_ID`。这些值在构建时写入前端；修改 Vercel 环境变量后需要重新部署，本地 `.env.local` 不会同步到线上。
 
 `.env.local`、私钥、依赖目录和构建缓存不提交。部署时将 `NEXT_PUBLIC_SITE_URL` 设置为实际域名，供 RSS 与 sitemap 使用。没有配置点赞服务时不显示点赞入口。
 

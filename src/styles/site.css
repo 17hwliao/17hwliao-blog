@@ -607,6 +607,28 @@ button:disabled {
 .page-action-buttons > .brand-btn {
 	background: #252525;
 }
+.private-key-feedback {
+	margin-top: 12px;
+	padding: 16px;
+	border: 1px solid var(--color-border);
+	border-radius: 8px;
+	background: var(--color-bg);
+	font-size: 13px;
+}
+.private-key-message {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+.private-key-message > svg { flex: 0 0 auto; margin-top: 2px; }
+.private-key-message > div { min-width: 0; }
+.private-key-message strong { display: block; font-weight: 600; }
+.private-key-filename { display: block; overflow-wrap: anywhere; color: var(--color-secondary); }
+.private-key-message p { margin: 4px 0 0; overflow-wrap: anywhere; }
+.private-key-feedback > button { margin-top: 12px; }
+.private-key-config { margin: 10px 0 0; color: var(--color-secondary); overflow-wrap: anywhere; }
+.private-key-feedback[data-phase='error'] { border-color: #a34a38; }
+.private-key-feedback[data-phase='error'] .private-key-message > svg { color: #a34a38; }
 .dialog-frame {
 	padding: 24px;
 	border: 0;

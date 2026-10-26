@@ -33,6 +33,7 @@ export function signAppJwt(appId: string, privateKeyPem: string): string {
 
 export async function getInstallationId(jwt: string, owner: string, repo: string): Promise<number> {
 	const res = await fetch(`${GH_API}/repos/${owner}/${repo}/installation`, {
+		signal: AbortSignal.timeout(30_000),
 		headers: {
 			Authorization: `Bearer ${jwt}`,
 			Accept: 'application/vnd.github+json',
@@ -49,6 +50,7 @@ export async function getInstallationId(jwt: string, owner: string, repo: string
 export async function createInstallationToken(jwt: string, installationId: number): Promise<string> {
 	const res = await fetch(`${GH_API}/app/installations/${installationId}/access_tokens`, {
 		method: 'POST',
+		signal: AbortSignal.timeout(30_000),
 		headers: {
 			Authorization: `Bearer ${jwt}`,
 			Accept: 'application/vnd.github+json',

@@ -51,7 +51,7 @@ pnpm dev
 - 头像及图标：`public/images/avatar.png`、`public/favicon.png`。
 - 作者名当前为 `17hwliao`。浏览器 favicon 和页头使用耿鬼像素图标；头像使用所提供的原始插画。资产地址及缓存版本统一在 `src/config/brand-assets.ts`，256px 像素版另存于 `public/images/site-icon-pixel.png`。
 
-本地前端开发无需私钥。要使用页面编辑后的远程保存，将 `.env.example` 复制为 `.env.local`，填写你自己的仓库和 GitHub App 配置，重启开发服务；私钥仅通过本地文件选择入口使用，不写入仓库。原 `card-styles.json` 数据结构暂为提交链路兼容保留，不再驱动新首页的定位或提供拖拽设置。
+本地前端开发无需私钥。远程保存默认读取 `src/config/github.json` 中本博客的公开仓库、分支和 App ID；`.env.local` 或 Vercel 的 `NEXT_PUBLIC_GITHUB_*` 变量可覆盖它们。部署环境变量变更需要重新构建，不能只修改本地 `.env.local`。设置中的“私钥授权”会显示当前目标仓库与 App ID，私钥仅通过本地文件选择入口读取，不写入仓库。原 `card-styles.json` 数据结构暂为提交链路兼容保留，不再驱动新首页的定位或提供拖拽设置。
 
 点赞默认关闭。若以后启用，`NEXT_PUBLIC_LIKE_ENDPOINT` 需要指向你自己的兼容服务。
 

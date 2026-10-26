@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { useAuthStore } from '@/hooks/use-auth'
+import { isPrivateKeyBusy, useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 
 type UseEditPageOptions = {
@@ -21,7 +21,7 @@ export function useEditPage(options: UseEditPageOptions = {}) {
 	const keyInputRef = useRef<HTMLInputElement>(null)
 	const pendingSaveRef = useRef<(() => Promise<void>) | null>(null)
 
-	const { isAuth, setPrivateKey } = useAuthStore()
+	const { isAuth, importPrivateKey, keyStatus } = useAuthStore()
 	const hideEditButton = useConfigStore(s => s.siteContent.hideEditButton ?? false)
 
 	const enterEditMode = useCallback(() => {
@@ -58,6 +58,7 @@ export function useEditPage(options: UseEditPageOptions = {}) {
 
 	const handleSaveClick = useCallback(
 		(save: () => Promise<void>) => {
+			if (isSaving || isPrivateKeyBusy(useAuthStore.getState().keyStatus)) return
 			pendingSaveRef.current = save
 			if (!isAuth) {
 				keyInputRef.current?.click()
@@ -65,33 +66,28 @@ export function useEditPage(options: UseEditPageOptions = {}) {
 				void runSave(save)
 			}
 		},
-		[isAuth, runSave]
+		[isAuth, isSaving, runSave]
 	)
 
 	const handlePemChange = useCallback(
 		async (e: React.ChangeEvent<HTMLInputElement>) => {
 			const file = e.target.files?.[0]
+			e.currentTarget.value = ''
 			const save = pendingSaveRef.current
 			if (file && save) {
-				try {
-					const text = await file.text()
-					await setPrivateKey(text)
+				if (await importPrivateKey(file)) {
 					await runSave(save)
-				} catch (error) {
-					console.error('Failed to read private key:', error)
-					toast.error('读取密钥文件失败')
 				}
 			}
-			if (e.currentTarget) e.currentTarget.value = ''
 		},
-		[setPrivateKey, runSave]
+		[importPrivateKey, runSave]
 	)
 
 	return {
 		isEditMode,
 		setIsEditMode,
 		enterEditMode,
-		isSaving,
+		isSaving: isSaving || isPrivateKeyBusy(keyStatus),
 		isAuth,
 		hideEditButton,
 		keyInputRef,
