@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { clearAllAuthCache, getAuthToken as getToken, hasAuth as checkAuth, getPemFromCache, savePemToCache } from '@/lib/auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import { signAppJwt } from '@/lib/github-client'
+import { toast } from 'sonner'
 
 export type PrivateKeyStatus = {
 	phase: 'idle' | 'reading' | 'validating' | 'ready' | 'verifying' | 'verified' | 'error'
@@ -48,6 +49,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
 	importPrivateKey: async file => {
 		if (isPrivateKeyBusy(get().keyStatus)) return false
+		const toastId = toast.loading('正在读取私钥…', { description: file.name })
 		set({ keyStatus: { phase: 'reading', filename: file.name } })
 		try {
 			if (!file.name.toLowerCase().endsWith('.pem')) throw new Error('请选择 .pem 格式的私钥文件。')
@@ -60,13 +62,17 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 				throw new Error('无法读取文件，请检查文件是否可用后重新选择。')
 			}
 			set({ keyStatus: { phase: 'validating', filename: file.name } })
+			toast.loading('正在检查私钥格式…', { id: toastId, description: file.name })
 			// Let the reading/validation feedback paint before synchronous RSA parsing.
 			await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
 			await get().setPrivateKey(key)
 			set({ keyStatus: { phase: 'ready', filename: file.name } })
+			toast.success('私钥已导入', { id: toastId, description: '格式检查通过。保存时将验证 GitHub 授权，请以保存结果为准。', duration: 5000 })
 			return true
 		} catch (cause) {
-			set({ keyStatus: { phase: 'error', filename: file.name, message: cause instanceof Error ? cause.message : '私钥导入失败，请重新选择。' } })
+			const message = cause instanceof Error ? cause.message : '私钥导入失败，请重新选择。'
+			set({ keyStatus: { phase: 'error', filename: file.name, message } })
+			toast.error('私钥导入失败', { id: toastId, description: message, duration: 8000 })
 			return false
 		}
 	},
