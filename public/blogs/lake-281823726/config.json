@@ -1,0 +1,30 @@
+{
+  "title": "Eino ES8 检索器使用",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-18T08:51:30.000Z",
+  "createdAt": "2026-08-18T08:51:30.000Z",
+  "updatedAt": "2026-08-19T06:51:34.000Z",
+  "contentUpdatedAt": "2026-08-19T06:13:50.000Z",
+  "firstPublishedAt": "2026-08-18T08:51:57.198Z",
+  "publishedAt": "2026-08-19T06:13:50.000Z",
+  "summary": "简介ES8 检索器是 Eino 框架中用于 Elasticsearch 8.x 的向量检索组件。它实现了 \"Retriever\"接口，可以与 Eino 的向量检索系统无缝集成，提供强大的语义搜索能力。核心特性- ✅ 实现了 `github.com/cloudwego/eino/componen...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 281823726,
+    "slug": "mvr5gutzaigyf1xo",
+    "directory": [
+      "GO-Agent",
+      "Eino ES8 检索器使用"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "1ebf3f568f65c1a4d9edd9e70f72f90d1406639eac15acc685a5d3fbba2530e5",
+    "missingImageReferences": []
+  }
+}

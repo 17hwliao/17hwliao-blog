@@ -1,0 +1,30 @@
+{
+  "title": "开发项目",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-05-06T12:16:19.000Z",
+  "createdAt": "2026-05-06T12:16:19.000Z",
+  "updatedAt": "2026-05-09T13:29:57.000Z",
+  "contentUpdatedAt": "2026-05-09T13:29:56.000Z",
+  "firstPublishedAt": "2026-05-06T12:16:53.081Z",
+  "publishedAt": "2026-05-09T13:29:56.000Z",
+  "summary": "创建分布式锁, 其实就是创建中间件的锁 , 和之前使用的防止穿透使用的锁 类似只要你保证：业务执行时间 &lt; 锁过期时间那么：直接 delete 解锁",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268575745,
+    "slug": "cefg93s8lqwk2ypg",
+    "directory": [
+      "Web后端开发 + AI",
+      "开发项目"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b78cab15e65e394b2dbb99c6a432d0ef658a11aec6f0451ea023e252531bd9fb",
+    "missingImageReferences": []
+  }
+}

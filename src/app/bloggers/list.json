@@ -1,0 +1,23 @@
+[
+  {
+    "name": "阮一峰的网络日志",
+    "avatar": "/images/blogger/ruanyifeng-initial.svg",
+    "url": "https://www.ruanyifeng.com/blog/archives.html",
+    "description": "经典必看，每周更新。无聊是看新闻、还是学习、还是拓展眼界，都是能其中获取到乐趣的。还有很多网友的每周留言。这就是 blog 的含金量。",
+    "stars": 5
+  },
+  {
+    "name": "Josh W. Comeau",
+    "url": "https://www.joshwcomeau.com/",
+    "avatar": "/images/blogger/josh-comeau-initial.svg",
+    "description": "John blog 更像是一个课程网站，每一篇文章都书写的很好，每次阅读都能吸收到新的东西。网站设计也恰到好处，工整、有趣。",
+    "stars": 5
+  },
+  {
+    "name": "nanda",
+    "url": "https://www.nan.fyi/",
+    "avatar": "/images/blogger/nanda-initial.svg",
+    "description": "设计大师，nanda 。页面只用灰色加线条，都让我觉得叹为观止，内容不多，每篇都精雕细琢。跟 Josh 一样，属于技术网站，但它的教程引导更加出神入化，可称为程序艺术家。",
+    "stars": 5
+  }
+]

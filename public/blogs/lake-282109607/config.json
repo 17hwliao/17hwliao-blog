@@ -1,0 +1,30 @@
+{
+  "title": "Eino ADK Agent 开发框架",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-20T12:16:16.000Z",
+  "createdAt": "2026-08-20T12:16:16.000Z",
+  "updatedAt": "2026-08-21T07:13:21.000Z",
+  "contentUpdatedAt": "2026-08-21T07:13:19.000Z",
+  "firstPublishedAt": "2026-08-20T12:16:48.701Z",
+  "publishedAt": "2026-08-21T07:13:19.000Z",
+  "summary": "简介Eino ADK (Agent Development Kit) 参考 Google-ADK 的设计，提供了 Go 语言的 Agents 开发灵活组合框架，即 Agent、Multi-Agent 开发框架，并为多 Agent 交互场景沉淀了通用的上下文传递、事件流分发和转换、任务控制权转让...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 282109607,
+    "slug": "yorwd0bb752335g9",
+    "directory": [
+      "GO-Agent",
+      "Eino ADK Agent 开发框架"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "d6197f2aa4a4c0beeb1aeb40f7321917916b36ee4be0ec2a658abe26c99e966d",
+    "missingImageReferences": []
+  }
+}

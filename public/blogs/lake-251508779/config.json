@@ -1,0 +1,31 @@
+{
+  "title": "第十三天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-01-03T11:50:57.000Z",
+  "createdAt": "2026-01-03T11:50:57.000Z",
+  "updatedAt": "2026-01-03T12:41:52.000Z",
+  "contentUpdatedAt": "2026-01-03T12:39:44.000Z",
+  "firstPublishedAt": "2026-01-03T11:51:18.348Z",
+  "publishedAt": "2026-01-03T12:41:52.000Z",
+  "summary": "泛型类 ( 类型参数 )Object : 1. 需要强制类型转化 ; 2 . 需要具体场景传参public class New_class { String name ; int date ; T value ; New_class(String name , in...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 251508779,
+    "slug": "egntwg5we6itdr3i",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第十三天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "4205adfca41213cdf9a86cde972ba2e3f5499ab10e823e12f927a9d9288bd3c8",
+    "missingImageReferences": []
+  }
+}

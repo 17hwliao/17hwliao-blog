@@ -1,0 +1,30 @@
+{
+  "title": "Prompt 和 ChatTemplate",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-04T11:05:49.000Z",
+  "createdAt": "2026-08-04T11:05:49.000Z",
+  "updatedAt": "2026-08-12T03:15:38.000Z",
+  "contentUpdatedAt": "2026-08-12T03:15:37.000Z",
+  "firstPublishedAt": "2026-08-04T11:11:10.280Z",
+  "publishedAt": "2026-08-12T03:15:37.000Z",
+  "summary": "建议的项目结构 : eino-project/ |--- cmd : main.go (主程序入口) |--- internal : agent(Agent实现)/tools(自定义工具)/config(配置管理) |--- pkg : utils (公共工具) |--- go.mod / -...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 280168079,
+    "slug": "zybx1pce43n76um3",
+    "directory": [
+      "GO-Agent",
+      "Prompt 和 ChatTemplate"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "78ec42c4f39e5d874c8f97198c8d3f6300a9526e5d0192d62dea159955e951e3",
+    "missingImageReferences": []
+  }
+}

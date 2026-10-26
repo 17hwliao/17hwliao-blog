@@ -1,0 +1,30 @@
+{
+  "title": "后端SSM框架入门",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-18T23:49:20.000Z",
+  "createdAt": "2026-04-18T23:49:20.000Z",
+  "updatedAt": "2026-04-27T12:58:16.000Z",
+  "contentUpdatedAt": "2026-04-24T12:44:50.000Z",
+  "firstPublishedAt": "2026-04-18T23:49:42.195Z",
+  "publishedAt": "2026-04-24T12:44:50.000Z",
+  "summary": "前言前面的课程中，我们已经学习了Web开发的基础知识，包括像Maven、HTTP协议、SpringBootWeb基础、IOC、DI、MySQL、JDBC、Mybatis等。 接下来呢，我们就要进入到后端Web实战篇的学习，在实战篇中，就要将前面学习的基础知识用起来，来完成一个大的综合案例 - ...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 266415660,
+    "slug": "kmgzgkdtbw8uqmhp",
+    "directory": [
+      "Web后端开发 + AI",
+      "后端SSM框架入门"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "c6ae8c0d8bc49f926fb6feaa5483a9b24c4c6db12b2185a22585676e8dea9165",
+    "missingImageReferences": []
+  }
+}

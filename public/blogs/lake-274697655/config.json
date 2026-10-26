@@ -1,0 +1,30 @@
+{
+  "title": "自定义数据类型",
+  "tags": [
+    "Goland",
+    "GORM"
+  ],
+  "date": "2026-06-22T00:42:58.000Z",
+  "createdAt": "2026-06-22T00:42:58.000Z",
+  "updatedAt": "2026-06-22T03:43:46.000Z",
+  "contentUpdatedAt": "2026-06-22T03:43:45.000Z",
+  "firstPublishedAt": "2026-06-22T00:43:10.505Z",
+  "publishedAt": "2026-06-22T03:43:45.000Z",
+  "summary": "很多情况下，我们有存json的需求那么就需要使用到gorm中的自定义数据类型了自定义的数据类型必须实现 Scanner 和 Valuer 接口简单说就是，在入库的时候转换一下，变成普通字符串进行存储，查询的时候，映射为结构体JSON自定义数据类型json数据用的比较多",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 274697655,
+    "slug": "vtb094qdg1c78aqx",
+    "directory": [
+      "GORM",
+      "自定义数据类型"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "a44fc296505318ad99950cf2e633bdbcfc7762b4834c888d14819308084c7ed9",
+    "missingImageReferences": []
+  }
+}

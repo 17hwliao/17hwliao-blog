@@ -1,0 +1,30 @@
+{
+  "title": "项目",
+  "tags": [
+    "Goland",
+    "PgSQL"
+  ],
+  "date": "2026-07-26T05:54:25.000Z",
+  "createdAt": "2026-07-26T05:54:25.000Z",
+  "updatedAt": "2026-08-02T00:34:21.000Z",
+  "contentUpdatedAt": "2026-08-02T00:34:20.000Z",
+  "firstPublishedAt": "2026-07-26T05:56:41.231Z",
+  "publishedAt": "2026-08-02T00:34:20.000Z",
+  "summary": "id bigint primary key auto_increment : mysql中实现的 id 键值自增 ; 在 postgreSQL中 : 实现id创建自增 : int auto_increment == serial ;bigint auto_increment == bigser...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 279029871,
+    "slug": "kuokaxvesxedacba",
+    "directory": [
+      "PgSQL",
+      "项目"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "bba995bbf3c567812a0d40916945f727d1608e4dc8b6e816d8477e905fc51975",
+    "missingImageReferences": []
+  }
+}

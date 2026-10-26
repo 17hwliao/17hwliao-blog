@@ -1,0 +1,30 @@
+{
+  "title": "SQL Sentinel",
+  "tags": [
+    "Goland",
+    "Agent项目"
+  ],
+  "date": "2026-08-23T09:03:30.000Z",
+  "createdAt": "2026-08-23T09:03:30.000Z",
+  "updatedAt": "2026-10-20T11:59:01.000Z",
+  "contentUpdatedAt": "2026-08-23T09:17:38.000Z",
+  "firstPublishedAt": "2026-08-23T09:04:40.982Z",
+  "publishedAt": "2026-08-23T09:17:38.000Z",
+  "summary": "准备MAD(Median Absolute Deviation):中位数绝对偏差:一堆数据的median,每个数据和median取绝对值差的队列的median ; 噪声基线:CPU调度,IO波动,内存与缓存干扰 BufferPool 缓存冷热:在启动 Mysql后,数据不在内存的BufferP...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 282383607,
+    "slug": "uuznba2w1a1mls4p",
+    "directory": [
+      "Agent项目",
+      "SQL Sentinel"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "593a12606b1528075fd3086d555376fea5c5d192c8bbd878240a49c689b68845",
+    "missingImageReferences": []
+  }
+}

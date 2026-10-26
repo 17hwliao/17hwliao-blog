@@ -1,0 +1,31 @@
+{
+  "title": "响应文件",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-24T03:21:26.000Z",
+  "createdAt": "2026-05-24T03:21:26.000Z",
+  "updatedAt": "2026-06-30T14:00:49.000Z",
+  "contentUpdatedAt": "2026-06-30T13:52:52.000Z",
+  "firstPublishedAt": "2026-05-24T03:21:45.397Z",
+  "publishedAt": "2026-06-30T13:52:52.000Z",
+  "summary": "用于浏览器直接请求这个接口唤起下载Go复制代码c.Header(\"Content-Type\", \"application/octet-stream\") // 表示是文件流，唤起浏览器下载，一般设置了这个，就要设置文件名 c.Header(\"Content-Disposition\", \"atta...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271097315,
+    "slug": "km5rxlapoqxahtg2",
+    "directory": [
+      "Gin-Web框架",
+      "gin响应",
+      "响应文件"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "e90815676c5d8c61f3f7de33f61ffbc58d43ad2567104bb5d5649163a2fbdc59",
+    "missingImageReferences": []
+  }
+}

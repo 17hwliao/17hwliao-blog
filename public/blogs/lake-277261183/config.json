@@ -1,0 +1,28 @@
+{
+  "title": "ElasticSearch",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-07-11T14:16:49.000Z",
+  "createdAt": "2026-07-11T14:16:49.000Z",
+  "updatedAt": "2026-07-12T12:36:26.000Z",
+  "contentUpdatedAt": "2026-07-12T12:36:25.000Z",
+  "firstPublishedAt": "2026-07-11T14:18:05.180Z",
+  "publishedAt": "2026-07-12T12:36:25.000Z",
+  "summary": "ElasticSearch 简称为es , 开源的分布式的全文搜索引擎 , 可以近乎实时的存储检索数据 ;es安装使用docker实现es的安装 ; services: elasticsearch: image: docker.elastic.co/elasticsearch/elastics...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 277261183,
+    "slug": "dqr1656v6eg4h1vr",
+    "directory": [
+      "ElasticSearch"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "5627ddab2606540c5e414f782f7e5fa30491d6961e89cef401f37a68ab1a5a58",
+    "missingImageReferences": []
+  }
+}

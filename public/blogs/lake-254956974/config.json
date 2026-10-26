@@ -1,0 +1,30 @@
+{
+  "title": "MySql",
+  "tags": [
+    "JAVA",
+    "数据库"
+  ],
+  "date": "2026-01-28T02:03:00.000Z",
+  "createdAt": "2026-01-28T02:03:00.000Z",
+  "updatedAt": "2026-05-29T14:30:29.000Z",
+  "contentUpdatedAt": "2026-05-29T14:30:28.000Z",
+  "firstPublishedAt": "2026-01-28T02:03:36.257Z",
+  "publishedAt": "2026-05-29T14:30:28.000Z",
+  "summary": "文件I/O来将数据保存到本地数据库专门用于快速查找想要的数据，便捷地插入、修改和删除数据常见的数据库有很多种，包括但不限于：MySQL - 免费，用的最多的，开源数据库，适用于中小型Microsoft SQL Server - 收钱的，但是提供技术支持，适用于Windows ServerOra...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 254956974,
+    "slug": "dpgm6c6gx0mh9zip",
+    "directory": [
+      "数据库",
+      "MySql"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b6af20d574361e7868d874d280c9921dc9e006d53ab5a2a9d53d296aa08012ec",
+    "missingImageReferences": []
+  }
+}

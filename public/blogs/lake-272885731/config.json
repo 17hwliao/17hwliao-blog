@@ -1,0 +1,28 @@
+{
+  "title": "GORM",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-06-07T03:51:49.000Z",
+  "createdAt": "2026-06-07T03:51:49.000Z",
+  "updatedAt": "2026-08-03T02:42:05.000Z",
+  "contentUpdatedAt": "2026-06-07T03:55:43.000Z",
+  "firstPublishedAt": "2026-06-07T03:55:43.446Z",
+  "publishedAt": "2026-06-07T03:55:43.000Z",
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 272885731,
+    "slug": "iuivs1vasiglqld7",
+    "directory": [
+      "GORM"
+    ],
+    "status": 1,
+    "empty": true,
+    "bodySha256": "6c31113cccdcb66989223ed0bcf14ef506f47801779f256ab0856388e5817a52",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "Maven项目管理工具",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-09T13:51:04.000Z",
+  "createdAt": "2026-04-09T13:51:04.000Z",
+  "updatedAt": "2026-04-13T14:23:27.000Z",
+  "contentUpdatedAt": "2026-04-13T14:23:26.000Z",
+  "firstPublishedAt": "2026-04-09T13:51:19.160Z",
+  "publishedAt": "2026-04-13T14:23:26.000Z",
+  "summary": "初始Maven介绍Maven 是一款用于管理和构建Java项目的工具，是Apache旗下的一个开源项目 。Apache 软件基金会，成立于1999年7月，是目前世界上最大的最受欢迎的开源软件基金会，也是一个专门为支持开源项目而生的非盈利性组织。开源项目：https://www.apache.o...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 265079676,
+    "slug": "onyrmny6mv6lorg7",
+    "directory": [
+      "Web后端开发 + AI",
+      "Web后端基础",
+      "Maven项目管理工具"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3dca784fbb7fe5242a7115042f556c37a10e34cc09a8ebce8af16914a933cf1f",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Casbin权限鉴别框架",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-06-28T23:56:25.000Z",
+  "createdAt": "2026-06-28T23:56:25.000Z",
+  "updatedAt": "2026-06-28T23:57:39.000Z",
+  "contentUpdatedAt": "2026-06-28T23:57:39.000Z",
+  "firstPublishedAt": "2026-06-28T23:56:58.833Z",
+  "publishedAt": "2026-06-28T23:57:39.000Z",
+  "summary": "Casbin是一个强大的，高效的开源访问控制框架，其权限管理机制支持多种访问控制模型，各个编程语言都对casbin有支持 目前我的所有项目，都是基于简单的角色管理来的 分为了三类，未登录能访问的，",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275586334,
+    "slug": "qgcg5enffl2chvt1",
+    "directory": [
+      "Casbin权限鉴别框架"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "6b7dd0bf3808623de6afde37a76009a4b8df9634d23c91e725af544738d5011d",
+    "missingImageReferences": []
+  }
+}

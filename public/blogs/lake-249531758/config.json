@@ -1,0 +1,31 @@
+{
+  "title": "快读板子+基础了解的东西",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-19T07:22:23.000Z",
+  "createdAt": "2025-12-19T07:22:23.000Z",
+  "updatedAt": "2026-04-02T02:10:23.000Z",
+  "contentUpdatedAt": "2026-04-02T02:10:23.000Z",
+  "firstPublishedAt": "2025-12-19T07:24:13.847Z",
+  "publishedAt": "2026-04-02T02:10:23.000Z",
+  "summary": "---JDK( Java development kit)是JAVA语言的软件开发工具包 ( JVM + 开发工具 + 核心类库) ; 包含JRE( java运行环境 [ JVM + 运行工具] + 核心类库 ) JDK &gt; JRE &gt; JVM ( java virtual machin",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249531758,
+    "slug": "noz4e6rxl0any1ib",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "快读板子+基础了解的东西"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "26d8dc138cd9fe887fcd3dea58eabe9fcda0a4d2c504efd8d80fc8801e1bfcfd",
+    "missingImageReferences": []
+  }
+}

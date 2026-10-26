@@ -1,0 +1,30 @@
+{
+  "title": "协程和channel",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-13T02:06:43.000Z",
+  "createdAt": "2026-05-13T02:06:43.000Z",
+  "updatedAt": "2026-07-15T02:49:43.000Z",
+  "contentUpdatedAt": "2026-07-15T02:49:43.000Z",
+  "firstPublishedAt": "2026-05-13T02:07:01.502Z",
+  "publishedAt": "2026-07-15T02:49:43.000Z",
+  "summary": "协程Goroutine是Go运行时管理的轻量级线程在go中，开启一个协程是非常简单的startTime := time.Now() fmt.Println(time.Since(startTime))Go复制代码package main import ( \"fmt\" \"time\" ) func...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269560008,
+    "slug": "vimow98ceeecv8la",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "协程和channel"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "d9e0847bcd21b647f690c88a5dfef6c111d24be3e0dfcfbf79848dd6e695ca65",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "第二十二天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-02-07T02:45:15.000Z",
+  "createdAt": "2026-02-07T02:45:15.000Z",
+  "updatedAt": "2026-02-27T10:24:39.000Z",
+  "contentUpdatedAt": "2026-02-07T06:09:40.000Z",
+  "firstPublishedAt": "2026-02-07T02:45:37.850Z",
+  "publishedAt": "2026-02-07T06:09:40.000Z",
+  "summary": "文件字符流字符流不同于字节，字符流是以一个具体的字符进行读取，因此它只适合读纯文本的文件，如果是其他类型的文件不适用：java复制代码public static void main(String[] args) { try(FileReader reader = new FileReader(...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 256292476,
+    "slug": "vwd3keh55g7nvayk",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第二十二天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "39dcc2da033404b5296d151f7f305888b16a683903c82eb47f4705d8074b3d7c",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "练习代码6",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-24T08:51:49.000Z",
+  "createdAt": "2025-12-24T08:51:49.000Z",
+  "updatedAt": "2025-12-26T07:26:02.000Z",
+  "contentUpdatedAt": "2025-12-24T08:52:19.000Z",
+  "firstPublishedAt": "2025-12-24T08:52:19.478Z",
+  "publishedAt": "2025-12-24T08:52:32.000Z",
+  "summary": "package io_17hwlioa; import java.math.BigDecimal; import java.math.BigInteger; import java.math.RoundingMode; import java.util.ArrayList; public cl...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250231099,
+    "slug": "cvdl19c7nr9qof9l",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码6"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "a392bd31afbc678a5849572c06a95f8772c0b866d58f351d93f1f70d30af1fef",
+    "missingImageReferences": []
+  }
+}

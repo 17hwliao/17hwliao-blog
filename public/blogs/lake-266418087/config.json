@@ -1,0 +1,30 @@
+{
+  "title": "Web项目实操+一些注意事项",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-19T01:21:32.000Z",
+  "createdAt": "2026-04-19T01:21:32.000Z",
+  "updatedAt": "2026-04-27T12:58:42.000Z",
+  "contentUpdatedAt": "2026-04-24T13:02:05.000Z",
+  "firstPublishedAt": "2026-04-19T01:21:51.775Z",
+  "publishedAt": "2026-04-27T12:58:42.000Z",
+  "summary": "一 : 创建一个idea的空项目 ; 配置JDK; //project structure ; 检查项目创建时候的Maven的路径 : setting --&gt; build -&gt; tools -&gt; Maven : Override 使用系统配置好的路径实现覆盖 ; 修改字符集 : E",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 266418087,
+    "slug": "oio03r0vdzt4vb3x",
+    "directory": [
+      "Web后端开发 + AI",
+      "Web项目实操+一些注意事项"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b1a67a779c67f9ad731817dbda3e223fcd25d499fc92380546d0203899872251",
+    "missingImageReferences": []
+  }
+}

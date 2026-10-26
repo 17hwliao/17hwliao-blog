@@ -1,0 +1,2242 @@
+{
+  "documents": 204,
+  "nonempty": 189,
+  "empty": 15,
+  "missingImageReferences": 264,
+  "cachedImages": 1198,
+  "externalImageReferences": 84,
+  "newest": {
+    "title": "MCP",
+    "date": "2026-09-16T12:51:08.000Z",
+    "slug": "lake-285420754"
+  },
+  "oldest": {
+    "title": "java学习路线",
+    "date": "2025-12-18T12:33:49.000Z",
+    "slug": "lake-249428013"
+  },
+  "details": [
+    {
+      "slug": "lake-285420754",
+      "title": "MCP",
+      "book": "Goland",
+      "date": "2026-09-16T12:51:08.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-282383607",
+      "title": "SQL Sentinel",
+      "book": "Goland",
+      "date": "2026-08-23T09:03:30.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-282376218",
+      "title": "AgentMesh",
+      "book": "Goland",
+      "date": "2026-08-23T07:34:48.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-282376188",
+      "title": "Agent项目",
+      "book": "Goland",
+      "date": "2026-08-23T07:34:38.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-282290405",
+      "title": "Eino Compose & ADK",
+      "book": "Goland",
+      "date": "2026-08-22T05:24:49.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1787386970060-6786e07d-ecc2-4d16-b31d-d1a8fff3d165.png"
+      ]
+    },
+    {
+      "slug": "lake-282109607",
+      "title": "Eino ADK Agent 开发框架",
+      "book": "Goland",
+      "date": "2026-08-20T12:16:16.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-281981945",
+      "title": "EinoMilvus 向量数据库",
+      "book": "Goland",
+      "date": "2026-08-19T13:03:28.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1787205852710-6c45ad33-ccd0-421f-a6db-4685d29f3eaa.png"
+      ]
+    },
+    {
+      "slug": "lake-281823726",
+      "title": "Eino ES8 检索器使用",
+      "book": "Goland",
+      "date": "2026-08-18T08:51:30.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-281821951",
+      "title": "Embedding 和向量检索",
+      "book": "Goland",
+      "date": "2026-08-18T08:42:05.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-281487502",
+      "title": "React Agent 智能代理",
+      "book": "Goland",
+      "date": "2026-08-15T12:18:14.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-281385848",
+      "title": "Tool 工具开发",
+      "book": "Goland",
+      "date": "2026-08-14T08:35:22.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-280868731",
+      "title": "Chain 链式编排",
+      "book": "Goland",
+      "date": "2026-08-10T13:20:37.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-280554822",
+      "title": "项目使用",
+      "book": "Goland",
+      "date": "2026-08-07T13:09:05.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-280553411",
+      "title": "JWT/token签发",
+      "book": "Goland",
+      "date": "2026-08-07T12:38:38.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-280551023",
+      "title": "简单的对话翻译项目",
+      "book": "Goland",
+      "date": "2026-08-07T11:49:01.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-280168079",
+      "title": "Prompt 和 ChatTemplate",
+      "book": "Goland",
+      "date": "2026-08-04T11:05:49.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-280134305",
+      "title": "悲观锁",
+      "book": "Goland",
+      "date": "2026-08-04T06:46:29.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-280042163",
+      "title": "简介和环境搭建",
+      "book": "Goland",
+      "date": "2026-08-03T12:25:39.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-280042135",
+      "title": "GO-Agent",
+      "book": "Goland",
+      "date": "2026-08-03T12:25:22.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-279939877",
+      "title": "项目",
+      "book": "Goland",
+      "date": "2026-08-03T02:05:48.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-279881188",
+      "title": "测试",
+      "book": "Goland",
+      "date": "2026-08-02T12:44:23.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-279873548",
+      "title": "日志轮询优化(lumberjack)",
+      "book": "Goland",
+      "date": "2026-08-02T10:26:59.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-279325857",
+      "title": "项目中使用",
+      "book": "Goland",
+      "date": "2026-07-28T13:07:42.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-279029871",
+      "title": "项目",
+      "book": "Goland",
+      "date": "2026-07-26T05:54:25.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-278884157",
+      "title": "实际项目",
+      "book": "Goland",
+      "date": "2026-07-24T09:25:24.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-278690131",
+      "title": "Viper",
+      "book": "Goland",
+      "date": "2026-07-23T01:13:16.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-278688306",
+      "title": "项目",
+      "book": "Goland",
+      "date": "2026-07-23T00:52:45.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-278444681",
+      "title": "golang的24种设计模式",
+      "book": "Goland",
+      "date": "2026-07-21T08:28:04.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-278209701",
+      "title": "RabbitMQ",
+      "book": "Goland",
+      "date": "2026-07-19T17:24:12.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-278167360",
+      "title": "kafka",
+      "book": "Goland",
+      "date": "2026-07-19T07:08:35.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-278167354",
+      "title": "消息队列",
+      "book": "Goland",
+      "date": "2026-07-19T07:08:28.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-277983783",
+      "title": "Logrus",
+      "book": "Goland",
+      "date": "2026-07-17T06:36:17.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-277935761",
+      "title": "PgSQL",
+      "book": "Goland",
+      "date": "2026-07-17T00:00:41.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-277758126",
+      "title": "Zap开源日志框架",
+      "book": "Goland",
+      "date": "2026-07-15T13:56:50.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-277672905",
+      "title": "Context",
+      "book": "Goland",
+      "date": "2026-07-15T01:34:53.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-277261183",
+      "title": "ElasticSearch",
+      "book": "Goland",
+      "date": "2026-07-11T14:16:49.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-277114630",
+      "title": "proto文件的书写原理",
+      "book": "Goland",
+      "date": "2026-07-10T03:55:19.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-276891991",
+      "title": "rpc服务",
+      "book": "Goland",
+      "date": "2026-07-08T09:42:08.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-276835660",
+      "title": "MySql操作",
+      "book": "Goland",
+      "date": "2026-07-08T02:40:05.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275857079",
+      "title": "api服务",
+      "book": "Goland",
+      "date": "2026-06-30T12:44:29.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275837631",
+      "title": "微服务demo",
+      "book": "Goland",
+      "date": "2026-06-30T09:22:13.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275830111",
+      "title": "Etcd",
+      "book": "Goland",
+      "date": "2026-06-30T08:45:46.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275589455",
+      "title": "环境构建",
+      "book": "Goland",
+      "date": "2026-06-29T00:56:18.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275586611",
+      "title": "微服务",
+      "book": "Goland",
+      "date": "2026-06-29T00:06:21.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275586595",
+      "title": "GO-zero",
+      "book": "Goland",
+      "date": "2026-06-29T00:05:41.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275586343",
+      "title": "基本使用",
+      "book": "Goland",
+      "date": "2026-06-28T23:56:58.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275586334",
+      "title": "Casbin权限鉴别框架",
+      "book": "Goland",
+      "date": "2026-06-28T23:56:25.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275536749",
+      "title": "redis的持久化",
+      "book": "Goland",
+      "date": "2026-06-28T12:12:34.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275447645",
+      "title": "redis",
+      "book": "Goland",
+      "date": "2026-06-27T10:32:19.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275439809",
+      "title": "go语言集成redis",
+      "book": "Goland",
+      "date": "2026-06-27T08:38:35.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275237238",
+      "title": "proto文件编译",
+      "book": "Goland",
+      "date": "2026-06-25T13:25:54.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275234018",
+      "title": "grpc的流式传输",
+      "book": "Goland",
+      "date": "2026-06-25T12:42:10.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275084085",
+      "title": "proto文件",
+      "book": "Goland",
+      "date": "2026-06-24T11:36:49.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275081128",
+      "title": "grpc 的基础",
+      "book": "Goland",
+      "date": "2026-06-24T11:14:59.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-275079395",
+      "title": "原生rpc",
+      "book": "Goland",
+      "date": "2026-06-24T11:00:04.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-274765747",
+      "title": "gRPC介绍",
+      "book": "Goland",
+      "date": "2026-06-22T08:37:24.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-274763656",
+      "title": "gRPC架构",
+      "book": "Goland",
+      "date": "2026-06-22T08:27:27.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-274739125",
+      "title": "Gorm的配置",
+      "book": "Goland",
+      "date": "2026-06-22T06:16:00.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-274725137",
+      "title": "事务",
+      "book": "Goland",
+      "date": "2026-06-22T03:32:08.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-274697655",
+      "title": "自定义数据类型",
+      "book": "Goland",
+      "date": "2026-06-22T00:42:58.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-274158928",
+      "title": "表结构",
+      "book": "Goland",
+      "date": "2026-06-16T14:15:29.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-273074958",
+      "title": "单表的高级查询",
+      "book": "Goland",
+      "date": "2026-06-08T13:29:09.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-272906370",
+      "title": "单表模型和单表操作",
+      "book": "Goland",
+      "date": "2026-06-07T09:31:22.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-272904586",
+      "title": "Gorm引入",
+      "book": "Goland",
+      "date": "2026-06-07T09:07:24.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-272885901",
+      "title": "通过go语言操作SQL",
+      "book": "Goland",
+      "date": "2026-06-07T03:55:43.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-272885731",
+      "title": "GORM",
+      "book": "Goland",
+      "date": "2026-06-07T03:51:49.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-272835781",
+      "title": "中间件",
+      "book": "Goland",
+      "date": "2026-06-06T13:14:45.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-272835764",
+      "title": "路由",
+      "book": "Goland",
+      "date": "2026-06-06T13:14:21.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-272835747",
+      "title": "中间件加路由",
+      "book": "Goland",
+      "date": "2026-06-06T13:13:56.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271904028",
+      "title": "参数绑定",
+      "book": "Goland",
+      "date": "2026-05-30T05:15:40.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271904026",
+      "title": "binding 内置规则",
+      "book": "Goland",
+      "date": "2026-05-30T05:15:39.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271904011",
+      "title": "bind 绑定器",
+      "book": "Goland",
+      "date": "2026-05-30T05:15:20.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271889184",
+      "title": "表单参数和文件上传",
+      "book": "Goland",
+      "date": "2026-05-30T01:41:25.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271804410",
+      "title": "原始内容",
+      "book": "Goland",
+      "date": "2026-05-29T06:51:30.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271715663",
+      "title": "gin 获取数据",
+      "book": "Goland",
+      "date": "2026-05-28T13:01:58.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271425514",
+      "title": "RESTful API设计",
+      "book": "Goland",
+      "date": "2026-05-26T13:23:09.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271097344",
+      "title": "静态文件",
+      "book": "Goland",
+      "date": "2026-05-24T03:21:45.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271097315",
+      "title": "响应文件",
+      "book": "Goland",
+      "date": "2026-05-24T03:21:26.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271097284",
+      "title": "html响应",
+      "book": "Goland",
+      "date": "2026-05-24T03:21:05.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271097170",
+      "title": "json响应",
+      "book": "Goland",
+      "date": "2026-05-24T03:19:47.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271097082",
+      "title": "gin响应",
+      "book": "Goland",
+      "date": "2026-05-24T03:18:47.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271090118",
+      "title": "go原生http服务",
+      "book": "Goland",
+      "date": "2026-05-24T02:03:17.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-271089987",
+      "title": "Gin-Web框架",
+      "book": "Goland",
+      "date": "2026-05-24T02:01:45.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-270392663",
+      "title": "redis 原理篇",
+      "book": "JAVA",
+      "date": "2026-05-19T01:22:35.000Z",
+      "empty": false,
+      "missingImages": [
+        ".\\原理篇.assets\\1653984583289.png",
+        ".\\原理篇.assets\\1653984624671.png",
+        ".\\原理篇.assets\\1653984648404.png",
+        ".\\原理篇.assets\\1653984787383.png",
+        ".\\原理篇.assets\\1653984822363.png",
+        ".\\原理篇.assets\\1653984838306.png",
+        ".\\原理篇.assets\\1653984923322.png",
+        ".\\原理篇.assets\\1653984942385.png",
+        ".\\原理篇.assets\\1653985276621.png",
+        ".\\原理篇.assets\\1653985304075.png",
+        ".\\原理篇.assets\\1653985327653.png",
+        ".\\原理篇.assets\\1653985396560.png",
+        ".\\原理篇.assets\\1653985497735.png",
+        ".\\原理篇.assets\\1653985570612.png",
+        ".\\原理篇.assets\\1653985586543.png",
+        ".\\原理篇.assets\\1653985640422.png",
+        ".\\原理篇.assets\\1653985716275.png",
+        ".\\原理篇.assets\\1653985743412.png",
+        ".\\原理篇.assets\\1653985824540.png",
+        ".\\原理篇.assets\\1653985987327.png",
+        ".\\原理篇.assets\\1653986055253.png",
+        ".\\原理篇.assets\\1653986172002.png",
+        ".\\原理篇.assets\\1653986282879.png",
+        ".\\原理篇.assets\\1653986328124.png",
+        ".\\原理篇.assets\\1653986474927.png",
+        ".\\原理篇.assets\\1653986642777.png",
+        ".\\原理篇.assets\\1653986667228.png",
+        ".\\原理篇.assets\\1653986718554.png",
+        ".\\原理篇.assets\\1653986771309.png",
+        ".\\原理篇.assets\\1653986813240.png",
+        ".\\原理篇.assets\\1653986877620.png",
+        ".\\原理篇.assets\\1653986956618.png",
+        ".\\原理篇.assets\\1653987103450.png",
+        ".\\原理篇.assets\\1653987159575.png",
+        ".\\原理篇.assets\\1653987172764.png",
+        ".\\原理篇.assets\\1653987202522.png",
+        ".\\原理篇.assets\\1653987240622.png",
+        ".\\原理篇.assets\\1653987313461.png",
+        ".\\原理篇.assets\\1653987342550.png",
+        ".\\原理篇.assets\\1653987388177.png",
+        ".\\原理篇.assets\\1653987454403.png",
+        ".\\原理篇.assets\\1653992091967.png",
+        ".\\原理篇.assets\\1653992121692.png",
+        ".\\原理篇.assets\\1653992172526.png",
+        ".\\原理篇.assets\\1653992238097.png",
+        ".\\原理篇.assets\\1653992299740.png",
+        ".\\原理篇.assets\\1653992339937.png",
+        ".\\原理篇.assets\\1653992360355.png",
+        ".\\原理篇.assets\\1653992413406.png",
+        ".\\原理篇.assets\\1653844970346.png",
+        ".\\原理篇.assets\\1653845147190.png",
+        ".\\原理篇.assets\\1653896065386.png",
+        ".\\原理篇.assets\\1653896377259.png",
+        ".\\原理篇.assets\\1653896687354.png",
+        ".\\原理篇.assets\\1653897115346.png",
+        ".\\原理篇.assets\\1653897270074.png",
+        ".\\原理篇.assets\\1653897490116.png",
+        ".\\原理篇.assets\\1653900022580.png",
+        ".\\原理篇.assets\\1653900721427.png",
+        ".\\原理篇.assets\\1653902845082.png",
+        ".\\原理篇.assets\\1653911776583.png",
+        ".\\原理篇.assets\\1653911877542.png",
+        ".\\原理篇.assets\\1653912219712.png",
+        ".\\原理篇.assets\\1653982278727.png",
+        ".\\原理篇.assets\\1653982993020.png",
+        ".\\原理篇.assets\\1653983341150.png",
+        ".\\原理篇.assets\\1653983366243.png",
+        ".\\原理篇.assets\\1653983423128.png",
+        ".\\原理篇.assets\\1653983606531.png",
+        ".\\原理篇.assets\\1653983652865.png",
+        ".\\原理篇.assets\\1653983978671.png",
+        ".\\原理篇.assets\\1653984029506.png",
+        ".\\原理篇.assets\\1653984085095.png"
+      ],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1779181305867-a7aeef63-22e9-494f-923c-afcb4f260ff6.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1779243088406-f963184b-f777-490d-9df4-053813e54435.png"
+      ]
+    },
+    {
+      "slug": "lake-270239191",
+      "title": "redis高级最佳实践",
+      "book": "JAVA",
+      "date": "2026-05-18T02:46:27.000Z",
+      "empty": false,
+      "missingImages": [
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521120213631.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521122320482.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521124650117.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521133359507.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521133703245.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521140415785.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521140621204.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521142943350.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521143458010.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521144339377.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521151459880.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521151524621.png",
+        ".\\Redis高级篇之最佳实践.assets\\image-20220521151902080.png",
+        ".\\Redis高级篇之最佳实践.assets\\1653126446641.png",
+        ".\\Redis高级篇之最佳实践.assets\\1653129590210.png",
+        ".\\Redis高级篇之最佳实践.assets\\1653130457771.png",
+        ".\\Redis高级篇之最佳实践.assets\\1653130475979.png",
+        ".\\Redis高级篇之最佳实践.assets\\1653130858066.png",
+        ".\\Redis高级篇之最佳实践.assets\\1653132073570.png",
+        ".\\Redis高级篇之最佳实践.assets\\1653132098823.png",
+        ".\\Redis高级篇之最佳实践.assets\\1653132410073.png"
+      ],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1779112624031-dd1e77da-6759-48ec-a715-23a0e1cc0463.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1779112643189-2c4072ad-8921-4da2-9182-7331bba0f8fc.png"
+      ]
+    },
+    {
+      "slug": "lake-270132026",
+      "title": "redis 多级缓存 + lua语言入门",
+      "book": "JAVA",
+      "date": "2026-05-17T04:43:16.000Z",
+      "empty": false,
+      "missingImages": [
+        "assets/image-20210821075259137.png",
+        "assets/image-20210821075558137.png",
+        "assets/image-20210821080511581.png",
+        "assets/image-20210821081418456.png",
+        "assets/image-20210821081826399.png",
+        "assets/image-20210821091621308.png",
+        "assets/image-20210821091638140.png",
+        "assets/image-20210821091835406.png",
+        "assets/image-20210821091904332.png",
+        "assets/image-20210821092657918.png",
+        "assets/image-20210821092902946.png",
+        "assets/image-20210821092941139.png",
+        "assets/yeVDlwtfMx.png",
+        "assets/image-20210821093144700.png",
+        "assets/image-20210821094447709.png",
+        "assets/image-20210821100755080.png",
+        "assets/image-20210821100801756.png",
+        "assets/image-20210821101217089.png",
+        "assets/image-20210821101721649.png",
+        "assets/image-20210821102235467.png",
+        "assets/image-20210821102610167.png",
+        "assets/image-20210821102959829.png",
+        "assets/image-20210821104149061.png",
+        "assets/image-20210821104857413.png",
+        "assets/image-20210821110441222.png",
+        "assets/image-20210821111023255.png",
+        "assets/image-20210821112420464.png",
+        "assets/image-20210821112444482.png",
+        "assets/image-20210821112559965.png",
+        "assets/image-20210821112637430.png",
+        "assets/image-20210821113340111.png",
+        "assets/image-20210821114528954.png",
+        "assets/image-20210821114742950.png",
+        "assets/image-20210821115108528.png",
+        "assets/image-20210821115552327.png",
+        "assets/image-20210821115719363.png",
+        "assets/image-20210821115914748.png",
+        "assets/image-20210821115948395.png",
+        "assets/image-20210821120017324.png",
+        "assets/image-20210821120049024.png"
+      ],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1779005657195-a977b50a-d60a-4215-9083-5d865684831a.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1779015495805-a5370d7e-751c-4372-acce-0f2e96a375ac.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1779024047229-974e3c55-585f-43f5-ab09-998fcaaea07b.png"
+      ]
+    },
+    {
+      "slug": "lake-270050158",
+      "title": "redis 分布式缓存",
+      "book": "JAVA",
+      "date": "2026-05-16T08:09:55.000Z",
+      "empty": false,
+      "missingImages": [
+        "assets/image-20210725144240631.png",
+        "assets/image-20210725151319695.png",
+        "assets/image-20210725151543640.png",
+        "assets/image-20210725151654046.png",
+        "assets/image-20210725151729118.png",
+        "assets/image-20210725151940515.png",
+        "assets/image-20210725152037611.png",
+        "assets/image-20210725152052501.png",
+        "assets/image-20210725152222497.png",
+        "assets/image-20210725152700914.png",
+        "assets/image-20210725153201086.png",
+        "assets/image-20210725153359022.png",
+        "assets/image-20210725153524190.png",
+        "assets/image-20210725153715910.png",
+        "assets/image-20210725153937031.png",
+        "assets/image-20210725154155984.png",
+        "assets/image-20210725154216392.png",
+        "assets/image-20210725154405899.png",
+        "assets/image-20210725154528072.png",
+        "assets/image-20210725154632354.png",
+        "assets/image-20210725155747294.png",
+        "assets/image-20210725155806288.png",
+        "assets/image-20210725155820320.png",
+        "assets/image-20210725155850200.png",
+        "assets/image-20210725160138290.png",
+        "assets/image-20210725160448139.png",
+        "assets/image-20210725160448139.png",
+        "assets/image-20210725161007099.png",
+        "assets/image-20210725161241793.png",
+        "assets/image-20210725161401925.png",
+        "assets/image-20210725161506241.png",
+        "assets/image-20210725161540841.png",
+        "assets/image-20210725161637152.png",
+        "assets/image-20210725161731738.png",
+        "assets/image-20210725161817642.png",
+        "assets/image-20210725162030478.png",
+        "assets/image-20210725162101228.png",
+        "assets/image-20210725162145497.png",
+        "assets/image-20210725162224058.png",
+        "assets/image-20210727161152065.png",
+        "assets/image-20210725162319490.png",
+        "assets/image-20210725162408979.png",
+        "assets/image-20210727160803386.png",
+        "assets/image-20210725162441407.png",
+        "assets/image-20210727160037766.png",
+        "assets/image-20210727161152065.png"
+      ],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778937151820-fcf2f17f-f5d5-490e-8a3c-70a78ab3d562.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778987513738-1241e5ff-c7af-47e7-bb81-44c5824daa05.png"
+      ]
+    },
+    {
+      "slug": "lake-269931716",
+      "title": "redis三大数据结构",
+      "book": "JAVA",
+      "date": "2026-05-15T07:47:17.000Z",
+      "empty": false,
+      "missingImages": [
+        ".\\Redis实战篇.assets\\1653822036941.png",
+        ".\\Redis实战篇.assets\\1653822021827.png",
+        ".\\Redis实战篇.assets\\1653823145495.png",
+        ".\\Redis实战篇.assets\\1653824498278.png",
+        ".\\Redis实战篇.assets\\1653833970361.png",
+        ".\\Redis实战篇.assets\\1653834455899.png",
+        ".\\Redis实战篇.assets\\1653835784444.png",
+        ".\\Redis实战篇.assets\\1653836416586.png",
+        ".\\Redis实战篇.assets\\1653836578970.png",
+        ".\\Redis实战篇.assets\\1653837988985.png",
+        ".\\Redis实战篇.assets\\1653838053608.png"
+      ],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778831714855-cdaa0125-892d-409a-8b7d-3a78ab5445c6.png"
+      ]
+    },
+    {
+      "slug": "lake-269919817",
+      "title": "项目部署",
+      "book": "Goland",
+      "date": "2026-05-15T06:47:10.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269918205",
+      "title": "网络编程",
+      "book": "Goland",
+      "date": "2026-05-15T06:38:30.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269714252",
+      "title": "反射",
+      "book": "Goland",
+      "date": "2026-05-14T02:28:51.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269705812",
+      "title": "单元测试",
+      "book": "Goland",
+      "date": "2026-05-14T01:45:41.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269639535",
+      "title": "文件操作",
+      "book": "Goland",
+      "date": "2026-05-13T09:50:13.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269622025",
+      "title": "泛型",
+      "book": "Goland",
+      "date": "2026-05-13T08:13:37.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269608187",
+      "title": "异常处理",
+      "book": "Goland",
+      "date": "2026-05-13T07:07:45.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269602022",
+      "title": "线程安全",
+      "book": "Goland",
+      "date": "2026-05-13T06:39:24.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269560008",
+      "title": "协程和channel",
+      "book": "Goland",
+      "date": "2026-05-13T02:06:43.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269547416",
+      "title": "接口",
+      "book": "Goland",
+      "date": "2026-05-13T00:31:30.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269509105",
+      "title": "自定义数据类型和类型别名",
+      "book": "Goland",
+      "date": "2026-05-12T14:04:57.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269502362",
+      "title": "GoLand 开发路线",
+      "book": "Goland",
+      "date": "2026-05-12T12:47:36.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269387427",
+      "title": "结构体",
+      "book": "Goland",
+      "date": "2026-05-12T00:14:55.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269338718",
+      "title": "init 和 defer 函数",
+      "book": "Goland",
+      "date": "2026-05-11T14:22:33.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269332108",
+      "title": "函数",
+      "book": "Goland",
+      "date": "2026-05-11T13:10:21.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269331570",
+      "title": "for循环语句",
+      "book": "Goland",
+      "date": "2026-05-11T13:04:24.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269231473",
+      "title": "if条件判断",
+      "book": "Goland",
+      "date": "2026-05-11T02:05:21.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269125064",
+      "title": "数组,切片,map",
+      "book": "Goland",
+      "date": "2026-05-10T03:01:46.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269072618",
+      "title": "基本数据类型",
+      "book": "Goland",
+      "date": "2026-05-09T13:56:13.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269071428",
+      "title": "变量定义加输入输出",
+      "book": "Goland",
+      "date": "2026-05-09T13:46:15.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269071408",
+      "title": "环境搭建",
+      "book": "Goland",
+      "date": "2026-05-09T13:46:03.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269070061",
+      "title": "Goland 语言入门",
+      "book": "Goland",
+      "date": "2026-05-09T13:35:36.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-269070035",
+      "title": "Goland",
+      "book": "Goland",
+      "date": "2026-05-09T13:35:23.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-268797834",
+      "title": "Conda 实现多环境控制",
+      "book": "JAVA",
+      "date": "2026-05-08T01:50:00.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-268575745",
+      "title": "开发项目",
+      "book": "JAVA",
+      "date": "2026-05-06T12:16:19.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-268561157",
+      "title": "黑马点评项目 实战篇",
+      "book": "JAVA",
+      "date": "2026-05-06T09:45:07.000Z",
+      "empty": false,
+      "missingImages": [
+        ".\\Redis实战篇.assets\\1653057872536.png",
+        ".\\Redis实战篇.assets\\1653059409865.png",
+        ".\\Redis实战篇.assets\\1653060237073.png",
+        ".\\Redis实战篇.assets\\1653060337562.png",
+        ".\\Redis实战篇.assets\\1653060588190.png",
+        ".\\Redis实战篇.assets\\1653067054461.png",
+        ".\\Redis实战篇.assets\\1653069893050.png",
+        ".\\Redis实战篇.assets\\1653319261433.png",
+        ".\\Redis实战篇.assets\\1653319474181.png",
+        ".\\Redis实战篇.assets\\1653320822964.png",
+        ".\\Redis实战篇.assets\\1653320764547.png",
+        ".\\Redis实战篇.assets\\image-20220523214414123.png",
+        ".\\Redis实战篇.assets\\1653322097736.png",
+        ".\\Redis实战篇.assets\\1653322190155.png",
+        ".\\Redis实战篇.assets\\1653322506393.png",
+        ".\\Redis实战篇.assets\\1653322857620.png",
+        ".\\Redis实战篇.assets\\1653323595206.png",
+        ".\\Redis实战篇.assets\\1653325871232.png",
+        ".\\Redis实战篇.assets\\1653325929549.png",
+        ".\\Redis实战篇.assets\\1653326156516.png",
+        ".\\Redis实战篇.assets\\1653327124561.png",
+        ".\\Redis实战篇.assets\\1653327884526.png",
+        ".\\Redis实战篇.assets\\1653328022622.png",
+        ".\\Redis实战篇.assets\\1653328288627.png",
+        ".\\Redis实战篇.assets\\1653328663897.png",
+        ".\\Redis实战篇.assets\\1653357522914.png",
+        ".\\Redis实战篇.assets\\1653357860001.png",
+        ".\\Redis实战篇.assets\\1653363100502.png",
+        ".\\Redis实战篇.assets\\1653363172079.png",
+        ".\\Redis实战篇.assets\\1653365839526.png",
+        ".\\Redis实战篇.assets\\1653366238564.png",
+        ".\\Redis实战篇.assets\\1653368335155.png",
+        ".\\Redis实战篇.assets\\1653368562591.png",
+        ".\\Redis实战篇.assets\\1653369268550.png",
+        ".\\Redis实战篇.assets\\1653371854389.png",
+        ".\\Redis实战篇.assets\\1653373434815.png",
+        ".\\Redis实战篇.assets\\1653383810643.png",
+        ".\\Redis实战篇.assets\\1653373887844.png",
+        ".\\Redis实战篇.assets\\1653373908620.png",
+        ".\\Redis实战篇.assets\\1653374044740.png",
+        ".\\Redis实战篇.assets\\1653374296906.png",
+        ".\\Redis实战篇.assets\\1653381992018.png",
+        ".\\Redis实战篇.assets\\1653382219377.png",
+        ".\\Redis实战篇.assets\\1656079017728.png",
+        ".\\Redis实战篇.assets\\1653387398820.png",
+        ".\\Redis实战篇.assets\\1653387764938.png",
+        ".\\Redis实战篇.assets\\1653392181413.png",
+        ".\\Redis实战篇.assets\\1653392218531.png",
+        ".\\Redis实战篇.assets\\1653393304844.png",
+        ".\\Redis实战篇.assets\\1653546070602.png",
+        ".\\Redis实战篇.assets\\1653546736063.png",
+        ".\\Redis实战篇.assets\\1653548087334.png",
+        ".\\Redis实战篇.assets\\1653553998403.png",
+        ".\\Redis实战篇.assets\\1653554055048.png",
+        ".\\Redis实战篇.assets\\1653553093967.png",
+        ".\\Redis实战篇.assets\\1653560986599.png",
+        ".\\Redis实战篇.assets\\1653561657295.png",
+        ".\\Redis实战篇.assets\\1653562234886.png",
+        ".\\Redis实战篇.assets\\1656080546603.png",
+        ".\\Redis实战篇.assets\\1653574849336.png",
+        ".\\Redis实战篇.assets\\1653575176451.png",
+        ".\\Redis实战篇.assets\\1653575506373.png",
+        ".\\Redis实战篇.assets\\1653577301737.png",
+        ".\\Redis实战篇.assets\\1653577349691.png",
+        ".\\Redis实战篇.assets\\1653577643629.png",
+        ".\\Redis实战篇.assets\\1653577659166.png",
+        ".\\Redis实战篇.assets\\1653577689129.png",
+        ".\\Redis实战篇.assets\\1653577801668.png",
+        ".\\Redis实战篇.assets\\1653577984924.png",
+        ".\\Redis实战篇.assets\\1653578211854.png",
+        ".\\Redis实战篇.assets\\1653578560691.png",
+        ".\\Redis实战篇.assets\\1656082824939.png"
+      ],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778122788591-b3fd84c4-8813-4c93-bcd6-a5839fcc82b4.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778323548507-ca353c20-81b2-4d3d-913f-e6e1f633f613.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778329486322-857b6f8b-ca45-4e93-847e-fa31f458e70b.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778470623347-a4c66d93-2dfc-49e1-8b3b-ac6c99a8eea8.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778470656014-b502cbd5-0226-459e-a844-ad24b5cd8796.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778573931663-76a8b9d1-5100-46da-83b6-f109bf6191a9.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778575769730-1ed4f967-f89c-4e7c-8e41-24ddca3124ec.png"
+      ]
+    },
+    {
+      "slug": "lake-268328377",
+      "title": "Redis",
+      "book": "JAVA",
+      "date": "2026-05-04T15:01:29.000Z",
+      "empty": false,
+      "missingImages": [
+        "assets/Ip9TKSY.png"
+      ],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777983100914-16c57829-f2e9-4bf6-b7b6-9c9e8d81b9dc.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777987972761-56ecedff-1d68-46d7-83db-f29b27a0de48.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778052742221-f2d3c441-cc3e-446a-9637-642f0308d3d6.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1778053117417-0b5ac60c-8313-4242-bbb3-85738348bcc4.png"
+      ]
+    },
+    {
+      "slug": "lake-268322502",
+      "title": "安装软件",
+      "book": "JAVA",
+      "date": "2026-05-04T12:59:16.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-268305653",
+      "title": "Docker 系统学习",
+      "book": "JAVA",
+      "date": "2026-05-04T07:21:32.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777892495970-caa77740-91aa-4079-9f43-a0c0124af299.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777892496119-08971083-9149-4226-88d0-15726c2e755c.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777892496737-85794a76-6128-47ae-97a6-58ee3e3216cc.png"
+      ]
+    },
+    {
+      "slug": "lake-268286225",
+      "title": "pyenv轻量化创建 python运行环境",
+      "book": "JAVA",
+      "date": "2026-05-04T00:34:29.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-268243736",
+      "title": "Linux系统学习",
+      "book": "JAVA",
+      "date": "2026-05-03T12:57:32.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874323928-2717e9c0-4338-429a-a35d-e1d1ab66ef58.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874324282-c6281de9-9b20-4fe0-9f65-3206aabef5ba.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874324735-cc0d93bf-1d08-458c-b7e3-600334e7912a.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874886379-d1063a6f-858a-4027-848d-45fdfdbd30ec.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874886375-35ad59e4-f8bb-452d-bfc7-d9e118b0486e.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874887385-b4f81a9e-e155-4126-a7fc-abd6fd8a2758.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874887782-5c7168b7-a7b9-41f9-b9c4-595e27399b4c.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874904186-393379df-be43-46af-aa4b-28e6ff8fa78f.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874905451-948f2345-ac38-4b18-8541-bf9756deb2af.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874931025-740c9c01-883e-4903-931e-9a0cf8bd369c.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874931784-bc291bd7-9e25-4fae-a94a-8a41dc11898c.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777874932951-e9e4fc14-5322-44ca-877f-1b1256c8c048.png"
+      ]
+    },
+    {
+      "slug": "lake-268222043",
+      "title": "Vue 工程化项目完整配置流程",
+      "book": "JAVA",
+      "date": "2026-05-03T06:20:08.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-268216835",
+      "title": "学习使用 vue工程化开发",
+      "book": "JAVA",
+      "date": "2026-05-03T04:31:01.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777785096017-af410c25-2f56-4f29-8b00-4e2e7cdd43a1.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777798801815-67825fe6-d3c4-4070-96ff-41e14b3c6365.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777798803249-bdec76da-039a-4055-b8f2-a4239912f7b5.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777798899848-5771f7a0-aac4-4e6d-a7b9-e0e856ee4533.png"
+      ]
+    },
+    {
+      "slug": "lake-268149720",
+      "title": "Vue 工程化",
+      "book": "JAVA",
+      "date": "2026-05-02T06:32:35.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777703604054-cdf63005-49a8-4c44-a3d2-01e35ca35d74.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777723752765-38a39f98-4f32-4407-8c29-30ca401a48fb.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777726134195-3b040dd9-e786-4ee3-a6cb-2dc1514c8973.png"
+      ]
+    },
+    {
+      "slug": "lake-268138603",
+      "title": "Maven高级",
+      "book": "JAVA",
+      "date": "2026-05-02T01:55:16.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777689391259-2ae4193b-7eaa-4738-8823-f9c9f79f1689.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777689407607-266014fd-5a76-4732-9fd0-b3eb5172b2a0.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777689430875-503cfb3f-66d5-4460-bfd9-f00a81fe75f9.png"
+      ]
+    },
+    {
+      "slug": "lake-268069712",
+      "title": "SpringBoot原理篇",
+      "book": "JAVA",
+      "date": "2026-05-01T02:14:23.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777601729813-000858e6-3a80-451f-b4d1-a1783fb81523.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777601729783-340bdbbf-fbf2-448f-a2c8-290822fb671f.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777601771883-be8ffdbe-1d35-4707-97bb-8df8b52b3278.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777601788586-86988f68-e5e0-43ca-988b-abb297550670.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777601813477-96f0f0f6-5ea3-46bf-a439-561539c88bdb.png"
+      ]
+    },
+    {
+      "slug": "lake-267856049",
+      "title": "AOP",
+      "book": "JAVA",
+      "date": "2026-04-29T10:10:13.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777457434637-435c8f68-5872-4bc6-a91e-20489bbeec2c.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777472313429-6f182372-125e-4890-8e94-c78ff7c421c9.png"
+      ]
+    },
+    {
+      "slug": "lake-267680549",
+      "title": "会话追踪 + Filter + Interceptor",
+      "book": "JAVA",
+      "date": "2026-04-28T07:32:55.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777361646242-2484f5c8-64c1-4455-bedc-17fe4122d180.png"
+      ]
+    },
+    {
+      "slug": "lake-267560790",
+      "title": "SQL文件的上传和储存OSS实战",
+      "book": "JAVA",
+      "date": "2026-04-27T12:35:43.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777258410701-3ec96ff4-6ea4-4bd5-aa89-85e2ab431011.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777258411379-8f094a63-a85a-4f09-9850-b618e541e713.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777258411671-56977ec8-eedb-436b-bc73-3a9a9c273532.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777258413498-945ea568-3f30-4911-9f85-d47dcea14892.png"
+      ]
+    },
+    {
+      "slug": "lake-267560361",
+      "title": "SQL事务",
+      "book": "JAVA",
+      "date": "2026-04-27T12:32:24.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777201439365-94a91eb6-311d-42a7-9c7d-b04f25c921b7.png"
+      ]
+    },
+    {
+      "slug": "lake-267266705",
+      "title": "nvm控制node版本",
+      "book": "JAVA",
+      "date": "2026-04-25T03:00:31.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-266765616",
+      "title": "SQL/CRUD实战",
+      "book": "JAVA",
+      "date": "2026-04-21T09:38:04.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1776764350631-12e20c84-a608-4f75-b2bf-c9a69913962d.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777175494966-2c095080-1437-4d6f-a6fe-d25892d61c4d.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777175495920-76c2cfe4-bf7b-415b-bdb7-ae5b91c6abba.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1777298024087-142c84a1-9b33-444b-97c5-b6640d3864e8.png"
+      ]
+    },
+    {
+      "slug": "lake-266418087",
+      "title": "Web项目实操+一些注意事项",
+      "book": "JAVA",
+      "date": "2026-04-19T01:21:32.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-266415660",
+      "title": "后端SSM框架入门",
+      "book": "JAVA",
+      "date": "2026-04-18T23:49:20.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1776558073882-9ddfbc26-e560-46a8-8205-7c921c977deb.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1776558075667-625c5849-cbff-4652-87a8-995c40e9aa25.png"
+      ]
+    },
+    {
+      "slug": "lake-266415592",
+      "title": "Web后端基础",
+      "book": "JAVA",
+      "date": "2026-04-18T23:45:08.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-266415401",
+      "title": "Springboot项目配置文件",
+      "book": "JAVA",
+      "date": "2026-04-18T23:24:46.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-266349387",
+      "title": "Mybatis",
+      "book": "JAVA",
+      "date": "2026-04-18T09:51:09.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-266115025",
+      "title": "JDBC",
+      "book": "JAVA",
+      "date": "2026-04-16T14:20:37.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1776349638828-ee4dd35e-a4ea-45a8-9feb-f8ef0f87dd66.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1776504957973-b89f35a7-35d1-43a4-b31a-ac42ff637160.png"
+      ]
+    },
+    {
+      "slug": "lake-265653699",
+      "title": "SpringBoot Web",
+      "book": "JAVA",
+      "date": "2026-04-14T01:21:39.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1776130457753-e309a837-d82f-409a-a190-a14c2497ded0.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1776166884426-642c84ec-27c1-47ea-8502-d636c4f2cd3f.png"
+      ]
+    },
+    {
+      "slug": "lake-265402503",
+      "title": "反射",
+      "book": "JAVA",
+      "date": "2026-04-12T08:40:02.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-265391187",
+      "title": "测试( JUnit白盒 )",
+      "book": "JAVA",
+      "date": "2026-04-12T06:45:57.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1776090539252-61e4c595-30e9-45d8-95f9-93d703997ebe.png"
+      ]
+    },
+    {
+      "slug": "lake-265079676",
+      "title": "Maven项目管理工具",
+      "book": "JAVA",
+      "date": "2026-04-09T13:51:04.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/gif/63728767/1775825328215-c1f3dc4f-4dcf-44e8-aa76-b4d2e03f7c61.gif",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1775825355045-d2ac97b5-190b-493a-bed9-9b3908f0eae5.png",
+        "https://cdn.nlark.com/yuque/0/2026/gif/63728767/1775825356188-8ffc7c81-cf62-4925-9cbf-598e6948558a.gif",
+        "https://cdn.nlark.com/yuque/0/2026/gif/63728767/1775825356686-a3648bff-4bc8-4865-b35e-01da06814b0b.gif",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1775825356703-85c71435-06e5-4e1c-aec8-7093ef3d477e.png"
+      ]
+    },
+    {
+      "slug": "lake-264734450",
+      "title": "Ajax",
+      "book": "JAVA",
+      "date": "2026-04-07T13:08:12.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1775570838316-63038abf-10b6-424b-822b-8cd546f293c7.png"
+      ]
+    },
+    {
+      "slug": "lake-264560632",
+      "title": "Vue3",
+      "book": "JAVA",
+      "date": "2026-04-06T13:25:02.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-264419362",
+      "title": "JavaScript",
+      "book": "JAVA",
+      "date": "2026-04-05T02:00:30.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1775357856152-301225ed-3edd-49ce-b980-6cc586bb6521.png"
+      ]
+    },
+    {
+      "slug": "lake-263913914",
+      "title": "Css",
+      "book": "JAVA",
+      "date": "2026-04-01T06:55:58.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1775291865231-299415fa-192e-425c-9e23-d88d9d38f002.png",
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1775309347371-4124e1cf-1cae-481a-9927-0e0cae5cdafe.png"
+      ]
+    },
+    {
+      "slug": "lake-262368911",
+      "title": "Linux基础学习",
+      "book": "JAVA",
+      "date": "2026-03-22T12:42:12.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-261991065",
+      "title": "基础语法学习",
+      "book": "JAVA",
+      "date": "2026-03-19T09:42:47.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-261831422",
+      "title": "实现电脑彻底删除Mysql",
+      "book": "JAVA",
+      "date": "2026-03-18T13:55:15.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-261817062",
+      "title": "Docker入门",
+      "book": "JAVA",
+      "date": "2026-03-18T11:50:57.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1773927331346-6420337f-d52d-4139-91b4-20bec9add3d0.png"
+      ]
+    },
+    {
+      "slug": "lake-261815625",
+      "title": "必要的相关技术",
+      "book": "JAVA",
+      "date": "2026-03-18T11:35:55.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-261795323",
+      "title": "HTML",
+      "book": "JAVA",
+      "date": "2026-03-18T09:36:51.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-261637286",
+      "title": "Web前端开发 + AI",
+      "book": "JAVA",
+      "date": "2026-03-17T13:19:15.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-261633623",
+      "title": "Servlet",
+      "book": "JAVA",
+      "date": "2026-03-17T13:03:43.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-261448261",
+      "title": "memory",
+      "book": "JAVA",
+      "date": "2026-03-16T12:32:17.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-261027910",
+      "title": "数据库",
+      "book": "JAVA",
+      "date": "2026-03-13T10:56:20.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-259857757",
+      "title": "Web后端开发 + AI",
+      "book": "JAVA",
+      "date": "2026-03-06T14:00:16.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-257118153",
+      "title": "第二十四天学习",
+      "book": "JAVA",
+      "date": "2026-02-16T02:42:14.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-256588587",
+      "title": "第二十三天学习",
+      "book": "JAVA",
+      "date": "2026-02-10T02:36:42.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-256292476",
+      "title": "第二十二天学习",
+      "book": "JAVA",
+      "date": "2026-02-07T02:45:15.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-256233251",
+      "title": "第二十一天学习",
+      "book": "JAVA",
+      "date": "2026-02-06T09:33:13.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-254956974",
+      "title": "MySql",
+      "book": "JAVA",
+      "date": "2026-01-28T02:03:00.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2026/png/63728767/1776329607502-9b83479a-652f-49eb-9b6e-da45e73a1e51.png"
+      ]
+    },
+    {
+      "slug": "lake-254486275",
+      "title": "练习代码19",
+      "book": "JAVA",
+      "date": "2026-01-24T08:30:04.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-254462405",
+      "title": "第二十天学习",
+      "book": "JAVA",
+      "date": "2026-01-24T02:30:29.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-253922479",
+      "title": "练习代码18",
+      "book": "JAVA",
+      "date": "2026-01-20T07:18:25.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-253780086",
+      "title": "第十九天学习",
+      "book": "JAVA",
+      "date": "2026-01-19T08:42:22.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-253534221",
+      "title": "Git技术学习",
+      "book": "JAVA",
+      "date": "2026-01-17T09:39:51.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-253180904",
+      "title": "第十八天学习",
+      "book": "JAVA",
+      "date": "2026-01-15T01:16:42.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-252910858",
+      "title": "练习代码17",
+      "book": "JAVA",
+      "date": "2026-01-13T04:05:15.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-252875633",
+      "title": "第十七天学习",
+      "book": "JAVA",
+      "date": "2026-01-12T23:54:11.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-252821909",
+      "title": "练习代码16",
+      "book": "JAVA",
+      "date": "2026-01-12T11:40:24.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-252814972",
+      "title": "第十六天学习",
+      "book": "JAVA",
+      "date": "2026-01-12T10:17:57.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-252003401",
+      "title": "练习代码15",
+      "book": "JAVA",
+      "date": "2026-01-06T12:02:42.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-251967714",
+      "title": "第十五天学习",
+      "book": "JAVA",
+      "date": "2026-01-06T08:03:46.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-251645379",
+      "title": "练习代码14",
+      "book": "JAVA",
+      "date": "2026-01-04T08:50:41.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-251611747",
+      "title": "第十四天学习",
+      "book": "JAVA",
+      "date": "2026-01-04T06:07:41.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-251512301",
+      "title": "练习代码13",
+      "book": "JAVA",
+      "date": "2026-01-03T12:41:55.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-251508779",
+      "title": "第十三天学习",
+      "book": "JAVA",
+      "date": "2026-01-03T11:50:57.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-251062816",
+      "title": "练习代码12",
+      "book": "JAVA",
+      "date": "2025-12-30T09:47:10.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-251035519",
+      "title": "第十二天学习",
+      "book": "JAVA",
+      "date": "2025-12-30T07:12:40.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250868347",
+      "title": "练习代码11",
+      "book": "JAVA",
+      "date": "2025-12-29T06:32:27.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250830361",
+      "title": "第十一天学习",
+      "book": "JAVA",
+      "date": "2025-12-29T02:06:18.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250773343",
+      "title": "练习代码10",
+      "book": "JAVA",
+      "date": "2025-12-28T13:46:24.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250757996",
+      "title": "第十天学习",
+      "book": "JAVA",
+      "date": "2025-12-28T10:24:47.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250664956",
+      "title": "JavaWeb",
+      "book": "JAVA",
+      "date": "2025-12-27T09:57:03.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": [
+        "https://cdn.nlark.com/yuque/0/2025/png/63728767/1766830293804-6688cf68-4a73-4d28-aaf1-b1474b5dcb97.png"
+      ]
+    },
+    {
+      "slug": "lake-250657667",
+      "title": "练习代码9",
+      "book": "JAVA",
+      "date": "2025-12-27T08:19:03.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250647562",
+      "title": "第九天学习",
+      "book": "JAVA",
+      "date": "2025-12-27T06:19:07.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250544881",
+      "title": "练习代码8",
+      "book": "JAVA",
+      "date": "2025-12-26T07:56:56.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250504437",
+      "title": "第八天学习",
+      "book": "JAVA",
+      "date": "2025-12-26T02:41:43.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250445517",
+      "title": "练习代码7",
+      "book": "JAVA",
+      "date": "2025-12-25T13:58:23.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250422242",
+      "title": "第七天学习",
+      "book": "JAVA",
+      "date": "2025-12-25T10:02:25.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250231099",
+      "title": "练习代码6",
+      "book": "JAVA",
+      "date": "2025-12-24T08:51:49.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250193272",
+      "title": "第六天学习",
+      "book": "JAVA",
+      "date": "2025-12-24T05:32:01.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250112852",
+      "title": "练习代码5",
+      "book": "JAVA",
+      "date": "2025-12-23T13:56:18.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-250094167",
+      "title": "第五天学习",
+      "book": "JAVA",
+      "date": "2025-12-23T11:38:56.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249922124",
+      "title": "练习代码4",
+      "book": "JAVA",
+      "date": "2025-12-22T14:15:09.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249824594",
+      "title": "第四天学习",
+      "book": "JAVA",
+      "date": "2025-12-22T02:28:23.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249749516",
+      "title": "练习代码3",
+      "book": "JAVA",
+      "date": "2025-12-21T09:01:44.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249721867",
+      "title": "第三天学习",
+      "book": "JAVA",
+      "date": "2025-12-21T02:27:07.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249668789",
+      "title": "练习代码02",
+      "book": "JAVA",
+      "date": "2025-12-20T11:39:10.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249668677",
+      "title": "练习代码01",
+      "book": "JAVA",
+      "date": "2025-12-20T11:38:05.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249636033",
+      "title": "for(标签) +方法重载 + 类的构造器",
+      "book": "JAVA",
+      "date": "2025-12-20T05:24:05.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249532183",
+      "title": "练习笔记",
+      "book": "JAVA",
+      "date": "2025-12-19T07:24:39.000Z",
+      "empty": true,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249532102",
+      "title": "类+方法(与C++类似值传递语言)",
+      "book": "JAVA",
+      "date": "2025-12-19T07:24:13.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249531758",
+      "title": "快读板子+基础了解的东西",
+      "book": "JAVA",
+      "date": "2025-12-19T07:22:23.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    },
+    {
+      "slug": "lake-249428013",
+      "title": "java学习路线",
+      "book": "JAVA",
+      "date": "2025-12-18T12:33:49.000Z",
+      "empty": false,
+      "missingImages": [],
+      "externalImages": []
+    }
+  ]
+}

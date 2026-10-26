@@ -1,0 +1,3220 @@
+[
+  {
+    "slug": "lake-285420754",
+    "title": "MCP",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-09-16T12:51:08.000Z",
+    "summary": "区分和 Tool 的关系 : 一句话区分：Tool：一个“可调用能力”MCP：把外部能力标准化接入 Agent 的“通信协议”MCP Server：真正实现这些能力的“服务端程序”Skill：教 Agent 在什么场景、按什么步骤、如何安全地使用能力的“操作手册 / SOP”Agent：负责理...",
+    "category": "Goland",
+    "createdAt": "2026-09-16T12:51:08.000Z",
+    "updatedAt": "2026-09-16T13:00:44.000Z",
+    "contentUpdatedAt": "2026-09-16T12:59:10.000Z",
+    "firstPublishedAt": "2026-09-16T12:51:31.334Z",
+    "publishedAt": "2026-09-16T12:59:10.000Z"
+  },
+  {
+    "slug": "lake-282383607",
+    "title": "SQL Sentinel",
+    "tags": [
+      "Goland",
+      "Agent项目"
+    ],
+    "date": "2026-08-23T09:03:30.000Z",
+    "summary": "准备MAD(Median Absolute Deviation):中位数绝对偏差:一堆数据的median,每个数据和median取绝对值差的队列的median ; 噪声基线:CPU调度,IO波动,内存与缓存干扰 BufferPool 缓存冷热:在启动 Mysql后,数据不在内存的BufferP...",
+    "category": "Goland",
+    "createdAt": "2026-08-23T09:03:30.000Z",
+    "updatedAt": "2026-10-20T11:59:01.000Z",
+    "contentUpdatedAt": "2026-08-23T09:17:38.000Z",
+    "firstPublishedAt": "2026-08-23T09:04:40.982Z",
+    "publishedAt": "2026-08-23T09:17:38.000Z"
+  },
+  {
+    "slug": "lake-282376218",
+    "title": "AgentMesh",
+    "tags": [
+      "Goland",
+      "Agent项目"
+    ],
+    "date": "2026-08-23T07:34:48.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-08-23T07:34:48.000Z",
+    "updatedAt": "2026-10-20T11:59:06.000Z",
+    "contentUpdatedAt": "2026-08-23T07:34:48.000Z",
+    "firstPublishedAt": null,
+    "publishedAt": null
+  },
+  {
+    "slug": "lake-282376188",
+    "title": "Agent项目",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-08-23T07:34:38.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-08-23T07:34:38.000Z",
+    "updatedAt": "2026-08-23T07:34:46.000Z",
+    "contentUpdatedAt": "2026-08-23T07:34:38.000Z",
+    "firstPublishedAt": null,
+    "publishedAt": null
+  },
+  {
+    "slug": "lake-282290405",
+    "title": "Eino Compose & ADK",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-22T05:24:49.000Z",
+    "summary": "Key differences : 虽然都是 使用 compose 实现编排 agent 但是在层次上面体现的不同 : 在之前的 ADK 的开发框架中的那些编排手段 : SequentialAgent、ParallelAgent、LoopAgent 这些都是基于底层的 API编排实现,简化了多...",
+    "category": "Goland",
+    "createdAt": "2026-08-22T05:24:49.000Z",
+    "updatedAt": "2026-08-23T07:27:47.000Z",
+    "contentUpdatedAt": "2026-08-23T06:27:55.000Z",
+    "firstPublishedAt": "2026-08-22T05:36:56.227Z",
+    "publishedAt": "2026-08-23T06:27:55.000Z"
+  },
+  {
+    "slug": "lake-282109607",
+    "title": "Eino ADK Agent 开发框架",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-20T12:16:16.000Z",
+    "summary": "简介Eino ADK (Agent Development Kit) 参考 Google-ADK 的设计，提供了 Go 语言的 Agents 开发灵活组合框架，即 Agent、Multi-Agent 开发框架，并为多 Agent 交互场景沉淀了通用的上下文传递、事件流分发和转换、任务控制权转让...",
+    "category": "Goland",
+    "createdAt": "2026-08-20T12:16:16.000Z",
+    "updatedAt": "2026-08-21T07:13:21.000Z",
+    "contentUpdatedAt": "2026-08-21T07:13:19.000Z",
+    "firstPublishedAt": "2026-08-20T12:16:48.701Z",
+    "publishedAt": "2026-08-21T07:13:19.000Z"
+  },
+  {
+    "slug": "lake-281981945",
+    "title": "EinoMilvus 向量数据库",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-19T13:03:28.000Z",
+    "summary": "简介Milvus 是一个开源的向量数据库 ,专门用来实现存储,索引 和 管理大规模向量数据 , 实现构建 AI应用 (如RAG, 推荐系统,图像搜索等)的理想选择 ;Milvus 的核心特性- ✅ 高性能向量搜索：支持十亿级向量的毫秒级搜索 - ✅ 多种索引类型：支持 IVF_FLAT、HNS...",
+    "category": "Goland",
+    "createdAt": "2026-08-19T13:03:28.000Z",
+    "updatedAt": "2026-08-20T12:16:15.000Z",
+    "contentUpdatedAt": "2026-08-20T12:12:05.000Z",
+    "firstPublishedAt": "2026-08-19T13:05:09.889Z",
+    "publishedAt": "2026-08-20T12:12:05.000Z"
+  },
+  {
+    "slug": "lake-281823726",
+    "title": "Eino ES8 检索器使用",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-18T08:51:30.000Z",
+    "summary": "简介ES8 检索器是 Eino 框架中用于 Elasticsearch 8.x 的向量检索组件。它实现了 \"Retriever\"接口，可以与 Eino 的向量检索系统无缝集成，提供强大的语义搜索能力。核心特性- ✅ 实现了 `github.com/cloudwego/eino/componen...",
+    "category": "Goland",
+    "createdAt": "2026-08-18T08:51:30.000Z",
+    "updatedAt": "2026-08-19T06:51:34.000Z",
+    "contentUpdatedAt": "2026-08-19T06:13:50.000Z",
+    "firstPublishedAt": "2026-08-18T08:51:57.198Z",
+    "publishedAt": "2026-08-19T06:13:50.000Z"
+  },
+  {
+    "slug": "lake-281821951",
+    "title": "Embedding 和向量检索",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-18T08:42:05.000Z",
+    "summary": "简介Embedding（嵌入/向量化）是将文本转换为数值向量的过程。这些向量能够捕获文本的语义信息，使得语义相似的文本在向量空间中距离较近。应用场景 🔍 语义搜索：根据语义而非关键词搜索 📚 RAG（检索增强生成）：为 AI 提供相关知识 🎯 文本分类：基于语义的分类 📊 推荐系统：相...",
+    "category": "Goland",
+    "createdAt": "2026-08-18T08:42:05.000Z",
+    "updatedAt": "2026-08-18T08:51:31.000Z",
+    "contentUpdatedAt": "2026-08-18T08:51:17.000Z",
+    "firstPublishedAt": "2026-08-18T08:42:25.567Z",
+    "publishedAt": "2026-08-18T08:51:17.000Z"
+  },
+  {
+    "slug": "lake-281487502",
+    "title": "React Agent 智能代理",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-15T12:18:14.000Z",
+    "summary": "简介React Agent 是一种能够推理（Reasoning）和行动（Acting）循环的智能代理。它能够：1. 🟢 理解用户的意图 2. 🔍 规划需要使用哪些工具 3. ⚙️ 执行工具调用 4. 📊 分析工具返回的结果 5. 💡 生成最终答复React 循环流程用户输入 ↓ [思考...",
+    "category": "Goland",
+    "createdAt": "2026-08-15T12:18:14.000Z",
+    "updatedAt": "2026-08-18T08:42:00.000Z",
+    "contentUpdatedAt": "2026-08-18T08:42:00.000Z",
+    "firstPublishedAt": "2026-08-15T12:18:42.638Z",
+    "publishedAt": "2026-08-18T08:42:00.000Z"
+  },
+  {
+    "slug": "lake-281385848",
+    "title": "Tool 工具开发",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-14T08:35:22.000Z",
+    "summary": "简介- 查询数据库或 API - 读写文件 - 执行计算 - 访问网络资源 - 生成图表 - ...任何你能用代码实现的功能Tool 的工作流程用户输入 → AI 理解意图 → 选择 Tool1 → 执行 Tool1 → 获取结果 → AI 生成回复 ↓ ↓ ↓ \"查天气\" \"weather_...",
+    "category": "Goland",
+    "createdAt": "2026-08-14T08:35:22.000Z",
+    "updatedAt": "2026-08-15T16:20:20.000Z",
+    "contentUpdatedAt": "2026-08-15T12:16:41.000Z",
+    "firstPublishedAt": "2026-08-14T09:26:11.180Z",
+    "publishedAt": "2026-08-15T12:16:41.000Z"
+  },
+  {
+    "slug": "lake-280868731",
+    "title": "Chain 链式编排",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-10T13:20:37.000Z",
+    "summary": "简介Chain(链) 就是Eino 中用于组合多个组件的编排方式, 它将多个组件按照顺序实现链接, 前一个组件的输出作为后一个组件的输入, 实现一个处理流水线Chain 的特点Chain 的基本结构基础示例 : 简单的 Chain 模板 + 模型的基础组合",
+    "category": "Goland",
+    "createdAt": "2026-08-10T13:20:37.000Z",
+    "updatedAt": "2026-08-14T09:17:29.000Z",
+    "contentUpdatedAt": "2026-08-14T09:03:32.000Z",
+    "firstPublishedAt": "2026-08-10T13:22:02.305Z",
+    "publishedAt": "2026-08-14T09:03:32.000Z"
+  },
+  {
+    "slug": "lake-280554822",
+    "title": "项目使用",
+    "tags": [
+      "Goland",
+      "Casbin权限鉴别框架"
+    ],
+    "date": "2026-08-07T13:09:05.000Z",
+    "summary": "Casbin 适配详解：渡隅 V1 / 作业版这次不是用 Casbin 替换 JWT，而是让两者分工：JWT：证明“当前请求是谁发出的” Casbin：判断“这个人能不能访问这个接口” Service：判断“这个人能不能操作这一条具体数据”例如用户 user:5 请求取消活动 id=12：1....",
+    "category": "Goland",
+    "createdAt": "2026-08-07T13:09:05.000Z",
+    "updatedAt": "2026-08-07T13:59:21.000Z",
+    "contentUpdatedAt": "2026-08-07T13:59:21.000Z",
+    "firstPublishedAt": "2026-08-07T13:09:29.926Z",
+    "publishedAt": "2026-08-07T13:59:21.000Z"
+  },
+  {
+    "slug": "lake-280553411",
+    "title": "JWT/token签发",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-08-07T12:38:38.000Z",
+    "summary": "JWT 鉴权教学文档： Go 项目实战1. JWT 是什么JWT（JSON Web Token）是一种“登录凭证”格式。用户登录成功后，后端不保存传统 Session，而是签发一个 Token 给客户端。之后客户端访问需要登录的接口时，把 Token 放进请求头；后端验证 Token 合法后，...",
+    "category": "Goland",
+    "createdAt": "2026-08-07T12:38:38.000Z",
+    "updatedAt": "2026-10-20T11:59:11.000Z",
+    "contentUpdatedAt": "2026-08-07T12:40:39.000Z",
+    "firstPublishedAt": "2026-08-07T12:39:03.475Z",
+    "publishedAt": "2026-08-07T12:40:39.000Z"
+  },
+  {
+    "slug": "lake-280551023",
+    "title": "简单的对话翻译项目",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-07T11:49:01.000Z",
+    "summary": "package main import ( \"bufio\" \"context\" \"errors\" \"fmt\" \"io\" \"log\" \"os\" \"strings\" \"github.com/cloudwego/eino-ext/components/model/ollama\" \"github.co...",
+    "category": "Goland",
+    "createdAt": "2026-08-07T11:49:01.000Z",
+    "updatedAt": "2026-08-07T13:01:30.000Z",
+    "contentUpdatedAt": "2026-08-07T13:01:29.000Z",
+    "firstPublishedAt": "2026-08-07T11:49:20.925Z",
+    "publishedAt": "2026-08-07T13:01:29.000Z"
+  },
+  {
+    "slug": "lake-280168079",
+    "title": "Prompt 和 ChatTemplate",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-04T11:05:49.000Z",
+    "summary": "建议的项目结构 : eino-project/ |--- cmd : main.go (主程序入口) |--- internal : agent(Agent实现)/tools(自定义工具)/config(配置管理) |--- pkg : utils (公共工具) |--- go.mod / -...",
+    "category": "Goland",
+    "createdAt": "2026-08-04T11:05:49.000Z",
+    "updatedAt": "2026-08-12T03:15:38.000Z",
+    "contentUpdatedAt": "2026-08-12T03:15:37.000Z",
+    "firstPublishedAt": "2026-08-04T11:11:10.280Z",
+    "publishedAt": "2026-08-12T03:15:37.000Z"
+  },
+  {
+    "slug": "lake-280134305",
+    "title": "悲观锁",
+    "tags": [
+      "Goland",
+      "PgSQL"
+    ],
+    "date": "2026-08-04T06:46:29.000Z",
+    "summary": "postgreSQL 中特有的操作 : 使用 GROM 实现给 SQL 加 for update ; 在 postgreSQL 中实现的 加锁 是事务级的锁 :在事务提交之后会自动实现释放锁 ; 实现的加锁是行级别的加锁 ; db.Clauses(clause.Locking{Strength...",
+    "category": "Goland",
+    "createdAt": "2026-08-04T06:46:29.000Z",
+    "updatedAt": "2026-08-07T10:49:26.000Z",
+    "contentUpdatedAt": "2026-08-07T10:48:57.000Z",
+    "firstPublishedAt": "2026-08-04T06:47:32.246Z",
+    "publishedAt": "2026-08-07T10:48:57.000Z"
+  },
+  {
+    "slug": "lake-280042163",
+    "title": "简介和环境搭建",
+    "tags": [
+      "Goland",
+      "GO-Agent"
+    ],
+    "date": "2026-08-03T12:25:39.000Z",
+    "summary": "核心特性组件化设计：提供 ChatModel、Embedding、Retriever、Tool 等丰富的原子组件 灵活编排：支持 Chain（链式）和 Graph（图式）两种编排方式 生态集成：支持 OpenAI、ARK、Ollama、Qwen 等多种大模型 高性能：基于 Go 语言，天然支持...",
+    "category": "Goland",
+    "createdAt": "2026-08-03T12:25:39.000Z",
+    "updatedAt": "2026-08-03T13:18:19.000Z",
+    "contentUpdatedAt": "2026-08-03T13:18:19.000Z",
+    "firstPublishedAt": "2026-08-03T12:43:51.887Z",
+    "publishedAt": "2026-08-03T13:18:19.000Z"
+  },
+  {
+    "slug": "lake-280042135",
+    "title": "GO-Agent",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-08-03T12:25:22.000Z",
+    "summary": "开始学习 agent 上手框架 Eino",
+    "category": "Goland",
+    "createdAt": "2026-08-03T12:25:22.000Z",
+    "updatedAt": "2026-08-18T08:42:01.000Z",
+    "contentUpdatedAt": "2026-08-07T12:24:30.000Z",
+    "firstPublishedAt": "2026-08-03T12:25:39.834Z",
+    "publishedAt": "2026-08-07T12:24:30.000Z"
+  },
+  {
+    "slug": "lake-279939877",
+    "title": "项目",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-08-03T02:05:48.000Z",
+    "summary": "为了防止 main 函数 太过臃肿 :封装全部的gin请求到router/router.go中去; router/router.go： package router import ( \"my-project/handler\" \"my-project/middleware\" \"my-projec...",
+    "category": "Goland",
+    "createdAt": "2026-08-03T02:05:48.000Z",
+    "updatedAt": "2026-08-03T02:23:27.000Z",
+    "contentUpdatedAt": "2026-08-03T02:23:27.000Z",
+    "firstPublishedAt": "2026-08-03T02:06:52.145Z",
+    "publishedAt": "2026-08-03T02:23:27.000Z"
+  },
+  {
+    "slug": "lake-279881188",
+    "title": "测试",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-08-02T12:44:23.000Z",
+    "summary": "Go 测试基础：文件命名logger/logger.go → 源代码logger/logger_test.go → 测试文件测试函数命名func TestXxx(t *testing.T) { // 测试逻辑}必须以 Test 开头参数必须是 *testing.T运行测试go test ./l...",
+    "category": "Goland",
+    "createdAt": "2026-08-02T12:44:23.000Z",
+    "updatedAt": "2026-08-02T12:46:01.000Z",
+    "contentUpdatedAt": "2026-08-02T12:45:00.000Z",
+    "firstPublishedAt": "2026-08-02T12:44:59.537Z",
+    "publishedAt": "2026-08-02T12:45:00.000Z"
+  },
+  {
+    "slug": "lake-279873548",
+    "title": "日志轮询优化(lumberjack)",
+    "tags": [
+      "Goland",
+      "Zap开源日志框架"
+    ],
+    "date": "2026-08-02T10:26:59.000Z",
+    "summary": "日志轮询// getWriter 创建带轮转能力的日志写入器 writer //(go get gopkg.in/natefinish/lumberjack.v2) func getWriter(filename string) *lumberjack.Logger { return &amp;lu",
+    "category": "Goland",
+    "createdAt": "2026-08-02T10:26:59.000Z",
+    "updatedAt": "2026-08-07T10:43:48.000Z",
+    "contentUpdatedAt": "2026-08-02T11:23:48.000Z",
+    "firstPublishedAt": "2026-08-02T10:29:59.931Z",
+    "publishedAt": "2026-08-02T11:23:48.000Z"
+  },
+  {
+    "slug": "lake-279325857",
+    "title": "项目中使用",
+    "tags": [
+      "Goland",
+      "GORM"
+    ],
+    "date": "2026-07-28T13:07:42.000Z",
+    "summary": "gorm: 内部实现的 命名策略 : 转化的规则实现是在内部实现gorm结构体映射的时候自动实现的1 : 驼峰转蛇形 : UserProfile --&gt; user_profile2 : 自动复数化 : User --&gt; users , Article --&gt; articles ; ",
+    "category": "Goland",
+    "createdAt": "2026-07-28T13:07:42.000Z",
+    "updatedAt": "2026-08-02T01:25:39.000Z",
+    "contentUpdatedAt": "2026-08-02T01:16:14.000Z",
+    "firstPublishedAt": "2026-07-28T13:08:10.519Z",
+    "publishedAt": "2026-08-02T01:16:14.000Z"
+  },
+  {
+    "slug": "lake-279029871",
+    "title": "项目",
+    "tags": [
+      "Goland",
+      "PgSQL"
+    ],
+    "date": "2026-07-26T05:54:25.000Z",
+    "summary": "id bigint primary key auto_increment : mysql中实现的 id 键值自增 ; 在 postgreSQL中 : 实现id创建自增 : int auto_increment == serial ;bigint auto_increment == bigser...",
+    "category": "Goland",
+    "createdAt": "2026-07-26T05:54:25.000Z",
+    "updatedAt": "2026-08-02T00:34:21.000Z",
+    "contentUpdatedAt": "2026-08-02T00:34:20.000Z",
+    "firstPublishedAt": "2026-07-26T05:56:41.231Z",
+    "publishedAt": "2026-08-02T00:34:20.000Z"
+  },
+  {
+    "slug": "lake-278884157",
+    "title": "实际项目",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-07-24T09:25:24.000Z",
+    "summary": "创建路由 : 在 main 中创建 一个实例对象 : func New(healthHandler *handler.HealthHandler) *gin.Engine { r := gin.New() // 创建一个空白的 Engine（路由引擎） // 对比：gin.Default() ...",
+    "category": "Goland",
+    "createdAt": "2026-07-24T09:25:24.000Z",
+    "updatedAt": "2026-09-26T13:47:26.000Z",
+    "contentUpdatedAt": "2026-07-31T06:59:29.000Z",
+    "firstPublishedAt": "2026-07-24T09:34:01.131Z",
+    "publishedAt": "2026-07-31T06:59:29.000Z"
+  },
+  {
+    "slug": "lake-278690131",
+    "title": "Viper",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-07-23T01:13:16.000Z",
+    "summary": "Viper 是 Go 语言中最流行的配置管理库之一，可以把它想象成一个集中的配置管理员，负责处理应用所需的所有配置。它最核心的价值在于：将多种来源的配置（文件、环境变量、命令行参数等）统一管理，并提供一个简单、一致的读取方式。go get github.com/spf13/viperviper...",
+    "category": "Goland",
+    "createdAt": "2026-07-23T01:13:16.000Z",
+    "updatedAt": "2026-07-24T08:15:33.000Z",
+    "contentUpdatedAt": "2026-07-24T03:50:09.000Z",
+    "firstPublishedAt": "2026-07-23T01:14:00.345Z",
+    "publishedAt": "2026-07-24T03:50:09.000Z"
+  },
+  {
+    "slug": "lake-278688306",
+    "title": "项目",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-07-23T00:52:45.000Z",
+    "summary": "项目骨架 - cmd/server/: 入口文件，main.go启动服务 - configs/: 配置文件（如YAML、ENV） - deployments/: 部署配置（Docker、K8s等） - docs/: 项目文档 - internal/: 核心业务代码（不对外暴露） - confi...",
+    "category": "Goland",
+    "createdAt": "2026-07-23T00:52:45.000Z",
+    "updatedAt": "2026-08-07T14:12:51.000Z",
+    "contentUpdatedAt": "2026-08-07T14:12:50.000Z",
+    "firstPublishedAt": "2026-07-23T00:53:21.875Z",
+    "publishedAt": "2026-08-07T14:12:50.000Z"
+  },
+  {
+    "slug": "lake-278444681",
+    "title": "golang的24种设计模式",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-07-21T08:28:04.000Z",
+    "summary": "Design Pattern 是软件工程中针对常见的开发问题 使用的通用方案, 与所使用的语言无关 ; 使用设计模式的好处面试提高代码复用性前人总结下来的经验, 合适的位置使用合适的设计模式 创建型模式 (Creational Patterns） 6 种",
+    "category": "Goland",
+    "createdAt": "2026-07-21T08:28:04.000Z",
+    "updatedAt": "2026-07-22T09:20:45.000Z",
+    "contentUpdatedAt": "2026-07-22T09:20:43.000Z",
+    "firstPublishedAt": "2026-07-21T08:29:09.825Z",
+    "publishedAt": "2026-07-22T09:20:43.000Z"
+  },
+  {
+    "slug": "lake-278209701",
+    "title": "RabbitMQ",
+    "tags": [
+      "Goland",
+      "消息队列"
+    ],
+    "date": "2026-07-19T17:24:12.000Z",
+    "summary": "主要实现的服务 : 解耦 , 异步 , 削峰; 使用 docker 实现安装services: rabbitmq: image: rabbitmq:3-management container_name: rabbitmq restart: unless-stopped ports: - \"5...",
+    "category": "Goland",
+    "createdAt": "2026-07-19T17:24:12.000Z",
+    "updatedAt": "2026-07-20T19:00:39.000Z",
+    "contentUpdatedAt": "2026-07-20T18:48:22.000Z",
+    "firstPublishedAt": "2026-07-19T23:17:20.437Z",
+    "publishedAt": "2026-07-20T19:00:37.000Z"
+  },
+  {
+    "slug": "lake-278167360",
+    "title": "kafka",
+    "tags": [
+      "Goland",
+      "消息队列"
+    ],
+    "date": "2026-07-19T07:08:35.000Z",
+    "summary": "高吞吐 , 高性能 , 十分强大的日志系统; Kafka 单节点安装不认证, 不加密 ; 后面会有安装(认证 + 加密 + 分布式) kafka集群当前学习的kafka是 2.8.0 版本之后的, 之前必须依赖ZooKeeper实现运行, 当时是实现kafka高可用的核心组件;详情见下 :",
+    "category": "Goland",
+    "createdAt": "2026-07-19T07:08:35.000Z",
+    "updatedAt": "2026-07-19T17:24:10.000Z",
+    "contentUpdatedAt": "2026-07-19T17:19:39.000Z",
+    "firstPublishedAt": "2026-07-19T07:09:10.811Z",
+    "publishedAt": "2026-07-19T17:24:09.000Z"
+  },
+  {
+    "slug": "lake-278167354",
+    "title": "消息队列",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-07-19T07:08:28.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-07-19T07:08:28.000Z",
+    "updatedAt": "2026-07-19T07:08:33.000Z",
+    "contentUpdatedAt": "2026-07-19T07:08:28.000Z",
+    "firstPublishedAt": null,
+    "publishedAt": null
+  },
+  {
+    "slug": "lake-277983783",
+    "title": "Logrus",
+    "tags": [
+      "Goland",
+      "Zap开源日志框架"
+    ],
+    "date": "2026-07-17T06:36:17.000Z",
+    "summary": "一个日志篇的一种过渡吧算 : 先简单入门一下日志 : logrus, 本质上就是替换掉过多使用的 fmp ; import \"github.com/sirupsen/logrus\"logrus.Debug(\"开发调试信息\") logrus.Info(\"普通运行信息\") logrus.Warn(...",
+    "category": "Goland",
+    "createdAt": "2026-07-17T06:36:17.000Z",
+    "updatedAt": "2026-07-17T06:36:55.000Z",
+    "contentUpdatedAt": "2026-07-17T06:36:54.000Z",
+    "firstPublishedAt": "2026-07-17T06:36:54.255Z",
+    "publishedAt": "2026-07-17T06:36:54.000Z"
+  },
+  {
+    "slug": "lake-277935761",
+    "title": "PgSQL",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-07-17T00:00:41.000Z",
+    "summary": "简介PostgreSQL免费的对象-关系型数据库,\"开源界的Oracle\" postgresql官网http://db-engines.com/en/ranking 使用docker安装 services: postgresql: image: postgres:18 container_na...",
+    "category": "Goland",
+    "createdAt": "2026-07-17T00:00:41.000Z",
+    "updatedAt": "2026-07-26T07:56:57.000Z",
+    "contentUpdatedAt": "2026-07-26T07:52:45.000Z",
+    "firstPublishedAt": "2026-07-17T00:02:15.427Z",
+    "publishedAt": "2026-07-26T07:52:45.000Z"
+  },
+  {
+    "slug": "lake-277758126",
+    "title": "Zap开源日志框架",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-07-15T13:56:50.000Z",
+    "summary": "前提必须要背诵的结构化知识 : Debug &lt; Info &lt; Warn &lt; Error &lt; DPanic &lt; Panic &lt; Fatalzap功能强大, 配置项很多 ; 一般需要掌握的技能有以下这些 : 1.时间的格式化 ; 2.输出美化3.预设字段4.使用全局日",
+    "category": "Goland",
+    "createdAt": "2026-07-15T13:56:50.000Z",
+    "updatedAt": "2026-07-28T12:59:41.000Z",
+    "contentUpdatedAt": "2026-07-23T14:29:38.000Z",
+    "firstPublishedAt": "2026-07-15T13:57:25.877Z",
+    "publishedAt": "2026-07-23T14:29:38.000Z"
+  },
+  {
+    "slug": "lake-277672905",
+    "title": "Context",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-07-15T01:34:53.000Z",
+    "summary": "在go语言中 , Context是实现不同的goroutine 之间传递请求域的相关的数据实现控制 goroutine 的生命周期和取消操作 ; 常见的方法; type Context interface { Deadline() (deadline time.Time, ok bool) D...",
+    "category": "Goland",
+    "createdAt": "2026-07-15T01:34:53.000Z",
+    "updatedAt": "2026-07-15T06:20:03.000Z",
+    "contentUpdatedAt": "2026-07-15T03:44:23.000Z",
+    "firstPublishedAt": "2026-07-15T02:06:48.990Z",
+    "publishedAt": "2026-07-15T03:44:23.000Z"
+  },
+  {
+    "slug": "lake-277261183",
+    "title": "ElasticSearch",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-07-11T14:16:49.000Z",
+    "summary": "ElasticSearch 简称为es , 开源的分布式的全文搜索引擎 , 可以近乎实时的存储检索数据 ;es安装使用docker实现es的安装 ; services: elasticsearch: image: docker.elastic.co/elasticsearch/elastics...",
+    "category": "Goland",
+    "createdAt": "2026-07-11T14:16:49.000Z",
+    "updatedAt": "2026-07-12T12:36:26.000Z",
+    "contentUpdatedAt": "2026-07-12T12:36:25.000Z",
+    "firstPublishedAt": "2026-07-11T14:18:05.180Z",
+    "publishedAt": "2026-07-12T12:36:25.000Z"
+  },
+  {
+    "slug": "lake-277114630",
+    "title": "proto文件的书写原理",
+    "tags": [
+      "Goland",
+      "GO-zero"
+    ],
+    "date": "2026-07-10T03:55:19.000Z",
+    "summary": "proto文件 syntax = \"proto3\" ; // ① 语法版本声明 package user ; // ② Proto 包名（命名空间） option go_package = \"./types;types\"; // ③ Go 语言包路径映射1. syntax = \"proto3\"...",
+    "category": "Goland",
+    "createdAt": "2026-07-10T03:55:19.000Z",
+    "updatedAt": "2026-08-06T05:19:31.000Z",
+    "contentUpdatedAt": "2026-07-10T04:36:45.000Z",
+    "firstPublishedAt": "2026-07-10T03:55:50.784Z",
+    "publishedAt": "2026-07-10T04:52:25.000Z"
+  },
+  {
+    "slug": "lake-276891991",
+    "title": "rpc服务",
+    "tags": [
+      "Goland",
+      "GO-zero"
+    ],
+    "date": "2026-07-08T09:42:08.000Z",
+    "summary": "proto文件的编写可以参考我之前讲解grpc的教程单rpc服务模式我们编写一个proto文件提供两个服务，一个是获取用户信息方法，一个是用户添加的方法user.proto",
+    "category": "Goland",
+    "createdAt": "2026-07-08T09:42:08.000Z",
+    "updatedAt": "2026-07-10T11:33:58.000Z",
+    "contentUpdatedAt": "2026-07-10T10:56:53.000Z",
+    "firstPublishedAt": "2026-07-08T09:42:20.950Z",
+    "publishedAt": "2026-07-10T10:56:53.000Z"
+  },
+  {
+    "slug": "lake-276835660",
+    "title": "MySql操作",
+    "tags": [
+      "Goland",
+      "GO-zero"
+    ],
+    "date": "2026-07-08T02:40:05.000Z",
+    "summary": "go-zero原生操作mysql代码生成v1/model/user.sqlSQL复制代码CREATE TABLE user ( id bigint AUTO_INCREME",
+    "category": "Goland",
+    "createdAt": "2026-07-08T02:40:05.000Z",
+    "updatedAt": "2026-07-08T09:42:09.000Z",
+    "contentUpdatedAt": "2026-07-08T08:59:34.000Z",
+    "firstPublishedAt": "2026-07-08T02:40:34.116Z",
+    "publishedAt": "2026-07-08T08:59:34.000Z"
+  },
+  {
+    "slug": "lake-275857079",
+    "title": "api服务",
+    "tags": [
+      "Goland",
+      "GO-zero"
+    ],
+    "date": "2026-06-30T12:44:29.000Z",
+    "summary": "api文件就是对这个服务所有api的描述服务名，函数名，路径，请求方法，请求参数，响应参数我们以用户管理的两个重要接口为例，去编写它的api文件@handler 是 go-zero API 语法注解",
+    "category": "Goland",
+    "createdAt": "2026-06-30T12:44:29.000Z",
+    "updatedAt": "2026-08-06T05:19:58.000Z",
+    "contentUpdatedAt": "2026-07-07T13:51:19.000Z",
+    "firstPublishedAt": "2026-06-30T12:44:54.842Z",
+    "publishedAt": "2026-07-07T13:51:19.000Z"
+  },
+  {
+    "slug": "lake-275837631",
+    "title": "微服务demo",
+    "tags": [
+      "Goland",
+      "GO-zero"
+    ],
+    "date": "2026-06-30T09:22:13.000Z",
+    "summary": "这节课，务必跟着教程走，先将demo成功跑起来这个demo是一个用户微服务，一个视频微服务视频微服务需要提供一个http接口，用户查询一个视频的信息，并且把关联用户id的用户名也查出来那么用户微服务就要提供一个方法，根据用户id返回用户信息用户微服务编写rpc的proto文件",
+    "category": "Goland",
+    "createdAt": "2026-06-30T09:22:13.000Z",
+    "updatedAt": "2026-08-06T05:20:00.000Z",
+    "contentUpdatedAt": "2026-06-30T10:25:45.000Z",
+    "firstPublishedAt": "2026-06-30T09:22:35.281Z",
+    "publishedAt": "2026-06-30T10:25:45.000Z"
+  },
+  {
+    "slug": "lake-275830111",
+    "title": "Etcd",
+    "tags": [
+      "Goland",
+      "GO-zero"
+    ],
+    "date": "2026-06-30T08:45:46.000Z",
+    "summary": "Etcd是一个高可用的分布式键值存储系统，主要用于共享配置信息和服务发现。它采用Raft一致性算法来保证数据的强一致性，并且支持对数据进行监视和更新为什么要用etcd主要是用于微服务的配置中心，服务发现0在对外api这个应用里面，怎么知道order服务的rpc地址呢？",
+    "category": "Goland",
+    "createdAt": "2026-06-30T08:45:46.000Z",
+    "updatedAt": "2026-06-30T09:22:14.000Z",
+    "contentUpdatedAt": "2026-06-30T09:14:56.000Z",
+    "firstPublishedAt": "2026-06-30T08:49:36.668Z",
+    "publishedAt": "2026-06-30T09:14:56.000Z"
+  },
+  {
+    "slug": "lake-275589455",
+    "title": "环境构建",
+    "tags": [
+      "Goland",
+      "GO-zero"
+    ],
+    "date": "2026-06-29T00:56:18.000Z",
+    "summary": "安装goctlVue复制代码go install github.com/zeromicro/go-zero/tools/goctl@latest安装protoc全家桶 Vue复制代码goctl env check --insta",
+    "category": "Goland",
+    "createdAt": "2026-06-29T00:56:18.000Z",
+    "updatedAt": "2026-06-30T08:38:21.000Z",
+    "contentUpdatedAt": "2026-06-30T08:38:20.000Z",
+    "firstPublishedAt": "2026-06-29T00:56:24.028Z",
+    "publishedAt": "2026-06-30T08:38:20.000Z"
+  },
+  {
+    "slug": "lake-275586611",
+    "title": "微服务",
+    "tags": [
+      "Goland",
+      "GO-zero"
+    ],
+    "date": "2026-06-29T00:06:21.000Z",
+    "summary": "顾名思义，其实就是微小的服务。最早之前的业务系统都是单体项目，像我们之前的五代博客，七代博客，都是属于单体项目这样的单体项目有什么弊端呢？例如后端要改一个很小的地方，那么都需要整个项目重新构建，然后停止整个项目，然后重启项目所以企业项目发布都是在深夜就是这个原因那么，如果是微服务呢？",
+    "category": "Goland",
+    "createdAt": "2026-06-29T00:06:21.000Z",
+    "updatedAt": "2026-08-06T05:19:16.000Z",
+    "contentUpdatedAt": "2026-06-29T00:07:10.000Z",
+    "firstPublishedAt": "2026-06-29T00:07:09.869Z",
+    "publishedAt": "2026-06-29T00:07:10.000Z"
+  },
+  {
+    "slug": "lake-275586595",
+    "title": "GO-zero",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-06-29T00:05:41.000Z",
+    "summary": "go-zero 是一个集成了各种工程实践的 web 和 rpc 框架。通过弹性设计保障了大并发服务端的稳定性，经受了充分的实战检验。官网：https://go-zero.dev/",
+    "category": "Goland",
+    "createdAt": "2026-06-29T00:05:41.000Z",
+    "updatedAt": "2026-06-29T00:06:40.000Z",
+    "contentUpdatedAt": "2026-06-29T00:06:40.000Z",
+    "firstPublishedAt": "2026-06-29T00:06:39.760Z",
+    "publishedAt": "2026-06-29T00:06:40.000Z"
+  },
+  {
+    "slug": "lake-275586343",
+    "title": "基本使用",
+    "tags": [
+      "Goland",
+      "Casbin权限鉴别框架"
+    ],
+    "date": "2026-06-28T23:56:58.000Z",
+    "summary": "下载Go复制代码go mod init your-project go get github.com/casbin/casbin/v3@latest go mod tidycasbin有两个部分组成，一个是配置文件，一个是规则集model.conf = 表结构和查询逻辑 policy.csv ...",
+    "category": "Goland",
+    "createdAt": "2026-06-28T23:56:58.000Z",
+    "updatedAt": "2026-07-15T14:50:25.000Z",
+    "contentUpdatedAt": "2026-07-15T14:50:24.000Z",
+    "firstPublishedAt": "2026-06-28T23:58:27.946Z",
+    "publishedAt": "2026-07-15T14:50:24.000Z"
+  },
+  {
+    "slug": "lake-275586334",
+    "title": "Casbin权限鉴别框架",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-06-28T23:56:25.000Z",
+    "summary": "Casbin是一个强大的，高效的开源访问控制框架，其权限管理机制支持多种访问控制模型，各个编程语言都对casbin有支持 目前我的所有项目，都是基于简单的角色管理来的 分为了三类，未登录能访问的，",
+    "category": "Goland",
+    "createdAt": "2026-06-28T23:56:25.000Z",
+    "updatedAt": "2026-06-28T23:57:39.000Z",
+    "contentUpdatedAt": "2026-06-28T23:57:39.000Z",
+    "firstPublishedAt": "2026-06-28T23:56:58.833Z",
+    "publishedAt": "2026-06-28T23:57:39.000Z"
+  },
+  {
+    "slug": "lake-275536749",
+    "title": "redis的持久化",
+    "tags": [
+      "Goland",
+      "go语言集成redis"
+    ],
+    "date": "2026-06-28T12:12:34.000Z",
+    "summary": "持久化Redis是一个内存数据库，数据保存在内存中，但是我们都知道内存的数据变化是很快的，也容易发生丢失辛好Redis还为我们提供了持久化的机制，分别是RDB(Redis DataBase)和AOF(Append Only File)。RDB，简而言之，就是在不同的时间点，将redis存储的数...",
+    "category": "Goland",
+    "createdAt": "2026-06-28T12:12:34.000Z",
+    "updatedAt": "2026-06-28T12:15:34.000Z",
+    "contentUpdatedAt": "2026-06-28T12:15:33.000Z",
+    "firstPublishedAt": "2026-06-28T12:12:59.597Z",
+    "publishedAt": "2026-06-28T12:15:33.000Z"
+  },
+  {
+    "slug": "lake-275447645",
+    "title": "redis",
+    "tags": [
+      "Goland",
+      "go语言集成redis"
+    ],
+    "date": "2026-06-27T10:32:19.000Z",
+    "summary": "go-redis v9 所有命令都需要传 context普通操作 context.Background() 需要超时控制 context.WithTimeout(ctx, 3*time.Second) 需要取消信号 context.WithCancel(ctx)连接redis1.使用docke...",
+    "category": "Goland",
+    "createdAt": "2026-06-27T10:32:19.000Z",
+    "updatedAt": "2026-06-28T23:51:41.000Z",
+    "contentUpdatedAt": "2026-06-28T12:10:06.000Z",
+    "firstPublishedAt": "2026-06-27T10:33:34.242Z",
+    "publishedAt": "2026-06-28T12:10:06.000Z"
+  },
+  {
+    "slug": "lake-275439809",
+    "title": "go语言集成redis",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-06-27T08:38:35.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-06-27T08:38:35.000Z",
+    "updatedAt": "2026-06-27T08:39:25.000Z",
+    "contentUpdatedAt": "2026-06-27T08:39:24.000Z",
+    "firstPublishedAt": "2026-06-27T08:39:24.462Z",
+    "publishedAt": "2026-06-27T08:39:24.000Z"
+  },
+  {
+    "slug": "lake-275237238",
+    "title": "proto文件编译",
+    "tags": [
+      "Goland",
+      "gRPC架构"
+    ],
+    "date": "2026-06-25T13:25:54.000Z",
+    "summary": "最全 protoc 编译命令逐字段详解（Go+gRPC 专用）命令原样：bash运行protoc -I . --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative...",
+    "category": "Goland",
+    "createdAt": "2026-06-25T13:25:54.000Z",
+    "updatedAt": "2026-06-25T13:27:34.000Z",
+    "contentUpdatedAt": "2026-06-25T13:27:33.000Z",
+    "firstPublishedAt": "2026-06-25T13:26:18.736Z",
+    "publishedAt": "2026-06-25T13:27:33.000Z"
+  },
+  {
+    "slug": "lake-275234018",
+    "title": "grpc的流式传输",
+    "tags": [
+      "Goland",
+      "gRPC架构"
+    ],
+    "date": "2026-06-25T12:42:10.000Z",
+    "summary": "普通rpc一问一答式Protocol Buffers复制代码syntax = \"proto3\"; option go_package = \"/proto\"; service Simple { rpc Fun(Request)returns(Response){} } message Reque...",
+    "category": "Goland",
+    "createdAt": "2026-06-25T12:42:10.000Z",
+    "updatedAt": "2026-08-06T05:21:35.000Z",
+    "contentUpdatedAt": "2026-06-27T07:13:51.000Z",
+    "firstPublishedAt": "2026-06-25T12:42:37.837Z",
+    "publishedAt": "2026-06-27T07:13:51.000Z"
+  },
+  {
+    "slug": "lake-275084085",
+    "title": "proto文件",
+    "tags": [
+      "Goland",
+      "gRPC架构"
+    ],
+    "date": "2026-06-24T11:36:49.000Z",
+    "summary": "syntax = \"proto3\"; // 指定proto版本 package hello_grpc; // 指定默认包名 // 指定golang包名 option go_package = \"/hello_grpc\"; //定义rpc服务 service HelloService { // ...",
+    "category": "Goland",
+    "createdAt": "2026-06-24T11:36:49.000Z",
+    "updatedAt": "2026-06-25T10:57:41.000Z",
+    "contentUpdatedAt": "2026-06-25T10:26:54.000Z",
+    "firstPublishedAt": "2026-06-24T11:37:15.802Z",
+    "publishedAt": "2026-06-25T10:26:54.000Z"
+  },
+  {
+    "slug": "lake-275081128",
+    "title": "grpc 的基础",
+    "tags": [
+      "Goland",
+      "gRPC架构"
+    ],
+    "date": "2026-06-24T11:14:59.000Z",
+    "summary": "编写protobuf文件service：关键字，定义一个RPC 服务类，类比 Java 接口",
+    "category": "Goland",
+    "createdAt": "2026-06-24T11:14:59.000Z",
+    "updatedAt": "2026-06-24T13:11:44.000Z",
+    "contentUpdatedAt": "2026-06-24T12:24:09.000Z",
+    "firstPublishedAt": "2026-06-24T11:15:15.540Z",
+    "publishedAt": "2026-06-24T12:24:09.000Z"
+  },
+  {
+    "slug": "lake-275079395",
+    "title": "原生rpc",
+    "tags": [
+      "Goland",
+      "gRPC架构"
+    ],
+    "date": "2026-06-24T11:00:04.000Z",
+    "summary": "服务端Go复制代码package main import ( \"fmt\" \"net\" \"net/http\" \"net/rpc\" ) type Server struct { } type Req struct { Num1 int Num2 int } type Res struct { Nu...",
+    "category": "Goland",
+    "createdAt": "2026-06-24T11:00:04.000Z",
+    "updatedAt": "2026-06-24T11:10:26.000Z",
+    "contentUpdatedAt": "2026-06-24T11:01:21.000Z",
+    "firstPublishedAt": "2026-06-24T11:00:14.513Z",
+    "publishedAt": "2026-06-24T11:01:21.000Z"
+  },
+  {
+    "slug": "lake-274765747",
+    "title": "gRPC介绍",
+    "tags": [
+      "Goland",
+      "gRPC架构"
+    ],
+    "date": "2026-06-22T08:37:24.000Z",
+    "summary": "现代改动很大 : 在现在创建 服务端 server 的时候 : 创造的 结构体 中必须要加上 : 结构体名字随便起（VideoServer / MyServer / 都行）rpc 方法名必须和 proto 一致",
+    "category": "Goland",
+    "createdAt": "2026-06-22T08:37:24.000Z",
+    "updatedAt": "2026-08-06T05:21:18.000Z",
+    "contentUpdatedAt": "2026-06-25T07:23:46.000Z",
+    "firstPublishedAt": "2026-06-22T08:37:51.062Z",
+    "publishedAt": "2026-06-25T07:23:46.000Z"
+  },
+  {
+    "slug": "lake-274763656",
+    "title": "gRPC架构",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-06-22T08:27:27.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-06-22T08:27:27.000Z",
+    "updatedAt": "2026-06-22T08:28:16.000Z",
+    "contentUpdatedAt": "2026-06-22T08:28:16.000Z",
+    "firstPublishedAt": "2026-06-22T08:28:15.561Z",
+    "publishedAt": "2026-06-22T08:28:16.000Z"
+  },
+  {
+    "slug": "lake-274739125",
+    "title": "Gorm的配置",
+    "tags": [
+      "Goland",
+      "GORM"
+    ],
+    "date": "2026-06-22T06:16:00.000Z",
+    "summary": "本门课程没有在一开始就讲一大堆gorm的配置那是因为尽可能实现约定大于配置如果按照gorm的约定来是编写代码，那么就可以省去很多配置项使用ID为主键默认情况下，名为 ID",
+    "category": "Goland",
+    "createdAt": "2026-06-22T06:16:00.000Z",
+    "updatedAt": "2026-06-22T06:29:29.000Z",
+    "contentUpdatedAt": "2026-06-22T06:29:03.000Z",
+    "firstPublishedAt": "2026-06-22T06:16:08.006Z",
+    "publishedAt": "2026-06-22T06:29:29.000Z"
+  },
+  {
+    "slug": "lake-274725137",
+    "title": "事务",
+    "tags": [
+      "Goland",
+      "GORM"
+    ],
+    "date": "2026-06-22T03:32:08.000Z",
+    "summary": "事务就是用户定义的一系列数据库操作，这些操作可以视为一个完成的逻辑处理工作单元，要么全部执行，要么全部不执行，是不可分割的工作单元，很形象的一个例子，张三给李四转账100元，在程序里面，张三的余额就要-100，李四的余额就要+100 整个事件是一个整体，哪一步错了，整个事件都是失败的gorm事...",
+    "category": "Goland",
+    "createdAt": "2026-06-22T03:32:08.000Z",
+    "updatedAt": "2026-06-22T08:27:28.000Z",
+    "contentUpdatedAt": "2026-06-22T03:43:21.000Z",
+    "firstPublishedAt": "2026-06-22T03:32:16.445Z",
+    "publishedAt": "2026-06-22T03:43:21.000Z"
+  },
+  {
+    "slug": "lake-274697655",
+    "title": "自定义数据类型",
+    "tags": [
+      "Goland",
+      "GORM"
+    ],
+    "date": "2026-06-22T00:42:58.000Z",
+    "summary": "很多情况下，我们有存json的需求那么就需要使用到gorm中的自定义数据类型了自定义的数据类型必须实现 Scanner 和 Valuer 接口简单说就是，在入库的时候转换一下，变成普通字符串进行存储，查询的时候，映射为结构体JSON自定义数据类型json数据用的比较多",
+    "category": "Goland",
+    "createdAt": "2026-06-22T00:42:58.000Z",
+    "updatedAt": "2026-06-22T03:43:46.000Z",
+    "contentUpdatedAt": "2026-06-22T03:43:45.000Z",
+    "firstPublishedAt": "2026-06-22T00:43:10.505Z",
+    "publishedAt": "2026-06-22T03:43:45.000Z"
+  },
+  {
+    "slug": "lake-274158928",
+    "title": "表结构",
+    "tags": [
+      "Goland",
+      "GORM"
+    ],
+    "date": "2026-06-16T14:15:29.000Z",
+    "summary": "xuexi在学习mysql多表关系的时候我们都知道有一对一关系，一对多关系，多对多关系我们不按照gorm的BelongsTo和Has Many去理解",
+    "category": "Goland",
+    "createdAt": "2026-06-16T14:15:29.000Z",
+    "updatedAt": "2026-06-21T14:00:02.000Z",
+    "contentUpdatedAt": "2026-06-21T13:59:38.000Z",
+    "firstPublishedAt": "2026-06-16T14:17:44.473Z",
+    "publishedAt": "2026-06-21T14:00:02.000Z"
+  },
+  {
+    "slug": "lake-273074958",
+    "title": "单表的高级查询",
+    "tags": [
+      "Goland",
+      "GORM"
+    ],
+    "date": "2026-06-08T13:29:09.000Z",
+    "summary": "Where查询直接写条件Go复制代码var user UserModel DB.Where(\"id = 5\").Take(&amp;user) fmt.Println(user) user = UserModel{} DB.Where(\"id = 5 or age = 11\").Take(&amp;",
+    "category": "Goland",
+    "createdAt": "2026-06-08T13:29:09.000Z",
+    "updatedAt": "2026-08-04T07:43:18.000Z",
+    "contentUpdatedAt": "2026-08-04T07:43:18.000Z",
+    "firstPublishedAt": "2026-06-14T04:58:07.567Z",
+    "publishedAt": "2026-08-04T07:43:18.000Z"
+  },
+  {
+    "slug": "lake-272906370",
+    "title": "单表模型和单表操作",
+    "tags": [
+      "Goland",
+      "GORM"
+    ],
+    "date": "2026-06-07T09:31:22.000Z",
+    "summary": "表结构在gorm中，使用结构体表示一张表例如User表通常情况下，我们会使用Model结尾表示它是表的结构体Go复制代码type UserModel struct { ID int64 `gorm:\"primaryKey\"` // 主键 Name string `gorm:\"not",
+    "category": "Goland",
+    "createdAt": "2026-06-07T09:31:22.000Z",
+    "updatedAt": "2026-06-14T04:57:50.000Z",
+    "contentUpdatedAt": "2026-06-14T04:57:50.000Z",
+    "firstPublishedAt": "2026-06-07T10:18:43.720Z",
+    "publishedAt": "2026-06-14T04:57:50.000Z"
+  },
+  {
+    "slug": "lake-272904586",
+    "title": "Gorm引入",
+    "tags": [
+      "Goland",
+      "GORM"
+    ],
+    "date": "2026-06-07T09:07:24.000Z",
+    "summary": "gorm的引入肯定是为了我们更好的操作数据库在使用原生sql查询的时候最大的问题就是没办法映射到结构体上我们不难发现，数据库里面的记录就很想一个结构体，数据库的一列对应一个字段所以数据库到结构体的映射就是orm的一个最大特点",
+    "category": "Goland",
+    "createdAt": "2026-06-07T09:07:24.000Z",
+    "updatedAt": "2026-07-08T08:37:07.000Z",
+    "contentUpdatedAt": "2026-07-08T08:35:08.000Z",
+    "firstPublishedAt": "2026-06-07T09:08:05.871Z",
+    "publishedAt": "2026-07-08T08:35:08.000Z"
+  },
+  {
+    "slug": "lake-272885901",
+    "title": "通过go语言操作SQL",
+    "tags": [
+      "Goland",
+      "GORM"
+    ],
+    "date": "2026-06-07T03:55:43.000Z",
+    "summary": "安装驱动Go复制代码go get -u github.com/go-sql-driver/mysql连接Go复制代码",
+    "category": "Goland",
+    "createdAt": "2026-06-07T03:55:43.000Z",
+    "updatedAt": "2026-06-21T10:54:56.000Z",
+    "contentUpdatedAt": "2026-06-21T10:54:55.000Z",
+    "firstPublishedAt": "2026-06-07T03:56:41.952Z",
+    "publishedAt": "2026-06-21T10:54:55.000Z"
+  },
+  {
+    "slug": "lake-272885731",
+    "title": "GORM",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-06-07T03:51:49.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-06-07T03:51:49.000Z",
+    "updatedAt": "2026-08-03T02:42:05.000Z",
+    "contentUpdatedAt": "2026-06-07T03:55:43.000Z",
+    "firstPublishedAt": "2026-06-07T03:55:43.446Z",
+    "publishedAt": "2026-06-07T03:55:43.000Z"
+  },
+  {
+    "slug": "lake-272835781",
+    "title": "中间件",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-06-06T13:14:45.000Z",
+    "summary": "局部中间件直接作用于单个路由Go复制代码c . Abort() --&gt; 实现的是 拦截网络访问的需求 ; c.Next() --&gt; 放行 ; // /3.中间件.go package main import ( \"fmt\" \"github.com/gin-gonic/gin&amp;q",
+    "category": "Goland",
+    "createdAt": "2026-06-06T13:14:45.000Z",
+    "updatedAt": "2026-06-07T03:51:50.000Z",
+    "contentUpdatedAt": "2026-06-06T14:37:13.000Z",
+    "firstPublishedAt": "2026-06-06T13:15:02.218Z",
+    "publishedAt": "2026-06-06T14:37:13.000Z"
+  },
+  {
+    "slug": "lake-272835764",
+    "title": "路由",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-06-06T13:14:21.000Z",
+    "summary": "路由 r := gin.Default() r.POST() r.PATCH() 部分实现更新 r.GET() r.DELETE() r.PUT() 全量更新 r.POST()路由分组把一类api划分到一个组可以给这个组加上统一的中间件RESETFul Api规范尽量使用名称的复数来定义路由",
+    "category": "Goland",
+    "createdAt": "2026-06-06T13:14:21.000Z",
+    "updatedAt": "2026-06-06T13:45:30.000Z",
+    "contentUpdatedAt": "2026-06-06T13:35:28.000Z",
+    "firstPublishedAt": "2026-06-06T13:14:33.984Z",
+    "publishedAt": "2026-06-06T13:35:28.000Z"
+  },
+  {
+    "slug": "lake-272835747",
+    "title": "中间件加路由",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-06-06T13:13:56.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-06-06T13:13:56.000Z",
+    "updatedAt": "2026-06-06T13:14:19.000Z",
+    "contentUpdatedAt": "2026-06-06T13:13:56.000Z",
+    "firstPublishedAt": null,
+    "publishedAt": null
+  },
+  {
+    "slug": "lake-271904028",
+    "title": "参数绑定",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-30T05:15:40.000Z",
+    "summary": "使用binding可以很好的完成参数的绑定先创建结构体 , 然后实例化, 使用 ShouldBind方法实现判断参数绑定是否完善 ; 参数都 拼接到了 url 中去了可以直接使用 ; 查询参数Go复制代码type User struct { Name st",
+    "category": "Goland",
+    "createdAt": "2026-05-30T05:15:40.000Z",
+    "updatedAt": "2026-05-31T02:34:17.000Z",
+    "contentUpdatedAt": "2026-05-31T01:27:07.000Z",
+    "firstPublishedAt": "2026-05-30T05:16:21.486Z",
+    "publishedAt": "2026-05-31T01:27:07.000Z"
+  },
+  {
+    "slug": "lake-271904026",
+    "title": "binding 内置规则",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-30T05:15:39.000Z",
+    "summary": "如果有多个规则，使用逗号分隔 binding:\"required\",\"min=2\" ; Go复制代码// 不能为空，并且不能没有这个字段 required： 必填字段，如：binding:\"required\" // 针对字符串的长度 min 最小长度，如：binding:\"min=5\" max...",
+    "category": "Goland",
+    "createdAt": "2026-05-30T05:15:39.000Z",
+    "updatedAt": "2026-08-02T10:16:30.000Z",
+    "contentUpdatedAt": "2026-08-02T10:13:27.000Z",
+    "firstPublishedAt": "2026-05-30T05:16:57.604Z",
+    "publishedAt": "2026-08-02T10:13:27.000Z"
+  },
+  {
+    "slug": "lake-271904011",
+    "title": "bind 绑定器",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-30T05:15:20.000Z",
+    "summary": "Gin 框架会负责收集请求 , 路由 , 响应, 获取到参数 ; 使用bind绑定器 实现 将获取到的参数全部 序列化 到 结构体中去 : 是 Gin 里 ** 专门做「请求数据自动映射到结构体」** 的工具 ps : bind 减少了手动获取请求参数的冗杂, 直接使用 struct 实现自动...",
+    "category": "Goland",
+    "createdAt": "2026-05-30T05:15:20.000Z",
+    "updatedAt": "2026-06-30T13:58:51.000Z",
+    "contentUpdatedAt": "2026-06-30T13:58:50.000Z",
+    "firstPublishedAt": "2026-06-30T13:55:56.357Z",
+    "publishedAt": "2026-06-30T13:58:50.000Z"
+  },
+  {
+    "slug": "lake-271889184",
+    "title": "表单参数和文件上传",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-30T01:41:25.000Z",
+    "summary": "表单参数一般就是专指form表单Go复制代码name := c.PostForm(\"name\") age, ok := c.GetPostForm(\"age\") fmt.Println(name) fmt.Println(age, ok)",
+    "category": "Goland",
+    "createdAt": "2026-05-30T01:41:25.000Z",
+    "updatedAt": "2026-05-30T01:42:56.000Z",
+    "contentUpdatedAt": "2026-05-30T01:42:55.000Z",
+    "firstPublishedAt": "2026-05-30T01:42:39.599Z",
+    "publishedAt": "2026-05-30T01:42:55.000Z"
+  },
+  {
+    "slug": "lake-271804410",
+    "title": "原始内容",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-29T06:51:30.000Z",
+    "summary": "不同的请求体对应的原始内容使用 io.ReadAll( c.Request.Body ) 可以创建一个一次性的文件操作流 ; 可以上传任意形式的文件类型 , 但是只能读取一次 ; body阅后即焚问题解决请求体获取之后就会销毁, 需要拿到阅读后的内容蓄一个新的Go",
+    "category": "Goland",
+    "createdAt": "2026-05-29T06:51:30.000Z",
+    "updatedAt": "2026-05-30T05:59:21.000Z",
+    "contentUpdatedAt": "2026-05-30T05:59:20.000Z",
+    "firstPublishedAt": "2026-05-29T06:51:51.102Z",
+    "publishedAt": "2026-05-30T05:59:20.000Z"
+  },
+  {
+    "slug": "lake-271715663",
+    "title": "gin 获取数据",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-28T13:01:58.000Z",
+    "summary": "路径查询表格写法返回类型",
+    "category": "Goland",
+    "createdAt": "2026-05-28T13:01:58.000Z",
+    "updatedAt": "2026-05-30T03:17:44.000Z",
+    "contentUpdatedAt": "2026-05-30T03:17:44.000Z",
+    "firstPublishedAt": "2026-05-28T13:02:10.243Z",
+    "publishedAt": "2026-05-30T03:17:44.000Z"
+  },
+  {
+    "slug": "lake-271425514",
+    "title": "RESTful API设计",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-26T13:23:09.000Z",
+    "summary": "REST 与 RESTful API 核心概念REST 是一种客户端与 Web 服务器交互的架构风格核心是用 HTTP 协议的 4 个请求方法代表不同操作：GET",
+    "category": "Goland",
+    "createdAt": "2026-05-26T13:23:09.000Z",
+    "updatedAt": "2026-05-26T13:31:25.000Z",
+    "contentUpdatedAt": "2026-05-26T13:31:24.000Z",
+    "firstPublishedAt": "2026-05-26T13:23:54.461Z",
+    "publishedAt": "2026-05-26T13:31:24.000Z"
+  },
+  {
+    "slug": "lake-271097344",
+    "title": "静态文件",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-24T03:21:45.000Z",
+    "summary": "r.Static(\"static\", \"static\") // 第一个参数是别名，第二个才是实际路径第一个参数 relativePath：浏览器访问的 URL 前缀（路由路径）",
+    "category": "Goland",
+    "createdAt": "2026-05-24T03:21:45.000Z",
+    "updatedAt": "2026-05-28T12:59:34.000Z",
+    "contentUpdatedAt": "2026-05-28T12:59:33.000Z",
+    "firstPublishedAt": "2026-05-24T03:22:03.142Z",
+    "publishedAt": "2026-05-28T12:59:33.000Z"
+  },
+  {
+    "slug": "lake-271097315",
+    "title": "响应文件",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-24T03:21:26.000Z",
+    "summary": "用于浏览器直接请求这个接口唤起下载Go复制代码c.Header(\"Content-Type\", \"application/octet-stream\") // 表示是文件流，唤起浏览器下载，一般设置了这个，就要设置文件名 c.Header(\"Content-Disposition\", \"atta...",
+    "category": "Goland",
+    "createdAt": "2026-05-24T03:21:26.000Z",
+    "updatedAt": "2026-06-30T14:00:49.000Z",
+    "contentUpdatedAt": "2026-06-30T13:52:52.000Z",
+    "firstPublishedAt": "2026-05-24T03:21:45.397Z",
+    "publishedAt": "2026-06-30T13:52:52.000Z"
+  },
+  {
+    "slug": "lake-271097284",
+    "title": "html响应",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-24T03:21:05.000Z",
+    "summary": "LoadHTMLGlob加载一个目录下的所有html文件 使用 name 字段 实现多个html 实现 ; LoadHTMLFiles加载单个html文件",
+    "category": "Goland",
+    "createdAt": "2026-05-24T03:21:05.000Z",
+    "updatedAt": "2026-06-06T04:07:39.000Z",
+    "contentUpdatedAt": "2026-05-27T13:20:07.000Z",
+    "firstPublishedAt": "2026-05-24T03:21:16.521Z",
+    "publishedAt": "2026-05-27T13:20:07.000Z"
+  },
+  {
+    "slug": "lake-271097170",
+    "title": "json响应",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-24T03:19:47.000Z",
+    "summary": "现在大部分的前后端交互都是以json为主，所以gin中最常用的就是json响应它的用法非常简单外层 http.StatusOK：HTTP 响应状态码",
+    "category": "Goland",
+    "createdAt": "2026-05-24T03:19:47.000Z",
+    "updatedAt": "2026-07-23T00:50:08.000Z",
+    "contentUpdatedAt": "2026-07-23T00:47:33.000Z",
+    "firstPublishedAt": "2026-05-24T03:20:12.534Z",
+    "publishedAt": "2026-07-23T00:47:33.000Z"
+  },
+  {
+    "slug": "lake-271097082",
+    "title": "gin响应",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-24T03:18:47.000Z",
+    "summary": "安装下载适用 Gin 框架 : go get -u github.com/gin-gonic/gintype H map[string]interface{} 内部提前封装",
+    "category": "Goland",
+    "createdAt": "2026-05-24T03:18:47.000Z",
+    "updatedAt": "2026-05-29T14:55:56.000Z",
+    "contentUpdatedAt": "2026-05-28T04:59:35.000Z",
+    "firstPublishedAt": "2026-05-24T03:19:02.666Z",
+    "publishedAt": "2026-05-28T04:59:35.000Z"
+  },
+  {
+    "slug": "lake-271090118",
+    "title": "go原生http服务",
+    "tags": [
+      "Goland",
+      "Gin-Web框架"
+    ],
+    "date": "2026-05-24T02:03:17.000Z",
+    "summary": "在go中写一个web服务非常发方便快速当前最新的 go-modole 已经默认整合到了go普通项目构建 (内部只要有 go.mod就行)远端仓库的 环境变量 要配置 国人维护的七牛云 : https://goproxy.cn,directWeb 开发 : 一个请求 一个响应 --&gt; w htt",
+    "category": "Goland",
+    "createdAt": "2026-05-24T02:03:17.000Z",
+    "updatedAt": "2026-05-29T23:45:58.000Z",
+    "contentUpdatedAt": "2026-05-24T03:23:44.000Z",
+    "firstPublishedAt": "2026-05-24T02:03:39.676Z",
+    "publishedAt": "2026-05-24T03:23:44.000Z"
+  },
+  {
+    "slug": "lake-271089987",
+    "title": "Gin-Web框架",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-24T02:01:45.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-05-24T02:01:45.000Z",
+    "updatedAt": "2026-05-29T14:49:53.000Z",
+    "contentUpdatedAt": "2026-05-24T02:02:08.000Z",
+    "firstPublishedAt": "2026-05-24T02:02:08.471Z",
+    "publishedAt": "2026-05-24T02:02:08.000Z"
+  },
+  {
+    "slug": "lake-270392663",
+    "title": "redis 原理篇",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-19T01:22:35.000Z",
+    "summary": "Redis原理篇1、原理篇-Redis数据结构1.1 Redis数据结构-动态字符串总结 : redis内部创建的结构体 替换 原C 中的char数组 ; len：字符串当前长度（已用字节数，不含结尾 \\0）alloc",
+    "category": "JAVA",
+    "createdAt": "2026-05-19T01:22:35.000Z",
+    "updatedAt": "2026-05-20T09:59:11.000Z",
+    "contentUpdatedAt": "2026-05-20T09:59:10.000Z",
+    "firstPublishedAt": "2026-05-19T01:22:49.556Z",
+    "publishedAt": "2026-05-20T09:59:10.000Z"
+  },
+  {
+    "slug": "lake-270239191",
+    "title": "redis高级最佳实践",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-18T02:46:27.000Z",
+    "summary": "Redis高级篇之最佳实践今日内容Redis键值设计批处理优化服务端优化集群最佳实践1、Redis键值设计1.1、优雅的key结构Redis的Key虽然可以自定义，但最好遵循下面的几个最佳实践约定：遵循基本格式：[业务名称]:[数据名]:[id]",
+    "category": "JAVA",
+    "createdAt": "2026-05-18T02:46:27.000Z",
+    "updatedAt": "2026-05-19T01:22:29.000Z",
+    "contentUpdatedAt": "2026-05-19T01:16:16.000Z",
+    "firstPublishedAt": "2026-05-18T02:47:37.094Z",
+    "publishedAt": "2026-05-19T01:22:27.000Z"
+  },
+  {
+    "slug": "lake-270132026",
+    "title": "redis 多级缓存 + lua语言入门",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-17T04:43:16.000Z",
+    "summary": "多级缓存Caffeine 属于 Java 应用本地缓存 存在 Tomcat 内部的 JVM 内存里 只给 Java 项目自己用 Nginx 层缓存 存放位置：Nginx 进程内存 / 磁盘 实现方式：nginx 配置 + OpenResty Lua Nginx 本身不能直接读",
+    "category": "JAVA",
+    "createdAt": "2026-05-17T04:43:16.000Z",
+    "updatedAt": "2026-05-18T02:00:06.000Z",
+    "contentUpdatedAt": "2026-05-17T14:09:09.000Z",
+    "firstPublishedAt": "2026-05-17T04:43:28.543Z",
+    "publishedAt": "2026-05-17T14:09:09.000Z"
+  },
+  {
+    "slug": "lake-270050158",
+    "title": "redis 分布式缓存",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-16T08:09:55.000Z",
+    "summary": "分布式缓存-- 基于Redis集群解决单机Redis存在的问题单机的Redis存在四大问题：0.学习目标1.Redis持久化Redis有两种持久化方案：R",
+    "category": "JAVA",
+    "createdAt": "2026-05-16T08:09:55.000Z",
+    "updatedAt": "2026-05-17T04:43:12.000Z",
+    "contentUpdatedAt": "2026-05-17T04:08:44.000Z",
+    "firstPublishedAt": "2026-05-16T08:10:17.603Z",
+    "publishedAt": "2026-05-17T04:08:44.000Z"
+  },
+  {
+    "slug": "lake-269931716",
+    "title": "redis三大数据结构",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-15T07:47:17.000Z",
+    "summary": "项目篇除了最后使用 redis 实现消息队列 其他都要全部 摸清原理 后面学的也是思路 和 结构知识 : 10、附近商户 (GEO数据结构)10.1、附近商户-GEO数据结构的基本用法 有序集合（Sorted Set）--&gt; 底层会实现一个 自动相互关联的数据 ; GEO就是Geolocati",
+    "category": "JAVA",
+    "createdAt": "2026-05-15T07:47:17.000Z",
+    "updatedAt": "2026-05-16T08:02:19.000Z",
+    "contentUpdatedAt": "2026-05-15T10:47:30.000Z",
+    "firstPublishedAt": "2026-05-15T07:47:44.681Z",
+    "publishedAt": "2026-05-16T08:02:18.000Z"
+  },
+  {
+    "slug": "lake-269919817",
+    "title": "项目部署",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-15T06:47:10.000Z",
+    "summary": "go项目的部署特别简单，编写完成之后，只需要执行go build即可打包为可执行文件注意，这个操作是不同平台不一样的windows下打包就是exe文件，linux下打包就是二进制文件打包命令Go复制代码go build",
+    "category": "Goland",
+    "createdAt": "2026-05-15T06:47:10.000Z",
+    "updatedAt": "2026-05-15T07:27:44.000Z",
+    "contentUpdatedAt": "2026-05-15T07:10:37.000Z",
+    "firstPublishedAt": "2026-05-15T06:47:23.679Z",
+    "publishedAt": "2026-05-15T07:10:37.000Z"
+  },
+  {
+    "slug": "lake-269918205",
+    "title": "网络编程",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-15T06:38:30.000Z",
+    "summary": "TCP传输控制协议（TCP，Transmission Control Protocol）是一种面向连接的、可靠的、基于字节流的传输层通信协议如何保证连接可靠呢？（面试常考题）三次握手四次挥手服务端",
+    "category": "Goland",
+    "createdAt": "2026-05-15T06:38:30.000Z",
+    "updatedAt": "2026-05-19T09:55:10.000Z",
+    "contentUpdatedAt": "2026-05-15T06:47:11.000Z",
+    "firstPublishedAt": "2026-05-15T06:38:46.565Z",
+    "publishedAt": "2026-05-15T06:47:11.000Z"
+  },
+  {
+    "slug": "lake-269714252",
+    "title": "反射",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-14T02:28:51.000Z",
+    "summary": "后面会接触到的结构体反射操作获取全部的内部字段值 : field reflect.StructField 携带了结构体字段的全部反射元信息。关键成员和方法有：成员 含义 在本例中的值field.Name Go 字段原名 \"UserName\"field.Type 字段类型 stringfield...",
+    "category": "Goland",
+    "createdAt": "2026-05-14T02:28:51.000Z",
+    "updatedAt": "2026-09-17T07:57:45.000Z",
+    "contentUpdatedAt": "2026-09-17T07:28:19.000Z",
+    "firstPublishedAt": "2026-05-14T02:29:10.038Z",
+    "publishedAt": "2026-09-17T07:57:45.000Z"
+  },
+  {
+    "slug": "lake-269705812",
+    "title": "单元测试",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-14T01:45:41.000Z",
+    "summary": "死规定 : 单元测试文件必须叫：原文件名 + _test.go必须在同一个包（package）里面测试用例函数必须以Test开头，一般来说就是Test+被测试的函数名测试 泛型函数的 时候不能传泛型的 类型直接传值 即可 ; Go语言中自带有一个轻量级的测试框架testing和自带的go te...",
+    "category": "Goland",
+    "createdAt": "2026-05-14T01:45:41.000Z",
+    "updatedAt": "2026-05-14T02:28:10.000Z",
+    "contentUpdatedAt": "2026-05-14T02:28:10.000Z",
+    "firstPublishedAt": "2026-05-14T01:45:53.448Z",
+    "publishedAt": "2026-05-14T02:28:10.000Z"
+  },
+  {
+    "slug": "lake-269639535",
+    "title": "文件操作",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-13T09:50:13.000Z",
+    "summary": "文件读取一次性读取. 核心区别总结（超级清晰）表格方式",
+    "category": "Goland",
+    "createdAt": "2026-05-13T09:50:13.000Z",
+    "updatedAt": "2026-06-26T13:35:52.000Z",
+    "contentUpdatedAt": "2026-06-26T13:35:51.000Z",
+    "firstPublishedAt": "2026-05-13T09:50:20.947Z",
+    "publishedAt": "2026-06-26T13:35:51.000Z"
+  },
+  {
+    "slug": "lake-269622025",
+    "title": "泛型",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-13T08:13:37.000Z",
+    "summary": "从1.18版本开始，Go添加了对泛型的支持，即类型参数泛型函数如果我们要实现一个对int类型的求和函数Go复制代码func add(a, b int) int { return a + b }",
+    "category": "Goland",
+    "createdAt": "2026-05-13T08:13:37.000Z",
+    "updatedAt": "2026-05-13T11:30:20.000Z",
+    "contentUpdatedAt": "2026-05-13T09:49:36.000Z",
+    "firstPublishedAt": "2026-05-13T08:13:46.237Z",
+    "publishedAt": "2026-05-13T09:49:36.000Z"
+  },
+  {
+    "slug": "lake-269608187",
+    "title": "异常处理",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-13T07:07:45.000Z",
+    "summary": "go的异常处理可能是这门语言唯一的一个诟病了吧由于go语言没有捕获异常的机制，导致每调一个函数都要接一下这个函数的error网上有个梗，叫做error是go的一等公民常见的异常处理向上抛将错误交给上一级处理一层调用接着一层调用 , 一层一层实现上抛异常处理异常",
+    "category": "Goland",
+    "createdAt": "2026-05-13T07:07:45.000Z",
+    "updatedAt": "2026-06-01T14:41:58.000Z",
+    "contentUpdatedAt": "2026-05-13T10:06:19.000Z",
+    "firstPublishedAt": "2026-05-13T07:08:06.324Z",
+    "publishedAt": "2026-05-13T10:06:19.000Z"
+  },
+  {
+    "slug": "lake-269602022",
+    "title": "线程安全",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-13T06:39:24.000Z",
+    "summary": "线程安全什么是线程安全？现在有两个协程，同时触发，一个协程对一个全局变量进行100完成++操作，另一个对全局变量—的操作那么，两个协程结束，最后的值应该是0才对Go复制代码package main import ( \"fmt\" \"sync\" ) var num int var wait syn...",
+    "category": "Goland",
+    "createdAt": "2026-05-13T06:39:24.000Z",
+    "updatedAt": "2026-05-13T09:43:27.000Z",
+    "contentUpdatedAt": "2026-05-13T09:43:27.000Z",
+    "firstPublishedAt": "2026-05-13T06:41:03.126Z",
+    "publishedAt": "2026-05-13T09:43:27.000Z"
+  },
+  {
+    "slug": "lake-269560008",
+    "title": "协程和channel",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-13T02:06:43.000Z",
+    "summary": "协程Goroutine是Go运行时管理的轻量级线程在go中，开启一个协程是非常简单的startTime := time.Now() fmt.Println(time.Since(startTime))Go复制代码package main import ( \"fmt\" \"time\" ) func...",
+    "category": "Goland",
+    "createdAt": "2026-05-13T02:06:43.000Z",
+    "updatedAt": "2026-07-15T02:49:43.000Z",
+    "contentUpdatedAt": "2026-07-15T02:49:43.000Z",
+    "firstPublishedAt": "2026-05-13T02:07:01.502Z",
+    "publishedAt": "2026-07-15T02:49:43.000Z"
+  },
+  {
+    "slug": "lake-269547416",
+    "title": "接口",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-13T00:31:30.000Z",
+    "summary": "接口是一组仅包含方法名、参数、返回值的未具体实现的方法的集合像是一种数据类型, 实际的数据关系是 对象中需要包含接口中的全部的方法 : 然后具备多种内部函数的不同对象就可以直接使用接口的类型实现匹配了 : var u Animal fmt(u.(cat).haqi) Go",
+    "category": "Goland",
+    "createdAt": "2026-05-13T00:31:30.000Z",
+    "updatedAt": "2026-07-31T09:58:33.000Z",
+    "contentUpdatedAt": "2026-07-31T08:12:43.000Z",
+    "firstPublishedAt": "2026-05-13T00:31:42.048Z",
+    "publishedAt": "2026-07-31T08:12:43.000Z"
+  },
+  {
+    "slug": "lake-269509105",
+    "title": "自定义数据类型和类型别名",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-12T14:04:57.000Z",
+    "summary": "在 Go 语言中，自定义类型指的是使用 type 关键字定义的新类型，它可以是基本类型的别名，也可以是结构体、函数等组合而成的新类型。自定义类型可以帮助我们更好地抽象和封装数据，让代码更加易读、易懂、易维护自定义类型简单理解 一下 就是 JAVA 中有 int --&gt; Integer , bo",
+    "category": "Goland",
+    "createdAt": "2026-05-12T14:04:57.000Z",
+    "updatedAt": "2026-06-01T14:41:34.000Z",
+    "contentUpdatedAt": "2026-05-13T00:31:23.000Z",
+    "firstPublishedAt": "2026-05-12T14:05:17.661Z",
+    "publishedAt": "2026-05-13T00:31:23.000Z"
+  },
+  {
+    "slug": "lake-269502362",
+    "title": "GoLand 开发路线",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-12T12:47:36.000Z",
+    "summary": "if err != nil {fmp{\"学无止境\"}}",
+    "category": "Goland",
+    "createdAt": "2026-05-12T12:47:36.000Z",
+    "updatedAt": "2026-07-19T13:50:00.000Z",
+    "contentUpdatedAt": "2026-07-19T13:50:00.000Z",
+    "firstPublishedAt": "2026-05-12T12:48:09.981Z",
+    "publishedAt": "2026-07-19T13:50:00.000Z"
+  },
+  {
+    "slug": "lake-269387427",
+    "title": "结构体",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-12T00:14:55.000Z",
+    "summary": "注意 在 go中 结构体 都不是引用 传递 结构体定义创建结构体 使用的 函数 func ( s Student) 函数名 {内部使用 s.属性名 实现调用 内部的参数 ; }Go复制代码",
+    "category": "Goland",
+    "createdAt": "2026-05-12T00:14:55.000Z",
+    "updatedAt": "2026-08-07T12:19:28.000Z",
+    "contentUpdatedAt": "2026-08-07T12:19:27.000Z",
+    "firstPublishedAt": "2026-05-12T00:15:12.532Z",
+    "publishedAt": "2026-08-07T12:19:27.000Z"
+  },
+  {
+    "slug": "lake-269338718",
+    "title": "init 和 defer 函数",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-11T14:22:33.000Z",
+    "summary": "init函数init()函数是一个特殊的函数，存在以下特性：不能被其他函数调用，而是在main函数执行之前，自动被调用init函数不能作为参数传入不能有传入参数和返回值一个go文件可以",
+    "category": "Goland",
+    "createdAt": "2026-05-11T14:22:33.000Z",
+    "updatedAt": "2026-05-12T12:46:13.000Z",
+    "contentUpdatedAt": "2026-05-11T14:31:49.000Z",
+    "firstPublishedAt": "2026-05-11T14:22:56.494Z",
+    "publishedAt": "2026-05-11T14:31:49.000Z"
+  },
+  {
+    "slug": "lake-269332108",
+    "title": "函数",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-11T13:10:21.000Z",
+    "summary": "func 变量名 ( 形参列表 ) ( 返回的数值类型 ) { }函数 传参的时候 , 需要传入 多个相同的类型 的时候 可以 直接设置 传入 的参数 [ ...var ]函数是一段封装了特定功能的可重用代码块，用于执行特定的任务或计算函数接受输入（参数）并产生输出（返回值）函数定义Go复制代...",
+    "category": "Goland",
+    "createdAt": "2026-05-11T13:10:21.000Z",
+    "updatedAt": "2026-05-12T14:37:45.000Z",
+    "contentUpdatedAt": "2026-05-12T14:37:44.000Z",
+    "firstPublishedAt": "2026-05-11T13:11:17.657Z",
+    "publishedAt": "2026-05-12T14:37:44.000Z"
+  },
+  {
+    "slug": "lake-269331570",
+    "title": "for循环语句",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-11T13:04:24.000Z",
+    "summary": "for 初始化 ; 失败条件 ; 变化因素 {}任何编程语言，都会有for循环，它的一般写法是Go复制代码for 初始化;条件;操作{ }例如求1+2+...+100 的 和",
+    "category": "Goland",
+    "createdAt": "2026-05-11T13:04:24.000Z",
+    "updatedAt": "2026-05-12T12:46:12.000Z",
+    "contentUpdatedAt": "2026-05-11T13:10:22.000Z",
+    "firstPublishedAt": "2026-05-11T13:07:23.677Z",
+    "publishedAt": "2026-05-11T13:10:22.000Z"
+  },
+  {
+    "slug": "lake-269231473",
+    "title": "if条件判断",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-11T02:05:21.000Z",
+    "summary": "if语句以年龄为例，输入的年龄在某一个区间，就输出对应的提示信息Go复制代码=35 中年很明显，这是一个多选一的情况我们有很多中方式来实现",
+    "category": "Goland",
+    "createdAt": "2026-05-11T02:05:21.000Z",
+    "updatedAt": "2026-05-12T12:46:12.000Z",
+    "contentUpdatedAt": "2026-05-11T13:04:25.000Z",
+    "firstPublishedAt": "2026-05-11T02:05:39.969Z",
+    "publishedAt": "2026-05-11T13:04:25.000Z"
+  },
+  {
+    "slug": "lake-269125064",
+    "title": "数组,切片,map",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-10T03:01:46.000Z",
+    "summary": "这是 升序排序（从小到大排序）。在 Go 的 sort.Slice 函数中，比较函数 func(i, j int) bool",
+    "category": "Goland",
+    "createdAt": "2026-05-10T03:01:46.000Z",
+    "updatedAt": "2026-05-12T12:46:12.000Z",
+    "contentUpdatedAt": "2026-05-11T14:10:12.000Z",
+    "firstPublishedAt": "2026-05-10T03:02:06.084Z",
+    "publishedAt": "2026-05-11T14:10:12.000Z"
+  },
+  {
+    "slug": "lake-269072618",
+    "title": "基本数据类型",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-09T13:56:13.000Z",
+    "summary": "go语言的基本数据类型有整数形浮点型复数布尔字符串整数型",
+    "category": "Goland",
+    "createdAt": "2026-05-09T13:56:13.000Z",
+    "updatedAt": "2026-05-12T12:46:12.000Z",
+    "contentUpdatedAt": "2026-05-10T02:45:41.000Z",
+    "firstPublishedAt": "2026-05-09T13:56:24.329Z",
+    "publishedAt": "2026-05-10T02:45:41.000Z"
+  },
+  {
+    "slug": "lake-269071428",
+    "title": "变量定义加输入输出",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-09T13:46:15.000Z",
+    "summary": "变量定义标准的变量定义Go复制代码package main import \"fmt\" func main() { // 先定义，再赋值 var name string name = \"枫枫\" fmt.Println(name) // var 变量名 类型 = \"变量值\" var userNam...",
+    "category": "Goland",
+    "createdAt": "2026-05-09T13:46:15.000Z",
+    "updatedAt": "2026-08-04T11:36:31.000Z",
+    "contentUpdatedAt": "2026-08-04T11:36:31.000Z",
+    "firstPublishedAt": "2026-05-09T13:46:52.412Z",
+    "publishedAt": "2026-08-04T11:36:31.000Z"
+  },
+  {
+    "slug": "lake-269071408",
+    "title": "环境搭建",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-09T13:46:03.000Z",
+    "summary": "相对于其他语言，go语言的环境搭建及其简单官网https://go.dev/dl/访问不了的就访问中文网就好了go安装包下载https:/",
+    "category": "Goland",
+    "createdAt": "2026-05-09T13:46:03.000Z",
+    "updatedAt": "2026-05-13T11:27:05.000Z",
+    "contentUpdatedAt": "2026-05-09T13:55:03.000Z",
+    "firstPublishedAt": "2026-05-09T13:46:15.489Z",
+    "publishedAt": "2026-05-09T13:55:03.000Z"
+  },
+  {
+    "slug": "lake-269070061",
+    "title": "Goland 语言入门",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-09T13:35:36.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-05-09T13:35:36.000Z",
+    "updatedAt": "2026-05-12T12:46:12.000Z",
+    "contentUpdatedAt": "2026-05-09T13:46:03.000Z",
+    "firstPublishedAt": "2026-05-09T13:35:54.472Z",
+    "publishedAt": "2026-05-09T13:46:03.000Z"
+  },
+  {
+    "slug": "lake-269070035",
+    "title": "Goland",
+    "tags": [
+      "Goland"
+    ],
+    "date": "2026-05-09T13:35:23.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "Goland",
+    "createdAt": "2026-05-09T13:35:23.000Z",
+    "updatedAt": "2026-05-12T12:47:32.000Z",
+    "contentUpdatedAt": "2026-05-09T13:35:23.000Z",
+    "firstPublishedAt": null,
+    "publishedAt": null
+  },
+  {
+    "slug": "lake-268797834",
+    "title": "Conda 实现多环境控制",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-08T01:50:00.000Z",
+    "summary": "Conda 常用命令速查1. 搜索可用的包（例如搜索 numpy）conda search numpy2. 安装包（默认安装最新版）conda install numpy3. 安装指定版本的包conda install numpy=1.24.34. 更新包到最新版conda update nu...",
+    "category": "JAVA",
+    "createdAt": "2026-05-08T01:50:00.000Z",
+    "updatedAt": "2026-05-08T01:55:51.000Z",
+    "contentUpdatedAt": "2026-05-08T01:55:51.000Z",
+    "firstPublishedAt": "2026-05-08T01:51:52.451Z",
+    "publishedAt": "2026-05-08T01:55:51.000Z"
+  },
+  {
+    "slug": "lake-268575745",
+    "title": "开发项目",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-05-06T12:16:19.000Z",
+    "summary": "创建分布式锁, 其实就是创建中间件的锁 , 和之前使用的防止穿透使用的锁 类似只要你保证：业务执行时间 &lt; 锁过期时间那么：直接 delete 解锁",
+    "category": "JAVA",
+    "createdAt": "2026-05-06T12:16:19.000Z",
+    "updatedAt": "2026-05-09T13:29:57.000Z",
+    "contentUpdatedAt": "2026-05-09T13:29:56.000Z",
+    "firstPublishedAt": "2026-05-06T12:16:53.081Z",
+    "publishedAt": "2026-05-09T13:29:56.000Z"
+  },
+  {
+    "slug": "lake-268561157",
+    "title": "黑马点评项目 实战篇",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-06T09:45:07.000Z",
+    "summary": "重点放在 实现 锁的逻辑 和 缓存那里 解决缓存 不一致, 穿透 , 雪崩 , 击穿, 基础语法 亲爱的小伙伴们大家好，马上咱们就开始实战篇的内容了，相信通过本章的学习，小伙伴们就能理解各种redis的使用啦，接下来咱们来一起看看实战篇我们要学习一些什么样的内容短信登录这一块我们会使用redi...",
+    "category": "JAVA",
+    "createdAt": "2026-05-06T09:45:07.000Z",
+    "updatedAt": "2026-05-15T07:52:29.000Z",
+    "contentUpdatedAt": "2026-05-15T07:51:59.000Z",
+    "firstPublishedAt": "2026-05-06T09:45:28.353Z",
+    "publishedAt": "2026-05-15T07:51:59.000Z"
+  },
+  {
+    "slug": "lake-268328377",
+    "title": "Redis",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-04T15:01:29.000Z",
+    "summary": "初识Redis基于我本地使用 redis : 使用 compose : 容器化管理 redis ; 使用图形化界面 管理 redis : 可以直接使用 Hexhub 实现图形化管理 : 超级方便 ; 使用docker exec -it redis bash作用：在已经运行的 Redis 容器内...",
+    "category": "JAVA",
+    "createdAt": "2026-05-04T15:01:29.000Z",
+    "updatedAt": "2026-05-12T08:22:32.000Z",
+    "contentUpdatedAt": "2026-05-12T08:22:31.000Z",
+    "firstPublishedAt": "2026-05-04T15:01:39.897Z",
+    "publishedAt": "2026-05-12T08:22:31.000Z"
+  },
+  {
+    "slug": "lake-268322502",
+    "title": "安装软件",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-04T12:59:16.000Z",
+    "summary": "一.先更新本地安装的环境 ;apt-get updateapt-get install -y curl wget vim net-tools software-properties-common gnupg二.安装 MySql# 安装 MySQLapt-get install -y mysql...",
+    "category": "JAVA",
+    "createdAt": "2026-05-04T12:59:16.000Z",
+    "updatedAt": "2026-05-04T13:04:17.000Z",
+    "contentUpdatedAt": "2026-05-04T13:04:16.000Z",
+    "firstPublishedAt": "2026-05-04T12:59:27.980Z",
+    "publishedAt": "2026-05-04T13:04:16.000Z"
+  },
+  {
+    "slug": "lake-268305653",
+    "title": "Docker 系统学习",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-04T07:21:32.000Z",
+    "summary": "使用 桌面 化的 docker 实现 开发1. 从仓库拉取：最直接的方式如果官方已经把镜像推到了 Docker Hub 这样的公开镜像仓库，你就不用亲自构建了。操作步骤：打开终端（CMD 或 PowerShell）。执行拉取命令：bashdocker pull :例如：doc...",
+    "category": "JAVA",
+    "createdAt": "2026-05-04T07:21:32.000Z",
+    "updatedAt": "2026-05-04T14:05:42.000Z",
+    "contentUpdatedAt": "2026-05-04T13:48:05.000Z",
+    "firstPublishedAt": "2026-05-04T07:21:45.040Z",
+    "publishedAt": "2026-05-04T14:05:42.000Z"
+  },
+  {
+    "slug": "lake-268286225",
+    "title": "pyenv轻量化创建 python运行环境",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-04T00:34:29.000Z",
+    "summary": "conda 可以创建 多种语言的运行环境 , 不是很建议常使用的命令 : # 1. 查看可安装的 Python 3.11 版本pyenv install --list | findstr \"3.11\"# 2. 安装 Python 3.11.9pyenv install 3.11.9# 3. 查...",
+    "category": "JAVA",
+    "createdAt": "2026-05-04T00:34:29.000Z",
+    "updatedAt": "2026-05-08T01:40:22.000Z",
+    "contentUpdatedAt": "2026-05-08T01:40:21.000Z",
+    "firstPublishedAt": "2026-05-04T00:34:52.356Z",
+    "publishedAt": "2026-05-08T01:40:21.000Z"
+  },
+  {
+    "slug": "lake-268243736",
+    "title": "Linux系统学习",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-05-03T12:57:32.000Z",
+    "summary": "Linux是一套免费使用和自由传播的操作系统。说到操作系统，大家比较熟知的应该就是Windows和MacOS操作系统，我们今天所学习的Linux也是一款操作系统。我们作为javaEE开发工程师，将来在企业中开发时会涉及到很多的数据库、中间件等技术，比如MySQL、Redis、MQ等技术，而这些...",
+    "category": "JAVA",
+    "createdAt": "2026-05-03T12:57:32.000Z",
+    "updatedAt": "2026-05-20T11:20:09.000Z",
+    "contentUpdatedAt": "2026-05-20T11:19:38.000Z",
+    "firstPublishedAt": "2026-05-03T12:57:43.385Z",
+    "publishedAt": "2026-05-20T11:20:09.000Z"
+  },
+  {
+    "slug": "lake-268222043",
+    "title": "Vue 工程化项目完整配置流程",
+    "tags": [
+      "JAVA",
+      "Web前端开发 + AI"
+    ],
+    "date": "2026-05-03T06:20:08.000Z",
+    "summary": "一、项目初始化基础床就按一个 vue 项目; # 1. 创建 Vue 项目（使用 Vite） npm create vue@版本号(3.3.4) 建议创建的时候 保留使用 路由的配置 # 2. 进入项目目录 cd my-project # 3. 安装依赖 npm install # 4. 安装...",
+    "category": "JAVA",
+    "createdAt": "2026-05-03T06:20:08.000Z",
+    "updatedAt": "2026-05-03T07:18:51.000Z",
+    "contentUpdatedAt": "2026-05-03T07:01:58.000Z",
+    "firstPublishedAt": "2026-05-03T06:20:16.241Z",
+    "publishedAt": "2026-05-03T07:01:58.000Z"
+  },
+  {
+    "slug": "lake-268216835",
+    "title": "学习使用 vue工程化开发",
+    "tags": [
+      "JAVA",
+      "Web前端开发 + AI"
+    ],
+    "date": "2026-05-03T04:31:01.000Z",
+    "summary": "页面布局准备工作导入资料中准备的基础工程到VsCode。 【复制出来放在自己的工作目录下】启动前端项目，访问该项目打开浏览器，访问 http://localhost:5173",
+    "category": "JAVA",
+    "createdAt": "2026-05-03T04:31:01.000Z",
+    "updatedAt": "2026-05-03T12:49:37.000Z",
+    "contentUpdatedAt": "2026-05-03T12:02:15.000Z",
+    "firstPublishedAt": "2026-05-03T04:31:24.845Z",
+    "publishedAt": "2026-05-03T12:02:15.000Z"
+  },
+  {
+    "slug": "lake-268149720",
+    "title": "Vue 工程化",
+    "tags": [
+      "JAVA",
+      "Web前端开发 + AI"
+    ],
+    "date": "2026-05-02T06:32:35.000Z",
+    "summary": "Vue工程化前面我们在介绍Vue的时候，我们讲到Vue是一款用于构建用户界面的渐进式JavaScript框架 。（官方：https://cn.vuejs.org/）那在前面的课程中，我们已经学习了Vue的基本语法、表达式、指令，并基于Vue的核心包，完成了Vue的案例。 那今天呢，我们要来讲解...",
+    "category": "JAVA",
+    "createdAt": "2026-05-02T06:32:35.000Z",
+    "updatedAt": "2026-05-06T00:59:33.000Z",
+    "contentUpdatedAt": "2026-05-03T04:15:24.000Z",
+    "firstPublishedAt": "2026-05-02T06:33:03.496Z",
+    "publishedAt": "2026-05-03T04:15:24.000Z"
+  },
+  {
+    "slug": "lake-268138603",
+    "title": "Maven高级",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-05-02T01:55:16.000Z",
+    "summary": "Web开发讲解完毕之后，我们再来学习Maven高级。其实在前面的课程当中，我们已经学习了Maven。我们讲到 Maven 是一款构建和管理 Java 项目的工具。经过前面十几天 web 开发的学习，相信大家对于 Maven 这款工具的基本使用应该没什么问题了。我们掌握了 Maven 工具的基本...",
+    "category": "JAVA",
+    "createdAt": "2026-05-02T01:55:16.000Z",
+    "updatedAt": "2026-05-05T04:22:01.000Z",
+    "contentUpdatedAt": "2026-05-02T06:22:56.000Z",
+    "firstPublishedAt": "2026-05-02T01:55:33.886Z",
+    "publishedAt": "2026-05-02T06:22:56.000Z"
+  },
+  {
+    "slug": "lake-268069712",
+    "title": "SpringBoot原理篇",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-05-01T02:14:23.000Z",
+    "summary": "前面十多天的课程当中，我们学习的都是web开发的技术使用，都是面向应用层面的，我们学会了怎么样去用。而我们今天所要学习的是web后端开发的最后一个篇章springboot原理篇，主要偏向于底层原理。我们今天的课程安排包括这么三个部分：配置优先级Bean的管理剖析Springboot的底层原理配...",
+    "category": "JAVA",
+    "createdAt": "2026-05-01T02:14:23.000Z",
+    "updatedAt": "2026-05-02T01:45:02.000Z",
+    "contentUpdatedAt": "2026-05-02T01:45:00.000Z",
+    "firstPublishedAt": "2026-05-01T02:14:53.704Z",
+    "publishedAt": "2026-05-02T01:45:00.000Z"
+  },
+  {
+    "slug": "lake-267856049",
+    "title": "AOP",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-29T10:10:13.000Z",
+    "summary": "接下来我们进入到AOP的学习。 AOP也是spring框架的第二大核心，我们先来学习AOP的基础。调用切面方法的本质 : 方法调用的时候 , 如果被 AOP 监控 , 会直接作为Proceeding JoinPoint对象 进入创建出的 AOP 方法, 内部调用的 proceed() 完全为原...",
+    "category": "JAVA",
+    "createdAt": "2026-04-29T10:10:13.000Z",
+    "updatedAt": "2026-05-01T02:14:09.000Z",
+    "contentUpdatedAt": "2026-05-01T01:51:36.000Z",
+    "firstPublishedAt": "2026-04-29T10:10:23.718Z",
+    "publishedAt": "2026-05-01T01:51:36.000Z"
+  },
+  {
+    "slug": "lake-267680549",
+    "title": "会话追踪 + Filter + Interceptor",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-28T07:32:55.000Z",
+    "summary": "登录功能需求在登录界面中，我们可以输入用户的用户名以及密码，然后点击 \"登录\" 按钮就要请求服务器，服务端判断用户输入的用户名或者密码是否正确。如果正确，则返回成功结果，前端跳转至系统首页面。接口描述我们参照接口文档中的 其他接口 -&gt; 登录接口",
+    "category": "JAVA",
+    "createdAt": "2026-04-28T07:32:55.000Z",
+    "updatedAt": "2026-04-29T13:17:06.000Z",
+    "contentUpdatedAt": "2026-04-29T13:17:05.000Z",
+    "firstPublishedAt": "2026-04-28T07:33:17.090Z",
+    "publishedAt": "2026-04-29T13:17:05.000Z"
+  },
+  {
+    "slug": "lake-267560790",
+    "title": "SQL文件的上传和储存OSS实战",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-27T12:35:43.000Z",
+    "summary": "文件上传简介文件上传，是指将本地图片、视频、音频等文件上传到服务器，供其他用户浏览或下载的过程。文件上传在项目中应用非常广泛，我们经常发微博、发微信朋友圈都用到了文件上传功能。在我们的案例中，在新增员工的时候，要上传员工的头像，此时就会涉及到文件上传的功能。在进行文件上传时，我们点击加号或者是...",
+    "category": "JAVA",
+    "createdAt": "2026-04-27T12:35:43.000Z",
+    "updatedAt": "2026-05-01T03:27:33.000Z",
+    "contentUpdatedAt": "2026-05-01T03:27:31.000Z",
+    "firstPublishedAt": "2026-04-27T12:47:21.515Z",
+    "publishedAt": "2026-05-01T03:27:31.000Z"
+  },
+  {
+    "slug": "lake-267560361",
+    "title": "SQL事务",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-27T12:32:24.000Z",
+    "summary": "事务问题分析目前我们实现的新增员工功能中，操作了两次数据库，执行了两次 insert 操作。 第一次：保存员工的基本信息到 emp 表中。第二次：保存员工的工作经历信息到 emp_expr 表中。如果说，保存员工的基本信息成功了，而保存员工的工作经历信息出错了，会发生什么现象呢？那接下来，我们...",
+    "category": "JAVA",
+    "createdAt": "2026-04-27T12:32:24.000Z",
+    "updatedAt": "2026-04-27T12:46:33.000Z",
+    "contentUpdatedAt": "2026-04-27T12:46:02.000Z",
+    "firstPublishedAt": "2026-04-27T12:34:31.897Z",
+    "publishedAt": "2026-04-27T12:46:32.000Z"
+  },
+  {
+    "slug": "lake-267266705",
+    "title": "nvm控制node版本",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-04-25T03:00:31.000Z",
+    "summary": "实现 node 控制版本自由 : 本地实现远程控制node版本 :下载 nvm工具 : 安装 nvm-windows下载安装程序访问：",
+    "category": "JAVA",
+    "createdAt": "2026-04-25T03:00:31.000Z",
+    "updatedAt": "2026-05-08T01:48:39.000Z",
+    "contentUpdatedAt": "2026-04-25T03:02:35.000Z",
+    "firstPublishedAt": "2026-04-25T03:01:05.249Z",
+    "publishedAt": "2026-05-08T01:48:38.000Z"
+  },
+  {
+    "slug": "lake-266765616",
+    "title": "SQL/CRUD实战",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-21T09:38:04.000Z",
+    "summary": "总环节最最重要 , 逻辑想不清代码全瞎写 : 请求方式数据在哪运行方向",
+    "category": "JAVA",
+    "createdAt": "2026-04-21T09:38:04.000Z",
+    "updatedAt": "2026-04-28T11:47:34.000Z",
+    "contentUpdatedAt": "2026-04-28T11:47:10.000Z",
+    "firstPublishedAt": "2026-04-21T09:38:26.493Z",
+    "publishedAt": "2026-04-28T11:47:10.000Z"
+  },
+  {
+    "slug": "lake-266418087",
+    "title": "Web项目实操+一些注意事项",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-19T01:21:32.000Z",
+    "summary": "一 : 创建一个idea的空项目 ; 配置JDK; //project structure ; 检查项目创建时候的Maven的路径 : setting --&gt; build -&gt; tools -&gt; Maven : Override 使用系统配置好的路径实现覆盖 ; 修改字符集 : E",
+    "category": "JAVA",
+    "createdAt": "2026-04-19T01:21:32.000Z",
+    "updatedAt": "2026-04-27T12:58:42.000Z",
+    "contentUpdatedAt": "2026-04-24T13:02:05.000Z",
+    "firstPublishedAt": "2026-04-19T01:21:51.775Z",
+    "publishedAt": "2026-04-27T12:58:42.000Z"
+  },
+  {
+    "slug": "lake-266415660",
+    "title": "后端SSM框架入门",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-18T23:49:20.000Z",
+    "summary": "前言前面的课程中，我们已经学习了Web开发的基础知识，包括像Maven、HTTP协议、SpringBootWeb基础、IOC、DI、MySQL、JDBC、Mybatis等。 接下来呢，我们就要进入到后端Web实战篇的学习，在实战篇中，就要将前面学习的基础知识用起来，来完成一个大的综合案例 - ...",
+    "category": "JAVA",
+    "createdAt": "2026-04-18T23:49:20.000Z",
+    "updatedAt": "2026-04-27T12:58:16.000Z",
+    "contentUpdatedAt": "2026-04-24T12:44:50.000Z",
+    "firstPublishedAt": "2026-04-18T23:49:42.195Z",
+    "publishedAt": "2026-04-24T12:44:50.000Z"
+  },
+  {
+    "slug": "lake-266415592",
+    "title": "Web后端基础",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-18T23:45:08.000Z",
+    "summary": "Maven 框架 ; Springboot 中的 Web 框架 ; JavaWeb 中的一些Web基础知识 ; JUnit 白盒测试 ( 后端单元测试 )MySql 数据库 ; JDBC , MyBatis 数据库操作语言",
+    "category": "JAVA",
+    "createdAt": "2026-04-18T23:45:08.000Z",
+    "updatedAt": "2026-04-18T23:49:13.000Z",
+    "contentUpdatedAt": "2026-04-18T23:49:12.000Z",
+    "firstPublishedAt": "2026-04-18T23:47:27.811Z",
+    "publishedAt": "2026-04-18T23:49:12.000Z"
+  },
+  {
+    "slug": "lake-266415401",
+    "title": "Springboot项目配置文件",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-18T23:24:46.000Z",
+    "summary": "SpringBoot配置文件介绍前面我们一直使用springboot项目创建完毕后自带的application.properties进行属性的配置，而如果在项目中，我们需要配置大量的属性，采用properties配置文件这种 key=value 的配置形式，就会显得配置文件的层级结构不清晰，也...",
+    "category": "JAVA",
+    "createdAt": "2026-04-18T23:24:46.000Z",
+    "updatedAt": "2026-05-05T04:20:39.000Z",
+    "contentUpdatedAt": "2026-04-18T23:44:44.000Z",
+    "firstPublishedAt": "2026-04-18T23:25:23.242Z",
+    "publishedAt": "2026-04-18T23:44:44.000Z"
+  },
+  {
+    "slug": "lake-266349387",
+    "title": "Mybatis",
+    "tags": [
+      "JAVA",
+      "数据库"
+    ],
+    "date": "2026-04-18T09:51:09.000Z",
+    "summary": "Mybatis介绍什么是MyBatis?MyBatis是一款优秀的 持久层框架，用于简化JDBC的开发。MyBatis本是 Apache的一个开源项目iBatis，2010年这个项目由apache迁移到了google code，并且改名为MyBatis 。2013年11月迁移到Github。官...",
+    "category": "JAVA",
+    "createdAt": "2026-04-18T09:51:09.000Z",
+    "updatedAt": "2026-04-23T12:31:28.000Z",
+    "contentUpdatedAt": "2026-04-23T12:31:27.000Z",
+    "firstPublishedAt": "2026-04-18T09:51:25.902Z",
+    "publishedAt": "2026-04-23T12:31:27.000Z"
+  },
+  {
+    "slug": "lake-266115025",
+    "title": "JDBC",
+    "tags": [
+      "JAVA",
+      "数据库"
+    ],
+    "date": "2026-04-16T14:20:37.000Z",
+    "summary": "前言在前面我们学习MySQL数据库时，都是利用图形化客户端工具(如：idea、datagrip)，来操作数据库的。我们做为后端程序开发人员，通常会使用Java程序来完成对数据库的操作。Java程序操作数据库的技术呢，有很多啊，而最为底层、最为基础的就是JDBC。JDBC：（Java DataB...",
+    "category": "JAVA",
+    "createdAt": "2026-04-16T14:20:37.000Z",
+    "updatedAt": "2026-04-23T02:43:56.000Z",
+    "contentUpdatedAt": "2026-04-23T02:43:55.000Z",
+    "firstPublishedAt": "2026-04-16T14:20:48.057Z",
+    "publishedAt": "2026-04-23T02:43:55.000Z"
+  },
+  {
+    "slug": "lake-265653699",
+    "title": "SpringBoot Web",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-14T01:21:39.000Z",
+    "summary": "SpringBootWeb入门那接下来呢，我们就要来讲解现在企业开发的主流技术 SpringBoot，并基于SpringBoot进行Web程序的开发 。概述在没有正式的学习SpringBoot之前，我们要先来了解下什么是Spring。我们可以打开Spring的官网(https://spring...",
+    "category": "JAVA",
+    "createdAt": "2026-04-14T01:21:39.000Z",
+    "updatedAt": "2026-04-19T00:40:23.000Z",
+    "contentUpdatedAt": "2026-04-18T12:10:34.000Z",
+    "firstPublishedAt": "2026-04-14T01:21:57.818Z",
+    "publishedAt": "2026-04-18T12:10:34.000Z"
+  },
+  {
+    "slug": "lake-265402503",
+    "title": "反射",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-04-12T08:40:02.000Z",
+    "summary": "注意： 本章节涉及到JVM相关底层原理，难度会有一些大。反射就是把Java类中的各个成分映射成一个个的Java对象。即在运行状态中，对于任意一个类，都能够知道这个类所有的属性和方法，对于任意一个对象，都能调用它的任意一个方法和属性。这种动态获取信息及动态调用对象方法的功能叫Java的反射机制。...",
+    "category": "JAVA",
+    "createdAt": "2026-04-12T08:40:02.000Z",
+    "updatedAt": "2026-04-12T09:04:19.000Z",
+    "contentUpdatedAt": "2026-04-12T08:41:49.000Z",
+    "firstPublishedAt": "2026-04-12T08:41:48.745Z",
+    "publishedAt": "2026-04-12T08:41:49.000Z"
+  },
+  {
+    "slug": "lake-265391187",
+    "title": "测试( JUnit白盒 )",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-12T06:45:57.000Z",
+    "summary": "单元测试介绍测试：是一种用来促进鉴定软件的正确性、完整性、安全性和质量的过程。阶段划分：单元测试、集成测试、系统测试、验收测试。1). 单元测试介绍：对软件的基本组成单位进行测试，最小测试单位。目的：检验软件基本组成单位的正确性。",
+    "category": "JAVA",
+    "createdAt": "2026-04-12T06:45:57.000Z",
+    "updatedAt": "2026-04-26T03:47:06.000Z",
+    "contentUpdatedAt": "2026-04-26T03:47:05.000Z",
+    "firstPublishedAt": "2026-04-12T06:46:10.600Z",
+    "publishedAt": "2026-04-26T03:47:05.000Z"
+  },
+  {
+    "slug": "lake-265079676",
+    "title": "Maven项目管理工具",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-04-09T13:51:04.000Z",
+    "summary": "初始Maven介绍Maven 是一款用于管理和构建Java项目的工具，是Apache旗下的一个开源项目 。Apache 软件基金会，成立于1999年7月，是目前世界上最大的最受欢迎的开源软件基金会，也是一个专门为支持开源项目而生的非盈利性组织。开源项目：https://www.apache.o...",
+    "category": "JAVA",
+    "createdAt": "2026-04-09T13:51:04.000Z",
+    "updatedAt": "2026-04-13T14:23:27.000Z",
+    "contentUpdatedAt": "2026-04-13T14:23:26.000Z",
+    "firstPublishedAt": "2026-04-09T13:51:19.160Z",
+    "publishedAt": "2026-04-13T14:23:26.000Z"
+  },
+  {
+    "slug": "lake-264734450",
+    "title": "Ajax",
+    "tags": [
+      "JAVA",
+      "Web前端开发 + AI"
+    ],
+    "date": "2026-04-07T13:08:12.000Z",
+    "summary": "概述我们前端页面中的数据，如下图所示的表格中的员工信息，应该来自于后台，那么我们的后台和前端是互不影响的2个程序，那么我们前端应该如何从后台获取数据呢？因为是2个程序，所以必须涉及到2个程序的交互，所以这就需要用到我们接下来学习的Ajax技术。Ajax: 全称Asynchronous Java...",
+    "category": "JAVA",
+    "createdAt": "2026-04-07T13:08:12.000Z",
+    "updatedAt": "2026-04-09T13:46:00.000Z",
+    "contentUpdatedAt": "2026-04-09T13:46:00.000Z",
+    "firstPublishedAt": "2026-04-07T13:09:10.017Z",
+    "publishedAt": "2026-04-09T13:46:00.000Z"
+  },
+  {
+    "slug": "lake-264560632",
+    "title": "Vue3",
+    "tags": [
+      "JAVA",
+      "Web前端开发 + AI"
+    ],
+    "date": "2026-04-06T13:25:02.000Z",
+    "summary": "概述Vue（读音 /vjuː /, 类似于 view），是一款用于构建用户界面的渐进式的JavaScript框架（官方网站：https://cn.vuejs.org）。Vue 是一个基于 JavaScript 的声明式 UI 框架。底层 : JS语言编写 ;",
+    "category": "JAVA",
+    "createdAt": "2026-04-06T13:25:02.000Z",
+    "updatedAt": "2026-04-09T14:07:14.000Z",
+    "contentUpdatedAt": "2026-04-09T14:06:26.000Z",
+    "firstPublishedAt": "2026-04-06T13:25:32.759Z",
+    "publishedAt": "2026-04-09T14:06:26.000Z"
+  },
+  {
+    "slug": "lake-264419362",
+    "title": "JavaScript",
+    "tags": [
+      "JAVA",
+      "Web前端开发 + AI"
+    ],
+    "date": "2026-04-05T02:00:30.000Z",
+    "summary": "JavaScript{弱类型语言 , 但大小写敏感}（简称：JS） 是一门跨平台、面向对象的脚本语言，是用来控制网页行为的，实现人机交互效果。JavaScript 和 Java 是完全不同的语言，不论是概念还是设计。但是基础语法类似。组成：ECMAScript: 规定了JS基础语法核心知识，包...",
+    "category": "JAVA",
+    "createdAt": "2026-04-05T02:00:30.000Z",
+    "updatedAt": "2026-05-02T11:46:35.000Z",
+    "contentUpdatedAt": "2026-05-02T11:46:34.000Z",
+    "firstPublishedAt": "2026-04-05T02:00:50.083Z",
+    "publishedAt": "2026-05-02T11:46:34.000Z"
+  },
+  {
+    "slug": "lake-263913914",
+    "title": "Css",
+    "tags": [
+      "JAVA",
+      "Web前端开发 + AI"
+    ],
+    "date": "2026-04-01T06:55:58.000Z",
+    "summary": "在HTML中调用Css 着重掌握在设置class , id 钩子实现使用 CSS 选择器 就行, 具体样式实现 使用 Ai 配置即可; &gt; ; 那在HTML的文件中，我们如何来编写CSS样式呢，此时就涉及到CSS的三种引入方式。具体有3种引入方式，语法如下表...",
+    "category": "JAVA",
+    "createdAt": "2026-04-01T06:55:58.000Z",
+    "updatedAt": "2026-04-09T11:03:38.000Z",
+    "contentUpdatedAt": "2026-04-09T11:03:37.000Z",
+    "firstPublishedAt": "2026-04-01T06:56:10.138Z",
+    "publishedAt": "2026-04-09T11:03:37.000Z"
+  },
+  {
+    "slug": "lake-262368911",
+    "title": "Linux基础学习",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-03-22T12:42:12.000Z",
+    "summary": "基于Docker desktop学习 开启容器 : C:\\Users\\17hwliao&gt;docker start linux-lab进入容器 : C:\\Users\\17hwliao&gt;docker exec -it linux-lab /bin/bash使用SSH远程连接SSH是一种网络协",
+    "category": "JAVA",
+    "createdAt": "2026-03-22T12:42:12.000Z",
+    "updatedAt": "2026-10-14T13:09:04.000Z",
+    "contentUpdatedAt": "2026-05-04T11:25:24.000Z",
+    "firstPublishedAt": "2026-03-22T12:42:25.195Z",
+    "publishedAt": "2026-05-04T11:25:24.000Z"
+  },
+  {
+    "slug": "lake-261991065",
+    "title": "基础语法学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-03-19T09:42:47.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "JAVA",
+    "createdAt": "2026-03-19T09:42:47.000Z",
+    "updatedAt": "2026-03-19T09:42:54.000Z",
+    "contentUpdatedAt": "2026-03-19T09:42:47.000Z",
+    "firstPublishedAt": null,
+    "publishedAt": null
+  },
+  {
+    "slug": "lake-261831422",
+    "title": "实现电脑彻底删除Mysql",
+    "tags": [
+      "JAVA",
+      "数据库"
+    ],
+    "date": "2026-03-18T13:55:15.000Z",
+    "summary": "控制面板删 ; 删 Program Files / x 86 中 Mysql 文件 ; regedit 登记表中 查看 : (1) HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\Eventlog\\Application\\MySQL (2) H...",
+    "category": "JAVA",
+    "createdAt": "2026-03-18T13:55:15.000Z",
+    "updatedAt": "2026-04-16T07:41:03.000Z",
+    "contentUpdatedAt": "2026-03-18T13:59:25.000Z",
+    "firstPublishedAt": "2026-03-18T13:55:31.502Z",
+    "publishedAt": "2026-03-18T13:59:25.000Z"
+  },
+  {
+    "slug": "lake-261817062",
+    "title": "Docker入门",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-03-18T11:50:57.000Z",
+    "summary": "简介使用Linux内核的两大原生功能 : Cgroups : 实现限制和隔离进程的资源使用 , 为容器设置CPU , 内存, 网络等资源的使用上限 , 确保不相互影响 ; Namespaces : 容器只能查看到内部进程ID , 网络相关资源而看不到宿主机 , 容器本身算一种特殊的进程 , 但...",
+    "category": "JAVA",
+    "createdAt": "2026-03-18T11:50:57.000Z",
+    "updatedAt": "2026-10-14T13:08:52.000Z",
+    "contentUpdatedAt": "2026-07-08T06:02:35.000Z",
+    "firstPublishedAt": "2026-03-18T11:52:06.250Z",
+    "publishedAt": "2026-07-08T06:02:35.000Z"
+  },
+  {
+    "slug": "lake-261815625",
+    "title": "必要的相关技术",
+    "tags": [
+      "JAVA"
+    ],
+    "date": "2026-03-18T11:35:55.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "JAVA",
+    "createdAt": "2026-03-18T11:35:55.000Z",
+    "updatedAt": "2026-03-18T11:36:24.000Z",
+    "contentUpdatedAt": "2026-03-18T11:35:55.000Z",
+    "firstPublishedAt": null,
+    "publishedAt": null
+  },
+  {
+    "slug": "lake-261795323",
+    "title": "HTML",
+    "tags": [
+      "JAVA",
+      "Web前端开发 + AI"
+    ],
+    "date": "2026-03-18T09:36:51.000Z",
+    "summary": "前端：我们网站的页面，包括网站的样式、图片、视频等一切用户可见的内容都是前端的内容。后端：处理网站的所有数据来源，比如我们之前从数据库中查询数据，而我们查询的数据经过处理最终会被展示到前端，而用于处理前端数据的工作就是由后端来完成的。相当于，前端仅仅是一层皮，它直接决定了整个网站的美观程度，我...",
+    "category": "JAVA",
+    "createdAt": "2026-03-18T09:36:51.000Z",
+    "updatedAt": "2026-04-09T11:00:52.000Z",
+    "contentUpdatedAt": "2026-04-09T11:00:51.000Z",
+    "firstPublishedAt": "2026-03-18T09:37:07.172Z",
+    "publishedAt": "2026-04-09T11:00:51.000Z"
+  },
+  {
+    "slug": "lake-261637286",
+    "title": "Web前端开发 + AI",
+    "tags": [
+      "JAVA"
+    ],
+    "date": "2026-03-17T13:19:15.000Z",
+    "summary": "浏览器内核可以直接解析前端代码中的渲染部分 ; Web标准也叫网页标准 , 由一系列的标准组成, 大部分由W3C( )负责指定; 三个组成部分 : 开发工具 :",
+    "category": "JAVA",
+    "createdAt": "2026-03-17T13:19:15.000Z",
+    "updatedAt": "2026-04-02T12:54:09.000Z",
+    "contentUpdatedAt": "2026-04-02T12:54:08.000Z",
+    "firstPublishedAt": "2026-03-31T09:18:22.065Z",
+    "publishedAt": "2026-04-02T12:54:08.000Z"
+  },
+  {
+    "slug": "lake-261633623",
+    "title": "Servlet",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2026-03-17T13:03:43.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "JAVA",
+    "createdAt": "2026-03-17T13:03:43.000Z",
+    "updatedAt": "2026-03-17T13:04:33.000Z",
+    "contentUpdatedAt": "2026-03-17T13:04:33.000Z",
+    "firstPublishedAt": "2026-03-17T13:04:33.167Z",
+    "publishedAt": "2026-03-17T13:04:33.000Z"
+  },
+  {
+    "slug": "lake-261448261",
+    "title": "memory",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-03-16T12:32:17.000Z",
+    "summary": "设置最大的数 : 0x3f3f3f3flambda 表达式 : (a , b) -&gt; {return a - b } ; 具体排序规则见下表中汇总 ; \\总结 : 负数 + 0 为假 , 不会换位置 , 正数 为真, 会实现换位 ; C++ 中对数组自定义排序 ; sort(arr.begin",
+    "category": "JAVA",
+    "createdAt": "2026-03-16T12:32:17.000Z",
+    "updatedAt": "2026-03-23T04:04:21.000Z",
+    "contentUpdatedAt": "2026-03-23T04:04:21.000Z",
+    "firstPublishedAt": "2026-03-16T12:34:11.971Z",
+    "publishedAt": "2026-03-23T04:04:21.000Z"
+  },
+  {
+    "slug": "lake-261027910",
+    "title": "数据库",
+    "tags": [
+      "JAVA"
+    ],
+    "date": "2026-03-13T10:56:20.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "JAVA",
+    "createdAt": "2026-03-13T10:56:20.000Z",
+    "updatedAt": "2026-03-13T10:56:30.000Z",
+    "contentUpdatedAt": "2026-03-13T10:56:20.000Z",
+    "firstPublishedAt": null,
+    "publishedAt": null
+  },
+  {
+    "slug": "lake-259857757",
+    "title": "Web后端开发 + AI",
+    "tags": [
+      "JAVA"
+    ],
+    "date": "2026-03-06T14:00:16.000Z",
+    "summary": "必备 基础知识 那在前面讲解Web前端开发的时候，我们学习了前端网页开发的三剑客HTML、CSS、JS，通过这三项技术，我们就可以制作前端页面了。 那最终，这些个页面资料，我们就可以部署在服务器上，然后打开浏览器就可以直接访问服务器上部署的前端页面了。而像HTML、CSS、JS 以及图片、音频...",
+    "category": "JAVA",
+    "createdAt": "2026-03-06T14:00:16.000Z",
+    "updatedAt": "2026-05-02T06:27:42.000Z",
+    "contentUpdatedAt": "2026-05-02T06:27:41.000Z",
+    "firstPublishedAt": "2026-04-09T13:46:44.817Z",
+    "publishedAt": "2026-05-02T06:27:41.000Z"
+  },
+  {
+    "slug": "lake-257118153",
+    "title": "第二十四天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-02-16T02:42:14.000Z",
+    "summary": "多线程进程是程序执行的实体，每一个进程都是一个应用程序（比如我们运行QQ、浏览器、LOL、网易云音乐等软件），都有自己的内存空间，CPU一个核心同时只能处理一件事情，当出现多个进程需要同时运行时，CPU一般通过时间片轮转调度算法，来实现多个进程的同时运行",
+    "category": "JAVA",
+    "createdAt": "2026-02-16T02:42:14.000Z",
+    "updatedAt": "2026-04-12T08:41:14.000Z",
+    "contentUpdatedAt": "2026-04-12T08:41:13.000Z",
+    "firstPublishedAt": "2026-02-16T02:42:31.598Z",
+    "publishedAt": "2026-04-12T08:41:13.000Z"
+  },
+  {
+    "slug": "lake-256588587",
+    "title": "第二十三天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-02-10T02:36:42.000Z",
+    "summary": "转换流读取的是一个字符串或是一个个字符，但是我只能往一个OutputStream里输出，但是OutputStream又只支持byte类型，如果要往里面写入内容，进行数据转换就会很麻烦，那么能否有更加简便的方式来做这样的事情呢？java复制代码public static void main(St...",
+    "category": "JAVA",
+    "createdAt": "2026-02-10T02:36:42.000Z",
+    "updatedAt": "2026-02-27T10:24:30.000Z",
+    "contentUpdatedAt": "2026-02-26T11:07:42.000Z",
+    "firstPublishedAt": "2026-02-10T02:37:00.680Z",
+    "publishedAt": "2026-02-26T11:42:36.000Z"
+  },
+  {
+    "slug": "lake-256292476",
+    "title": "第二十二天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-02-07T02:45:15.000Z",
+    "summary": "文件字符流字符流不同于字节，字符流是以一个具体的字符进行读取，因此它只适合读纯文本的文件，如果是其他类型的文件不适用：java复制代码public static void main(String[] args) { try(FileReader reader = new FileReader(...",
+    "category": "JAVA",
+    "createdAt": "2026-02-07T02:45:15.000Z",
+    "updatedAt": "2026-02-27T10:24:39.000Z",
+    "contentUpdatedAt": "2026-02-07T06:09:40.000Z",
+    "firstPublishedAt": "2026-02-07T02:45:37.850Z",
+    "publishedAt": "2026-02-07T06:09:40.000Z"
+  },
+  {
+    "slug": "lake-256233251",
+    "title": "第二十一天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-02-06T09:33:13.000Z",
+    "summary": "Java I/OI/O简而言之，就是输入输出,读取硬盘上的文件，网络文件传输，鼠标键盘输入，也可以是接受单片机发回的数据，而能够支持这些操作的设备就是I/O设备。常见的I/O设备一般是鼠标、键盘这类通过USB进行传输的外设或者是通过Sata接口或是M.2连接的硬盘。一般情况下，这些设备是由CP...",
+    "category": "JAVA",
+    "createdAt": "2026-02-06T09:33:13.000Z",
+    "updatedAt": "2026-02-07T03:09:48.000Z",
+    "contentUpdatedAt": "2026-02-07T03:03:47.000Z",
+    "firstPublishedAt": "2026-02-06T09:35:21.908Z",
+    "publishedAt": "2026-02-07T03:03:47.000Z"
+  },
+  {
+    "slug": "lake-254956974",
+    "title": "MySql",
+    "tags": [
+      "JAVA",
+      "数据库"
+    ],
+    "date": "2026-01-28T02:03:00.000Z",
+    "summary": "文件I/O来将数据保存到本地数据库专门用于快速查找想要的数据，便捷地插入、修改和删除数据常见的数据库有很多种，包括但不限于：MySQL - 免费，用的最多的，开源数据库，适用于中小型Microsoft SQL Server - 收钱的，但是提供技术支持，适用于Windows ServerOra...",
+    "category": "JAVA",
+    "createdAt": "2026-01-28T02:03:00.000Z",
+    "updatedAt": "2026-05-29T14:30:29.000Z",
+    "contentUpdatedAt": "2026-05-29T14:30:28.000Z",
+    "firstPublishedAt": "2026-01-28T02:03:36.257Z",
+    "publishedAt": "2026-05-29T14:30:28.000Z"
+  },
+  {
+    "slug": "lake-254486275",
+    "title": "练习代码19",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-01-24T08:30:04.000Z",
+    "summary": "import java.io.* ; import java.util.*; import java.util.stream.Collectors; import static java.util.Map.*; public class Main { public static void ma...",
+    "category": "JAVA",
+    "createdAt": "2026-01-24T08:30:04.000Z",
+    "updatedAt": "2026-02-27T08:13:54.000Z",
+    "contentUpdatedAt": "2026-01-24T08:30:23.000Z",
+    "firstPublishedAt": "2026-01-24T08:30:15.644Z",
+    "publishedAt": "2026-01-24T08:30:23.000Z"
+  },
+  {
+    "slug": "lake-254462405",
+    "title": "第二十天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-01-24T02:30:29.000Z",
+    "summary": "集合工厂方法 List fruit = Arrays.asList(\"apple\", \"banana\", \"orange\"",
+    "category": "JAVA",
+    "createdAt": "2026-01-24T02:30:29.000Z",
+    "updatedAt": "2026-01-24T08:30:35.000Z",
+    "contentUpdatedAt": "2026-01-24T08:29:50.000Z",
+    "firstPublishedAt": "2026-01-24T02:30:58.520Z",
+    "publishedAt": "2026-01-24T08:29:50.000Z"
+  },
+  {
+    "slug": "lake-253922479",
+    "title": "练习代码18",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-01-20T07:18:25.000Z",
+    "summary": "import java.io.*; import java.util.*; public class Main { public static void main(String[] args) { Map map = new HashMap&lt;&gt;() ; ma...",
+    "category": "JAVA",
+    "createdAt": "2026-01-20T07:18:25.000Z",
+    "updatedAt": "2026-01-20T07:18:37.000Z",
+    "contentUpdatedAt": "2026-01-20T07:18:36.000Z",
+    "firstPublishedAt": "2026-01-20T07:18:36.441Z",
+    "publishedAt": "2026-01-20T07:18:36.000Z"
+  },
+  {
+    "slug": "lake-253780086",
+    "title": "第十九天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-01-19T08:42:22.000Z",
+    "summary": "Map映射元素之间是两两对应的，是以键值对的形式存在。Map接口 : //Map并不是Collection体系下的接口，而是单独的一个体系，因为操作特殊//这里需要填写两个泛型参数，其中K就是键的类型，V就是值的类型，比如上面的学生信息，ID一般是int，那么键就是Integer类型的，而值就...",
+    "category": "JAVA",
+    "createdAt": "2026-01-19T08:42:22.000Z",
+    "updatedAt": "2026-01-20T07:17:59.000Z",
+    "contentUpdatedAt": "2026-01-20T07:17:58.000Z",
+    "firstPublishedAt": "2026-01-19T08:42:39.291Z",
+    "publishedAt": "2026-01-20T07:17:58.000Z"
+  },
+  {
+    "slug": "lake-253534221",
+    "title": "Git技术学习",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-01-17T09:39:51.000Z",
+    "summary": "Git工作原理 : 大致分为四个板块 : 工作目录 : 存放正在写的代码 ( 开发完成之后 , 实现新版本提交 )暂存区 : 保存待提交内容 ( 新版本提交会存放到本地仓库 )本地仓库 : 位于本地的版本控制仓库( 存放当前项目各个版本之间代码的增删情况 )远程仓库 : 服务器上的版本控制仓库...",
+    "category": "JAVA",
+    "createdAt": "2026-01-17T09:39:51.000Z",
+    "updatedAt": "2026-03-19T10:44:16.000Z",
+    "contentUpdatedAt": "2026-03-19T10:44:15.000Z",
+    "firstPublishedAt": "2026-01-17T09:40:38.121Z",
+    "publishedAt": "2026-03-19T10:44:15.000Z"
+  },
+  {
+    "slug": "lake-253180904",
+    "title": "第十八天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-01-15T01:16:42.000Z",
+    "summary": "栈和队列接口之间的继承关系 : Deque( 双端队列 ) -&gt; Queue( 队列 ) -&gt; Collection -&gt; Iterable ( 实现迭代器的创建方法的接口 ) { 子类 -&gt; 父类 }LinkedList实现的接口 : List Deque...",
+    "category": "JAVA",
+    "createdAt": "2026-01-15T01:16:42.000Z",
+    "updatedAt": "2026-01-15T05:48:01.000Z",
+    "contentUpdatedAt": "2026-01-15T05:47:34.000Z",
+    "firstPublishedAt": "2026-01-15T01:17:05.564Z",
+    "publishedAt": "2026-01-15T05:48:00.000Z"
+  },
+  {
+    "slug": "lake-252910858",
+    "title": "练习代码17",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-01-13T04:05:15.000Z",
+    "summary": "package Today; import java.util.*; import java.util.function.UnaryOperator; public class Main { public static void main(String[] args) { List",
+    "category": "JAVA",
+    "createdAt": "2026-01-13T04:05:15.000Z",
+    "updatedAt": "2026-01-14T22:39:06.000Z",
+    "contentUpdatedAt": "2026-01-13T10:52:00.000Z",
+    "firstPublishedAt": "2026-01-13T04:05:32.370Z",
+    "publishedAt": "2026-01-13T10:52:00.000Z"
+  },
+  {
+    "slug": "lake-252875633",
+    "title": "第十七天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-01-12T23:54:11.000Z",
+    "summary": "集合根接口 : 其他具体实现放十六天的不同集合中去了boolean containsAll( Collection c ) ; //判断所给是否为子集实际使用 : List1.containsAll(List2)default boolean removeIf( Predicate ...",
+    "category": "JAVA",
+    "createdAt": "2026-01-12T23:54:11.000Z",
+    "updatedAt": "2026-01-15T04:28:26.000Z",
+    "contentUpdatedAt": "2026-01-15T04:28:25.000Z",
+    "firstPublishedAt": "2026-01-12T23:54:30.805Z",
+    "publishedAt": "2026-01-15T04:28:25.000Z"
+  },
+  {
+    "slug": "lake-252821909",
+    "title": "练习代码16",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-01-12T11:40:24.000Z",
+    "summary": "package Today.Study.Study; import java.util.ArrayList; public class LinkList { private Node head = new Node(null) ; private int size = 0 ;...",
+    "category": "JAVA",
+    "createdAt": "2026-01-12T11:40:24.000Z",
+    "updatedAt": "2026-01-12T12:19:10.000Z",
+    "contentUpdatedAt": "2026-01-12T11:40:53.000Z",
+    "firstPublishedAt": "2026-01-12T11:40:42.143Z",
+    "publishedAt": "2026-01-12T11:40:53.000Z"
+  },
+  {
+    "slug": "lake-252814972",
+    "title": "第十六天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-01-12T10:17:57.000Z",
+    "summary": "Java实现数组顺序表:ArrayList list = new ArrayList&lt;&gt;(); //内部实现的链表 list.add(0 , \"A\"); //add( 插入位置 , 数据 ) list.addFirst(\"B\"); list.addLast(\"C\"); list...",
+    "category": "JAVA",
+    "createdAt": "2026-01-12T10:17:57.000Z",
+    "updatedAt": "2026-01-13T03:19:41.000Z",
+    "contentUpdatedAt": "2026-01-13T03:19:41.000Z",
+    "firstPublishedAt": "2026-01-12T10:18:42.813Z",
+    "publishedAt": "2026-01-13T03:19:41.000Z"
+  },
+  {
+    "slug": "lake-252003401",
+    "title": "练习代码15",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-01-06T12:02:42.000Z",
+    "summary": "package Today; import java.util.Optional; import java.util.function.Consumer; import java.util.function.Function; import java.util.function.Predica...",
+    "category": "JAVA",
+    "createdAt": "2026-01-06T12:02:42.000Z",
+    "updatedAt": "2026-01-06T12:04:08.000Z",
+    "contentUpdatedAt": "2026-01-06T12:04:07.000Z",
+    "firstPublishedAt": "2026-01-06T12:03:02.449Z",
+    "publishedAt": "2026-01-06T12:04:07.000Z"
+  },
+  {
+    "slug": "lake-251967714",
+    "title": "第十五天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-01-06T08:03:46.000Z",
+    "summary": "函数式接口导包 : import java.util.function.Supplier ;Supplier接口 : 内部方法实现返回需要的类型 ; public void setName(Suppliername){ this.name = name.get() ; } Ma...",
+    "category": "JAVA",
+    "createdAt": "2026-01-06T08:03:46.000Z",
+    "updatedAt": "2026-01-06T11:48:49.000Z",
+    "contentUpdatedAt": "2026-01-06T11:48:48.000Z",
+    "firstPublishedAt": "2026-01-06T08:04:02.436Z",
+    "publishedAt": "2026-01-06T11:48:48.000Z"
+  },
+  {
+    "slug": "lake-251645379",
+    "title": "练习代码14",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-01-04T08:50:41.000Z",
+    "summary": "package Today;public class New_Class{ String name ; int date ; T ws ; New_Class(String name , int date, T ws){ this.name = name ; this.date = da...",
+    "category": "JAVA",
+    "createdAt": "2026-01-04T08:50:41.000Z",
+    "updatedAt": "2026-01-04T08:50:56.000Z",
+    "contentUpdatedAt": "2026-01-04T08:50:56.000Z",
+    "firstPublishedAt": "2026-01-04T08:50:55.733Z",
+    "publishedAt": "2026-01-04T08:50:56.000Z"
+  },
+  {
+    "slug": "lake-251611747",
+    "title": "第十四天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-01-04T06:07:41.000Z",
+    "summary": "泛型方法( 支持静态方法 和 成员方法 )private static T test(T t ){ return t ; } main: tring s = test(\"ws是gay\") ; (创建泛型对象)JDK内部实现的泛型方法数组排序Arrays.sort(arr , new C...",
+    "category": "JAVA",
+    "createdAt": "2026-01-04T06:07:41.000Z",
+    "updatedAt": "2026-01-04T08:48:34.000Z",
+    "contentUpdatedAt": "2026-01-04T08:46:42.000Z",
+    "firstPublishedAt": "2026-01-04T06:11:32.568Z",
+    "publishedAt": "2026-01-04T08:46:42.000Z"
+  },
+  {
+    "slug": "lake-251512301",
+    "title": "练习代码13",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2026-01-03T12:41:55.000Z",
+    "summary": "package Today; public class Today { public static void main(String[] args) { New_class ws0 = new New_class&lt;&gt;(\"ws\", 4, 0); New_class",
+    "category": "JAVA",
+    "createdAt": "2026-01-03T12:41:55.000Z",
+    "updatedAt": "2026-01-03T12:42:29.000Z",
+    "contentUpdatedAt": "2026-01-03T12:42:28.000Z",
+    "firstPublishedAt": "2026-01-03T12:42:19.248Z",
+    "publishedAt": "2026-01-03T12:42:28.000Z"
+  },
+  {
+    "slug": "lake-251508779",
+    "title": "第十三天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2026-01-03T11:50:57.000Z",
+    "summary": "泛型类 ( 类型参数 )Object : 1. 需要强制类型转化 ; 2 . 需要具体场景传参public class New_class { String name ; int date ; T value ; New_class(String name , in...",
+    "category": "JAVA",
+    "createdAt": "2026-01-03T11:50:57.000Z",
+    "updatedAt": "2026-01-03T12:41:52.000Z",
+    "contentUpdatedAt": "2026-01-03T12:39:44.000Z",
+    "firstPublishedAt": "2026-01-03T11:51:18.348Z",
+    "publishedAt": "2026-01-03T12:41:52.000Z"
+  },
+  {
+    "slug": "lake-251062816",
+    "title": "练习代码12",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-30T09:47:10.000Z",
+    "summary": "package Today ; import java.util.*; public class Main{ public static void main(String[]args){ int[] arr = {24,43,65,743,35,34,25,61,1,9} ; Bubble_S...",
+    "category": "JAVA",
+    "createdAt": "2025-12-30T09:47:10.000Z",
+    "updatedAt": "2025-12-30T09:47:36.000Z",
+    "contentUpdatedAt": "2025-12-30T09:47:35.000Z",
+    "firstPublishedAt": "2025-12-30T09:47:34.876Z",
+    "publishedAt": "2025-12-30T09:47:35.000Z"
+  },
+  {
+    "slug": "lake-251035519",
+    "title": "第十二天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-30T07:12:40.000Z",
+    "summary": "代码训练 : toString实现将对象转化为字符串进行输出 ( 在自己建的类中需要重写实现否则无实际意义 [ @1b6d3586 ] , 数组中的Arrays.toString已经重写过可以输出数组全部内容 (直接输出[I@1b6d3586（没意义）) )String s = cin.nex...",
+    "category": "JAVA",
+    "createdAt": "2025-12-30T07:12:40.000Z",
+    "updatedAt": "2025-12-30T13:32:41.000Z",
+    "contentUpdatedAt": "2025-12-30T09:46:23.000Z",
+    "firstPublishedAt": "2025-12-30T07:13:05.195Z",
+    "publishedAt": "2025-12-30T09:46:58.000Z"
+  },
+  {
+    "slug": "lake-250868347",
+    "title": "练习代码11",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-29T06:32:27.000Z",
+    "summary": "package Today; import java.text.* ; import java.time.* ; import java.time.format.DateTimeFormatter; import java.util.* ; public class Main { public...",
+    "category": "JAVA",
+    "createdAt": "2025-12-29T06:32:27.000Z",
+    "updatedAt": "2025-12-29T06:32:40.000Z",
+    "contentUpdatedAt": "2025-12-29T06:32:39.000Z",
+    "firstPublishedAt": "2025-12-29T06:32:38.882Z",
+    "publishedAt": "2025-12-29T06:32:39.000Z"
+  },
+  {
+    "slug": "lake-250830361",
+    "title": "第十一天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-29T02:06:18.000Z",
+    "summary": "新版本的时间类 : LocalDate date = LocalDate.now(); LocalDate date1 = LocalDate.of(2023,12 , 21) ; LocalDate date2 = LocalDate.ofYearDay(2025,365) ; //查讯年的...",
+    "category": "JAVA",
+    "createdAt": "2025-12-29T02:06:18.000Z",
+    "updatedAt": "2026-01-07T01:27:06.000Z",
+    "contentUpdatedAt": "2025-12-29T06:28:01.000Z",
+    "firstPublishedAt": "2025-12-29T02:08:00.471Z",
+    "publishedAt": "2025-12-29T06:32:16.000Z"
+  },
+  {
+    "slug": "lake-250773343",
+    "title": "练习代码10",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-28T13:46:24.000Z",
+    "summary": "package Today; import java.text.* ; import java.time.* ; import java.util.* ; public class Main { public static void main(String[] args) throws Par...",
+    "category": "JAVA",
+    "createdAt": "2025-12-28T13:46:24.000Z",
+    "updatedAt": "2025-12-28T13:52:20.000Z",
+    "contentUpdatedAt": "2025-12-28T13:48:09.000Z",
+    "firstPublishedAt": "2025-12-28T13:48:08.815Z",
+    "publishedAt": "2025-12-28T13:48:09.000Z"
+  },
+  {
+    "slug": "lake-250757996",
+    "title": "第十天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-28T10:24:47.000Z",
+    "summary": "工具类 : 数学工具类 : 通过Math类调用函数 : pow , min , max , abs , sin , cos ; Java重载魅力时刻 : Java 中的 Math.abs() 方法适用于所有数值类型，无论是整数还是小数，正数还是负数。 floor( 向下取整 ) , round...",
+    "category": "JAVA",
+    "createdAt": "2025-12-28T10:24:47.000Z",
+    "updatedAt": "2026-01-31T17:19:10.000Z",
+    "contentUpdatedAt": "2025-12-28T13:44:39.000Z",
+    "firstPublishedAt": "2025-12-28T10:25:17.727Z",
+    "publishedAt": "2025-12-28T13:44:40.000Z"
+  },
+  {
+    "slug": "lake-250664956",
+    "title": "JavaWeb",
+    "tags": [
+      "JAVA",
+      "Web后端开发 + AI"
+    ],
+    "date": "2025-12-27T09:57:03.000Z",
+    "summary": "互联网和网络设备访问互联网 : 只能通过网络运营商( 网络服务供应商,ISP )1.通过SIM卡 , 通过移动设备连接到附近的基站使用网络 , 只要有基站就能使用2.通过办理宽带 , 光纤入户 . 位置固定 , 但连接延迟低很稳定光猫 : 光纤入户的是光信号 -&gt; 电信号 ,网线 -&gt; ",
+    "category": "JAVA",
+    "createdAt": "2025-12-27T09:57:03.000Z",
+    "updatedAt": "2026-03-19T09:33:06.000Z",
+    "contentUpdatedAt": "2026-03-18T09:50:35.000Z",
+    "firstPublishedAt": "2025-12-27T09:57:21.788Z",
+    "publishedAt": "2026-03-18T09:50:35.000Z"
+  },
+  {
+    "slug": "lake-250657667",
+    "title": "练习代码9",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-27T08:19:03.000Z",
+    "summary": "package Today; public class Exercise extends Exception{ public Exercise(String message){ super(message); } }package Today; public class Exercise1 e...",
+    "category": "JAVA",
+    "createdAt": "2025-12-27T08:19:03.000Z",
+    "updatedAt": "2025-12-27T08:20:53.000Z",
+    "contentUpdatedAt": "2025-12-27T08:20:53.000Z",
+    "firstPublishedAt": "2025-12-27T08:19:34.446Z",
+    "publishedAt": "2025-12-27T08:20:53.000Z"
+  },
+  {
+    "slug": "lake-250647562",
+    "title": "第九天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-27T06:19:07.000Z",
+    "summary": "异常在Java中异常已经被封装为类 : 第一种异常 : 运行时异常 : 算数中出现 / 0;对 null 执行 toString() 操作没在类中实现接口但调用方法的第二种异常 : 编译时异常 ( 必须进行手动处理 )第三种异常 : 错误 , 致命的问题 :创建为 Integer . MAX_...",
+    "category": "JAVA",
+    "createdAt": "2025-12-27T06:19:07.000Z",
+    "updatedAt": "2026-01-31T17:18:56.000Z",
+    "contentUpdatedAt": "2025-12-27T08:18:58.000Z",
+    "firstPublishedAt": "2025-12-27T06:19:29.900Z",
+    "publishedAt": "2025-12-27T08:18:58.000Z"
+  },
+  {
+    "slug": "lake-250544881",
+    "title": "练习代码8",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-26T07:56:56.000Z",
+    "summary": "package Today; public interface Add { public int add(int a , int b ) ; }package Today; public class Fulei { String name ; public Fulei(String name)...",
+    "category": "JAVA",
+    "createdAt": "2025-12-26T07:56:56.000Z",
+    "updatedAt": "2025-12-26T07:57:52.000Z",
+    "contentUpdatedAt": "2025-12-26T07:57:50.000Z",
+    "firstPublishedAt": "2025-12-26T07:57:17.278Z",
+    "publishedAt": "2025-12-26T07:57:50.000Z"
+  },
+  {
+    "slug": "lake-250504437",
+    "title": "第八天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-26T02:41:43.000Z",
+    "summary": "内部类在类里创建类 ：内部类 ; 内部类也可以含有成员变量和方法Test s = new Test(); Test.Inner inner = new Test() / s.new Inner() ;内部类可以设置访问权限控制 ( 方法和成员变量 )成员内部类可以访问到外部变量( 外面无法访问...",
+    "category": "JAVA",
+    "createdAt": "2025-12-26T02:41:43.000Z",
+    "updatedAt": "2026-04-12T08:28:49.000Z",
+    "contentUpdatedAt": "2026-04-12T08:28:49.000Z",
+    "firstPublishedAt": "2025-12-26T03:05:39.788Z",
+    "publishedAt": "2026-04-12T08:28:49.000Z"
+  },
+  {
+    "slug": "lake-250445517",
+    "title": "练习代码7",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-25T13:58:23.000Z",
+    "summary": "package Next_day; public class Main { public static void main(String[]args){ String str = \"杰哥\" + \"你干嘛\" ; String str2 = \"汉堡\" ; String str3 = \"坐的\" ; ...",
+    "category": "JAVA",
+    "createdAt": "2025-12-25T13:58:23.000Z",
+    "updatedAt": "2025-12-25T13:59:13.000Z",
+    "contentUpdatedAt": "2025-12-25T13:59:12.000Z",
+    "firstPublishedAt": "2025-12-25T13:58:46.842Z",
+    "publishedAt": "2025-12-25T13:59:12.000Z"
+  },
+  {
+    "slug": "lake-250422242",
+    "title": "第七天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-25T10:02:25.000Z",
+    "summary": "StringBuilder类 : 实现优化String str = \"杰哥\" + \"你干嘛\" ;System.out.println(str + str2 + str3 + str4);实现多个相加内部 : 使用StringBuilder实现 :StringBuilder builder = ...",
+    "category": "JAVA",
+    "createdAt": "2025-12-25T10:02:25.000Z",
+    "updatedAt": "2025-12-26T02:55:38.000Z",
+    "contentUpdatedAt": "2025-12-25T13:46:27.000Z",
+    "firstPublishedAt": "2025-12-25T10:05:00.788Z",
+    "publishedAt": "2025-12-25T13:58:18.000Z"
+  },
+  {
+    "slug": "lake-250231099",
+    "title": "练习代码6",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-24T08:51:49.000Z",
+    "summary": "package io_17hwlioa; import java.math.BigDecimal; import java.math.BigInteger; import java.math.RoundingMode; import java.util.ArrayList; public cl...",
+    "category": "JAVA",
+    "createdAt": "2025-12-24T08:51:49.000Z",
+    "updatedAt": "2025-12-26T07:26:02.000Z",
+    "contentUpdatedAt": "2025-12-24T08:52:19.000Z",
+    "firstPublishedAt": "2025-12-24T08:52:19.478Z",
+    "publishedAt": "2025-12-24T08:52:32.000Z"
+  },
+  {
+    "slug": "lake-250193272",
+    "title": "第六天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-24T05:32:01.000Z",
+    "summary": "面向对象 : 基本类型包装类 : 基本类型 (代表具体数值) != 引用类型 ( 代表对象的引用 )设计了包装类 ：实现将 基本类型 当作 引用类型来用基本类型包装类 : 继承Number : Integer a = Integer.valueOf(222); == ( 自动装箱机制) Int...",
+    "category": "JAVA",
+    "createdAt": "2025-12-24T05:32:01.000Z",
+    "updatedAt": "2026-04-02T02:28:41.000Z",
+    "contentUpdatedAt": "2026-04-02T02:28:40.000Z",
+    "firstPublishedAt": "2025-12-24T05:33:43.322Z",
+    "publishedAt": "2026-04-02T02:28:40.000Z"
+  },
+  {
+    "slug": "lake-250112852",
+    "title": "练习代码5",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-23T13:56:18.000Z",
+    "summary": "package io_17hwlioa; public class Exercise { public static void main(String[] args) throws CloneNotSupportedException { Student s = new Student() ;...",
+    "category": "JAVA",
+    "createdAt": "2025-12-23T13:56:18.000Z",
+    "updatedAt": "2025-12-23T14:04:34.000Z",
+    "contentUpdatedAt": "2025-12-23T13:57:06.000Z",
+    "firstPublishedAt": "2025-12-23T13:56:35.575Z",
+    "publishedAt": "2025-12-23T13:57:06.000Z"
+  },
+  {
+    "slug": "lake-250094167",
+    "title": "第五天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-23T11:38:56.000Z",
+    "summary": "1. Object 是所有类的父类 : 超类public Object object 是一个公有的 Object 类型成员变量声明object = new Object(); 设计一个Object 对象 , 可以实现调用object内部所有函数设计函数传入类型为Object obj 可以在调用...",
+    "category": "JAVA",
+    "createdAt": "2025-12-23T11:38:56.000Z",
+    "updatedAt": "2026-04-12T08:07:27.000Z",
+    "contentUpdatedAt": "2026-04-12T08:07:26.000Z",
+    "firstPublishedAt": "2025-12-23T11:40:04.900Z",
+    "publishedAt": "2026-04-12T08:07:26.000Z"
+  },
+  {
+    "slug": "lake-249922124",
+    "title": "练习代码4",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-22T14:15:09.000Z",
+    "summary": "package io_17hwlioa; public class Exercise { public static void main(String[] args) { Student student = new Student(\"shiqi\" ) ; test( student ) ; s...",
+    "category": "JAVA",
+    "createdAt": "2025-12-22T14:15:09.000Z",
+    "updatedAt": "2025-12-25T14:10:51.000Z",
+    "contentUpdatedAt": "2025-12-22T14:16:47.000Z",
+    "firstPublishedAt": "2025-12-22T14:15:23.519Z",
+    "publishedAt": "2025-12-22T14:16:47.000Z"
+  },
+  {
+    "slug": "lake-249824594",
+    "title": "第四天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-22T02:28:23.000Z",
+    "summary": "Object 类 : object 类 : 所有的类都继承于 object 类( 被省略而已 )每个初建的类的方便函数 继承于 object 类native 方法底层使用C++实现 无法直接在java中调用hashcode 返回int 表示返回对象的内存地址equals 判断( 返回Boole...",
+    "category": "JAVA",
+    "createdAt": "2025-12-22T02:28:23.000Z",
+    "updatedAt": "2026-04-02T02:08:09.000Z",
+    "contentUpdatedAt": "2026-04-02T02:08:09.000Z",
+    "firstPublishedAt": "2025-12-22T11:03:14.727Z",
+    "publishedAt": "2026-04-02T02:08:09.000Z"
+  },
+  {
+    "slug": "lake-249749516",
+    "title": "练习代码3",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-21T09:01:44.000Z",
+    "summary": "package com_java; import java.util.* ; public class Java01 { public static void main(String[] args) { Person p = Person.new_i(); Student s = new St...",
+    "category": "JAVA",
+    "createdAt": "2025-12-21T09:01:44.000Z",
+    "updatedAt": "2026-02-01T00:15:12.000Z",
+    "contentUpdatedAt": "2025-12-21T09:02:17.000Z",
+    "firstPublishedAt": "2025-12-21T09:01:58.161Z",
+    "publishedAt": "2025-12-21T09:02:17.000Z"
+  },
+  {
+    "slug": "lake-249721867",
+    "title": "第三天学习",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-21T02:27:07.000Z",
+    "summary": "类的成员方法 静态方法 : static 创建为属于类的属性 和对象无关 ; static 可以创建静态变量 和 静态方法静态成员（静态变量、静态代码块）在 类加载时 初始化，只执行一次",
+    "category": "JAVA",
+    "createdAt": "2025-12-21T02:27:07.000Z",
+    "updatedAt": "2026-04-12T08:06:42.000Z",
+    "contentUpdatedAt": "2026-04-12T08:06:42.000Z",
+    "firstPublishedAt": "2025-12-21T02:28:19.969Z",
+    "publishedAt": "2026-04-12T08:06:42.000Z"
+  },
+  {
+    "slug": "lake-249668789",
+    "title": "练习代码02",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-20T11:39:10.000Z",
+    "summary": "public class Person { String name ; final int age = 18 ; String gender ; { System.out.println(\"xiao \"); } void add_name(String str){ this.name = st...",
+    "category": "JAVA",
+    "createdAt": "2025-12-20T11:39:10.000Z",
+    "updatedAt": "2026-03-01T03:32:47.000Z",
+    "contentUpdatedAt": "2025-12-21T03:10:53.000Z",
+    "firstPublishedAt": "2025-12-20T14:23:42.463Z",
+    "publishedAt": "2025-12-21T03:10:53.000Z"
+  },
+  {
+    "slug": "lake-249668677",
+    "title": "练习代码01",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-20T11:38:05.000Z",
+    "summary": "public class Person { String name ; int age ; String gender ; int cun1 ; int cun2 ; void say_hello(){ System.out.println(\" \" + name + \" \"+ age + \" ...",
+    "category": "JAVA",
+    "createdAt": "2025-12-20T11:38:05.000Z",
+    "updatedAt": "2025-12-20T11:39:08.000Z",
+    "contentUpdatedAt": "2025-12-20T11:38:30.000Z",
+    "firstPublishedAt": "2025-12-20T11:38:29.675Z",
+    "publishedAt": "2025-12-20T11:39:08.000Z"
+  },
+  {
+    "slug": "lake-249636033",
+    "title": "for(标签) +方法重载 + 类的构造器",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-20T05:24:05.000Z",
+    "summary": "标签 : 可以将类里面的方法使用一个标签全部打包后break + 标签（跳出指定代码区）continue + 标签（跳到指定代码区）outer : 放在外层循环 运用 break outer 可以实现直接跳出外层循环运用 continue",
+    "category": "JAVA",
+    "createdAt": "2025-12-20T05:24:05.000Z",
+    "updatedAt": "2026-04-02T02:18:01.000Z",
+    "contentUpdatedAt": "2025-12-21T02:14:31.000Z",
+    "firstPublishedAt": "2025-12-20T05:24:16.100Z",
+    "publishedAt": "2025-12-21T02:14:31.000Z"
+  },
+  {
+    "slug": "lake-249532183",
+    "title": "练习笔记",
+    "tags": [
+      "JAVA",
+      "必要的相关技术"
+    ],
+    "date": "2025-12-19T07:24:39.000Z",
+    "summary": "原笔记为空白文档，保留原始目录与时间。",
+    "category": "JAVA",
+    "createdAt": "2025-12-19T07:24:39.000Z",
+    "updatedAt": "2025-12-20T11:39:07.000Z",
+    "contentUpdatedAt": "2025-12-20T11:39:06.000Z",
+    "firstPublishedAt": "2025-12-19T11:07:46.295Z",
+    "publishedAt": "2025-12-20T11:39:06.000Z"
+  },
+  {
+    "slug": "lake-249532102",
+    "title": "类+方法(与C++类似值传递语言)",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-19T07:24:13.000Z",
+    "summary": "实现数组排序 : Arrays.sort(numbers); // 实现升序排序Arrays.sort(nums, (a, b) -&gt; b - a); //实现降序排序快捷输出 : sout 直接打印 System.out.println() ; 类1.创建类文件",
+    "category": "JAVA",
+    "createdAt": "2025-12-19T07:24:13.000Z",
+    "updatedAt": "2026-04-02T02:15:50.000Z",
+    "contentUpdatedAt": "2026-04-02T02:11:21.000Z",
+    "firstPublishedAt": "2025-12-19T07:40:30.177Z",
+    "publishedAt": "2026-04-02T02:15:49.000Z"
+  },
+  {
+    "slug": "lake-249531758",
+    "title": "快读板子+基础了解的东西",
+    "tags": [
+      "JAVA",
+      "java学习路线"
+    ],
+    "date": "2025-12-19T07:22:23.000Z",
+    "summary": "---JDK( Java development kit)是JAVA语言的软件开发工具包 ( JVM + 开发工具 + 核心类库) ; 包含JRE( java运行环境 [ JVM + 运行工具] + 核心类库 ) JDK &gt; JRE &gt; JVM ( java virtual machin",
+    "category": "JAVA",
+    "createdAt": "2025-12-19T07:22:23.000Z",
+    "updatedAt": "2026-04-02T02:10:23.000Z",
+    "contentUpdatedAt": "2026-04-02T02:10:23.000Z",
+    "firstPublishedAt": "2025-12-19T07:24:13.847Z",
+    "publishedAt": "2026-04-02T02:10:23.000Z"
+  },
+  {
+    "slug": "lake-249428013",
+    "title": "java学习路线",
+    "tags": [
+      "JAVA"
+    ],
+    "date": "2025-12-18T12:33:49.000Z",
+    "summary": "JAVASE --- 基础篇JAVAWEB --- SSM 框架直接上servlet -- 不需要系统学习jdbc -- mybatis 替换mysql --- 直接就有redis --强度拉满 springcloud 微服务架构 ; -- 正式项目框架 springsecurity 加分(加...",
+    "category": "JAVA",
+    "createdAt": "2025-12-18T12:33:49.000Z",
+    "updatedAt": "2026-08-28T08:18:21.000Z",
+    "contentUpdatedAt": "2026-06-01T09:17:50.000Z",
+    "firstPublishedAt": "2025-12-18T12:35:07.734Z",
+    "publishedAt": "2026-06-01T09:17:50.000Z"
+  }
+]

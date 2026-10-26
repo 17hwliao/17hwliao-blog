@@ -1,0 +1,31 @@
+{
+  "title": "json响应",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-24T03:19:47.000Z",
+  "createdAt": "2026-05-24T03:19:47.000Z",
+  "updatedAt": "2026-07-23T00:50:08.000Z",
+  "contentUpdatedAt": "2026-07-23T00:47:33.000Z",
+  "firstPublishedAt": "2026-05-24T03:20:12.534Z",
+  "publishedAt": "2026-07-23T00:47:33.000Z",
+  "summary": "现在大部分的前后端交互都是以json为主，所以gin中最常用的就是json响应它的用法非常简单外层 http.StatusOK：HTTP 响应状态码",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271097170,
+    "slug": "racz6xbgcgcqql8t",
+    "directory": [
+      "Gin-Web框架",
+      "gin响应",
+      "json响应"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "5bcbc3f9e32bd0d7feab812f3904a37bc028da9b9cef59b516b923b05c293c9d",
+    "missingImageReferences": []
+  }
+}

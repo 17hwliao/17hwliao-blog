@@ -1,0 +1,30 @@
+{
+  "title": "Git技术学习",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-01-17T09:39:51.000Z",
+  "createdAt": "2026-01-17T09:39:51.000Z",
+  "updatedAt": "2026-03-19T10:44:16.000Z",
+  "contentUpdatedAt": "2026-03-19T10:44:15.000Z",
+  "firstPublishedAt": "2026-01-17T09:40:38.121Z",
+  "publishedAt": "2026-03-19T10:44:15.000Z",
+  "summary": "Git工作原理 : 大致分为四个板块 : 工作目录 : 存放正在写的代码 ( 开发完成之后 , 实现新版本提交 )暂存区 : 保存待提交内容 ( 新版本提交会存放到本地仓库 )本地仓库 : 位于本地的版本控制仓库( 存放当前项目各个版本之间代码的增删情况 )远程仓库 : 服务器上的版本控制仓库...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 253534221,
+    "slug": "ar7u34ihs24wgbmg",
+    "directory": [
+      "必要的相关技术",
+      "Git技术学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b30546eac6c96daa54d484cc2b553402fb5950b401a12fbb1411aaaec84af6f0",
+    "missingImageReferences": []
+  }
+}

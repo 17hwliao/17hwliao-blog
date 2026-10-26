@@ -1,0 +1,28 @@
+{
+  "title": "Gin-Web框架",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-24T02:01:45.000Z",
+  "createdAt": "2026-05-24T02:01:45.000Z",
+  "updatedAt": "2026-05-29T14:49:53.000Z",
+  "contentUpdatedAt": "2026-05-24T02:02:08.000Z",
+  "firstPublishedAt": "2026-05-24T02:02:08.471Z",
+  "publishedAt": "2026-05-24T02:02:08.000Z",
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271089987,
+    "slug": "pbrvyshngpgxzs3d",
+    "directory": [
+      "Gin-Web框架"
+    ],
+    "status": 1,
+    "empty": true,
+    "bodySha256": "bb62bb8810c28ad437805462b0b53224ff4f7699826e7d42945cba421ff5ca83",
+    "missingImageReferences": []
+  }
+}

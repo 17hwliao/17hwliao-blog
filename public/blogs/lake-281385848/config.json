@@ -1,0 +1,30 @@
+{
+  "title": "Tool 工具开发",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-14T08:35:22.000Z",
+  "createdAt": "2026-08-14T08:35:22.000Z",
+  "updatedAt": "2026-08-15T16:20:20.000Z",
+  "contentUpdatedAt": "2026-08-15T12:16:41.000Z",
+  "firstPublishedAt": "2026-08-14T09:26:11.180Z",
+  "publishedAt": "2026-08-15T12:16:41.000Z",
+  "summary": "简介- 查询数据库或 API - 读写文件 - 执行计算 - 访问网络资源 - 生成图表 - ...任何你能用代码实现的功能Tool 的工作流程用户输入 → AI 理解意图 → 选择 Tool1 → 执行 Tool1 → 获取结果 → AI 生成回复 ↓ ↓ ↓ \"查天气\" \"weather_...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 281385848,
+    "slug": "vwteb817bs42ga0l",
+    "directory": [
+      "GO-Agent",
+      "Tool 工具开发"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "099bef247742843a3c111d86fe738e3e2d72b37afa18cdf48d1df4365744c2ea",
+    "missingImageReferences": []
+  }
+}

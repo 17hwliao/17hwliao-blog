@@ -1,0 +1,31 @@
+{
+  "title": "RESTful API设计",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-26T13:23:09.000Z",
+  "createdAt": "2026-05-26T13:23:09.000Z",
+  "updatedAt": "2026-05-26T13:31:25.000Z",
+  "contentUpdatedAt": "2026-05-26T13:31:24.000Z",
+  "firstPublishedAt": "2026-05-26T13:23:54.461Z",
+  "publishedAt": "2026-05-26T13:31:24.000Z",
+  "summary": "REST 与 RESTful API 核心概念REST 是一种客户端与 Web 服务器交互的架构风格核心是用 HTTP 协议的 4 个请求方法代表不同操作：GET",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271425514,
+    "slug": "ppd2s9kxz5zfwy3h",
+    "directory": [
+      "Gin-Web框架",
+      "go原生http服务",
+      "RESTful API设计"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "6f93a4face86592234ecabb1e2de62973b8009289824e653fd25d0345b21338b",
+    "missingImageReferences": []
+  }
+}

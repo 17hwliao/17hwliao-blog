@@ -1,0 +1,28 @@
+{
+  "title": "JWT/token签发",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-08-07T12:38:38.000Z",
+  "createdAt": "2026-08-07T12:38:38.000Z",
+  "updatedAt": "2026-10-20T11:59:11.000Z",
+  "contentUpdatedAt": "2026-08-07T12:40:39.000Z",
+  "firstPublishedAt": "2026-08-07T12:39:03.475Z",
+  "publishedAt": "2026-08-07T12:40:39.000Z",
+  "summary": "JWT 鉴权教学文档： Go 项目实战1. JWT 是什么JWT（JSON Web Token）是一种“登录凭证”格式。用户登录成功后，后端不保存传统 Session，而是签发一个 Token 给客户端。之后客户端访问需要登录的接口时，把 Token 放进请求头；后端验证 Token 合法后，...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 280553411,
+    "slug": "bmg3xa05yttgzotv",
+    "directory": [
+      "JWT/token签发"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3231e725a5d4c1fe8033a7c05f4f07a8eedde26ade3d4e922de201010898767b",
+    "missingImageReferences": []
+  }
+}

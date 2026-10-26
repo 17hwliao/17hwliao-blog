@@ -1,0 +1,31 @@
+{
+  "title": "练习代码15",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-01-06T12:02:42.000Z",
+  "createdAt": "2026-01-06T12:02:42.000Z",
+  "updatedAt": "2026-01-06T12:04:08.000Z",
+  "contentUpdatedAt": "2026-01-06T12:04:07.000Z",
+  "firstPublishedAt": "2026-01-06T12:03:02.449Z",
+  "publishedAt": "2026-01-06T12:04:07.000Z",
+  "summary": "package Today; import java.util.Optional; import java.util.function.Consumer; import java.util.function.Function; import java.util.function.Predica...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 252003401,
+    "slug": "uuzuoukfg8eysaap",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码15"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "46cdb29ac334921698f0c1c7b0d6ea80e8f779b68854b0e26033be16bcd73f3e",
+    "missingImageReferences": []
+  }
+}

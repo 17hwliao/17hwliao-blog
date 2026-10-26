@@ -1,0 +1,30 @@
+{
+  "title": "实际项目",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-07-24T09:25:24.000Z",
+  "createdAt": "2026-07-24T09:25:24.000Z",
+  "updatedAt": "2026-09-26T13:47:26.000Z",
+  "contentUpdatedAt": "2026-07-31T06:59:29.000Z",
+  "firstPublishedAt": "2026-07-24T09:34:01.131Z",
+  "publishedAt": "2026-07-31T06:59:29.000Z",
+  "summary": "创建路由 : 在 main 中创建 一个实例对象 : func New(healthHandler *handler.HealthHandler) *gin.Engine { r := gin.New() // 创建一个空白的 Engine（路由引擎） // 对比：gin.Default() ...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 278884157,
+    "slug": "ehd4srhyitb7gx7m",
+    "directory": [
+      "Gin-Web框架",
+      "实际项目"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "6c17366e254fa9cd07056487e789634f177c6bbdcef17135e88d2cd7537d2ff6",
+    "missingImageReferences": []
+  }
+}

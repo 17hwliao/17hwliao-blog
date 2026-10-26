@@ -1,0 +1,30 @@
+{
+  "title": "悲观锁",
+  "tags": [
+    "Goland",
+    "PgSQL"
+  ],
+  "date": "2026-08-04T06:46:29.000Z",
+  "createdAt": "2026-08-04T06:46:29.000Z",
+  "updatedAt": "2026-08-07T10:49:26.000Z",
+  "contentUpdatedAt": "2026-08-07T10:48:57.000Z",
+  "firstPublishedAt": "2026-08-04T06:47:32.246Z",
+  "publishedAt": "2026-08-07T10:48:57.000Z",
+  "summary": "postgreSQL 中特有的操作 : 使用 GROM 实现给 SQL 加 for update ; 在 postgreSQL 中实现的 加锁 是事务级的锁 :在事务提交之后会自动实现释放锁 ; 实现的加锁是行级别的加锁 ; db.Clauses(clause.Locking{Strength...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 280134305,
+    "slug": "wbchtrpq9b05qkdp",
+    "directory": [
+      "PgSQL",
+      "悲观锁"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "956c6f99483c1b5e070d102c04f184fbd7038c0f4450fbee56bf34efa1ddc742",
+    "missingImageReferences": []
+  }
+}

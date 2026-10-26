@@ -1,0 +1,28 @@
+{
+  "title": "Context",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-07-15T01:34:53.000Z",
+  "createdAt": "2026-07-15T01:34:53.000Z",
+  "updatedAt": "2026-07-15T06:20:03.000Z",
+  "contentUpdatedAt": "2026-07-15T03:44:23.000Z",
+  "firstPublishedAt": "2026-07-15T02:06:48.990Z",
+  "publishedAt": "2026-07-15T03:44:23.000Z",
+  "summary": "在go语言中 , Context是实现不同的goroutine 之间传递请求域的相关的数据实现控制 goroutine 的生命周期和取消操作 ; 常见的方法; type Context interface { Deadline() (deadline time.Time, ok bool) D...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 277672905,
+    "slug": "cf9gdyro4rpm0rgn",
+    "directory": [
+      "Context"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "8bd8dd4a2a27cfbe01e2851ba9ebbab5b2816a21adb4313e5d78e1d90bd15227",
+    "missingImageReferences": []
+  }
+}

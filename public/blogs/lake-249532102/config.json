@@ -1,0 +1,31 @@
+{
+  "title": "类+方法(与C++类似值传递语言)",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-19T07:24:13.000Z",
+  "createdAt": "2025-12-19T07:24:13.000Z",
+  "updatedAt": "2026-04-02T02:15:50.000Z",
+  "contentUpdatedAt": "2026-04-02T02:11:21.000Z",
+  "firstPublishedAt": "2025-12-19T07:40:30.177Z",
+  "publishedAt": "2026-04-02T02:15:49.000Z",
+  "summary": "实现数组排序 : Arrays.sort(numbers); // 实现升序排序Arrays.sort(nums, (a, b) -&gt; b - a); //实现降序排序快捷输出 : sout 直接打印 System.out.println() ; 类1.创建类文件",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249532102,
+    "slug": "rg66s6g6ngvas6ec",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "类+方法(与C++类似值传递语言)"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3f763a207f8ba32eed0b19e1e99f1072981333332bc94c5268f120aa27a4566f",
+    "missingImageReferences": []
+  }
+}

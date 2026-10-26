@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/17hwliao/sql-sentinel",
+  "branch": "master",
+  "revision": "9c5807796663ac1a8d77c3b1d80108db60f88e38",
+  "readmePath": "README.md",
+  "logoPath": "docs/assets/readme-mark.svg",
+  "fork": false,
+  "parent": null,
+  "license": "未指定",
+  "importedAt": "2026-10-26"
+}

@@ -1,0 +1,30 @@
+{
+  "title": "网络编程",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-15T06:38:30.000Z",
+  "createdAt": "2026-05-15T06:38:30.000Z",
+  "updatedAt": "2026-05-19T09:55:10.000Z",
+  "contentUpdatedAt": "2026-05-15T06:47:11.000Z",
+  "firstPublishedAt": "2026-05-15T06:38:46.565Z",
+  "publishedAt": "2026-05-15T06:47:11.000Z",
+  "summary": "TCP传输控制协议（TCP，Transmission Control Protocol）是一种面向连接的、可靠的、基于字节流的传输层通信协议如何保证连接可靠呢？（面试常考题）三次握手四次挥手服务端",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269918205,
+    "slug": "fnzyin7rbpr3bay0",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "网络编程"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "e6c615630eb8a9d5274a30959e1905185044bd1f439084a8331d1c6f99ec4108",
+    "missingImageReferences": []
+  }
+}

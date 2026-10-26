@@ -1,0 +1,31 @@
+{
+  "title": "第九天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-27T06:19:07.000Z",
+  "createdAt": "2025-12-27T06:19:07.000Z",
+  "updatedAt": "2026-01-31T17:18:56.000Z",
+  "contentUpdatedAt": "2025-12-27T08:18:58.000Z",
+  "firstPublishedAt": "2025-12-27T06:19:29.900Z",
+  "publishedAt": "2025-12-27T08:18:58.000Z",
+  "summary": "异常在Java中异常已经被封装为类 : 第一种异常 : 运行时异常 : 算数中出现 / 0;对 null 执行 toString() 操作没在类中实现接口但调用方法的第二种异常 : 编译时异常 ( 必须进行手动处理 )第三种异常 : 错误 , 致命的问题 :创建为 Integer . MAX_...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250647562,
+    "slug": "eiv6ebnhg8whz1gy",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第九天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "4c42ec4fa73973ac94539e675638daa5802191074b276a9bb2137ecb34a0ab92",
+    "missingImageReferences": []
+  }
+}

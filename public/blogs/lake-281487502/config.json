@@ -1,0 +1,30 @@
+{
+  "title": "React Agent 智能代理",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-15T12:18:14.000Z",
+  "createdAt": "2026-08-15T12:18:14.000Z",
+  "updatedAt": "2026-08-18T08:42:00.000Z",
+  "contentUpdatedAt": "2026-08-18T08:42:00.000Z",
+  "firstPublishedAt": "2026-08-15T12:18:42.638Z",
+  "publishedAt": "2026-08-18T08:42:00.000Z",
+  "summary": "简介React Agent 是一种能够推理（Reasoning）和行动（Acting）循环的智能代理。它能够：1. 🟢 理解用户的意图 2. 🔍 规划需要使用哪些工具 3. ⚙️ 执行工具调用 4. 📊 分析工具返回的结果 5. 💡 生成最终答复React 循环流程用户输入 ↓ [思考...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 281487502,
+    "slug": "rgag556u163nok0v",
+    "directory": [
+      "GO-Agent",
+      "React Agent 智能代理"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "49eafc71641467836a60ad72c0ab476ce7e2a810c71cde0ad82ede30df4e5595",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "title": "JDBC",
+  "tags": [
+    "JAVA",
+    "数据库"
+  ],
+  "date": "2026-04-16T14:20:37.000Z",
+  "createdAt": "2026-04-16T14:20:37.000Z",
+  "updatedAt": "2026-04-23T02:43:56.000Z",
+  "contentUpdatedAt": "2026-04-23T02:43:55.000Z",
+  "firstPublishedAt": "2026-04-16T14:20:48.057Z",
+  "publishedAt": "2026-04-23T02:43:55.000Z",
+  "summary": "前言在前面我们学习MySQL数据库时，都是利用图形化客户端工具(如：idea、datagrip)，来操作数据库的。我们做为后端程序开发人员，通常会使用Java程序来完成对数据库的操作。Java程序操作数据库的技术呢，有很多啊，而最为底层、最为基础的就是JDBC。JDBC：（Java DataB...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 266115025,
+    "slug": "uaud4r5hcazi6u7g",
+    "directory": [
+      "数据库",
+      "JDBC"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "976fcd67eb14782eb9898508c3317003dfd857f754a636cfc4f1336ea75fab7b",
+    "missingImageReferences": []
+  }
+}

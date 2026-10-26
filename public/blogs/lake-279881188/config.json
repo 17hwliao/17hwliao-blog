@@ -1,0 +1,28 @@
+{
+  "title": "测试",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-08-02T12:44:23.000Z",
+  "createdAt": "2026-08-02T12:44:23.000Z",
+  "updatedAt": "2026-08-02T12:46:01.000Z",
+  "contentUpdatedAt": "2026-08-02T12:45:00.000Z",
+  "firstPublishedAt": "2026-08-02T12:44:59.537Z",
+  "publishedAt": "2026-08-02T12:45:00.000Z",
+  "summary": "Go 测试基础：文件命名logger/logger.go → 源代码logger/logger_test.go → 测试文件测试函数命名func TestXxx(t *testing.T) { // 测试逻辑}必须以 Test 开头参数必须是 *testing.T运行测试go test ./l...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 279881188,
+    "slug": "smhgeht55en2s19u",
+    "directory": [
+      "测试"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "6f491524d785f0dbf6e37298a56560b32cf979cc431b6aabf7146cdd47a14953",
+    "missingImageReferences": []
+  }
+}

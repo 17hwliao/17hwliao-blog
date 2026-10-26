@@ -1,0 +1,31 @@
+{
+  "title": "第七天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-25T10:02:25.000Z",
+  "createdAt": "2025-12-25T10:02:25.000Z",
+  "updatedAt": "2025-12-26T02:55:38.000Z",
+  "contentUpdatedAt": "2025-12-25T13:46:27.000Z",
+  "firstPublishedAt": "2025-12-25T10:05:00.788Z",
+  "publishedAt": "2025-12-25T13:58:18.000Z",
+  "summary": "StringBuilder类 : 实现优化String str = \"杰哥\" + \"你干嘛\" ;System.out.println(str + str2 + str3 + str4);实现多个相加内部 : 使用StringBuilder实现 :StringBuilder builder = ...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250422242,
+    "slug": "nuny5kckvsd3wq5e",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第七天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "9b0d4ca4a16a5a6bb6c3637716c7d4b43c8d5fa658f7a6aaf16b24573d8b0f7d",
+    "missingImageReferences": []
+  }
+}

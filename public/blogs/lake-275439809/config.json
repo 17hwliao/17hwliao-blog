@@ -1,0 +1,28 @@
+{
+  "title": "go语言集成redis",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-06-27T08:38:35.000Z",
+  "createdAt": "2026-06-27T08:38:35.000Z",
+  "updatedAt": "2026-06-27T08:39:25.000Z",
+  "contentUpdatedAt": "2026-06-27T08:39:24.000Z",
+  "firstPublishedAt": "2026-06-27T08:39:24.462Z",
+  "publishedAt": "2026-06-27T08:39:24.000Z",
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275439809,
+    "slug": "hd314k0zvadd7dg4",
+    "directory": [
+      "go语言集成redis"
+    ],
+    "status": 1,
+    "empty": true,
+    "bodySha256": "5b6e8a0db12a6f7c3dfee4911e786837e450f4583bd5cbc2d3636cb8e1d13a39",
+    "missingImageReferences": []
+  }
+}

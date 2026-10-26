@@ -1,0 +1,16 @@
+17hwliao Blog
+Copyright (c) 2026 17hwliao
+
+The blog application and modifications are distributed under the GNU General
+Public License, version 3 only (SPDX-License-Identifier: GPL-3.0-only).
+See LICENSE for the full license text.
+
+This distribution includes code originally licensed under the MIT License.
+Its copyright and permission notice is preserved in LICENSES/MIT.txt.
+Those portions retain their original MIT license terms.
+
+Articles, photographs, music, project README snapshots, logos and other content
+assets are not relicensed by the source-code license. Their respective rights
+and license terms continue to apply. Project snapshot metadata is recorded in
+src/content/projects/*/source.json. Third-party dependencies retain their own
+license terms.

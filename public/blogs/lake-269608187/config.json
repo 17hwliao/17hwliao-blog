@@ -1,0 +1,30 @@
+{
+  "title": "异常处理",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-13T07:07:45.000Z",
+  "createdAt": "2026-05-13T07:07:45.000Z",
+  "updatedAt": "2026-06-01T14:41:58.000Z",
+  "contentUpdatedAt": "2026-05-13T10:06:19.000Z",
+  "firstPublishedAt": "2026-05-13T07:08:06.324Z",
+  "publishedAt": "2026-05-13T10:06:19.000Z",
+  "summary": "go的异常处理可能是这门语言唯一的一个诟病了吧由于go语言没有捕获异常的机制，导致每调一个函数都要接一下这个函数的error网上有个梗，叫做error是go的一等公民常见的异常处理向上抛将错误交给上一级处理一层调用接着一层调用 , 一层一层实现上抛异常处理异常",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269608187,
+    "slug": "ax8onymv7dgl6n9x",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "异常处理"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "321c6c8357151a3fc672226b6ced8877ec4e00ea0b270b0ee743c8dfbab52510",
+    "missingImageReferences": []
+  }
+}

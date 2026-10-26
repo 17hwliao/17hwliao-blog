@@ -1,0 +1,30 @@
+{
+  "title": "Maven高级",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-05-02T01:55:16.000Z",
+  "createdAt": "2026-05-02T01:55:16.000Z",
+  "updatedAt": "2026-05-05T04:22:01.000Z",
+  "contentUpdatedAt": "2026-05-02T06:22:56.000Z",
+  "firstPublishedAt": "2026-05-02T01:55:33.886Z",
+  "publishedAt": "2026-05-02T06:22:56.000Z",
+  "summary": "Web开发讲解完毕之后，我们再来学习Maven高级。其实在前面的课程当中，我们已经学习了Maven。我们讲到 Maven 是一款构建和管理 Java 项目的工具。经过前面十几天 web 开发的学习，相信大家对于 Maven 这款工具的基本使用应该没什么问题了。我们掌握了 Maven 工具的基本...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268138603,
+    "slug": "lh6618qkn3ht0ev8",
+    "directory": [
+      "Web后端开发 + AI",
+      "Maven高级"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "c86468748151f7ec36534f3a17c48a0e7d184325e614c8560e17c4586c1001b6",
+    "missingImageReferences": []
+  }
+}

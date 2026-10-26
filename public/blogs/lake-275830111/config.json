@@ -1,0 +1,30 @@
+{
+  "title": "Etcd",
+  "tags": [
+    "Goland",
+    "GO-zero"
+  ],
+  "date": "2026-06-30T08:45:46.000Z",
+  "createdAt": "2026-06-30T08:45:46.000Z",
+  "updatedAt": "2026-06-30T09:22:14.000Z",
+  "contentUpdatedAt": "2026-06-30T09:14:56.000Z",
+  "firstPublishedAt": "2026-06-30T08:49:36.668Z",
+  "publishedAt": "2026-06-30T09:14:56.000Z",
+  "summary": "Etcd是一个高可用的分布式键值存储系统，主要用于共享配置信息和服务发现。它采用Raft一致性算法来保证数据的强一致性，并且支持对数据进行监视和更新为什么要用etcd主要是用于微服务的配置中心，服务发现0在对外api这个应用里面，怎么知道order服务的rpc地址呢？",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275830111,
+    "slug": "qx7ni2m1uqpvvbd9",
+    "directory": [
+      "GO-zero",
+      "Etcd"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "023f7dbc4968b423d69bbf81bb7affe33432d15849b0b22331a753e91313a34a",
+    "missingImageReferences": []
+  }
+}

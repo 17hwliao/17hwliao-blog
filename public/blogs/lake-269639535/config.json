@@ -1,0 +1,30 @@
+{
+  "title": "文件操作",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-13T09:50:13.000Z",
+  "createdAt": "2026-05-13T09:50:13.000Z",
+  "updatedAt": "2026-06-26T13:35:52.000Z",
+  "contentUpdatedAt": "2026-06-26T13:35:51.000Z",
+  "firstPublishedAt": "2026-05-13T09:50:20.947Z",
+  "publishedAt": "2026-06-26T13:35:51.000Z",
+  "summary": "文件读取一次性读取. 核心区别总结（超级清晰）表格方式",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269639535,
+    "slug": "bdq4yqy6s7pg36u8",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "文件操作"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "9c4583ef46bc437fde73a98f59facac5759825416948c2e8614281b0f5348637",
+    "missingImageReferences": []
+  }
+}

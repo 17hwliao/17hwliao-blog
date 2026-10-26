@@ -1,0 +1,30 @@
+{
+  "title": "表结构",
+  "tags": [
+    "Goland",
+    "GORM"
+  ],
+  "date": "2026-06-16T14:15:29.000Z",
+  "createdAt": "2026-06-16T14:15:29.000Z",
+  "updatedAt": "2026-06-21T14:00:02.000Z",
+  "contentUpdatedAt": "2026-06-21T13:59:38.000Z",
+  "firstPublishedAt": "2026-06-16T14:17:44.473Z",
+  "publishedAt": "2026-06-21T14:00:02.000Z",
+  "summary": "xuexi在学习mysql多表关系的时候我们都知道有一对一关系，一对多关系，多对多关系我们不按照gorm的BelongsTo和Has Many去理解",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 274158928,
+    "slug": "wpfsksxw7fy3v9y9",
+    "directory": [
+      "GORM",
+      "表结构"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "6cf465d984703b6976506f06cd8f1f693794b51f45add220e54ec8fc607b9593",
+    "missingImageReferences": []
+  }
+}

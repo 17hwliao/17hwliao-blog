@@ -1,0 +1,30 @@
+{
+  "title": "会话追踪 + Filter + Interceptor",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-28T07:32:55.000Z",
+  "createdAt": "2026-04-28T07:32:55.000Z",
+  "updatedAt": "2026-04-29T13:17:06.000Z",
+  "contentUpdatedAt": "2026-04-29T13:17:05.000Z",
+  "firstPublishedAt": "2026-04-28T07:33:17.090Z",
+  "publishedAt": "2026-04-29T13:17:05.000Z",
+  "summary": "登录功能需求在登录界面中，我们可以输入用户的用户名以及密码，然后点击 \"登录\" 按钮就要请求服务器，服务端判断用户输入的用户名或者密码是否正确。如果正确，则返回成功结果，前端跳转至系统首页面。接口描述我们参照接口文档中的 其他接口 -&gt; 登录接口",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 267680549,
+    "slug": "phue5iveb7eif9mg",
+    "directory": [
+      "Web后端开发 + AI",
+      "会话追踪 + Filter + Interceptor"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "87c53a100e2f0f89662b1ebb5271a2f42c9be002400689bbe2999c262ea19319",
+    "missingImageReferences": []
+  }
+}

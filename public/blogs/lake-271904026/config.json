@@ -1,0 +1,31 @@
+{
+  "title": "binding 内置规则",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-30T05:15:39.000Z",
+  "createdAt": "2026-05-30T05:15:39.000Z",
+  "updatedAt": "2026-08-02T10:16:30.000Z",
+  "contentUpdatedAt": "2026-08-02T10:13:27.000Z",
+  "firstPublishedAt": "2026-05-30T05:16:57.604Z",
+  "publishedAt": "2026-08-02T10:13:27.000Z",
+  "summary": "如果有多个规则，使用逗号分隔 binding:\"required\",\"min=2\" ; Go复制代码// 不能为空，并且不能没有这个字段 required： 必填字段，如：binding:\"required\" // 针对字符串的长度 min 最小长度，如：binding:\"min=5\" max...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271904026,
+    "slug": "fmy0y36ff0k2rlzz",
+    "directory": [
+      "Gin-Web框架",
+      "bind 绑定器",
+      "binding 内置规则"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "18a38d42890c6de57796bab0aa46736f159befba77ec026638f8ccd94cc22b27",
+    "missingImageReferences": []
+  }
+}

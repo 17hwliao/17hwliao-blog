@@ -1,0 +1,28 @@
+{
+  "title": "Web前端开发 + AI",
+  "tags": [
+    "JAVA"
+  ],
+  "date": "2026-03-17T13:19:15.000Z",
+  "createdAt": "2026-03-17T13:19:15.000Z",
+  "updatedAt": "2026-04-02T12:54:09.000Z",
+  "contentUpdatedAt": "2026-04-02T12:54:08.000Z",
+  "firstPublishedAt": "2026-03-31T09:18:22.065Z",
+  "publishedAt": "2026-04-02T12:54:08.000Z",
+  "summary": "浏览器内核可以直接解析前端代码中的渲染部分 ; Web标准也叫网页标准 , 由一系列的标准组成, 大部分由W3C( )负责指定; 三个组成部分 : 开发工具 :",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 261637286,
+    "slug": "aly9zxvq1dww3sp9",
+    "directory": [
+      "Web前端开发 + AI"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "d0413412b311fda7db281782f5440ab5689833b99cfb0ed0aacff08cdeca9038",
+    "missingImageReferences": []
+  }
+}

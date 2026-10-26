@@ -1,0 +1,31 @@
+{
+  "title": "第二十三天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-02-10T02:36:42.000Z",
+  "createdAt": "2026-02-10T02:36:42.000Z",
+  "updatedAt": "2026-02-27T10:24:30.000Z",
+  "contentUpdatedAt": "2026-02-26T11:07:42.000Z",
+  "firstPublishedAt": "2026-02-10T02:37:00.680Z",
+  "publishedAt": "2026-02-26T11:42:36.000Z",
+  "summary": "转换流读取的是一个字符串或是一个个字符，但是我只能往一个OutputStream里输出，但是OutputStream又只支持byte类型，如果要往里面写入内容，进行数据转换就会很麻烦，那么能否有更加简便的方式来做这样的事情呢？java复制代码public static void main(St...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 256588587,
+    "slug": "dmhbqzf20rr0o7m2",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第二十三天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "d49683784a5563708d278676a53157e7d16bd7a494c3d359bf024d64cf1d26a3",
+    "missingImageReferences": []
+  }
+}

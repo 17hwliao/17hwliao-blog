@@ -1,0 +1,30 @@
+{
+  "title": "nvm控制node版本",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-04-25T03:00:31.000Z",
+  "createdAt": "2026-04-25T03:00:31.000Z",
+  "updatedAt": "2026-05-08T01:48:39.000Z",
+  "contentUpdatedAt": "2026-04-25T03:02:35.000Z",
+  "firstPublishedAt": "2026-04-25T03:01:05.249Z",
+  "publishedAt": "2026-05-08T01:48:38.000Z",
+  "summary": "实现 node 控制版本自由 : 本地实现远程控制node版本 :下载 nvm工具 : 安装 nvm-windows下载安装程序访问：",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 267266705,
+    "slug": "pmznvgcc5ccxv3t4",
+    "directory": [
+      "必要的相关技术",
+      "nvm控制node版本"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "dfeffb5ae8a97edab410938b9f453bf5c88e82900257b3eee257662d10dff0da",
+    "missingImageReferences": []
+  }
+}

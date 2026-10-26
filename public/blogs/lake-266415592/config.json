@@ -1,0 +1,30 @@
+{
+  "title": "Web后端基础",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-18T23:45:08.000Z",
+  "createdAt": "2026-04-18T23:45:08.000Z",
+  "updatedAt": "2026-04-18T23:49:13.000Z",
+  "contentUpdatedAt": "2026-04-18T23:49:12.000Z",
+  "firstPublishedAt": "2026-04-18T23:47:27.811Z",
+  "publishedAt": "2026-04-18T23:49:12.000Z",
+  "summary": "Maven 框架 ; Springboot 中的 Web 框架 ; JavaWeb 中的一些Web基础知识 ; JUnit 白盒测试 ( 后端单元测试 )MySql 数据库 ; JDBC , MyBatis 数据库操作语言",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 266415592,
+    "slug": "gseipty3gl48v25s",
+    "directory": [
+      "Web后端开发 + AI",
+      "Web后端基础"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "940e08d1ea9e0f75a77f1b1bc1d0ad3e9f969e2653b1d43d17dc1fecab3ccd4a",
+    "missingImageReferences": []
+  }
+}

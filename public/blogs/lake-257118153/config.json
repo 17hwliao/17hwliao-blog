@@ -1,0 +1,31 @@
+{
+  "title": "第二十四天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-02-16T02:42:14.000Z",
+  "createdAt": "2026-02-16T02:42:14.000Z",
+  "updatedAt": "2026-04-12T08:41:14.000Z",
+  "contentUpdatedAt": "2026-04-12T08:41:13.000Z",
+  "firstPublishedAt": "2026-02-16T02:42:31.598Z",
+  "publishedAt": "2026-04-12T08:41:13.000Z",
+  "summary": "多线程进程是程序执行的实体，每一个进程都是一个应用程序（比如我们运行QQ、浏览器、LOL、网易云音乐等软件），都有自己的内存空间，CPU一个核心同时只能处理一件事情，当出现多个进程需要同时运行时，CPU一般通过时间片轮转调度算法，来实现多个进程的同时运行",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 257118153,
+    "slug": "iau1g9paaq25tpm6",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第二十四天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "21603d44fa8fb993122f0ac699014e75c2006357f3663cfc7636089111ec9946",
+    "missingImageReferences": []
+  }
+}

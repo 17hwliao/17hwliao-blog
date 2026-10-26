@@ -1,0 +1,31 @@
+{
+  "title": "练习代码7",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-25T13:58:23.000Z",
+  "createdAt": "2025-12-25T13:58:23.000Z",
+  "updatedAt": "2025-12-25T13:59:13.000Z",
+  "contentUpdatedAt": "2025-12-25T13:59:12.000Z",
+  "firstPublishedAt": "2025-12-25T13:58:46.842Z",
+  "publishedAt": "2025-12-25T13:59:12.000Z",
+  "summary": "package Next_day; public class Main { public static void main(String[]args){ String str = \"杰哥\" + \"你干嘛\" ; String str2 = \"汉堡\" ; String str3 = \"坐的\" ; ...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250445517,
+    "slug": "mn32qlxv8vsrsgpw",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码7"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "24ef64c46a4b69233c5b2fc2589b2f829fdf9dc1e85fef836c9d188f7eb3c4ca",
+    "missingImageReferences": []
+  }
+}

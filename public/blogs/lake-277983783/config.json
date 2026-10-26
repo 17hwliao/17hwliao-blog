@@ -1,0 +1,30 @@
+{
+  "title": "Logrus",
+  "tags": [
+    "Goland",
+    "Zap开源日志框架"
+  ],
+  "date": "2026-07-17T06:36:17.000Z",
+  "createdAt": "2026-07-17T06:36:17.000Z",
+  "updatedAt": "2026-07-17T06:36:55.000Z",
+  "contentUpdatedAt": "2026-07-17T06:36:54.000Z",
+  "firstPublishedAt": "2026-07-17T06:36:54.255Z",
+  "publishedAt": "2026-07-17T06:36:54.000Z",
+  "summary": "一个日志篇的一种过渡吧算 : 先简单入门一下日志 : logrus, 本质上就是替换掉过多使用的 fmp ; import \"github.com/sirupsen/logrus\"logrus.Debug(\"开发调试信息\") logrus.Info(\"普通运行信息\") logrus.Warn(...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 277983783,
+    "slug": "qh9zzqzgsh7nx4z4",
+    "directory": [
+      "Zap开源日志框架",
+      "Logrus"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "0516b0664e653360f93ac597b91a547d407bbe7171da2191452cf45d36b9b1ab",
+    "missingImageReferences": []
+  }
+}

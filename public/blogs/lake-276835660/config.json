@@ -1,0 +1,30 @@
+{
+  "title": "MySql操作",
+  "tags": [
+    "Goland",
+    "GO-zero"
+  ],
+  "date": "2026-07-08T02:40:05.000Z",
+  "createdAt": "2026-07-08T02:40:05.000Z",
+  "updatedAt": "2026-07-08T09:42:09.000Z",
+  "contentUpdatedAt": "2026-07-08T08:59:34.000Z",
+  "firstPublishedAt": "2026-07-08T02:40:34.116Z",
+  "publishedAt": "2026-07-08T08:59:34.000Z",
+  "summary": "go-zero原生操作mysql代码生成v1/model/user.sqlSQL复制代码CREATE TABLE user ( id bigint AUTO_INCREME",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 276835660,
+    "slug": "hp3h3asaoko7l23k",
+    "directory": [
+      "GO-zero",
+      "MySql操作"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "204701b4a3bbde97f7528b512100600b9c8738e765cd7ee6d5095422c18f8f1e",
+    "missingImageReferences": []
+  }
+}

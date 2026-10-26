@@ -1,0 +1,30 @@
+{
+  "title": "结构体",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-12T00:14:55.000Z",
+  "createdAt": "2026-05-12T00:14:55.000Z",
+  "updatedAt": "2026-08-07T12:19:28.000Z",
+  "contentUpdatedAt": "2026-08-07T12:19:27.000Z",
+  "firstPublishedAt": "2026-05-12T00:15:12.532Z",
+  "publishedAt": "2026-08-07T12:19:27.000Z",
+  "summary": "注意 在 go中 结构体 都不是引用 传递 结构体定义创建结构体 使用的 函数 func ( s Student) 函数名 {内部使用 s.属性名 实现调用 内部的参数 ; }Go复制代码",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269387427,
+    "slug": "ssesyeaiw8otugus",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "结构体"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "27a5f5f752d30ea14c0a417db654129d46c594b90f29ef4ee42b161240172af6",
+    "missingImageReferences": []
+  }
+}

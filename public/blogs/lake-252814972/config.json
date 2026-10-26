@@ -1,0 +1,31 @@
+{
+  "title": "第十六天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-01-12T10:17:57.000Z",
+  "createdAt": "2026-01-12T10:17:57.000Z",
+  "updatedAt": "2026-01-13T03:19:41.000Z",
+  "contentUpdatedAt": "2026-01-13T03:19:41.000Z",
+  "firstPublishedAt": "2026-01-12T10:18:42.813Z",
+  "publishedAt": "2026-01-13T03:19:41.000Z",
+  "summary": "Java实现数组顺序表:ArrayList list = new ArrayList&lt;&gt;(); //内部实现的链表 list.add(0 , \"A\"); //add( 插入位置 , 数据 ) list.addFirst(\"B\"); list.addLast(\"C\"); list...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 252814972,
+    "slug": "xt6n121zgyvxe0i4",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第十六天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "490dceb4bcdb695c5c0dab83e2811a0d1550bec3986c8ff4c40c7f23e2a73f8e",
+    "missingImageReferences": []
+  }
+}

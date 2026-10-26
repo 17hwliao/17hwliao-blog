@@ -1,0 +1,30 @@
+{
+  "title": "单表的高级查询",
+  "tags": [
+    "Goland",
+    "GORM"
+  ],
+  "date": "2026-06-08T13:29:09.000Z",
+  "createdAt": "2026-06-08T13:29:09.000Z",
+  "updatedAt": "2026-08-04T07:43:18.000Z",
+  "contentUpdatedAt": "2026-08-04T07:43:18.000Z",
+  "firstPublishedAt": "2026-06-14T04:58:07.567Z",
+  "publishedAt": "2026-08-04T07:43:18.000Z",
+  "summary": "Where查询直接写条件Go复制代码var user UserModel DB.Where(\"id = 5\").Take(&amp;user) fmt.Println(user) user = UserModel{} DB.Where(\"id = 5 or age = 11\").Take(&amp;",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 273074958,
+    "slug": "or849bc1yqvfmzst",
+    "directory": [
+      "GORM",
+      "单表的高级查询"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "6836e85ec9c5cf13595f22b26cfdeaee3106ac710fcd2e7648a8e0e50e1ca8a9",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "练习代码01",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-20T11:38:05.000Z",
+  "createdAt": "2025-12-20T11:38:05.000Z",
+  "updatedAt": "2025-12-20T11:39:08.000Z",
+  "contentUpdatedAt": "2025-12-20T11:38:30.000Z",
+  "firstPublishedAt": "2025-12-20T11:38:29.675Z",
+  "publishedAt": "2025-12-20T11:39:08.000Z",
+  "summary": "public class Person { String name ; int age ; String gender ; int cun1 ; int cun2 ; void say_hello(){ System.out.println(\" \" + name + \" \"+ age + \" ...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249668677,
+    "slug": "cpzi5i8i1f21etw3",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码01"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "bcf49e4768cbb06848a18e470516190a6cb9c82ab782e5c06a11a8028c04c5a7",
+    "missingImageReferences": []
+  }
+}

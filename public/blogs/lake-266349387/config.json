@@ -1,0 +1,30 @@
+{
+  "title": "Mybatis",
+  "tags": [
+    "JAVA",
+    "数据库"
+  ],
+  "date": "2026-04-18T09:51:09.000Z",
+  "createdAt": "2026-04-18T09:51:09.000Z",
+  "updatedAt": "2026-04-23T12:31:28.000Z",
+  "contentUpdatedAt": "2026-04-23T12:31:27.000Z",
+  "firstPublishedAt": "2026-04-18T09:51:25.902Z",
+  "publishedAt": "2026-04-23T12:31:27.000Z",
+  "summary": "Mybatis介绍什么是MyBatis?MyBatis是一款优秀的 持久层框架，用于简化JDBC的开发。MyBatis本是 Apache的一个开源项目iBatis，2010年这个项目由apache迁移到了google code，并且改名为MyBatis 。2013年11月迁移到Github。官...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 266349387,
+    "slug": "meiuqud0hwb0p7cs",
+    "directory": [
+      "数据库",
+      "Mybatis"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "899bd8e5c3d7a9390b212b6525efcf8d468df4ac7c21089663fd75c94bc8a64a",
+    "missingImageReferences": []
+  }
+}

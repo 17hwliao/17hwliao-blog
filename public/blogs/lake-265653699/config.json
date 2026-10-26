@@ -1,0 +1,31 @@
+{
+  "title": "SpringBoot Web",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-14T01:21:39.000Z",
+  "createdAt": "2026-04-14T01:21:39.000Z",
+  "updatedAt": "2026-04-19T00:40:23.000Z",
+  "contentUpdatedAt": "2026-04-18T12:10:34.000Z",
+  "firstPublishedAt": "2026-04-14T01:21:57.818Z",
+  "publishedAt": "2026-04-18T12:10:34.000Z",
+  "summary": "SpringBootWeb入门那接下来呢，我们就要来讲解现在企业开发的主流技术 SpringBoot，并基于SpringBoot进行Web程序的开发 。概述在没有正式的学习SpringBoot之前，我们要先来了解下什么是Spring。我们可以打开Spring的官网(https://spring...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 265653699,
+    "slug": "px578ib0nw2y8g56",
+    "directory": [
+      "Web后端开发 + AI",
+      "Web后端基础",
+      "SpringBoot Web"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "84d8b173fdaccd28331fab5b6f135edebc0036f9d935493126967d44fe865ba3",
+    "missingImageReferences": []
+  }
+}

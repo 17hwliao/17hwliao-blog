@@ -1,0 +1,30 @@
+{
+  "title": "Chain 链式编排",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-10T13:20:37.000Z",
+  "createdAt": "2026-08-10T13:20:37.000Z",
+  "updatedAt": "2026-08-14T09:17:29.000Z",
+  "contentUpdatedAt": "2026-08-14T09:03:32.000Z",
+  "firstPublishedAt": "2026-08-10T13:22:02.305Z",
+  "publishedAt": "2026-08-14T09:03:32.000Z",
+  "summary": "简介Chain(链) 就是Eino 中用于组合多个组件的编排方式, 它将多个组件按照顺序实现链接, 前一个组件的输出作为后一个组件的输入, 实现一个处理流水线Chain 的特点Chain 的基本结构基础示例 : 简单的 Chain 模板 + 模型的基础组合",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 280868731,
+    "slug": "wb7f7gs1rpzu9naa",
+    "directory": [
+      "GO-Agent",
+      "Chain 链式编排"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "4ebc879490b22fdba4538a1beb312de99b38904e404e17a1cf92ee915857623a",
+    "missingImageReferences": []
+  }
+}

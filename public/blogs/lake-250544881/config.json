@@ -1,0 +1,31 @@
+{
+  "title": "练习代码8",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-26T07:56:56.000Z",
+  "createdAt": "2025-12-26T07:56:56.000Z",
+  "updatedAt": "2025-12-26T07:57:52.000Z",
+  "contentUpdatedAt": "2025-12-26T07:57:50.000Z",
+  "firstPublishedAt": "2025-12-26T07:57:17.278Z",
+  "publishedAt": "2025-12-26T07:57:50.000Z",
+  "summary": "package Today; public interface Add { public int add(int a , int b ) ; }package Today; public class Fulei { String name ; public Fulei(String name)...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250544881,
+    "slug": "hoetyikobv99xfn9",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码8"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "ecd7fa6be49b2314f7af43e726d00c783c4267d15ed2fde452b6027526ef1df7",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "SQL/CRUD实战",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-21T09:38:04.000Z",
+  "createdAt": "2026-04-21T09:38:04.000Z",
+  "updatedAt": "2026-04-28T11:47:34.000Z",
+  "contentUpdatedAt": "2026-04-28T11:47:10.000Z",
+  "firstPublishedAt": "2026-04-21T09:38:26.493Z",
+  "publishedAt": "2026-04-28T11:47:10.000Z",
+  "summary": "总环节最最重要 , 逻辑想不清代码全瞎写 : 请求方式数据在哪运行方向",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 266765616,
+    "slug": "ftqnp7c4aiw8xekt",
+    "directory": [
+      "Web后端开发 + AI",
+      "后端SSM框架入门",
+      "SQL/CRUD实战"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "8b41491d95ba22e001996eebaf14b0352e8c2ae2f83c376136d8070520b0bca8",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "title": "grpc 的基础",
+  "tags": [
+    "Goland",
+    "gRPC架构"
+  ],
+  "date": "2026-06-24T11:14:59.000Z",
+  "createdAt": "2026-06-24T11:14:59.000Z",
+  "updatedAt": "2026-06-24T13:11:44.000Z",
+  "contentUpdatedAt": "2026-06-24T12:24:09.000Z",
+  "firstPublishedAt": "2026-06-24T11:15:15.540Z",
+  "publishedAt": "2026-06-24T12:24:09.000Z",
+  "summary": "编写protobuf文件service：关键字，定义一个RPC 服务类，类比 Java 接口",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275081128,
+    "slug": "fgimuqqs9rure0dg",
+    "directory": [
+      "gRPC架构",
+      "grpc 的基础"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "a09d7fb83cf3fd874225cebaf90d7bebf69fca0ac75ef374899a55746d1b7cc9",
+    "missingImageReferences": []
+  }
+}

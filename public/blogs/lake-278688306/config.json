@@ -1,0 +1,28 @@
+{
+  "title": "项目",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-07-23T00:52:45.000Z",
+  "createdAt": "2026-07-23T00:52:45.000Z",
+  "updatedAt": "2026-08-07T14:12:51.000Z",
+  "contentUpdatedAt": "2026-08-07T14:12:50.000Z",
+  "firstPublishedAt": "2026-07-23T00:53:21.875Z",
+  "publishedAt": "2026-08-07T14:12:50.000Z",
+  "summary": "项目骨架 - cmd/server/: 入口文件，main.go启动服务 - configs/: 配置文件（如YAML、ENV） - deployments/: 部署配置（Docker、K8s等） - docs/: 项目文档 - internal/: 核心业务代码（不对外暴露） - confi...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 278688306,
+    "slug": "bbkov5akbv4nqk0p",
+    "directory": [
+      "项目"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "72537918fb398449451c92291f2bfa58736918b157a712130bc362222dcaa804",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "golang的24种设计模式",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-07-21T08:28:04.000Z",
+  "createdAt": "2026-07-21T08:28:04.000Z",
+  "updatedAt": "2026-07-22T09:20:45.000Z",
+  "contentUpdatedAt": "2026-07-22T09:20:43.000Z",
+  "firstPublishedAt": "2026-07-21T08:29:09.825Z",
+  "publishedAt": "2026-07-22T09:20:43.000Z",
+  "summary": "Design Pattern 是软件工程中针对常见的开发问题 使用的通用方案, 与所使用的语言无关 ; 使用设计模式的好处面试提高代码复用性前人总结下来的经验, 合适的位置使用合适的设计模式 创建型模式 (Creational Patterns） 6 种",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 278444681,
+    "slug": "bk8bqd03m4odwfer",
+    "directory": [
+      "golang的24种设计模式"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "ffbf118911c98f74550ddf0e26d33b9eb2416c226dbbe3dd315257a2af1e3515",
+    "missingImageReferences": []
+  }
+}

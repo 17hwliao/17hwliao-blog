@@ -1,0 +1,31 @@
+{
+  "title": "反射",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-04-12T08:40:02.000Z",
+  "createdAt": "2026-04-12T08:40:02.000Z",
+  "updatedAt": "2026-04-12T09:04:19.000Z",
+  "contentUpdatedAt": "2026-04-12T08:41:49.000Z",
+  "firstPublishedAt": "2026-04-12T08:41:48.745Z",
+  "publishedAt": "2026-04-12T08:41:49.000Z",
+  "summary": "注意： 本章节涉及到JVM相关底层原理，难度会有一些大。反射就是把Java类中的各个成分映射成一个个的Java对象。即在运行状态中，对于任意一个类，都能够知道这个类所有的属性和方法，对于任意一个对象，都能调用它的任意一个方法和属性。这种动态获取信息及动态调用对象方法的功能叫Java的反射机制。...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 265402503,
+    "slug": "fvn2gb5dcu8sdqd3",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "反射"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b9f0d555686ea879b460812ad62a98686d841fa9afdbfc400df814cbf027290a",
+    "missingImageReferences": []
+  }
+}

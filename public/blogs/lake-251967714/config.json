@@ -1,0 +1,31 @@
+{
+  "title": "第十五天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-01-06T08:03:46.000Z",
+  "createdAt": "2026-01-06T08:03:46.000Z",
+  "updatedAt": "2026-01-06T11:48:49.000Z",
+  "contentUpdatedAt": "2026-01-06T11:48:48.000Z",
+  "firstPublishedAt": "2026-01-06T08:04:02.436Z",
+  "publishedAt": "2026-01-06T11:48:48.000Z",
+  "summary": "函数式接口导包 : import java.util.function.Supplier ;Supplier接口 : 内部方法实现返回需要的类型 ; public void setName(Suppliername){ this.name = name.get() ; } Ma...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 251967714,
+    "slug": "qdub3lngy8kzi1ck",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第十五天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "a0b570bdbbecc3f699e2edbda58a6beb1d0da8c1a3d1b7e20ba81880ecac7c91",
+    "missingImageReferences": []
+  }
+}

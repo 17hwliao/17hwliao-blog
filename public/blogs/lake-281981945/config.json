@@ -1,0 +1,30 @@
+{
+  "title": "EinoMilvus 向量数据库",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-19T13:03:28.000Z",
+  "createdAt": "2026-08-19T13:03:28.000Z",
+  "updatedAt": "2026-08-20T12:16:15.000Z",
+  "contentUpdatedAt": "2026-08-20T12:12:05.000Z",
+  "firstPublishedAt": "2026-08-19T13:05:09.889Z",
+  "publishedAt": "2026-08-20T12:12:05.000Z",
+  "summary": "简介Milvus 是一个开源的向量数据库 ,专门用来实现存储,索引 和 管理大规模向量数据 , 实现构建 AI应用 (如RAG, 推荐系统,图像搜索等)的理想选择 ;Milvus 的核心特性- ✅ 高性能向量搜索：支持十亿级向量的毫秒级搜索 - ✅ 多种索引类型：支持 IVF_FLAT、HNS...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 281981945,
+    "slug": "hvv4gam9goruq0g9",
+    "directory": [
+      "GO-Agent",
+      "EinoMilvus 向量数据库"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "70fccf458bdbdf833f3411857c510813d4839ff073a0cb86f783bdd3347b056a",
+    "missingImageReferences": []
+  }
+}

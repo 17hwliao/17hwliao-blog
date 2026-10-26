@@ -1,0 +1,30 @@
+{
+  "title": "单表模型和单表操作",
+  "tags": [
+    "Goland",
+    "GORM"
+  ],
+  "date": "2026-06-07T09:31:22.000Z",
+  "createdAt": "2026-06-07T09:31:22.000Z",
+  "updatedAt": "2026-06-14T04:57:50.000Z",
+  "contentUpdatedAt": "2026-06-14T04:57:50.000Z",
+  "firstPublishedAt": "2026-06-07T10:18:43.720Z",
+  "publishedAt": "2026-06-14T04:57:50.000Z",
+  "summary": "表结构在gorm中，使用结构体表示一张表例如User表通常情况下，我们会使用Model结尾表示它是表的结构体Go复制代码type UserModel struct { ID int64 `gorm:\"primaryKey\"` // 主键 Name string `gorm:\"not",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 272906370,
+    "slug": "lho8h9be9ear2egw",
+    "directory": [
+      "GORM",
+      "单表模型和单表操作"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "348e86ee461df121b1cca00b93ae9d025ee6e99ce1fc19ddbdfd845091307179",
+    "missingImageReferences": []
+  }
+}

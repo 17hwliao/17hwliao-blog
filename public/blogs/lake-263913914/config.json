@@ -1,0 +1,30 @@
+{
+  "title": "Css",
+  "tags": [
+    "JAVA",
+    "Web前端开发 + AI"
+  ],
+  "date": "2026-04-01T06:55:58.000Z",
+  "createdAt": "2026-04-01T06:55:58.000Z",
+  "updatedAt": "2026-04-09T11:03:38.000Z",
+  "contentUpdatedAt": "2026-04-09T11:03:37.000Z",
+  "firstPublishedAt": "2026-04-01T06:56:10.138Z",
+  "publishedAt": "2026-04-09T11:03:37.000Z",
+  "summary": "在HTML中调用Css 着重掌握在设置class , id 钩子实现使用 CSS 选择器 就行, 具体样式实现 使用 Ai 配置即可; &gt; ; 那在HTML的文件中，我们如何来编写CSS样式呢，此时就涉及到CSS的三种引入方式。具体有3种引入方式，语法如下表...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 263913914,
+    "slug": "amg153lhskv3lprt",
+    "directory": [
+      "Web前端开发 + AI",
+      "Css"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b8f56ddec32d66043a30f2616bcb48465f9d0eb3d69183293a76703e8e278dfb",
+    "missingImageReferences": []
+  }
+}

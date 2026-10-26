@@ -1,0 +1,30 @@
+{
+  "title": "项目部署",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-15T06:47:10.000Z",
+  "createdAt": "2026-05-15T06:47:10.000Z",
+  "updatedAt": "2026-05-15T07:27:44.000Z",
+  "contentUpdatedAt": "2026-05-15T07:10:37.000Z",
+  "firstPublishedAt": "2026-05-15T06:47:23.679Z",
+  "publishedAt": "2026-05-15T07:10:37.000Z",
+  "summary": "go项目的部署特别简单，编写完成之后，只需要执行go build即可打包为可执行文件注意，这个操作是不同平台不一样的windows下打包就是exe文件，linux下打包就是二进制文件打包命令Go复制代码go build",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269919817,
+    "slug": "fb7uogb13795m595",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "项目部署"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "abaf751cd11c263f48228b8f4ae2a171cd024e02aa649e00985781a0ec7725c5",
+    "missingImageReferences": []
+  }
+}

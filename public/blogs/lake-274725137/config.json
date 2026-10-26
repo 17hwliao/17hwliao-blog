@@ -1,0 +1,30 @@
+{
+  "title": "事务",
+  "tags": [
+    "Goland",
+    "GORM"
+  ],
+  "date": "2026-06-22T03:32:08.000Z",
+  "createdAt": "2026-06-22T03:32:08.000Z",
+  "updatedAt": "2026-06-22T08:27:28.000Z",
+  "contentUpdatedAt": "2026-06-22T03:43:21.000Z",
+  "firstPublishedAt": "2026-06-22T03:32:16.445Z",
+  "publishedAt": "2026-06-22T03:43:21.000Z",
+  "summary": "事务就是用户定义的一系列数据库操作，这些操作可以视为一个完成的逻辑处理工作单元，要么全部执行，要么全部不执行，是不可分割的工作单元，很形象的一个例子，张三给李四转账100元，在程序里面，张三的余额就要-100，李四的余额就要+100 整个事件是一个整体，哪一步错了，整个事件都是失败的gorm事...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 274725137,
+    "slug": "yr0o7s8ok1b06sok",
+    "directory": [
+      "GORM",
+      "事务"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b70a2427da4b6780dd6d130a39f88cb598ea5173efb5fca069be1b634ccbba4e",
+    "missingImageReferences": []
+  }
+}

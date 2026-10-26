@@ -1,0 +1,31 @@
+{
+  "title": "第八天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-26T02:41:43.000Z",
+  "createdAt": "2025-12-26T02:41:43.000Z",
+  "updatedAt": "2026-04-12T08:28:49.000Z",
+  "contentUpdatedAt": "2026-04-12T08:28:49.000Z",
+  "firstPublishedAt": "2025-12-26T03:05:39.788Z",
+  "publishedAt": "2026-04-12T08:28:49.000Z",
+  "summary": "内部类在类里创建类 ：内部类 ; 内部类也可以含有成员变量和方法Test s = new Test(); Test.Inner inner = new Test() / s.new Inner() ;内部类可以设置访问权限控制 ( 方法和成员变量 )成员内部类可以访问到外部变量( 外面无法访问...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250504437,
+    "slug": "lms2g0wciwymtcqg",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第八天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "332a33726ee6334e0cdc62f16cbefdb8b75af3b6789911a172f1f2bf5796fcad",
+    "missingImageReferences": []
+  }
+}

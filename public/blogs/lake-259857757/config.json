@@ -1,0 +1,28 @@
+{
+  "title": "Web后端开发 + AI",
+  "tags": [
+    "JAVA"
+  ],
+  "date": "2026-03-06T14:00:16.000Z",
+  "createdAt": "2026-03-06T14:00:16.000Z",
+  "updatedAt": "2026-05-02T06:27:42.000Z",
+  "contentUpdatedAt": "2026-05-02T06:27:41.000Z",
+  "firstPublishedAt": "2026-04-09T13:46:44.817Z",
+  "publishedAt": "2026-05-02T06:27:41.000Z",
+  "summary": "必备 基础知识 那在前面讲解Web前端开发的时候，我们学习了前端网页开发的三剑客HTML、CSS、JS，通过这三项技术，我们就可以制作前端页面了。 那最终，这些个页面资料，我们就可以部署在服务器上，然后打开浏览器就可以直接访问服务器上部署的前端页面了。而像HTML、CSS、JS 以及图片、音频...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 259857757,
+    "slug": "diagswofsqbvrund",
+    "directory": [
+      "Web后端开发 + AI"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "68fb024659f04264659bdaf9b168a87e551d34cd75555d51811f0188059392ba",
+    "missingImageReferences": []
+  }
+}

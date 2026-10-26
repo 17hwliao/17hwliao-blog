@@ -1,0 +1,31 @@
+{
+  "title": "练习代码13",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-01-03T12:41:55.000Z",
+  "createdAt": "2026-01-03T12:41:55.000Z",
+  "updatedAt": "2026-01-03T12:42:29.000Z",
+  "contentUpdatedAt": "2026-01-03T12:42:28.000Z",
+  "firstPublishedAt": "2026-01-03T12:42:19.248Z",
+  "publishedAt": "2026-01-03T12:42:28.000Z",
+  "summary": "package Today; public class Today { public static void main(String[] args) { New_class ws0 = new New_class&lt;&gt;(\"ws\", 4, 0); New_class",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 251512301,
+    "slug": "vqbuml38rihruc5f",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码13"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3864de7e640984a5feeb1d34d974bc80c5f36b35e7a23803cb5796f478694aa3",
+    "missingImageReferences": []
+  }
+}

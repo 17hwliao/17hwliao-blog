@@ -1,0 +1,31 @@
+{
+  "title": "练习代码19",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-01-24T08:30:04.000Z",
+  "createdAt": "2026-01-24T08:30:04.000Z",
+  "updatedAt": "2026-02-27T08:13:54.000Z",
+  "contentUpdatedAt": "2026-01-24T08:30:23.000Z",
+  "firstPublishedAt": "2026-01-24T08:30:15.644Z",
+  "publishedAt": "2026-01-24T08:30:23.000Z",
+  "summary": "import java.io.* ; import java.util.*; import java.util.stream.Collectors; import static java.util.Map.*; public class Main { public static void ma...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 254486275,
+    "slug": "yo8d2aef3csykf1r",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码19"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3552c6fbc988e0aba53f1e15718b29bc9979e69345dddd3b9b05d65bad91cb42",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "title": "kafka",
+  "tags": [
+    "Goland",
+    "消息队列"
+  ],
+  "date": "2026-07-19T07:08:35.000Z",
+  "createdAt": "2026-07-19T07:08:35.000Z",
+  "updatedAt": "2026-07-19T17:24:10.000Z",
+  "contentUpdatedAt": "2026-07-19T17:19:39.000Z",
+  "firstPublishedAt": "2026-07-19T07:09:10.811Z",
+  "publishedAt": "2026-07-19T17:24:09.000Z",
+  "summary": "高吞吐 , 高性能 , 十分强大的日志系统; Kafka 单节点安装不认证, 不加密 ; 后面会有安装(认证 + 加密 + 分布式) kafka集群当前学习的kafka是 2.8.0 版本之后的, 之前必须依赖ZooKeeper实现运行, 当时是实现kafka高可用的核心组件;详情见下 :",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 278167360,
+    "slug": "spkmhi129829d7va",
+    "directory": [
+      "消息队列",
+      "kafka"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "f27a6dfe16511ff6fddc25a3295800290319b99450fd8e027499f2bdf872f421",
+    "missingImageReferences": []
+  }
+}

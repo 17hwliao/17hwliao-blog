@@ -1,0 +1,31 @@
+{
+  "title": "静态文件",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-24T03:21:45.000Z",
+  "createdAt": "2026-05-24T03:21:45.000Z",
+  "updatedAt": "2026-05-28T12:59:34.000Z",
+  "contentUpdatedAt": "2026-05-28T12:59:33.000Z",
+  "firstPublishedAt": "2026-05-24T03:22:03.142Z",
+  "publishedAt": "2026-05-28T12:59:33.000Z",
+  "summary": "r.Static(\"static\", \"static\") // 第一个参数是别名，第二个才是实际路径第一个参数 relativePath：浏览器访问的 URL 前缀（路由路径）",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271097344,
+    "slug": "zk2mme0avsyyx1e0",
+    "directory": [
+      "Gin-Web框架",
+      "gin响应",
+      "静态文件"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "331f635e5c5c0441f39851d48f024cc499f43b3a4044eccb087ac60f10f39254",
+    "missingImageReferences": []
+  }
+}

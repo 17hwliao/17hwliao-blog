@@ -1,0 +1,30 @@
+{
+  "title": "项目中使用",
+  "tags": [
+    "Goland",
+    "GORM"
+  ],
+  "date": "2026-07-28T13:07:42.000Z",
+  "createdAt": "2026-07-28T13:07:42.000Z",
+  "updatedAt": "2026-08-02T01:25:39.000Z",
+  "contentUpdatedAt": "2026-08-02T01:16:14.000Z",
+  "firstPublishedAt": "2026-07-28T13:08:10.519Z",
+  "publishedAt": "2026-08-02T01:16:14.000Z",
+  "summary": "gorm: 内部实现的 命名策略 : 转化的规则实现是在内部实现gorm结构体映射的时候自动实现的1 : 驼峰转蛇形 : UserProfile --&gt; user_profile2 : 自动复数化 : User --&gt; users , Article --&gt; articles ; ",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 279325857,
+    "slug": "qvvhbfl90ks8x5nx",
+    "directory": [
+      "GORM",
+      "项目中使用"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "01f0a4d173e22ddb26db145c16ee4ed1b0d9ffe1320fdebdaea31084e19993de",
+    "missingImageReferences": []
+  }
+}

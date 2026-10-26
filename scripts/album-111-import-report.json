@@ -1,0 +1,89 @@
+{
+  "photos": [
+    {
+      "id": "photo-111-1",
+      "image": "1.jpg",
+      "sha256": "93b1b5aa922d59a816d5cac3e12a9ae96e17cf0b275a9d5ab0b9bd35a09f7ece",
+      "descriptionImage": "11.png",
+      "description": "当上队长后第一件大事，今年情况特殊学长时间很赶，着着急急地办完欢送会，感觉饭店没怎么挑好，反正结束了，管他呢，最近很忙啊，啥事都干不了感觉",
+      "displayDate": "2026-06-05T20:23:00+08:00"
+    },
+    {
+      "id": "photo-111-2",
+      "image": "2.jpg",
+      "sha256": "74429e2d774e9ed16ab9dac638b1a23b2290d39d37a9cf146b1f598ca5791914",
+      "descriptionImage": "22.png",
+      "description": "lec软件工作室的第二次大团建，去吃的中餐，饭量很足，到我写博客这回，团体吃一桌饭最饱的一次，而且饭还很好吃",
+      "displayDate": "2026-04-25T22:08:00+08:00"
+    },
+    {
+      "id": "photo-111-3",
+      "image": "3.jpg",
+      "sha256": "852168553fac0f00454e57abd45767012824a20178581c91a733766979f39b8d",
+      "descriptionImage": "33.png",
+      "description": "都是保存作用",
+      "displayDate": "2026-06-05T20:27:00+08:00"
+    },
+    {
+      "id": "photo-111-4",
+      "image": "4.jpg",
+      "sha256": "0cf3392ba8271c8be6a936d00334d83731f07d345e713933455b34c5dd3adf02",
+      "descriptionImage": "44.png",
+      "description": "lec软件工作室的第一次团建，大学敲代码四年的开端",
+      "displayDate": "2026-04-25T21:57:00+08:00"
+    },
+    {
+      "id": "photo-111-5",
+      "image": "5.jpg",
+      "sha256": "d0d8d9bd769ef7a79764c920c07d0dfe77d51e4d62755577ff611835ba851b3d",
+      "descriptionImage": "55.png",
+      "description": "这张图真是戳中我的心了，中考测试最后好不容易满昏，结果不考了，反正没体育很爽就对了",
+      "displayDate": "2026-04-25T22:00:00+08:00"
+    },
+    {
+      "id": "photo-111-6",
+      "image": "6.png",
+      "sha256": "891b57290d2677b12febe5b25818f705ae44a4aceacac8539dc134d8ced09130",
+      "descriptionImage": "66.png",
+      "description": "都是保存作用",
+      "displayDate": "2026-06-05T20:27:00+08:00"
+    },
+    {
+      "id": "photo-111-7",
+      "image": "7.jpg",
+      "sha256": "80412882df7597905be71632dd038e8d44d94509453e696829688ca5e28cbd46",
+      "descriptionImage": "77.png",
+      "description": "欢送会送学长的照片，保留一下",
+      "displayDate": "2026-06-05T20:25:00+08:00"
+    },
+    {
+      "id": "photo-111-9",
+      "image": "9.jpg",
+      "sha256": "ca0288a6b1215d8ea0a5713eb9de8bc6db40e73886338b209a97440486240a6f",
+      "descriptionImage": null,
+      "description": null,
+      "displayDate": null
+    }
+  ],
+  "captionCount": 7,
+  "descriptionSource": "Paired repeated-digit screenshots, visually checked with local OCR; punctuation normalized.",
+  "dateSource": "Caption screenshot display date; Asia/Shanghai; not photo EXIF or import date.",
+  "missingCaptionImages": [
+    "99.png"
+  ],
+  "bloggersSource": "000.png; exactly three selected names. Matching base-repository records complete truncated URL/description.",
+  "bloggers": [
+    {
+      "name": "阮一峰的网络日志",
+      "url": "https://www.ruanyifeng.com/blog/archives.html"
+    },
+    {
+      "name": "Josh W. Comeau",
+      "url": "https://www.joshwcomeau.com/"
+    },
+    {
+      "name": "nanda",
+      "url": "https://www.nan.fyi/"
+    }
+  ]
+}

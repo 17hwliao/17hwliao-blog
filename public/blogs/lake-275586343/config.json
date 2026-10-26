@@ -1,0 +1,30 @@
+{
+  "title": "基本使用",
+  "tags": [
+    "Goland",
+    "Casbin权限鉴别框架"
+  ],
+  "date": "2026-06-28T23:56:58.000Z",
+  "createdAt": "2026-06-28T23:56:58.000Z",
+  "updatedAt": "2026-07-15T14:50:25.000Z",
+  "contentUpdatedAt": "2026-07-15T14:50:24.000Z",
+  "firstPublishedAt": "2026-06-28T23:58:27.946Z",
+  "publishedAt": "2026-07-15T14:50:24.000Z",
+  "summary": "下载Go复制代码go mod init your-project go get github.com/casbin/casbin/v3@latest go mod tidycasbin有两个部分组成，一个是配置文件，一个是规则集model.conf = 表结构和查询逻辑 policy.csv ...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275586343,
+    "slug": "ynirs1diqlmcgeer",
+    "directory": [
+      "Casbin权限鉴别框架",
+      "基本使用"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "f2043e9ec498c9f2fa0ce26a82654b6d20e1b6df62e1b13148ade63ff73ef333",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "表单参数和文件上传",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-30T01:41:25.000Z",
+  "createdAt": "2026-05-30T01:41:25.000Z",
+  "updatedAt": "2026-05-30T01:42:56.000Z",
+  "contentUpdatedAt": "2026-05-30T01:42:55.000Z",
+  "firstPublishedAt": "2026-05-30T01:42:39.599Z",
+  "publishedAt": "2026-05-30T01:42:55.000Z",
+  "summary": "表单参数一般就是专指form表单Go复制代码name := c.PostForm(\"name\") age, ok := c.GetPostForm(\"age\") fmt.Println(name) fmt.Println(age, ok)",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271889184,
+    "slug": "kvx4oqh40bdbfhhf",
+    "directory": [
+      "Gin-Web框架",
+      "gin 获取数据",
+      "表单参数和文件上传"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "c7f4d1d3464041586cff07c61dc182e28bd87ce7405c400bfa69ac440b44f4ba",
+    "missingImageReferences": []
+  }
+}

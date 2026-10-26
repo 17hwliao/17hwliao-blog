@@ -1,0 +1,43 @@
+{
+  "title": "redis三大数据结构",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-05-15T07:47:17.000Z",
+  "createdAt": "2026-05-15T07:47:17.000Z",
+  "updatedAt": "2026-05-16T08:02:19.000Z",
+  "contentUpdatedAt": "2026-05-15T10:47:30.000Z",
+  "firstPublishedAt": "2026-05-15T07:47:44.681Z",
+  "publishedAt": "2026-05-16T08:02:18.000Z",
+  "summary": "项目篇除了最后使用 redis 实现消息队列 其他都要全部 摸清原理 后面学的也是思路 和 结构知识 : 10、附近商户 (GEO数据结构)10.1、附近商户-GEO数据结构的基本用法 有序集合（Sorted Set）--&gt; 底层会实现一个 自动相互关联的数据 ; GEO就是Geolocati",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 269931716,
+    "slug": "kicy6rylqhhy74rq",
+    "directory": [
+      "必要的相关技术",
+      "Redis",
+      "redis三大数据结构"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "bc8be8e010623653dc0d7fb189d5d2830bb60ff8b2b494b2ba2febc54f682e92",
+    "missingImageReferences": [
+      ".\\Redis实战篇.assets\\1653822036941.png",
+      ".\\Redis实战篇.assets\\1653822021827.png",
+      ".\\Redis实战篇.assets\\1653823145495.png",
+      ".\\Redis实战篇.assets\\1653824498278.png",
+      ".\\Redis实战篇.assets\\1653833970361.png",
+      ".\\Redis实战篇.assets\\1653834455899.png",
+      ".\\Redis实战篇.assets\\1653835784444.png",
+      ".\\Redis实战篇.assets\\1653836416586.png",
+      ".\\Redis实战篇.assets\\1653836578970.png",
+      ".\\Redis实战篇.assets\\1653837988985.png",
+      ".\\Redis实战篇.assets\\1653838053608.png"
+    ]
+  }
+}

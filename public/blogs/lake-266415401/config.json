@@ -1,0 +1,32 @@
+{
+  "title": "Springboot项目配置文件",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-18T23:24:46.000Z",
+  "createdAt": "2026-04-18T23:24:46.000Z",
+  "updatedAt": "2026-05-05T04:20:39.000Z",
+  "contentUpdatedAt": "2026-04-18T23:44:44.000Z",
+  "firstPublishedAt": "2026-04-18T23:25:23.242Z",
+  "publishedAt": "2026-04-18T23:44:44.000Z",
+  "summary": "SpringBoot配置文件介绍前面我们一直使用springboot项目创建完毕后自带的application.properties进行属性的配置，而如果在项目中，我们需要配置大量的属性，采用properties配置文件这种 key=value 的配置形式，就会显得配置文件的层级结构不清晰，也...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 266415401,
+    "slug": "dcsgrgwqpi04ir5s",
+    "directory": [
+      "Web后端开发 + AI",
+      "Web后端基础",
+      "SpringBoot Web",
+      "Springboot项目配置文件"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "51d8de31d59a71eb799b6c7d3e9331c1ec3e78e5d5d08aa3b50e7c2ab591a0d9",
+    "missingImageReferences": []
+  }
+}

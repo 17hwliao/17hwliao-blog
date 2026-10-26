@@ -1,0 +1,30 @@
+{
+  "title": "MCP",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-09-16T12:51:08.000Z",
+  "createdAt": "2026-09-16T12:51:08.000Z",
+  "updatedAt": "2026-09-16T13:00:44.000Z",
+  "contentUpdatedAt": "2026-09-16T12:59:10.000Z",
+  "firstPublishedAt": "2026-09-16T12:51:31.334Z",
+  "publishedAt": "2026-09-16T12:59:10.000Z",
+  "summary": "区分和 Tool 的关系 : 一句话区分：Tool：一个“可调用能力”MCP：把外部能力标准化接入 Agent 的“通信协议”MCP Server：真正实现这些能力的“服务端程序”Skill：教 Agent 在什么场景、按什么步骤、如何安全地使用能力的“操作手册 / SOP”Agent：负责理...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 285420754,
+    "slug": "mat50spf68xkqunt",
+    "directory": [
+      "GO-Agent",
+      "MCP"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "028ba027949728fcdd252f45db33ab3961736157de7f2d61bd5b014eebc81f95",
+    "missingImageReferences": []
+  }
+}

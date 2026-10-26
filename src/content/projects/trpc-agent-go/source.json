@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/17hwliao/trpc-agent-go",
+  "branch": "main",
+  "revision": "d51b52bdda3f8e2c56739652c2e078d10feddfcc",
+  "readmePath": "README.zh_CN.md",
+  "logoPath": "docs/mkdocs/assets/img/logo-readme-blue.png",
+  "fork": true,
+  "parent": "trpc-group/trpc-agent-go",
+  "license": "Apache-2.0",
+  "importedAt": "2026-10-26"
+}

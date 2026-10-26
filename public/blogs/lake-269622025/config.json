@@ -1,0 +1,30 @@
+{
+  "title": "泛型",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-13T08:13:37.000Z",
+  "createdAt": "2026-05-13T08:13:37.000Z",
+  "updatedAt": "2026-05-13T11:30:20.000Z",
+  "contentUpdatedAt": "2026-05-13T09:49:36.000Z",
+  "firstPublishedAt": "2026-05-13T08:13:46.237Z",
+  "publishedAt": "2026-05-13T09:49:36.000Z",
+  "summary": "从1.18版本开始，Go添加了对泛型的支持，即类型参数泛型函数如果我们要实现一个对int类型的求和函数Go复制代码func add(a, b int) int { return a + b }",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269622025,
+    "slug": "eisq0sa5l0lg2a9b",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "泛型"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "63de33b71932a67565158f912a5528e43575e0f067cfea9c2b9d010f6c21c1e2",
+    "missingImageReferences": []
+  }
+}

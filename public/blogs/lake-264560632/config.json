@@ -1,0 +1,30 @@
+{
+  "title": "Vue3",
+  "tags": [
+    "JAVA",
+    "Web前端开发 + AI"
+  ],
+  "date": "2026-04-06T13:25:02.000Z",
+  "createdAt": "2026-04-06T13:25:02.000Z",
+  "updatedAt": "2026-04-09T14:07:14.000Z",
+  "contentUpdatedAt": "2026-04-09T14:06:26.000Z",
+  "firstPublishedAt": "2026-04-06T13:25:32.759Z",
+  "publishedAt": "2026-04-09T14:06:26.000Z",
+  "summary": "概述Vue（读音 /vjuː /, 类似于 view），是一款用于构建用户界面的渐进式的JavaScript框架（官方网站：https://cn.vuejs.org）。Vue 是一个基于 JavaScript 的声明式 UI 框架。底层 : JS语言编写 ;",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 264560632,
+    "slug": "pte8agsowvxoiwrx",
+    "directory": [
+      "Web前端开发 + AI",
+      "Vue3"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "cfc549062a8e7b0984e20da69dba32bca5e7414fdc266b18e069004ee9237c30",
+    "missingImageReferences": []
+  }
+}

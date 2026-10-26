@@ -1,0 +1,31 @@
+{
+  "title": "路由",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-06-06T13:14:21.000Z",
+  "createdAt": "2026-06-06T13:14:21.000Z",
+  "updatedAt": "2026-06-06T13:45:30.000Z",
+  "contentUpdatedAt": "2026-06-06T13:35:28.000Z",
+  "firstPublishedAt": "2026-06-06T13:14:33.984Z",
+  "publishedAt": "2026-06-06T13:35:28.000Z",
+  "summary": "路由 r := gin.Default() r.POST() r.PATCH() 部分实现更新 r.GET() r.DELETE() r.PUT() 全量更新 r.POST()路由分组把一类api划分到一个组可以给这个组加上统一的中间件RESETFul Api规范尽量使用名称的复数来定义路由",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 272835764,
+    "slug": "xt1gozs0pxu56kbc",
+    "directory": [
+      "Gin-Web框架",
+      "中间件加路由",
+      "路由"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "90aa8e4f0aac4cd4558f6b812d09984f5a82562d3e7ddf1f6e899b155b61c5f6",
+    "missingImageReferences": []
+  }
+}

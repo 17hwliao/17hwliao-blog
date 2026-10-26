@@ -1,0 +1,31 @@
+{
+  "title": "练习代码18",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-01-20T07:18:25.000Z",
+  "createdAt": "2026-01-20T07:18:25.000Z",
+  "updatedAt": "2026-01-20T07:18:37.000Z",
+  "contentUpdatedAt": "2026-01-20T07:18:36.000Z",
+  "firstPublishedAt": "2026-01-20T07:18:36.441Z",
+  "publishedAt": "2026-01-20T07:18:36.000Z",
+  "summary": "import java.io.*; import java.util.*; public class Main { public static void main(String[] args) { Map map = new HashMap&lt;&gt;() ; ma...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 253922479,
+    "slug": "srn68qxcf6fcmum9",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码18"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "cd544f3285719a74c48b8f24b0299b3872405aba0033c4f76aa2ea333f5f3aae",
+    "missingImageReferences": []
+  }
+}

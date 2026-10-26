@@ -1,0 +1,30 @@
+{
+  "title": "Conda 实现多环境控制",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-05-08T01:50:00.000Z",
+  "createdAt": "2026-05-08T01:50:00.000Z",
+  "updatedAt": "2026-05-08T01:55:51.000Z",
+  "contentUpdatedAt": "2026-05-08T01:55:51.000Z",
+  "firstPublishedAt": "2026-05-08T01:51:52.451Z",
+  "publishedAt": "2026-05-08T01:55:51.000Z",
+  "summary": "Conda 常用命令速查1. 搜索可用的包（例如搜索 numpy）conda search numpy2. 安装包（默认安装最新版）conda install numpy3. 安装指定版本的包conda install numpy=1.24.34. 更新包到最新版conda update nu...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268797834,
+    "slug": "cemzgwec0aw0w7py",
+    "directory": [
+      "必要的相关技术",
+      "Conda 实现多环境控制"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "21e23d117f7f78104b4b4d8fb60978b6e32aba502eedb960ee798995a614ecf4",
+    "missingImageReferences": []
+  }
+}

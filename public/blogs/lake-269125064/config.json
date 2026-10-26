@@ -1,0 +1,30 @@
+{
+  "title": "数组,切片,map",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-10T03:01:46.000Z",
+  "createdAt": "2026-05-10T03:01:46.000Z",
+  "updatedAt": "2026-05-12T12:46:12.000Z",
+  "contentUpdatedAt": "2026-05-11T14:10:12.000Z",
+  "firstPublishedAt": "2026-05-10T03:02:06.084Z",
+  "publishedAt": "2026-05-11T14:10:12.000Z",
+  "summary": "这是 升序排序（从小到大排序）。在 Go 的 sort.Slice 函数中，比较函数 func(i, j int) bool",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269125064,
+    "slug": "bn6d8v6twd0pu91q",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "数组,切片,map"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "ca7702eb7de93122d5fe6716d1a8bdb9684626a97710b170c09fde9062b4f324",
+    "missingImageReferences": []
+  }
+}

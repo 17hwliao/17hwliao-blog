@@ -1,0 +1,31 @@
+{
+  "title": "Docker 系统学习",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-05-04T07:21:32.000Z",
+  "createdAt": "2026-05-04T07:21:32.000Z",
+  "updatedAt": "2026-05-04T14:05:42.000Z",
+  "contentUpdatedAt": "2026-05-04T13:48:05.000Z",
+  "firstPublishedAt": "2026-05-04T07:21:45.040Z",
+  "publishedAt": "2026-05-04T14:05:42.000Z",
+  "summary": "使用 桌面 化的 docker 实现 开发1. 从仓库拉取：最直接的方式如果官方已经把镜像推到了 Docker Hub 这样的公开镜像仓库，你就不用亲自构建了。操作步骤：打开终端（CMD 或 PowerShell）。执行拉取命令：bashdocker pull :例如：doc...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268305653,
+    "slug": "pqw1c8biyl1whh31",
+    "directory": [
+      "必要的相关技术",
+      "Docker入门",
+      "Docker 系统学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "224e74e7547985d3d5a25618c65a3b0045cd77ef9bd1f9472bc6ef8e625e9a42",
+    "missingImageReferences": []
+  }
+}

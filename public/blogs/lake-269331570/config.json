@@ -1,0 +1,30 @@
+{
+  "title": "for循环语句",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-11T13:04:24.000Z",
+  "createdAt": "2026-05-11T13:04:24.000Z",
+  "updatedAt": "2026-05-12T12:46:12.000Z",
+  "contentUpdatedAt": "2026-05-11T13:10:22.000Z",
+  "firstPublishedAt": "2026-05-11T13:07:23.677Z",
+  "publishedAt": "2026-05-11T13:10:22.000Z",
+  "summary": "for 初始化 ; 失败条件 ; 变化因素 {}任何编程语言，都会有for循环，它的一般写法是Go复制代码for 初始化;条件;操作{ }例如求1+2+...+100 的 和",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269331570,
+    "slug": "lrf87sbdqcax1bv2",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "for循环语句"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "ac69c6bfcd5879316485c777bb62a38b05cb32f87b2c84fa405b882568a36a01",
+    "missingImageReferences": []
+  }
+}

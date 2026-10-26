@@ -1,0 +1,92 @@
+[
+	{
+		"slug": "trpc-agent-go",
+		"name": "tRPC-Agent-Go",
+		"kind": "Agent 框架",
+		"positioning": "Go-native Agent Runtime",
+		"description": "以 Go 构建 Agent、图工作流和工具调用，把会话、记忆与可观测性连接到同一套运行时。",
+		"tags": [
+			"Go",
+			"Agent",
+			"Graph",
+			"MCP"
+		],
+		"year": 2026,
+		"image": "/images/projects/trpc-agent-go.png",
+		"url": "/projects/trpc-agent-go",
+		"github": "https://github.com/17hwliao/trpc-agent-go",
+		"readme": "https://github.com/17hwliao/trpc-agent-go/blob/main/README.zh_CN.md"
+	},
+	{
+		"slug": "sql-sentinel",
+		"name": "SQL Sentinel",
+		"kind": "开发工具",
+		"positioning": "以证据支持 SQL 优化",
+		"description": "从 SQL 准入、执行计划到隔离验证，串联候选方案与人工审批，让每个优化建议都有可追溯的依据。",
+		"tags": [
+			"Go",
+			"SQL",
+			"Eino",
+			"数据库"
+		],
+		"year": 2026,
+		"image": "/images/projects/sql-sentinel.svg",
+		"url": "/projects/sql-sentinel",
+		"github": "https://github.com/17hwliao/sql-sentinel",
+		"readme": "https://github.com/17hwliao/sql-sentinel/blob/master/README.md"
+	},
+	{
+		"slug": "agentmesh",
+		"name": "AgentMesh",
+		"kind": "模型网关",
+		"positioning": "统一接入，受控路由",
+		"description": "面向多租户的 LLM 网关与 Agent Runtime，连接模型路由、预算控制、流式响应和用量追踪。",
+		"tags": [
+			"Go",
+			"LLM",
+			"Gateway",
+			"可观测性"
+		],
+		"year": 2026,
+		"image": "/images/projects/agentmesh.svg",
+		"url": "/projects/agentmesh",
+		"github": "https://github.com/17hwliao/AgentMesh",
+		"readme": "https://github.com/17hwliao/AgentMesh/blob/master/README.md"
+	},
+	{
+		"slug": "zenix",
+		"name": "Zenix",
+		"kind": "桌面 / 移动应用",
+		"positioning": "属于自己的音乐空间",
+		"description": "面向 Windows 与 Android 的个性化音乐播放器，以贴纸、轨道和列表组织音乐，支持自定义源、本地曲库与歌词。",
+		"tags": [
+			"Electron",
+			"Android",
+			"音乐",
+			"本地优先"
+		],
+		"year": 2026,
+		"image": "/images/projects/zenix.png",
+		"url": "/projects/zenix",
+		"github": "https://github.com/17hwliao/Zenix",
+		"readme": "https://github.com/17hwliao/Zenix/blob/main/README.md"
+	},
+	{
+		"slug": "table-card",
+		"name": "TableCard",
+		"kind": "终端应用",
+		"positioning": "把终端变成游戏桌",
+		"description": "在同一个终端里选游戏、建房间、聊天和对局。Go 服务端校验操作，通过 WebSocket 同步玩家视图。",
+		"tags": [
+			"Go",
+			"TUI",
+			"WebSocket",
+			"多人游戏"
+		],
+		"year": 2026,
+		"image": "/images/projects/table-card.png",
+		"url": "/projects/table-card",
+		"github": "https://github.com/17hwliao/Table-Card",
+		"readme": "https://github.com/17hwliao/Table-Card/blob/main/README.md"
+	}
+]

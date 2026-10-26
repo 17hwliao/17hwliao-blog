@@ -1,0 +1,30 @@
+{
+  "title": "环境搭建",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-09T13:46:03.000Z",
+  "createdAt": "2026-05-09T13:46:03.000Z",
+  "updatedAt": "2026-05-13T11:27:05.000Z",
+  "contentUpdatedAt": "2026-05-09T13:55:03.000Z",
+  "firstPublishedAt": "2026-05-09T13:46:15.489Z",
+  "publishedAt": "2026-05-09T13:55:03.000Z",
+  "summary": "相对于其他语言，go语言的环境搭建及其简单官网https://go.dev/dl/访问不了的就访问中文网就好了go安装包下载https:/",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269071408,
+    "slug": "nu0k4zasmn75l3yy",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "环境搭建"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "0c6a00d8258f2ed28f27330c36f66e9a2042bd6ff8130125acf26b140c53bbfa",
+    "missingImageReferences": []
+  }
+}

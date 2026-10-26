@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/17hwliao/Zenix",
+  "branch": "main",
+  "revision": "a585d0cdadcefdb684f3fa5e7113b7f1a4a84324",
+  "readmePath": "README.md",
+  "logoPath": "assets/zenix-icon.png",
+  "fork": false,
+  "parent": null,
+  "license": "GPL-3.0",
+  "importedAt": "2026-10-26"
+}

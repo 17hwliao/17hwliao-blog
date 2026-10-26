@@ -1,0 +1,31 @@
+{
+  "title": "中间件",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-06-06T13:14:45.000Z",
+  "createdAt": "2026-06-06T13:14:45.000Z",
+  "updatedAt": "2026-06-07T03:51:50.000Z",
+  "contentUpdatedAt": "2026-06-06T14:37:13.000Z",
+  "firstPublishedAt": "2026-06-06T13:15:02.218Z",
+  "publishedAt": "2026-06-06T14:37:13.000Z",
+  "summary": "局部中间件直接作用于单个路由Go复制代码c . Abort() --&gt; 实现的是 拦截网络访问的需求 ; c.Next() --&gt; 放行 ; // /3.中间件.go package main import ( \"fmt\" \"github.com/gin-gonic/gin&amp;q",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 272835781,
+    "slug": "gxo84hc0wmt20dvz",
+    "directory": [
+      "Gin-Web框架",
+      "中间件加路由",
+      "中间件"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "9ea38c574da8b444b8cef4725452894aed5fa3c2691a0e983cd8031f5a6edcec",
+    "missingImageReferences": []
+  }
+}

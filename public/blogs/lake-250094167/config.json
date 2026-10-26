@@ -1,0 +1,31 @@
+{
+  "title": "第五天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-23T11:38:56.000Z",
+  "createdAt": "2025-12-23T11:38:56.000Z",
+  "updatedAt": "2026-04-12T08:07:27.000Z",
+  "contentUpdatedAt": "2026-04-12T08:07:26.000Z",
+  "firstPublishedAt": "2025-12-23T11:40:04.900Z",
+  "publishedAt": "2026-04-12T08:07:26.000Z",
+  "summary": "1. Object 是所有类的父类 : 超类public Object object 是一个公有的 Object 类型成员变量声明object = new Object(); 设计一个Object 对象 , 可以实现调用object内部所有函数设计函数传入类型为Object obj 可以在调用...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250094167,
+    "slug": "dt7qd5w4fb3k0gs4",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第五天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "836b0969d2052239a5b7afc2c4a7a21725bd59f7577e6f3b021027ae83b15707",
+    "missingImageReferences": []
+  }
+}

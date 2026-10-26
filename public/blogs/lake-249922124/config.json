@@ -1,0 +1,31 @@
+{
+  "title": "练习代码4",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-22T14:15:09.000Z",
+  "createdAt": "2025-12-22T14:15:09.000Z",
+  "updatedAt": "2025-12-25T14:10:51.000Z",
+  "contentUpdatedAt": "2025-12-22T14:16:47.000Z",
+  "firstPublishedAt": "2025-12-22T14:15:23.519Z",
+  "publishedAt": "2025-12-22T14:16:47.000Z",
+  "summary": "package io_17hwlioa; public class Exercise { public static void main(String[] args) { Student student = new Student(\"shiqi\" ) ; test( student ) ; s...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249922124,
+    "slug": "tqx6obp9ucfrfkpz",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码4"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "fcdba2577d2cc680018285fc8546dc96d8776e37c6d2cc72d0e52095f07a4840",
+    "missingImageReferences": []
+  }
+}

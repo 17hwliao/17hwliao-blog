@@ -1,0 +1,28 @@
+{
+  "title": "GO-zero",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-06-29T00:05:41.000Z",
+  "createdAt": "2026-06-29T00:05:41.000Z",
+  "updatedAt": "2026-06-29T00:06:40.000Z",
+  "contentUpdatedAt": "2026-06-29T00:06:40.000Z",
+  "firstPublishedAt": "2026-06-29T00:06:39.760Z",
+  "publishedAt": "2026-06-29T00:06:40.000Z",
+  "summary": "go-zero 是一个集成了各种工程实践的 web 和 rpc 框架。通过弹性设计保障了大并发服务端的稳定性，经受了充分的实战检验。官网：https://go-zero.dev/",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275586595,
+    "slug": "qsao08ngooo7cq8p",
+    "directory": [
+      "GO-zero"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "cb82cf1b3d6ccc2e6a6c38f77bb65357675c3b0ee559604de73e178589f4c449",
+    "missingImageReferences": []
+  }
+}

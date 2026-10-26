@@ -1,0 +1,31 @@
+{
+  "title": "练习代码14",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-01-04T08:50:41.000Z",
+  "createdAt": "2026-01-04T08:50:41.000Z",
+  "updatedAt": "2026-01-04T08:50:56.000Z",
+  "contentUpdatedAt": "2026-01-04T08:50:56.000Z",
+  "firstPublishedAt": "2026-01-04T08:50:55.733Z",
+  "publishedAt": "2026-01-04T08:50:56.000Z",
+  "summary": "package Today;public class New_Class{ String name ; int date ; T ws ; New_Class(String name , int date, T ws){ this.name = name ; this.date = da...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 251645379,
+    "slug": "rlgw1xtn3mx0vso0",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码14"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "4059226d46cf02c13530078119ab5ba9ce41ef54c7922ac98ead89a42cb5b639",
+    "missingImageReferences": []
+  }
+}

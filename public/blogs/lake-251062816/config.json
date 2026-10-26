@@ -1,0 +1,31 @@
+{
+  "title": "练习代码12",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-30T09:47:10.000Z",
+  "createdAt": "2025-12-30T09:47:10.000Z",
+  "updatedAt": "2025-12-30T09:47:36.000Z",
+  "contentUpdatedAt": "2025-12-30T09:47:35.000Z",
+  "firstPublishedAt": "2025-12-30T09:47:34.876Z",
+  "publishedAt": "2025-12-30T09:47:35.000Z",
+  "summary": "package Today ; import java.util.*; public class Main{ public static void main(String[]args){ int[] arr = {24,43,65,743,35,34,25,61,1,9} ; Bubble_S...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 251062816,
+    "slug": "xrhg3mylg3tyomwz",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码12"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "aa12bdec6090150fa997e975c73d48a7abf2942320610c459f824bec10b849f4",
+    "missingImageReferences": []
+  }
+}

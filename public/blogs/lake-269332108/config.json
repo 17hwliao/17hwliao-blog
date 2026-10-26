@@ -1,0 +1,30 @@
+{
+  "title": "函数",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-11T13:10:21.000Z",
+  "createdAt": "2026-05-11T13:10:21.000Z",
+  "updatedAt": "2026-05-12T14:37:45.000Z",
+  "contentUpdatedAt": "2026-05-12T14:37:44.000Z",
+  "firstPublishedAt": "2026-05-11T13:11:17.657Z",
+  "publishedAt": "2026-05-12T14:37:44.000Z",
+  "summary": "func 变量名 ( 形参列表 ) ( 返回的数值类型 ) { }函数 传参的时候 , 需要传入 多个相同的类型 的时候 可以 直接设置 传入 的参数 [ ...var ]函数是一段封装了特定功能的可重用代码块，用于执行特定的任务或计算函数接受输入（参数）并产生输出（返回值）函数定义Go复制代...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269332108,
+    "slug": "nxip35hzrnalkdkn",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "函数"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "846804cefea854eef43a573ba8b6355ad4ea20d3760c87b374a5c01f682e853c",
+    "missingImageReferences": []
+  }
+}

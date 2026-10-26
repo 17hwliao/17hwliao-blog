@@ -1,0 +1,31 @@
+{
+  "title": "第二十一天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-02-06T09:33:13.000Z",
+  "createdAt": "2026-02-06T09:33:13.000Z",
+  "updatedAt": "2026-02-07T03:09:48.000Z",
+  "contentUpdatedAt": "2026-02-07T03:03:47.000Z",
+  "firstPublishedAt": "2026-02-06T09:35:21.908Z",
+  "publishedAt": "2026-02-07T03:03:47.000Z",
+  "summary": "Java I/OI/O简而言之，就是输入输出,读取硬盘上的文件，网络文件传输，鼠标键盘输入，也可以是接受单片机发回的数据，而能够支持这些操作的设备就是I/O设备。常见的I/O设备一般是鼠标、键盘这类通过USB进行传输的外设或者是通过Sata接口或是M.2连接的硬盘。一般情况下，这些设备是由CP...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 256233251,
+    "slug": "dig0cg72zp1c9itg",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第二十一天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "4be09fe87d321047b75b42909bd0adcd295aba7de773f87786b2b45a29a2f492",
+    "missingImageReferences": []
+  }
+}

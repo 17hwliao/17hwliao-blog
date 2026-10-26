@@ -1,0 +1,31 @@
+{
+  "title": "参数绑定",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-30T05:15:40.000Z",
+  "createdAt": "2026-05-30T05:15:40.000Z",
+  "updatedAt": "2026-05-31T02:34:17.000Z",
+  "contentUpdatedAt": "2026-05-31T01:27:07.000Z",
+  "firstPublishedAt": "2026-05-30T05:16:21.486Z",
+  "publishedAt": "2026-05-31T01:27:07.000Z",
+  "summary": "使用binding可以很好的完成参数的绑定先创建结构体 , 然后实例化, 使用 ShouldBind方法实现判断参数绑定是否完善 ; 参数都 拼接到了 url 中去了可以直接使用 ; 查询参数Go复制代码type User struct { Name st",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271904028,
+    "slug": "gx422uwfe21vbz17",
+    "directory": [
+      "Gin-Web框架",
+      "bind 绑定器",
+      "参数绑定"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "8f4bf3d891dfcf2d067975911993133f9cb803d75d06f4ee9f53df87228992e5",
+    "missingImageReferences": []
+  }
+}

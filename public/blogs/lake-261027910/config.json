@@ -1,0 +1,28 @@
+{
+  "title": "数据库",
+  "tags": [
+    "JAVA"
+  ],
+  "date": "2026-03-13T10:56:20.000Z",
+  "createdAt": "2026-03-13T10:56:20.000Z",
+  "updatedAt": "2026-03-13T10:56:30.000Z",
+  "contentUpdatedAt": "2026-03-13T10:56:20.000Z",
+  "firstPublishedAt": null,
+  "publishedAt": null,
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 261027910,
+    "slug": "taxmcwfyxkpudpaf",
+    "directory": [
+      "数据库"
+    ],
+    "status": 0,
+    "empty": true,
+    "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "missingImageReferences": []
+  }
+}

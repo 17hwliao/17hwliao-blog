@@ -1,0 +1,31 @@
+{
+  "title": "第十四天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-01-04T06:07:41.000Z",
+  "createdAt": "2026-01-04T06:07:41.000Z",
+  "updatedAt": "2026-01-04T08:48:34.000Z",
+  "contentUpdatedAt": "2026-01-04T08:46:42.000Z",
+  "firstPublishedAt": "2026-01-04T06:11:32.568Z",
+  "publishedAt": "2026-01-04T08:46:42.000Z",
+  "summary": "泛型方法( 支持静态方法 和 成员方法 )private static T test(T t ){ return t ; } main: tring s = test(\"ws是gay\") ; (创建泛型对象)JDK内部实现的泛型方法数组排序Arrays.sort(arr , new C...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 251611747,
+    "slug": "qd5sbtz1vt6itbpd",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第十四天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3fe8788bd69a339cf0bc0bd0c535603f5faa9bab35c73c1e6f3bc44ba101322a",
+    "missingImageReferences": []
+  }
+}

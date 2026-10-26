@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/17hwliao/Table-Card",
+  "branch": "main",
+  "revision": "3f0860ab43d94871e29dcdd418a2f6bc0d706605",
+  "readmePath": "README.md",
+  "logoPath": "docs/branding/tablecard-logo.png",
+  "fork": false,
+  "parent": null,
+  "license": "GPL-3.0",
+  "importedAt": "2026-10-26"
+}

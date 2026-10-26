@@ -1,0 +1,30 @@
+{
+  "title": "练习笔记",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-19T07:24:39.000Z",
+  "createdAt": "2025-12-19T07:24:39.000Z",
+  "updatedAt": "2025-12-20T11:39:07.000Z",
+  "contentUpdatedAt": "2025-12-20T11:39:06.000Z",
+  "firstPublishedAt": "2025-12-19T11:07:46.295Z",
+  "publishedAt": "2025-12-20T11:39:06.000Z",
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249532183,
+    "slug": "ank9cxeucn3wbfck",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记"
+    ],
+    "status": 1,
+    "empty": true,
+    "bodySha256": "7debd38fae0d8e9e157fbab0708b48c8ea43883c2572f1b42545bf0f826b27f0",
+    "missingImageReferences": []
+  }
+}

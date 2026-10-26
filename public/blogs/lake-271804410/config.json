@@ -1,0 +1,31 @@
+{
+  "title": "原始内容",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-29T06:51:30.000Z",
+  "createdAt": "2026-05-29T06:51:30.000Z",
+  "updatedAt": "2026-05-30T05:59:21.000Z",
+  "contentUpdatedAt": "2026-05-30T05:59:20.000Z",
+  "firstPublishedAt": "2026-05-29T06:51:51.102Z",
+  "publishedAt": "2026-05-30T05:59:20.000Z",
+  "summary": "不同的请求体对应的原始内容使用 io.ReadAll( c.Request.Body ) 可以创建一个一次性的文件操作流 ; 可以上传任意形式的文件类型 , 但是只能读取一次 ; body阅后即焚问题解决请求体获取之后就会销毁, 需要拿到阅读后的内容蓄一个新的Go",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271804410,
+    "slug": "hmbqw9nfgdv4pksb",
+    "directory": [
+      "Gin-Web框架",
+      "gin 获取数据",
+      "原始内容"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "8390b9d132e95c5ff961e3cd5ac1da6fd6262b4a9523b85a2415bceb7652c7e4",
+    "missingImageReferences": []
+  }
+}

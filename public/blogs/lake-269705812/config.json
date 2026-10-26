@@ -1,0 +1,30 @@
+{
+  "title": "单元测试",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-14T01:45:41.000Z",
+  "createdAt": "2026-05-14T01:45:41.000Z",
+  "updatedAt": "2026-05-14T02:28:10.000Z",
+  "contentUpdatedAt": "2026-05-14T02:28:10.000Z",
+  "firstPublishedAt": "2026-05-14T01:45:53.448Z",
+  "publishedAt": "2026-05-14T02:28:10.000Z",
+  "summary": "死规定 : 单元测试文件必须叫：原文件名 + _test.go必须在同一个包（package）里面测试用例函数必须以Test开头，一般来说就是Test+被测试的函数名测试 泛型函数的 时候不能传泛型的 类型直接传值 即可 ; Go语言中自带有一个轻量级的测试框架testing和自带的go te...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269705812,
+    "slug": "binwctvvhn9f5dw9",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "单元测试"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "25fbe1b2ff634beb884a7014d1798c49851536bd030ba1ac5ce214051d16406f",
+    "missingImageReferences": []
+  }
+}

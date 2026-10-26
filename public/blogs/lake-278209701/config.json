@@ -1,0 +1,30 @@
+{
+  "title": "RabbitMQ",
+  "tags": [
+    "Goland",
+    "消息队列"
+  ],
+  "date": "2026-07-19T17:24:12.000Z",
+  "createdAt": "2026-07-19T17:24:12.000Z",
+  "updatedAt": "2026-07-20T19:00:39.000Z",
+  "contentUpdatedAt": "2026-07-20T18:48:22.000Z",
+  "firstPublishedAt": "2026-07-19T23:17:20.437Z",
+  "publishedAt": "2026-07-20T19:00:37.000Z",
+  "summary": "主要实现的服务 : 解耦 , 异步 , 削峰; 使用 docker 实现安装services: rabbitmq: image: rabbitmq:3-management container_name: rabbitmq restart: unless-stopped ports: - \"5...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 278209701,
+    "slug": "xevt62byi6veo09p",
+    "directory": [
+      "消息队列",
+      "RabbitMQ"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "05eebe3452429d907635dcd2c2a53f7e025ed51cc75ad063cdd49b2cba51ce72",
+    "missingImageReferences": []
+  }
+}

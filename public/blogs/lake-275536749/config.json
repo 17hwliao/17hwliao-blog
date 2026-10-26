@@ -1,0 +1,30 @@
+{
+  "title": "redis的持久化",
+  "tags": [
+    "Goland",
+    "go语言集成redis"
+  ],
+  "date": "2026-06-28T12:12:34.000Z",
+  "createdAt": "2026-06-28T12:12:34.000Z",
+  "updatedAt": "2026-06-28T12:15:34.000Z",
+  "contentUpdatedAt": "2026-06-28T12:15:33.000Z",
+  "firstPublishedAt": "2026-06-28T12:12:59.597Z",
+  "publishedAt": "2026-06-28T12:15:33.000Z",
+  "summary": "持久化Redis是一个内存数据库，数据保存在内存中，但是我们都知道内存的数据变化是很快的，也容易发生丢失辛好Redis还为我们提供了持久化的机制，分别是RDB(Redis DataBase)和AOF(Append Only File)。RDB，简而言之，就是在不同的时间点，将redis存储的数...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275536749,
+    "slug": "ggpxof6li7n83ybb",
+    "directory": [
+      "go语言集成redis",
+      "redis的持久化"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "1a9b6807adf35db5fb8e684b338f9a9cc90c3ed62d66f11f1cac6a2b4ef2f7b7",
+    "missingImageReferences": []
+  }
+}

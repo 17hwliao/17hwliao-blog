@@ -1,0 +1,31 @@
+{
+  "title": "第十二天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-30T07:12:40.000Z",
+  "createdAt": "2025-12-30T07:12:40.000Z",
+  "updatedAt": "2025-12-30T13:32:41.000Z",
+  "contentUpdatedAt": "2025-12-30T09:46:23.000Z",
+  "firstPublishedAt": "2025-12-30T07:13:05.195Z",
+  "publishedAt": "2025-12-30T09:46:58.000Z",
+  "summary": "代码训练 : toString实现将对象转化为字符串进行输出 ( 在自己建的类中需要重写实现否则无实际意义 [ @1b6d3586 ] , 数组中的Arrays.toString已经重写过可以输出数组全部内容 (直接输出[I@1b6d3586（没意义）) )String s = cin.nex...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 251035519,
+    "slug": "hkcvton6shbg7bss",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第十二天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "621b00cad26ff25de3956865b2830db75e71c1d27a6b6fde0f3c352d01c19d5d",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "title": "反射",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-14T02:28:51.000Z",
+  "createdAt": "2026-05-14T02:28:51.000Z",
+  "updatedAt": "2026-09-17T07:57:45.000Z",
+  "contentUpdatedAt": "2026-09-17T07:28:19.000Z",
+  "firstPublishedAt": "2026-05-14T02:29:10.038Z",
+  "publishedAt": "2026-09-17T07:57:45.000Z",
+  "summary": "后面会接触到的结构体反射操作获取全部的内部字段值 : field reflect.StructField 携带了结构体字段的全部反射元信息。关键成员和方法有：成员 含义 在本例中的值field.Name Go 字段原名 \"UserName\"field.Type 字段类型 stringfield...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269714252,
+    "slug": "dx01xd2khnxrvbys",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "反射"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "a1591c460e5d8c97064447c02b3e544479f0683a20a9b94361efb431a1a307c5",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "第十天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-28T10:24:47.000Z",
+  "createdAt": "2025-12-28T10:24:47.000Z",
+  "updatedAt": "2026-01-31T17:19:10.000Z",
+  "contentUpdatedAt": "2025-12-28T13:44:39.000Z",
+  "firstPublishedAt": "2025-12-28T10:25:17.727Z",
+  "publishedAt": "2025-12-28T13:44:40.000Z",
+  "summary": "工具类 : 数学工具类 : 通过Math类调用函数 : pow , min , max , abs , sin , cos ; Java重载魅力时刻 : Java 中的 Math.abs() 方法适用于所有数值类型，无论是整数还是小数，正数还是负数。 floor( 向下取整 ) , round...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250757996,
+    "slug": "hmoo1s6dcgq2dkyc",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第十天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "26c949274d59a7518f0879bb53ae02185845f708a760245a6affaed8ef3ada9c",
+    "missingImageReferences": []
+  }
+}

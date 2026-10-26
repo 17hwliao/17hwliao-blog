@@ -1,0 +1,6 @@
+[
+	{ "id": "only", "title": "唯一", "label": "emo", "src": "/music/only.mp3" },
+	{ "id": "loser", "title": "loser", "label": "疯狂", "src": "/music/loser.mp3" },
+	{ "id": "loser-sifeng", "title": "loser死冯版", "label": "更加疯狂", "src": "/music/loser-sifeng.mp3" },
+	{ "id": "twenty-two", "title": "二十二", "label": "欢快", "src": "/music/twenty-two.mp3" }
+]

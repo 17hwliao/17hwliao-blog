@@ -1,0 +1,30 @@
+{
+  "title": "gin响应",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-24T03:18:47.000Z",
+  "createdAt": "2026-05-24T03:18:47.000Z",
+  "updatedAt": "2026-05-29T14:55:56.000Z",
+  "contentUpdatedAt": "2026-05-28T04:59:35.000Z",
+  "firstPublishedAt": "2026-05-24T03:19:02.666Z",
+  "publishedAt": "2026-05-28T04:59:35.000Z",
+  "summary": "安装下载适用 Gin 框架 : go get -u github.com/gin-gonic/gintype H map[string]interface{} 内部提前封装",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271097082,
+    "slug": "xwpfp9ueb0tgxznh",
+    "directory": [
+      "Gin-Web框架",
+      "gin响应"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "adcebdfe6a5d4858d38434f46f4e673497901a5eb87f1985397ca9f1d649b14f",
+    "missingImageReferences": []
+  }
+}

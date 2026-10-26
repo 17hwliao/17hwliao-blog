@@ -1,0 +1,31 @@
+{
+  "title": "练习代码11",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-29T06:32:27.000Z",
+  "createdAt": "2025-12-29T06:32:27.000Z",
+  "updatedAt": "2025-12-29T06:32:40.000Z",
+  "contentUpdatedAt": "2025-12-29T06:32:39.000Z",
+  "firstPublishedAt": "2025-12-29T06:32:38.882Z",
+  "publishedAt": "2025-12-29T06:32:39.000Z",
+  "summary": "package Today; import java.text.* ; import java.time.* ; import java.time.format.DateTimeFormatter; import java.util.* ; public class Main { public...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250868347,
+    "slug": "ag3d6oantkwcmutv",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码11"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "6a282557fc9a13377fc26062c30ae3dde6b4ec404e28d7d2a0a7dcaaad5929ee",
+    "missingImageReferences": []
+  }
+}

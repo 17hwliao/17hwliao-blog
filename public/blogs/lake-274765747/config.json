@@ -1,0 +1,30 @@
+{
+  "title": "gRPC介绍",
+  "tags": [
+    "Goland",
+    "gRPC架构"
+  ],
+  "date": "2026-06-22T08:37:24.000Z",
+  "createdAt": "2026-06-22T08:37:24.000Z",
+  "updatedAt": "2026-08-06T05:21:18.000Z",
+  "contentUpdatedAt": "2026-06-25T07:23:46.000Z",
+  "firstPublishedAt": "2026-06-22T08:37:51.062Z",
+  "publishedAt": "2026-06-25T07:23:46.000Z",
+  "summary": "现代改动很大 : 在现在创建 服务端 server 的时候 : 创造的 结构体 中必须要加上 : 结构体名字随便起（VideoServer / MyServer / 都行）rpc 方法名必须和 proto 一致",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 274765747,
+    "slug": "kulp2qpukygtppam",
+    "directory": [
+      "gRPC架构",
+      "gRPC介绍"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "7b4ba922b3b5bd8e8c5ac6b77fc35e9bd042934c531ecebfdc59526d5a754d99",
+    "missingImageReferences": []
+  }
+}

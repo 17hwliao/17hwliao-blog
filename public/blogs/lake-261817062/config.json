@@ -1,0 +1,30 @@
+{
+  "title": "Docker入门",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-03-18T11:50:57.000Z",
+  "createdAt": "2026-03-18T11:50:57.000Z",
+  "updatedAt": "2026-10-14T13:08:52.000Z",
+  "contentUpdatedAt": "2026-07-08T06:02:35.000Z",
+  "firstPublishedAt": "2026-03-18T11:52:06.250Z",
+  "publishedAt": "2026-07-08T06:02:35.000Z",
+  "summary": "简介使用Linux内核的两大原生功能 : Cgroups : 实现限制和隔离进程的资源使用 , 为容器设置CPU , 内存, 网络等资源的使用上限 , 确保不相互影响 ; Namespaces : 容器只能查看到内部进程ID , 网络相关资源而看不到宿主机 , 容器本身算一种特殊的进程 , 但...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 261817062,
+    "slug": "ycu3185vgq31ad8k",
+    "directory": [
+      "必要的相关技术",
+      "Docker入门"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "aaeb533cfcb1821079bba9087ab955ea3d061a4db27326d3e4cdb978a50a8368",
+    "missingImageReferences": []
+  }
+}

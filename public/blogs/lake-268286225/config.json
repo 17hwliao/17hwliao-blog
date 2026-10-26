@@ -1,0 +1,30 @@
+{
+  "title": "pyenv轻量化创建 python运行环境",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-05-04T00:34:29.000Z",
+  "createdAt": "2026-05-04T00:34:29.000Z",
+  "updatedAt": "2026-05-08T01:40:22.000Z",
+  "contentUpdatedAt": "2026-05-08T01:40:21.000Z",
+  "firstPublishedAt": "2026-05-04T00:34:52.356Z",
+  "publishedAt": "2026-05-08T01:40:21.000Z",
+  "summary": "conda 可以创建 多种语言的运行环境 , 不是很建议常使用的命令 : # 1. 查看可安装的 Python 3.11 版本pyenv install --list | findstr \"3.11\"# 2. 安装 Python 3.11.9pyenv install 3.11.9# 3. 查...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268286225,
+    "slug": "qppbxep7rkn7f2pr",
+    "directory": [
+      "必要的相关技术",
+      "pyenv轻量化创建 python运行环境"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "d3f6f0f4a41cc05f519fd3ec41d39e28339ab277d77d9ebe726ba1fedc7e6c71",
+    "missingImageReferences": []
+  }
+}

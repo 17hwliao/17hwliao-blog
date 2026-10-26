@@ -1,0 +1,31 @@
+{
+  "title": "练习代码16",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-01-12T11:40:24.000Z",
+  "createdAt": "2026-01-12T11:40:24.000Z",
+  "updatedAt": "2026-01-12T12:19:10.000Z",
+  "contentUpdatedAt": "2026-01-12T11:40:53.000Z",
+  "firstPublishedAt": "2026-01-12T11:40:42.143Z",
+  "publishedAt": "2026-01-12T11:40:53.000Z",
+  "summary": "package Today.Study.Study; import java.util.ArrayList; public class LinkList { private Node head = new Node(null) ; private int size = 0 ;...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 252821909,
+    "slug": "pv7xs8lla85wz8g4",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码16"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "9c74debd95be59ebb6cb081eb821e26dbfede66140f6ffa90c8da359d2a2af55",
+    "missingImageReferences": []
+  }
+}

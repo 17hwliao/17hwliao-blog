@@ -1,0 +1,30 @@
+{
+  "title": "AOP",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-29T10:10:13.000Z",
+  "createdAt": "2026-04-29T10:10:13.000Z",
+  "updatedAt": "2026-05-01T02:14:09.000Z",
+  "contentUpdatedAt": "2026-05-01T01:51:36.000Z",
+  "firstPublishedAt": "2026-04-29T10:10:23.718Z",
+  "publishedAt": "2026-05-01T01:51:36.000Z",
+  "summary": "接下来我们进入到AOP的学习。 AOP也是spring框架的第二大核心，我们先来学习AOP的基础。调用切面方法的本质 : 方法调用的时候 , 如果被 AOP 监控 , 会直接作为Proceeding JoinPoint对象 进入创建出的 AOP 方法, 内部调用的 proceed() 完全为原...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 267856049,
+    "slug": "nam12alaamxh9f82",
+    "directory": [
+      "Web后端开发 + AI",
+      "AOP"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "ac584eb2ab9782b4fa7b6f0ae999d34177445b75122fe77c1ef604f8b5408a6e",
+    "missingImageReferences": []
+  }
+}

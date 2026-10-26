@@ -1,0 +1,28 @@
+{
+  "title": "Zap开源日志框架",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-07-15T13:56:50.000Z",
+  "createdAt": "2026-07-15T13:56:50.000Z",
+  "updatedAt": "2026-07-28T12:59:41.000Z",
+  "contentUpdatedAt": "2026-07-23T14:29:38.000Z",
+  "firstPublishedAt": "2026-07-15T13:57:25.877Z",
+  "publishedAt": "2026-07-23T14:29:38.000Z",
+  "summary": "前提必须要背诵的结构化知识 : Debug &lt; Info &lt; Warn &lt; Error &lt; DPanic &lt; Panic &lt; Fatalzap功能强大, 配置项很多 ; 一般需要掌握的技能有以下这些 : 1.时间的格式化 ; 2.输出美化3.预设字段4.使用全局日",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 277758126,
+    "slug": "rgmhd1gbv5w79kq6",
+    "directory": [
+      "Zap开源日志框架"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "d5cb340379b3ffd8066286902573d82585cac53054c2762c2a6478d738ee9181",
+    "missingImageReferences": []
+  }
+}

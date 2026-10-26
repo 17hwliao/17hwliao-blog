@@ -1,0 +1,30 @@
+{
+  "title": "HTML",
+  "tags": [
+    "JAVA",
+    "Web前端开发 + AI"
+  ],
+  "date": "2026-03-18T09:36:51.000Z",
+  "createdAt": "2026-03-18T09:36:51.000Z",
+  "updatedAt": "2026-04-09T11:00:52.000Z",
+  "contentUpdatedAt": "2026-04-09T11:00:51.000Z",
+  "firstPublishedAt": "2026-03-18T09:37:07.172Z",
+  "publishedAt": "2026-04-09T11:00:51.000Z",
+  "summary": "前端：我们网站的页面，包括网站的样式、图片、视频等一切用户可见的内容都是前端的内容。后端：处理网站的所有数据来源，比如我们之前从数据库中查询数据，而我们查询的数据经过处理最终会被展示到前端，而用于处理前端数据的工作就是由后端来完成的。相当于，前端仅仅是一层皮，它直接决定了整个网站的美观程度，我...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 261795323,
+    "slug": "dglgk9vf3cbygsn7",
+    "directory": [
+      "Web前端开发 + AI",
+      "HTML"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "a1fe26646ee6a3717f095764e317a7ed384ecc468498515af45486abaac968ad",
+    "missingImageReferences": []
+  }
+}

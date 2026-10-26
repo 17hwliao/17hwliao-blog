@@ -1,0 +1,30 @@
+{
+  "title": "api服务",
+  "tags": [
+    "Goland",
+    "GO-zero"
+  ],
+  "date": "2026-06-30T12:44:29.000Z",
+  "createdAt": "2026-06-30T12:44:29.000Z",
+  "updatedAt": "2026-08-06T05:19:58.000Z",
+  "contentUpdatedAt": "2026-07-07T13:51:19.000Z",
+  "firstPublishedAt": "2026-06-30T12:44:54.842Z",
+  "publishedAt": "2026-07-07T13:51:19.000Z",
+  "summary": "api文件就是对这个服务所有api的描述服务名，函数名，路径，请求方法，请求参数，响应参数我们以用户管理的两个重要接口为例，去编写它的api文件@handler 是 go-zero API 语法注解",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275857079,
+    "slug": "wo4s2o794w4k2ir4",
+    "directory": [
+      "GO-zero",
+      "api服务"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "aae7e96f9b5fc2aa2fd8e138c49646e7c600bb5547d22ed31df2476e37ff99ed",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "第二十天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-01-24T02:30:29.000Z",
+  "createdAt": "2026-01-24T02:30:29.000Z",
+  "updatedAt": "2026-01-24T08:30:35.000Z",
+  "contentUpdatedAt": "2026-01-24T08:29:50.000Z",
+  "firstPublishedAt": "2026-01-24T02:30:58.520Z",
+  "publishedAt": "2026-01-24T08:29:50.000Z",
+  "summary": "集合工厂方法 List fruit = Arrays.asList(\"apple\", \"banana\", \"orange\"",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 254462405,
+    "slug": "ze1dot6r7u3953sf",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第二十天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "2841f646c2f0343444be446fee1988c7168c65a14d609fe9c25c0c70182e48c0",
+    "missingImageReferences": []
+  }
+}

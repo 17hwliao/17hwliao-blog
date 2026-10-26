@@ -1,0 +1,30 @@
+{
+  "title": "proto文件",
+  "tags": [
+    "Goland",
+    "gRPC架构"
+  ],
+  "date": "2026-06-24T11:36:49.000Z",
+  "createdAt": "2026-06-24T11:36:49.000Z",
+  "updatedAt": "2026-06-25T10:57:41.000Z",
+  "contentUpdatedAt": "2026-06-25T10:26:54.000Z",
+  "firstPublishedAt": "2026-06-24T11:37:15.802Z",
+  "publishedAt": "2026-06-25T10:26:54.000Z",
+  "summary": "syntax = \"proto3\"; // 指定proto版本 package hello_grpc; // 指定默认包名 // 指定golang包名 option go_package = \"/hello_grpc\"; //定义rpc服务 service HelloService { // ...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275084085,
+    "slug": "bl0n1et17f5lhmks",
+    "directory": [
+      "gRPC架构",
+      "proto文件"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "d9db3a618cc8df5e2d5c99a8f13a4515f8efedddc0e4988195696b3214f77803",
+    "missingImageReferences": []
+  }
+}

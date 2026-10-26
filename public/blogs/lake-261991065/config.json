@@ -1,0 +1,30 @@
+{
+  "title": "基础语法学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-03-19T09:42:47.000Z",
+  "createdAt": "2026-03-19T09:42:47.000Z",
+  "updatedAt": "2026-03-19T09:42:54.000Z",
+  "contentUpdatedAt": "2026-03-19T09:42:47.000Z",
+  "firstPublishedAt": null,
+  "publishedAt": null,
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 261991065,
+    "slug": "psl6h84fgknod35x",
+    "directory": [
+      "java学习路线",
+      "基础语法学习"
+    ],
+    "status": 0,
+    "empty": true,
+    "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "missingImageReferences": []
+  }
+}

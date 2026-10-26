@@ -1,0 +1,30 @@
+{
+  "title": "if条件判断",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-11T02:05:21.000Z",
+  "createdAt": "2026-05-11T02:05:21.000Z",
+  "updatedAt": "2026-05-12T12:46:12.000Z",
+  "contentUpdatedAt": "2026-05-11T13:04:25.000Z",
+  "firstPublishedAt": "2026-05-11T02:05:39.969Z",
+  "publishedAt": "2026-05-11T13:04:25.000Z",
+  "summary": "if语句以年龄为例，输入的年龄在某一个区间，就输出对应的提示信息Go复制代码=35 中年很明显，这是一个多选一的情况我们有很多中方式来实现",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269231473,
+    "slug": "xsre6gvoo8spxopk",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "if条件判断"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "6dd3084579d5c215be0b35467efbc041322fa2ee3627339ebb7b7e1b977560dd",
+    "missingImageReferences": []
+  }
+}

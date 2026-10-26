@@ -1,0 +1,30 @@
+{
+  "title": "简单的对话翻译项目",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-07T11:49:01.000Z",
+  "createdAt": "2026-08-07T11:49:01.000Z",
+  "updatedAt": "2026-08-07T13:01:30.000Z",
+  "contentUpdatedAt": "2026-08-07T13:01:29.000Z",
+  "firstPublishedAt": "2026-08-07T11:49:20.925Z",
+  "publishedAt": "2026-08-07T13:01:29.000Z",
+  "summary": "package main import ( \"bufio\" \"context\" \"errors\" \"fmt\" \"io\" \"log\" \"os\" \"strings\" \"github.com/cloudwego/eino-ext/components/model/ollama\" \"github.co...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 280551023,
+    "slug": "ietpf68fugo0ec39",
+    "directory": [
+      "GO-Agent",
+      "简单的对话翻译项目"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "e19a3bf0b07adc763e2c785f773337e87e08bcdd54ed6b525310680be106fc75",
+    "missingImageReferences": []
+  }
+}

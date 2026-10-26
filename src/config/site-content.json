@@ -1,0 +1,47 @@
+{
+	"meta": {
+		"title": "17hwliao",
+		"description": "欢迎来到17hwliao的博客，平时记录一些好玩好看的东西.\n如果你喜欢我的开源请不要吝啬你的 star ⭐(♥ ω ♥)\n个人宣言：或许不必太复杂",
+		"username": "17hwliao"
+	},
+	"theme": {
+		"colorBrand": "#252525",
+		"colorPrimary": "#202020",
+		"colorSecondary": "#6b6b68",
+		"colorBrandSecondary": "#5d7770",
+		"colorBg": "#fcfcfa",
+		"colorBorder": "#e6e6e1",
+		"colorCard": "#ffffff",
+		"colorArticle": "#ffffff"
+	},
+	"backgroundColors": [],
+	"artImages": [],
+	"currentArtImageId": "",
+	"backgroundImages": [],
+	"currentBackgroundImageId": "",
+	"socialButtons": [
+		{
+			"id": "github",
+			"type": "link",
+			"value": "https://github.com/17hwliao",
+			"label": "github",
+			"order": 1
+		},
+		{
+			"id": "email",
+			"type": "email",
+			"value": "shiqihaowuliao@qq.com",
+			"label": "email",
+			"order": 2
+		}
+	],
+	"clockShowSeconds": false,
+	"summaryInContent": false,
+	"isCachePem": false,
+	"hideEditButton": false,
+	"enableCategories": true,
+	"beian": {
+		"text": "",
+		"link": ""
+	}
+}

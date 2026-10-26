@@ -1,0 +1,30 @@
+{
+  "title": "环境构建",
+  "tags": [
+    "Goland",
+    "GO-zero"
+  ],
+  "date": "2026-06-29T00:56:18.000Z",
+  "createdAt": "2026-06-29T00:56:18.000Z",
+  "updatedAt": "2026-06-30T08:38:21.000Z",
+  "contentUpdatedAt": "2026-06-30T08:38:20.000Z",
+  "firstPublishedAt": "2026-06-29T00:56:24.028Z",
+  "publishedAt": "2026-06-30T08:38:20.000Z",
+  "summary": "安装goctlVue复制代码go install github.com/zeromicro/go-zero/tools/goctl@latest安装protoc全家桶 Vue复制代码goctl env check --insta",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275589455,
+    "slug": "xf4egurwv17seug0",
+    "directory": [
+      "GO-zero",
+      "环境构建"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3e217c10260640ed98d9a9560b7b827390ce89056ddd0193ddbf0fbfe4d84d50",
+    "missingImageReferences": []
+  }
+}

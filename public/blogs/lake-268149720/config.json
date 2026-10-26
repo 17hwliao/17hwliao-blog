@@ -1,0 +1,31 @@
+{
+  "title": "Vue 工程化",
+  "tags": [
+    "JAVA",
+    "Web前端开发 + AI"
+  ],
+  "date": "2026-05-02T06:32:35.000Z",
+  "createdAt": "2026-05-02T06:32:35.000Z",
+  "updatedAt": "2026-05-06T00:59:33.000Z",
+  "contentUpdatedAt": "2026-05-03T04:15:24.000Z",
+  "firstPublishedAt": "2026-05-02T06:33:03.496Z",
+  "publishedAt": "2026-05-03T04:15:24.000Z",
+  "summary": "Vue工程化前面我们在介绍Vue的时候，我们讲到Vue是一款用于构建用户界面的渐进式JavaScript框架 。（官方：https://cn.vuejs.org/）那在前面的课程中，我们已经学习了Vue的基本语法、表达式、指令，并基于Vue的核心包，完成了Vue的案例。 那今天呢，我们要来讲解...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268149720,
+    "slug": "vf2g849qfxti7t5r",
+    "directory": [
+      "Web前端开发 + AI",
+      "Vue3",
+      "Vue 工程化"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "eba9bac71ab227ebd68c01f2640492d4b9608f45f31e8b37338eeaef2fa0fef5",
+    "missingImageReferences": []
+  }
+}

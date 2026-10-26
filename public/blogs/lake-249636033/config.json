@@ -1,0 +1,31 @@
+{
+  "title": "for(标签) +方法重载 + 类的构造器",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-20T05:24:05.000Z",
+  "createdAt": "2025-12-20T05:24:05.000Z",
+  "updatedAt": "2026-04-02T02:18:01.000Z",
+  "contentUpdatedAt": "2025-12-21T02:14:31.000Z",
+  "firstPublishedAt": "2025-12-20T05:24:16.100Z",
+  "publishedAt": "2025-12-21T02:14:31.000Z",
+  "summary": "标签 : 可以将类里面的方法使用一个标签全部打包后break + 标签（跳出指定代码区）continue + 标签（跳到指定代码区）outer : 放在外层循环 运用 break outer 可以实现直接跳出外层循环运用 continue",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249636033,
+    "slug": "vlr96503gzwcbvy0",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "for(标签) +方法重载 + 类的构造器"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "4306b50722e3e1284d0c9daf242f0929207db7e1b81a3404e5763919906efb81",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "第四天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-22T02:28:23.000Z",
+  "createdAt": "2025-12-22T02:28:23.000Z",
+  "updatedAt": "2026-04-02T02:08:09.000Z",
+  "contentUpdatedAt": "2026-04-02T02:08:09.000Z",
+  "firstPublishedAt": "2025-12-22T11:03:14.727Z",
+  "publishedAt": "2026-04-02T02:08:09.000Z",
+  "summary": "Object 类 : object 类 : 所有的类都继承于 object 类( 被省略而已 )每个初建的类的方便函数 继承于 object 类native 方法底层使用C++实现 无法直接在java中调用hashcode 返回int 表示返回对象的内存地址equals 判断( 返回Boole...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249824594,
+    "slug": "yq825dbsksq2i3rn",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第四天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b7adf8c03680898582126b1b20301760e1823c0f69c8714d030390e6f842bb10",
+    "missingImageReferences": []
+  }
+}

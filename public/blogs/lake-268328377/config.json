@@ -1,0 +1,32 @@
+{
+  "title": "Redis",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-05-04T15:01:29.000Z",
+  "createdAt": "2026-05-04T15:01:29.000Z",
+  "updatedAt": "2026-05-12T08:22:32.000Z",
+  "contentUpdatedAt": "2026-05-12T08:22:31.000Z",
+  "firstPublishedAt": "2026-05-04T15:01:39.897Z",
+  "publishedAt": "2026-05-12T08:22:31.000Z",
+  "summary": "初识Redis基于我本地使用 redis : 使用 compose : 容器化管理 redis ; 使用图形化界面 管理 redis : 可以直接使用 Hexhub 实现图形化管理 : 超级方便 ; 使用docker exec -it redis bash作用：在已经运行的 Redis 容器内...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268328377,
+    "slug": "ch6geg0f7hgm7viv",
+    "directory": [
+      "必要的相关技术",
+      "Redis"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "934dc520963ff6da9ff1f2b79d408fdda68303c9fba2d118a2180a1c4cf7a1f9",
+    "missingImageReferences": [
+      "assets/Ip9TKSY.png"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "第十八天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-01-15T01:16:42.000Z",
+  "createdAt": "2026-01-15T01:16:42.000Z",
+  "updatedAt": "2026-01-15T05:48:01.000Z",
+  "contentUpdatedAt": "2026-01-15T05:47:34.000Z",
+  "firstPublishedAt": "2026-01-15T01:17:05.564Z",
+  "publishedAt": "2026-01-15T05:48:00.000Z",
+  "summary": "栈和队列接口之间的继承关系 : Deque( 双端队列 ) -&gt; Queue( 队列 ) -&gt; Collection -&gt; Iterable ( 实现迭代器的创建方法的接口 ) { 子类 -&gt; 父类 }LinkedList实现的接口 : List Deque...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 253180904,
+    "slug": "bouc5815841sc32c",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第十八天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "0b46e497580a186b03fbebf91ad831ad8b819f160c37fa7932cb9f0c1959dba9",
+    "missingImageReferences": []
+  }
+}

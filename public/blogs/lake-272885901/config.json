@@ -1,0 +1,30 @@
+{
+  "title": "通过go语言操作SQL",
+  "tags": [
+    "Goland",
+    "GORM"
+  ],
+  "date": "2026-06-07T03:55:43.000Z",
+  "createdAt": "2026-06-07T03:55:43.000Z",
+  "updatedAt": "2026-06-21T10:54:56.000Z",
+  "contentUpdatedAt": "2026-06-21T10:54:55.000Z",
+  "firstPublishedAt": "2026-06-07T03:56:41.952Z",
+  "publishedAt": "2026-06-21T10:54:55.000Z",
+  "summary": "安装驱动Go复制代码go get -u github.com/go-sql-driver/mysql连接Go复制代码",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 272885901,
+    "slug": "nbkv46f3tqkx2xh4",
+    "directory": [
+      "GORM",
+      "通过go语言操作SQL"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "0df8bd2a9db369e2ca5a8580201fb9a8f8043481f7758e6310acf554afadd75f",
+    "missingImageReferences": []
+  }
+}

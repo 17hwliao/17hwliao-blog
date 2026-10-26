@@ -1,0 +1,30 @@
+{
+  "title": "bind 绑定器",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-30T05:15:20.000Z",
+  "createdAt": "2026-05-30T05:15:20.000Z",
+  "updatedAt": "2026-06-30T13:58:51.000Z",
+  "contentUpdatedAt": "2026-06-30T13:58:50.000Z",
+  "firstPublishedAt": "2026-06-30T13:55:56.357Z",
+  "publishedAt": "2026-06-30T13:58:50.000Z",
+  "summary": "Gin 框架会负责收集请求 , 路由 , 响应, 获取到参数 ; 使用bind绑定器 实现 将获取到的参数全部 序列化 到 结构体中去 : 是 Gin 里 ** 专门做「请求数据自动映射到结构体」** 的工具 ps : bind 减少了手动获取请求参数的冗杂, 直接使用 struct 实现自动...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271904011,
+    "slug": "ob3nefdkayg528yy",
+    "directory": [
+      "Gin-Web框架",
+      "bind 绑定器"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b213808820361924ab0c0d52eab783cc61236324632ed8f3d5f816f1932e7e6a",
+    "missingImageReferences": []
+  }
+}

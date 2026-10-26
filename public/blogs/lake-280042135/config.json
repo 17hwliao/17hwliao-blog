@@ -1,0 +1,28 @@
+{
+  "title": "GO-Agent",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-08-03T12:25:22.000Z",
+  "createdAt": "2026-08-03T12:25:22.000Z",
+  "updatedAt": "2026-08-18T08:42:01.000Z",
+  "contentUpdatedAt": "2026-08-07T12:24:30.000Z",
+  "firstPublishedAt": "2026-08-03T12:25:39.834Z",
+  "publishedAt": "2026-08-07T12:24:30.000Z",
+  "summary": "开始学习 agent 上手框架 Eino",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 280042135,
+    "slug": "nqwiagv43wg0lr5z",
+    "directory": [
+      "GO-Agent"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "488b1eaafa4705720c4c03127c8ad4de207d2c83a1ca247c7e678bd904baafe3",
+    "missingImageReferences": []
+  }
+}

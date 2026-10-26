@@ -1,0 +1,31 @@
+{
+  "title": "SQL事务",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-27T12:32:24.000Z",
+  "createdAt": "2026-04-27T12:32:24.000Z",
+  "updatedAt": "2026-04-27T12:46:33.000Z",
+  "contentUpdatedAt": "2026-04-27T12:46:02.000Z",
+  "firstPublishedAt": "2026-04-27T12:34:31.897Z",
+  "publishedAt": "2026-04-27T12:46:32.000Z",
+  "summary": "事务问题分析目前我们实现的新增员工功能中，操作了两次数据库，执行了两次 insert 操作。 第一次：保存员工的基本信息到 emp 表中。第二次：保存员工的工作经历信息到 emp_expr 表中。如果说，保存员工的基本信息成功了，而保存员工的工作经历信息出错了，会发生什么现象呢？那接下来，我们...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 267560361,
+    "slug": "ge5vgw9i82fd0dpv",
+    "directory": [
+      "Web后端开发 + AI",
+      "后端SSM框架入门",
+      "SQL事务"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "eee9f9364112c6166be1f6e70a364b98a8735d870054c46f51085d1d32aebfce",
+    "missingImageReferences": []
+  }
+}

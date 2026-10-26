@@ -1,0 +1,31 @@
+{
+  "title": "练习代码02",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-20T11:39:10.000Z",
+  "createdAt": "2025-12-20T11:39:10.000Z",
+  "updatedAt": "2026-03-01T03:32:47.000Z",
+  "contentUpdatedAt": "2025-12-21T03:10:53.000Z",
+  "firstPublishedAt": "2025-12-20T14:23:42.463Z",
+  "publishedAt": "2025-12-21T03:10:53.000Z",
+  "summary": "public class Person { String name ; final int age = 18 ; String gender ; { System.out.println(\"xiao \"); } void add_name(String str){ this.name = st...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249668789,
+    "slug": "cqrhx2dyi1hrsn3b",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码02"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "2b2fa31200ff20dff90db10258639bc0223e3d825ced0a71b25c1ce554da8e42",
+    "missingImageReferences": []
+  }
+}

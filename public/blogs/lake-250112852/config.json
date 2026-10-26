@@ -1,0 +1,31 @@
+{
+  "title": "练习代码5",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-23T13:56:18.000Z",
+  "createdAt": "2025-12-23T13:56:18.000Z",
+  "updatedAt": "2025-12-23T14:04:34.000Z",
+  "contentUpdatedAt": "2025-12-23T13:57:06.000Z",
+  "firstPublishedAt": "2025-12-23T13:56:35.575Z",
+  "publishedAt": "2025-12-23T13:57:06.000Z",
+  "summary": "package io_17hwlioa; public class Exercise { public static void main(String[] args) throws CloneNotSupportedException { Student s = new Student() ;...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250112852,
+    "slug": "ng5e09paaq28pie0",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码5"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "0538eda528cdfe5f07f3c4813bae3522943167ef160b70893f52025e29180f39",
+    "missingImageReferences": []
+  }
+}

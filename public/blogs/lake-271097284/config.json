@@ -1,0 +1,31 @@
+{
+  "title": "html响应",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-24T03:21:05.000Z",
+  "createdAt": "2026-05-24T03:21:05.000Z",
+  "updatedAt": "2026-06-06T04:07:39.000Z",
+  "contentUpdatedAt": "2026-05-27T13:20:07.000Z",
+  "firstPublishedAt": "2026-05-24T03:21:16.521Z",
+  "publishedAt": "2026-05-27T13:20:07.000Z",
+  "summary": "LoadHTMLGlob加载一个目录下的所有html文件 使用 name 字段 实现多个html 实现 ; LoadHTMLFiles加载单个html文件",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271097284,
+    "slug": "sm493gr6584mz6bd",
+    "directory": [
+      "Gin-Web框架",
+      "gin响应",
+      "html响应"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "eafbd68928104d9fb4484349bced82f7e1d7d8a49017e7ac813226f9d83c60ea",
+    "missingImageReferences": []
+  }
+}

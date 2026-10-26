@@ -1,0 +1,30 @@
+{
+  "title": "JavaScript",
+  "tags": [
+    "JAVA",
+    "Web前端开发 + AI"
+  ],
+  "date": "2026-04-05T02:00:30.000Z",
+  "createdAt": "2026-04-05T02:00:30.000Z",
+  "updatedAt": "2026-05-02T11:46:35.000Z",
+  "contentUpdatedAt": "2026-05-02T11:46:34.000Z",
+  "firstPublishedAt": "2026-04-05T02:00:50.083Z",
+  "publishedAt": "2026-05-02T11:46:34.000Z",
+  "summary": "JavaScript{弱类型语言 , 但大小写敏感}（简称：JS） 是一门跨平台、面向对象的脚本语言，是用来控制网页行为的，实现人机交互效果。JavaScript 和 Java 是完全不同的语言，不论是概念还是设计。但是基础语法类似。组成：ECMAScript: 规定了JS基础语法核心知识，包...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 264419362,
+    "slug": "fl2vnc6mfcrykg9o",
+    "directory": [
+      "Web前端开发 + AI",
+      "JavaScript"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "5de66a9b4535a309ba7933f3fb3cb1d0e2e5bb47b0baf8ddad5b4085754f1be9",
+    "missingImageReferences": []
+  }
+}

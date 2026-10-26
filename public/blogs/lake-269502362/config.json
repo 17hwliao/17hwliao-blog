@@ -1,0 +1,28 @@
+{
+  "title": "GoLand 开发路线",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-12T12:47:36.000Z",
+  "createdAt": "2026-05-12T12:47:36.000Z",
+  "updatedAt": "2026-07-19T13:50:00.000Z",
+  "contentUpdatedAt": "2026-07-19T13:50:00.000Z",
+  "firstPublishedAt": "2026-05-12T12:48:09.981Z",
+  "publishedAt": "2026-07-19T13:50:00.000Z",
+  "summary": "if err != nil {fmp{\"学无止境\"}}",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269502362,
+    "slug": "kesmwdh1yb1xd9or",
+    "directory": [
+      "GoLand 开发路线"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "bc54f4e9ca3cf8548ae30f22d5f16e4e082a908e3a975c28b33ee887b608a5d8",
+    "missingImageReferences": []
+  }
+}

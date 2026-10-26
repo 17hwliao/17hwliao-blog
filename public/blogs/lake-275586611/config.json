@@ -1,0 +1,30 @@
+{
+  "title": "微服务",
+  "tags": [
+    "Goland",
+    "GO-zero"
+  ],
+  "date": "2026-06-29T00:06:21.000Z",
+  "createdAt": "2026-06-29T00:06:21.000Z",
+  "updatedAt": "2026-08-06T05:19:16.000Z",
+  "contentUpdatedAt": "2026-06-29T00:07:10.000Z",
+  "firstPublishedAt": "2026-06-29T00:07:09.869Z",
+  "publishedAt": "2026-06-29T00:07:10.000Z",
+  "summary": "顾名思义，其实就是微小的服务。最早之前的业务系统都是单体项目，像我们之前的五代博客，七代博客，都是属于单体项目这样的单体项目有什么弊端呢？例如后端要改一个很小的地方，那么都需要整个项目重新构建，然后停止整个项目，然后重启项目所以企业项目发布都是在深夜就是这个原因那么，如果是微服务呢？",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275586611,
+    "slug": "sznqgpv283rprum8",
+    "directory": [
+      "GO-zero",
+      "微服务"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "4898e410e21113be9b276b556f622ce0cf730cd5cd0569db0a577d5988b8af79",
+    "missingImageReferences": []
+  }
+}

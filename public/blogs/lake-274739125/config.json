@@ -1,0 +1,30 @@
+{
+  "title": "Gorm的配置",
+  "tags": [
+    "Goland",
+    "GORM"
+  ],
+  "date": "2026-06-22T06:16:00.000Z",
+  "createdAt": "2026-06-22T06:16:00.000Z",
+  "updatedAt": "2026-06-22T06:29:29.000Z",
+  "contentUpdatedAt": "2026-06-22T06:29:03.000Z",
+  "firstPublishedAt": "2026-06-22T06:16:08.006Z",
+  "publishedAt": "2026-06-22T06:29:29.000Z",
+  "summary": "本门课程没有在一开始就讲一大堆gorm的配置那是因为尽可能实现约定大于配置如果按照gorm的约定来是编写代码，那么就可以省去很多配置项使用ID为主键默认情况下，名为 ID",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 274739125,
+    "slug": "pvr7n239criwdek5",
+    "directory": [
+      "GORM",
+      "Gorm的配置"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "86c9542d026de659f88a707f8a8c1865510978b352d9a7eedcff2641e655ec12",
+    "missingImageReferences": []
+  }
+}

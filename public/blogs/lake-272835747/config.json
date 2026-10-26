@@ -1,0 +1,30 @@
+{
+  "title": "中间件加路由",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-06-06T13:13:56.000Z",
+  "createdAt": "2026-06-06T13:13:56.000Z",
+  "updatedAt": "2026-06-06T13:14:19.000Z",
+  "contentUpdatedAt": "2026-06-06T13:13:56.000Z",
+  "firstPublishedAt": null,
+  "publishedAt": null,
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 272835747,
+    "slug": "kr4pgg8xv8un7qpp",
+    "directory": [
+      "Gin-Web框架",
+      "中间件加路由"
+    ],
+    "status": 0,
+    "empty": true,
+    "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "missingImageReferences": []
+  }
+}

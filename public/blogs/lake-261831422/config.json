@@ -1,0 +1,30 @@
+{
+  "title": "实现电脑彻底删除Mysql",
+  "tags": [
+    "JAVA",
+    "数据库"
+  ],
+  "date": "2026-03-18T13:55:15.000Z",
+  "createdAt": "2026-03-18T13:55:15.000Z",
+  "updatedAt": "2026-04-16T07:41:03.000Z",
+  "contentUpdatedAt": "2026-03-18T13:59:25.000Z",
+  "firstPublishedAt": "2026-03-18T13:55:31.502Z",
+  "publishedAt": "2026-03-18T13:59:25.000Z",
+  "summary": "控制面板删 ; 删 Program Files / x 86 中 Mysql 文件 ; regedit 登记表中 查看 : (1) HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\Eventlog\\Application\\MySQL (2) H...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 261831422,
+    "slug": "gp6cs3bo7ky1c9f2",
+    "directory": [
+      "数据库",
+      "实现电脑彻底删除Mysql"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "4380176390dbc465f4ac82b0f5540f38d8e769c79385da5983c4449a46160db4",
+    "missingImageReferences": []
+  }
+}

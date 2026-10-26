@@ -1,0 +1,30 @@
+{
+  "title": "rpc服务",
+  "tags": [
+    "Goland",
+    "GO-zero"
+  ],
+  "date": "2026-07-08T09:42:08.000Z",
+  "createdAt": "2026-07-08T09:42:08.000Z",
+  "updatedAt": "2026-07-10T11:33:58.000Z",
+  "contentUpdatedAt": "2026-07-10T10:56:53.000Z",
+  "firstPublishedAt": "2026-07-08T09:42:20.950Z",
+  "publishedAt": "2026-07-10T10:56:53.000Z",
+  "summary": "proto文件的编写可以参考我之前讲解grpc的教程单rpc服务模式我们编写一个proto文件提供两个服务，一个是获取用户信息方法，一个是用户添加的方法user.proto",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 276891991,
+    "slug": "gpnp12beariy3lvy",
+    "directory": [
+      "GO-zero",
+      "rpc服务"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "98ed3a1a320c6dd20d1d948bac074b6b8bcce27592dcd96eed11ca111d1711c4",
+    "missingImageReferences": []
+  }
+}

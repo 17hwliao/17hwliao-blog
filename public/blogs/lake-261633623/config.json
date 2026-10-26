@@ -1,0 +1,31 @@
+{
+  "title": "Servlet",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-03-17T13:03:43.000Z",
+  "createdAt": "2026-03-17T13:03:43.000Z",
+  "updatedAt": "2026-03-17T13:04:33.000Z",
+  "contentUpdatedAt": "2026-03-17T13:04:33.000Z",
+  "firstPublishedAt": "2026-03-17T13:04:33.167Z",
+  "publishedAt": "2026-03-17T13:04:33.000Z",
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 261633623,
+    "slug": "qg38duzlyiyq16ur",
+    "directory": [
+      "Web后端开发 + AI",
+      "Web后端基础",
+      "Servlet"
+    ],
+    "status": 1,
+    "empty": true,
+    "bodySha256": "ed568ee544bdafeb64e5830d8ab55cd19e17d4c2496f29ce21a8468bf6acee33",
+    "missingImageReferences": []
+  }
+}

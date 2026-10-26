@@ -1,0 +1,30 @@
+{
+  "title": "基本数据类型",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-09T13:56:13.000Z",
+  "createdAt": "2026-05-09T13:56:13.000Z",
+  "updatedAt": "2026-05-12T12:46:12.000Z",
+  "contentUpdatedAt": "2026-05-10T02:45:41.000Z",
+  "firstPublishedAt": "2026-05-09T13:56:24.329Z",
+  "publishedAt": "2026-05-10T02:45:41.000Z",
+  "summary": "go语言的基本数据类型有整数形浮点型复数布尔字符串整数型",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269072618,
+    "slug": "gpbxxxdyfn7ydvuh",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "基本数据类型"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "f2ff59ead5ee6b8e417fc0f4fe873ebfff003e50b087348400388105edaa4630",
+    "missingImageReferences": []
+  }
+}

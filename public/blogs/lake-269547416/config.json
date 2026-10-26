@@ -1,0 +1,30 @@
+{
+  "title": "接口",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-13T00:31:30.000Z",
+  "createdAt": "2026-05-13T00:31:30.000Z",
+  "updatedAt": "2026-07-31T09:58:33.000Z",
+  "contentUpdatedAt": "2026-07-31T08:12:43.000Z",
+  "firstPublishedAt": "2026-05-13T00:31:42.048Z",
+  "publishedAt": "2026-07-31T08:12:43.000Z",
+  "summary": "接口是一组仅包含方法名、参数、返回值的未具体实现的方法的集合像是一种数据类型, 实际的数据关系是 对象中需要包含接口中的全部的方法 : 然后具备多种内部函数的不同对象就可以直接使用接口的类型实现匹配了 : var u Animal fmt(u.(cat).haqi) Go",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269547416,
+    "slug": "ompt2fbwm4tody8t",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "接口"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3e74a0b35372d26df54f912e57da07ec73f344b46dce86fd609a8a1b0aec6728",
+    "missingImageReferences": []
+  }
+}

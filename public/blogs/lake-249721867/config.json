@@ -1,0 +1,31 @@
+{
+  "title": "第三天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-21T02:27:07.000Z",
+  "createdAt": "2025-12-21T02:27:07.000Z",
+  "updatedAt": "2026-04-12T08:06:42.000Z",
+  "contentUpdatedAt": "2026-04-12T08:06:42.000Z",
+  "firstPublishedAt": "2025-12-21T02:28:19.969Z",
+  "publishedAt": "2026-04-12T08:06:42.000Z",
+  "summary": "类的成员方法 静态方法 : static 创建为属于类的属性 和对象无关 ; static 可以创建静态变量 和 静态方法静态成员（静态变量、静态代码块）在 类加载时 初始化，只执行一次",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249721867,
+    "slug": "qbimocqouy282y6a",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第三天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "348fcd5f2baca7d16042063fd396683e21e50e5db91ce595bfd644bc12e18f9d",
+    "missingImageReferences": []
+  }
+}

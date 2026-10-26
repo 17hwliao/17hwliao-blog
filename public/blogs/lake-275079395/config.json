@@ -1,0 +1,30 @@
+{
+  "title": "原生rpc",
+  "tags": [
+    "Goland",
+    "gRPC架构"
+  ],
+  "date": "2026-06-24T11:00:04.000Z",
+  "createdAt": "2026-06-24T11:00:04.000Z",
+  "updatedAt": "2026-06-24T11:10:26.000Z",
+  "contentUpdatedAt": "2026-06-24T11:01:21.000Z",
+  "firstPublishedAt": "2026-06-24T11:00:14.513Z",
+  "publishedAt": "2026-06-24T11:01:21.000Z",
+  "summary": "服务端Go复制代码package main import ( \"fmt\" \"net\" \"net/http\" \"net/rpc\" ) type Server struct { } type Req struct { Num1 int Num2 int } type Res struct { Nu...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275079395,
+    "slug": "nae3o9tp88o1c2wy",
+    "directory": [
+      "gRPC架构",
+      "原生rpc"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "e93bbcf72faa59efedf0a9907fc31c3692e72a216fb396ee0e4f8eca0926ba3e",
+    "missingImageReferences": []
+  }
+}

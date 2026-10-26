@@ -1,0 +1,30 @@
+{
+  "title": "Linux基础学习",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-03-22T12:42:12.000Z",
+  "createdAt": "2026-03-22T12:42:12.000Z",
+  "updatedAt": "2026-10-14T13:09:04.000Z",
+  "contentUpdatedAt": "2026-05-04T11:25:24.000Z",
+  "firstPublishedAt": "2026-03-22T12:42:25.195Z",
+  "publishedAt": "2026-05-04T11:25:24.000Z",
+  "summary": "基于Docker desktop学习 开启容器 : C:\\Users\\17hwliao&gt;docker start linux-lab进入容器 : C:\\Users\\17hwliao&gt;docker exec -it linux-lab /bin/bash使用SSH远程连接SSH是一种网络协",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 262368911,
+    "slug": "yo2qbl6v3br9axwz",
+    "directory": [
+      "必要的相关技术",
+      "Linux基础学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "962be1b65a96c58a3beb3b4b374d153780b02e76000bd41d1f095f400b5e37cd",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "title": "redis高级最佳实践",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-05-18T02:46:27.000Z",
+  "createdAt": "2026-05-18T02:46:27.000Z",
+  "updatedAt": "2026-05-19T01:22:29.000Z",
+  "contentUpdatedAt": "2026-05-19T01:16:16.000Z",
+  "firstPublishedAt": "2026-05-18T02:47:37.094Z",
+  "publishedAt": "2026-05-19T01:22:27.000Z",
+  "summary": "Redis高级篇之最佳实践今日内容Redis键值设计批处理优化服务端优化集群最佳实践1、Redis键值设计1.1、优雅的key结构Redis的Key虽然可以自定义，但最好遵循下面的几个最佳实践约定：遵循基本格式：[业务名称]:[数据名]:[id]",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 270239191,
+    "slug": "ghpw3p03oblfdhf9",
+    "directory": [
+      "必要的相关技术",
+      "Redis",
+      "redis高级最佳实践"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b4e4bc555e75c29d41e1dd4c4469729ddc6a0ee4f3422e2ceec87ff7915db970",
+    "missingImageReferences": [
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521120213631.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521122320482.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521124650117.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521133359507.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521133703245.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521140415785.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521140621204.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521142943350.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521143458010.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521144339377.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521151459880.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521151524621.png",
+      ".\\Redis高级篇之最佳实践.assets\\image-20220521151902080.png",
+      ".\\Redis高级篇之最佳实践.assets\\1653126446641.png",
+      ".\\Redis高级篇之最佳实践.assets\\1653129590210.png",
+      ".\\Redis高级篇之最佳实践.assets\\1653130457771.png",
+      ".\\Redis高级篇之最佳实践.assets\\1653130475979.png",
+      ".\\Redis高级篇之最佳实践.assets\\1653130858066.png",
+      ".\\Redis高级篇之最佳实践.assets\\1653132073570.png",
+      ".\\Redis高级篇之最佳实践.assets\\1653132098823.png",
+      ".\\Redis高级篇之最佳实践.assets\\1653132410073.png"
+    ]
+  }
+}

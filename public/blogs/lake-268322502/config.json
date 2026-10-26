@@ -1,0 +1,32 @@
+{
+  "title": "安装软件",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-05-04T12:59:16.000Z",
+  "createdAt": "2026-05-04T12:59:16.000Z",
+  "updatedAt": "2026-05-04T13:04:17.000Z",
+  "contentUpdatedAt": "2026-05-04T13:04:16.000Z",
+  "firstPublishedAt": "2026-05-04T12:59:27.980Z",
+  "publishedAt": "2026-05-04T13:04:16.000Z",
+  "summary": "一.先更新本地安装的环境 ;apt-get updateapt-get install -y curl wget vim net-tools software-properties-common gnupg二.安装 MySql# 安装 MySQLapt-get install -y mysql...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268322502,
+    "slug": "fr3f0ynxsqme5c49",
+    "directory": [
+      "必要的相关技术",
+      "Linux基础学习",
+      "Linux系统学习",
+      "安装软件"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b43c46ddce57725de93d223da68f0e3c3895cbdf91042c571ee1be316760c1ad",
+    "missingImageReferences": []
+  }
+}

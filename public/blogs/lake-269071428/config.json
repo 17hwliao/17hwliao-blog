@@ -1,0 +1,30 @@
+{
+  "title": "变量定义加输入输出",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-09T13:46:15.000Z",
+  "createdAt": "2026-05-09T13:46:15.000Z",
+  "updatedAt": "2026-08-04T11:36:31.000Z",
+  "contentUpdatedAt": "2026-08-04T11:36:31.000Z",
+  "firstPublishedAt": "2026-05-09T13:46:52.412Z",
+  "publishedAt": "2026-08-04T11:36:31.000Z",
+  "summary": "变量定义标准的变量定义Go复制代码package main import \"fmt\" func main() { // 先定义，再赋值 var name string name = \"枫枫\" fmt.Println(name) // var 变量名 类型 = \"变量值\" var userNam...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269071428,
+    "slug": "kim3gfw3kkgp7otl",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "变量定义加输入输出"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "0e8adf2eb64a216990a84daa350b6c689edceea812f035c065e0517107f8bcc2",
+    "missingImageReferences": []
+  }
+}

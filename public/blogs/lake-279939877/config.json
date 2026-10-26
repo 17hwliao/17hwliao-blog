@@ -1,0 +1,31 @@
+{
+  "title": "项目",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-08-03T02:05:48.000Z",
+  "createdAt": "2026-08-03T02:05:48.000Z",
+  "updatedAt": "2026-08-03T02:23:27.000Z",
+  "contentUpdatedAt": "2026-08-03T02:23:27.000Z",
+  "firstPublishedAt": "2026-08-03T02:06:52.145Z",
+  "publishedAt": "2026-08-03T02:23:27.000Z",
+  "summary": "为了防止 main 函数 太过臃肿 :封装全部的gin请求到router/router.go中去; router/router.go： package router import ( \"my-project/handler\" \"my-project/middleware\" \"my-projec...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 279939877,
+    "slug": "acqvdcrxkdgcgsgi",
+    "directory": [
+      "Gin-Web框架",
+      "gin响应",
+      "项目"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "fc6315bda0545e1ac19db57f351e349f5545f321723820126fc2e99b6b02109c",
+    "missingImageReferences": []
+  }
+}

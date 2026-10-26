@@ -1,0 +1,30 @@
+{
+  "title": "Eino Compose & ADK",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-22T05:24:49.000Z",
+  "createdAt": "2026-08-22T05:24:49.000Z",
+  "updatedAt": "2026-08-23T07:27:47.000Z",
+  "contentUpdatedAt": "2026-08-23T06:27:55.000Z",
+  "firstPublishedAt": "2026-08-22T05:36:56.227Z",
+  "publishedAt": "2026-08-23T06:27:55.000Z",
+  "summary": "Key differences : 虽然都是 使用 compose 实现编排 agent 但是在层次上面体现的不同 : 在之前的 ADK 的开发框架中的那些编排手段 : SequentialAgent、ParallelAgent、LoopAgent 这些都是基于底层的 API编排实现,简化了多...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 282290405,
+    "slug": "lifycdfghpvgusds",
+    "directory": [
+      "GO-Agent",
+      "Eino Compose & ADK"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "0bca7cc68c779e0a848acbf1d4a46621e0cfa5bd78b708a8f9d42842fcd8118e",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "gRPC架构",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-06-22T08:27:27.000Z",
+  "createdAt": "2026-06-22T08:27:27.000Z",
+  "updatedAt": "2026-06-22T08:28:16.000Z",
+  "contentUpdatedAt": "2026-06-22T08:28:16.000Z",
+  "firstPublishedAt": "2026-06-22T08:28:15.561Z",
+  "publishedAt": "2026-06-22T08:28:16.000Z",
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 274763656,
+    "slug": "gcqabrv7bdswtly6",
+    "directory": [
+      "gRPC架构"
+    ],
+    "status": 1,
+    "empty": true,
+    "bodySha256": "51cabc601bbb745229f3723f4a44e6f3bd27d81a5138a7e41ebf2ef6a6b7bd8d",
+    "missingImageReferences": []
+  }
+}

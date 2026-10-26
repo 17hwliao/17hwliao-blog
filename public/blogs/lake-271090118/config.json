@@ -1,0 +1,30 @@
+{
+  "title": "go原生http服务",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-24T02:03:17.000Z",
+  "createdAt": "2026-05-24T02:03:17.000Z",
+  "updatedAt": "2026-05-29T23:45:58.000Z",
+  "contentUpdatedAt": "2026-05-24T03:23:44.000Z",
+  "firstPublishedAt": "2026-05-24T02:03:39.676Z",
+  "publishedAt": "2026-05-24T03:23:44.000Z",
+  "summary": "在go中写一个web服务非常发方便快速当前最新的 go-modole 已经默认整合到了go普通项目构建 (内部只要有 go.mod就行)远端仓库的 环境变量 要配置 国人维护的七牛云 : https://goproxy.cn,directWeb 开发 : 一个请求 一个响应 --&gt; w htt",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271090118,
+    "slug": "cy2r80uzczmdsubw",
+    "directory": [
+      "Gin-Web框架",
+      "go原生http服务"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "1027198a2511544e75ce7f6d9d45cafdb52dcff55972f8c51dcc1c151c39641b",
+    "missingImageReferences": []
+  }
+}

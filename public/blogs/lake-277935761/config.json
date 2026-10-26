@@ -1,0 +1,28 @@
+{
+  "title": "PgSQL",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-07-17T00:00:41.000Z",
+  "createdAt": "2026-07-17T00:00:41.000Z",
+  "updatedAt": "2026-07-26T07:56:57.000Z",
+  "contentUpdatedAt": "2026-07-26T07:52:45.000Z",
+  "firstPublishedAt": "2026-07-17T00:02:15.427Z",
+  "publishedAt": "2026-07-26T07:52:45.000Z",
+  "summary": "简介PostgreSQL免费的对象-关系型数据库,\"开源界的Oracle\" postgresql官网http://db-engines.com/en/ranking 使用docker安装 services: postgresql: image: postgres:18 container_na...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 277935761,
+    "slug": "gukurtgphzup03gc",
+    "directory": [
+      "PgSQL"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b25639094d9bcd6fa78fa6240ec8e22cfc672c8e17f21d40b9c2fd28d12fb6a5",
+    "missingImageReferences": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "练习代码3",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2025-12-21T09:01:44.000Z",
+  "createdAt": "2025-12-21T09:01:44.000Z",
+  "updatedAt": "2026-02-01T00:15:12.000Z",
+  "contentUpdatedAt": "2025-12-21T09:02:17.000Z",
+  "firstPublishedAt": "2025-12-21T09:01:58.161Z",
+  "publishedAt": "2025-12-21T09:02:17.000Z",
+  "summary": "package com_java; import java.util.* ; public class Java01 { public static void main(String[] args) { Person p = Person.new_i(); Student s = new St...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249749516,
+    "slug": "mfmyg9y2vz9a3xgu",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码3"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "14ae8663cb50738e89b2ac0a4056386cdf57a234b995cea64a3c02f86ee11e1b",
+    "missingImageReferences": []
+  }
+}

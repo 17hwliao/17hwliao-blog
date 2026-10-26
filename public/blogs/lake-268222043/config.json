@@ -1,0 +1,32 @@
+{
+  "title": "Vue 工程化项目完整配置流程",
+  "tags": [
+    "JAVA",
+    "Web前端开发 + AI"
+  ],
+  "date": "2026-05-03T06:20:08.000Z",
+  "createdAt": "2026-05-03T06:20:08.000Z",
+  "updatedAt": "2026-05-03T07:18:51.000Z",
+  "contentUpdatedAt": "2026-05-03T07:01:58.000Z",
+  "firstPublishedAt": "2026-05-03T06:20:16.241Z",
+  "publishedAt": "2026-05-03T07:01:58.000Z",
+  "summary": "一、项目初始化基础床就按一个 vue 项目; # 1. 创建 Vue 项目（使用 Vite） npm create vue@版本号(3.3.4) 建议创建的时候 保留使用 路由的配置 # 2. 进入项目目录 cd my-project # 3. 安装依赖 npm install # 4. 安装...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268222043,
+    "slug": "ybq3y7xskn87al4r",
+    "directory": [
+      "Web前端开发 + AI",
+      "Vue3",
+      "Vue 工程化",
+      "Vue 工程化项目完整配置流程"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "1dcc41484a5499c73465598dfc157f4411681c8be2393ad1a078b2d3aaa8ba40",
+    "missingImageReferences": []
+  }
+}

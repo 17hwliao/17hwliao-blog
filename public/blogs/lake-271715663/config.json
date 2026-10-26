@@ -1,0 +1,30 @@
+{
+  "title": "gin 获取数据",
+  "tags": [
+    "Goland",
+    "Gin-Web框架"
+  ],
+  "date": "2026-05-28T13:01:58.000Z",
+  "createdAt": "2026-05-28T13:01:58.000Z",
+  "updatedAt": "2026-05-30T03:17:44.000Z",
+  "contentUpdatedAt": "2026-05-30T03:17:44.000Z",
+  "firstPublishedAt": "2026-05-28T13:02:10.243Z",
+  "publishedAt": "2026-05-30T03:17:44.000Z",
+  "summary": "路径查询表格写法返回类型",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 271715663,
+    "slug": "pm6z7mv50ye5m6g2",
+    "directory": [
+      "Gin-Web框架",
+      "gin 获取数据"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "56d7bb464a1473f3facd6d99a3c336abcbbba8a3b275b8518f09c7ac1964a1a9",
+    "missingImageReferences": []
+  }
+}

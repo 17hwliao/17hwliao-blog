@@ -1,0 +1,30 @@
+{
+  "title": "项目使用",
+  "tags": [
+    "Goland",
+    "Casbin权限鉴别框架"
+  ],
+  "date": "2026-08-07T13:09:05.000Z",
+  "createdAt": "2026-08-07T13:09:05.000Z",
+  "updatedAt": "2026-08-07T13:59:21.000Z",
+  "contentUpdatedAt": "2026-08-07T13:59:21.000Z",
+  "firstPublishedAt": "2026-08-07T13:09:29.926Z",
+  "publishedAt": "2026-08-07T13:59:21.000Z",
+  "summary": "Casbin 适配详解：渡隅 V1 / 作业版这次不是用 Casbin 替换 JWT，而是让两者分工：JWT：证明“当前请求是谁发出的” Casbin：判断“这个人能不能访问这个接口” Service：判断“这个人能不能操作这一条具体数据”例如用户 user:5 请求取消活动 id=12：1....",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 280554822,
+    "slug": "plrd9ipvpqab5qye",
+    "directory": [
+      "Casbin权限鉴别框架",
+      "项目使用"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "07bc9bc25a5a442b921248e6b02bbe55b1e474824894c0b407ef34e4bcffe20a",
+    "missingImageReferences": []
+  }
+}

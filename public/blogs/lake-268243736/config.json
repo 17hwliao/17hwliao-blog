@@ -1,0 +1,31 @@
+{
+  "title": "Linux系统学习",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-05-03T12:57:32.000Z",
+  "createdAt": "2026-05-03T12:57:32.000Z",
+  "updatedAt": "2026-05-20T11:20:09.000Z",
+  "contentUpdatedAt": "2026-05-20T11:19:38.000Z",
+  "firstPublishedAt": "2026-05-03T12:57:43.385Z",
+  "publishedAt": "2026-05-20T11:20:09.000Z",
+  "summary": "Linux是一套免费使用和自由传播的操作系统。说到操作系统，大家比较熟知的应该就是Windows和MacOS操作系统，我们今天所学习的Linux也是一款操作系统。我们作为javaEE开发工程师，将来在企业中开发时会涉及到很多的数据库、中间件等技术，比如MySQL、Redis、MQ等技术，而这些...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268243736,
+    "slug": "fybatt2tzfova8f0",
+    "directory": [
+      "必要的相关技术",
+      "Linux基础学习",
+      "Linux系统学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "830529c7c970e51efb7dee42cab470969828e69e467495f757ee931f84014481",
+    "missingImageReferences": []
+  }
+}

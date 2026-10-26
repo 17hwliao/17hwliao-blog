@@ -1,0 +1,31 @@
+{
+  "title": "练习代码17",
+  "tags": [
+    "JAVA",
+    "必要的相关技术"
+  ],
+  "date": "2026-01-13T04:05:15.000Z",
+  "createdAt": "2026-01-13T04:05:15.000Z",
+  "updatedAt": "2026-01-14T22:39:06.000Z",
+  "contentUpdatedAt": "2026-01-13T10:52:00.000Z",
+  "firstPublishedAt": "2026-01-13T04:05:32.370Z",
+  "publishedAt": "2026-01-13T10:52:00.000Z",
+  "summary": "package Today; import java.util.*; import java.util.function.UnaryOperator; public class Main { public static void main(String[] args) { List",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 252910858,
+    "slug": "cs5gi3dxoa0ppnuz",
+    "directory": [
+      "必要的相关技术",
+      "练习笔记",
+      "练习代码17"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "e95865e344cf363082dac0c40bf7095be49372eadb5a0f4924eca1fabb0ea2b2",
+    "missingImageReferences": []
+  }
+}

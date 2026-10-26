@@ -1,0 +1,30 @@
+{
+  "title": "Ajax",
+  "tags": [
+    "JAVA",
+    "Web前端开发 + AI"
+  ],
+  "date": "2026-04-07T13:08:12.000Z",
+  "createdAt": "2026-04-07T13:08:12.000Z",
+  "updatedAt": "2026-04-09T13:46:00.000Z",
+  "contentUpdatedAt": "2026-04-09T13:46:00.000Z",
+  "firstPublishedAt": "2026-04-07T13:09:10.017Z",
+  "publishedAt": "2026-04-09T13:46:00.000Z",
+  "summary": "概述我们前端页面中的数据，如下图所示的表格中的员工信息，应该来自于后台，那么我们的后台和前端是互不影响的2个程序，那么我们前端应该如何从后台获取数据呢？因为是2个程序，所以必须涉及到2个程序的交互，所以这就需要用到我们接下来学习的Ajax技术。Ajax: 全称Asynchronous Java...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 264734450,
+    "slug": "fsmy04uuskhegnv9",
+    "directory": [
+      "Web前端开发 + AI",
+      "Ajax"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "03ceecb879fa40d2c7c2928c7b03b91acd46ddb6d23e85119f89e5efeb8377f6",
+    "missingImageReferences": []
+  }
+}

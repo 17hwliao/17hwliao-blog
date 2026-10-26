@@ -1,0 +1,31 @@
+{
+  "title": "JavaWeb",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2025-12-27T09:57:03.000Z",
+  "createdAt": "2025-12-27T09:57:03.000Z",
+  "updatedAt": "2026-03-19T09:33:06.000Z",
+  "contentUpdatedAt": "2026-03-18T09:50:35.000Z",
+  "firstPublishedAt": "2025-12-27T09:57:21.788Z",
+  "publishedAt": "2026-03-18T09:50:35.000Z",
+  "summary": "互联网和网络设备访问互联网 : 只能通过网络运营商( 网络服务供应商,ISP )1.通过SIM卡 , 通过移动设备连接到附近的基站使用网络 , 只要有基站就能使用2.通过办理宽带 , 光纤入户 . 位置固定 , 但连接延迟低很稳定光猫 : 光纤入户的是光信号 -&gt; 电信号 ,网线 -&gt; ",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250664956,
+    "slug": "udghfh9mhhysvymr",
+    "directory": [
+      "Web后端开发 + AI",
+      "Web后端基础",
+      "JavaWeb"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "e496339436cf61a4b7f5d7221364b3379f33ef0377c67eb18dc24cf2f4116a36",
+    "missingImageReferences": []
+  }
+}

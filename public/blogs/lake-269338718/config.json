@@ -1,0 +1,30 @@
+{
+  "title": "init 和 defer 函数",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-11T14:22:33.000Z",
+  "createdAt": "2026-05-11T14:22:33.000Z",
+  "updatedAt": "2026-05-12T12:46:13.000Z",
+  "contentUpdatedAt": "2026-05-11T14:31:49.000Z",
+  "firstPublishedAt": "2026-05-11T14:22:56.494Z",
+  "publishedAt": "2026-05-11T14:31:49.000Z",
+  "summary": "init函数init()函数是一个特殊的函数，存在以下特性：不能被其他函数调用，而是在main函数执行之前，自动被调用init函数不能作为参数传入不能有传入参数和返回值一个go文件可以",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269338718,
+    "slug": "iowhx797x9k76e65",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "init 和 defer 函数"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "5422cd31d6e8c4ad4f44e21059d733745b305ba409cf5ff3a972b66f5f2f8412",
+    "missingImageReferences": []
+  }
+}

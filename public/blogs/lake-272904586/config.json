@@ -1,0 +1,30 @@
+{
+  "title": "Gorm引入",
+  "tags": [
+    "Goland",
+    "GORM"
+  ],
+  "date": "2026-06-07T09:07:24.000Z",
+  "createdAt": "2026-06-07T09:07:24.000Z",
+  "updatedAt": "2026-07-08T08:37:07.000Z",
+  "contentUpdatedAt": "2026-07-08T08:35:08.000Z",
+  "firstPublishedAt": "2026-06-07T09:08:05.871Z",
+  "publishedAt": "2026-07-08T08:35:08.000Z",
+  "summary": "gorm的引入肯定是为了我们更好的操作数据库在使用原生sql查询的时候最大的问题就是没办法映射到结构体上我们不难发现，数据库里面的记录就很想一个结构体，数据库的一列对应一个字段所以数据库到结构体的映射就是orm的一个最大特点",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 272904586,
+    "slug": "cih50ffnoggr29ud",
+    "directory": [
+      "GORM",
+      "Gorm引入"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "a3112d6251faabcabdc7738776fb87a7fb606ba28e1d1e59d4cd9824cd0455d1",
+    "missingImageReferences": []
+  }
+}

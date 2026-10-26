@@ -1,0 +1,30 @@
+{
+  "title": "proto文件的书写原理",
+  "tags": [
+    "Goland",
+    "GO-zero"
+  ],
+  "date": "2026-07-10T03:55:19.000Z",
+  "createdAt": "2026-07-10T03:55:19.000Z",
+  "updatedAt": "2026-08-06T05:19:31.000Z",
+  "contentUpdatedAt": "2026-07-10T04:36:45.000Z",
+  "firstPublishedAt": "2026-07-10T03:55:50.784Z",
+  "publishedAt": "2026-07-10T04:52:25.000Z",
+  "summary": "proto文件 syntax = \"proto3\" ; // ① 语法版本声明 package user ; // ② Proto 包名（命名空间） option go_package = \"./types;types\"; // ③ Go 语言包路径映射1. syntax = \"proto3\"...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 277114630,
+    "slug": "gfr7ngu312rkfqye",
+    "directory": [
+      "GO-zero",
+      "proto文件的书写原理"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "78ed12473867f87fdba7b4683b28a59be82fc097ff0058926eb81fe55fa97f56",
+    "missingImageReferences": []
+  }
+}

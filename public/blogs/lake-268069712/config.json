@@ -1,0 +1,30 @@
+{
+  "title": "SpringBoot原理篇",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-05-01T02:14:23.000Z",
+  "createdAt": "2026-05-01T02:14:23.000Z",
+  "updatedAt": "2026-05-02T01:45:02.000Z",
+  "contentUpdatedAt": "2026-05-02T01:45:00.000Z",
+  "firstPublishedAt": "2026-05-01T02:14:53.704Z",
+  "publishedAt": "2026-05-02T01:45:00.000Z",
+  "summary": "前面十多天的课程当中，我们学习的都是web开发的技术使用，都是面向应用层面的，我们学会了怎么样去用。而我们今天所要学习的是web后端开发的最后一个篇章springboot原理篇，主要偏向于底层原理。我们今天的课程安排包括这么三个部分：配置优先级Bean的管理剖析Springboot的底层原理配...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268069712,
+    "slug": "xuylndkgeh4il1gg",
+    "directory": [
+      "Web后端开发 + AI",
+      "SpringBoot原理篇"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b65e7a8963cb707389ee8768bad863edcf49575239cfaa294926bfeabb2c2c6a",
+    "missingImageReferences": []
+  }
+}

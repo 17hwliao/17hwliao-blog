@@ -1,0 +1,31 @@
+{
+  "title": "第十九天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-01-19T08:42:22.000Z",
+  "createdAt": "2026-01-19T08:42:22.000Z",
+  "updatedAt": "2026-01-20T07:17:59.000Z",
+  "contentUpdatedAt": "2026-01-20T07:17:58.000Z",
+  "firstPublishedAt": "2026-01-19T08:42:39.291Z",
+  "publishedAt": "2026-01-20T07:17:58.000Z",
+  "summary": "Map映射元素之间是两两对应的，是以键值对的形式存在。Map接口 : //Map并不是Collection体系下的接口，而是单独的一个体系，因为操作特殊//这里需要填写两个泛型参数，其中K就是键的类型，V就是值的类型，比如上面的学生信息，ID一般是int，那么键就是Integer类型的，而值就...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 253780086,
+    "slug": "au94gvolpgf9ml8a",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第十九天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b9949964e639669b2f6236067334a853cf3bafa9c0a2bed49ef85094cc45b98d",
+    "missingImageReferences": []
+  }
+}

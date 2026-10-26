@@ -1,0 +1,31 @@
+{
+  "title": "第十一天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-29T02:06:18.000Z",
+  "createdAt": "2025-12-29T02:06:18.000Z",
+  "updatedAt": "2026-01-07T01:27:06.000Z",
+  "contentUpdatedAt": "2025-12-29T06:28:01.000Z",
+  "firstPublishedAt": "2025-12-29T02:08:00.471Z",
+  "publishedAt": "2025-12-29T06:32:16.000Z",
+  "summary": "新版本的时间类 : LocalDate date = LocalDate.now(); LocalDate date1 = LocalDate.of(2023,12 , 21) ; LocalDate date2 = LocalDate.ofYearDay(2025,365) ; //查讯年的...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250830361,
+    "slug": "zougyr3z0l15ynfl",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第十一天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3b70aaa207243f59c5db87df92b0ca01d73b46194b94e668121587a650c21e32",
+    "missingImageReferences": []
+  }
+}

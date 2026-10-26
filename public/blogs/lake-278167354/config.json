@@ -1,0 +1,28 @@
+{
+  "title": "消息队列",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-07-19T07:08:28.000Z",
+  "createdAt": "2026-07-19T07:08:28.000Z",
+  "updatedAt": "2026-07-19T07:08:33.000Z",
+  "contentUpdatedAt": "2026-07-19T07:08:28.000Z",
+  "firstPublishedAt": null,
+  "publishedAt": null,
+  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 278167354,
+    "slug": "qgxm9wgxaxcg5wov",
+    "directory": [
+      "消息队列"
+    ],
+    "status": 0,
+    "empty": true,
+    "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "missingImageReferences": []
+  }
+}

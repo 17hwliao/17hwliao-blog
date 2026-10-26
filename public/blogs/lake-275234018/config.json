@@ -1,0 +1,30 @@
+{
+  "title": "grpc的流式传输",
+  "tags": [
+    "Goland",
+    "gRPC架构"
+  ],
+  "date": "2026-06-25T12:42:10.000Z",
+  "createdAt": "2026-06-25T12:42:10.000Z",
+  "updatedAt": "2026-08-06T05:21:35.000Z",
+  "contentUpdatedAt": "2026-06-27T07:13:51.000Z",
+  "firstPublishedAt": "2026-06-25T12:42:37.837Z",
+  "publishedAt": "2026-06-27T07:13:51.000Z",
+  "summary": "普通rpc一问一答式Protocol Buffers复制代码syntax = \"proto3\"; option go_package = \"/proto\"; service Simple { rpc Fun(Request)returns(Response){} } message Reque...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275234018,
+    "slug": "yi6k8dhmutgy2q3e",
+    "directory": [
+      "gRPC架构",
+      "grpc的流式传输"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3661e9489519e41c9388c6a2aeac45b92b4346f4497a8799347a97b3b6de7ca7",
+    "missingImageReferences": []
+  }
+}

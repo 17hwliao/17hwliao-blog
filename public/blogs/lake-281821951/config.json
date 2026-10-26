@@ -1,0 +1,30 @@
+{
+  "title": "Embedding 和向量检索",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-18T08:42:05.000Z",
+  "createdAt": "2026-08-18T08:42:05.000Z",
+  "updatedAt": "2026-08-18T08:51:31.000Z",
+  "contentUpdatedAt": "2026-08-18T08:51:17.000Z",
+  "firstPublishedAt": "2026-08-18T08:42:25.567Z",
+  "publishedAt": "2026-08-18T08:51:17.000Z",
+  "summary": "简介Embedding（嵌入/向量化）是将文本转换为数值向量的过程。这些向量能够捕获文本的语义信息，使得语义相似的文本在向量空间中距离较近。应用场景 🔍 语义搜索：根据语义而非关键词搜索 📚 RAG（检索增强生成）：为 AI 提供相关知识 🎯 文本分类：基于语义的分类 📊 推荐系统：相...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 281821951,
+    "slug": "nv8h7h3ylugvgtc2",
+    "directory": [
+      "GO-Agent",
+      "Embedding 和向量检索"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "dbc134763776ff47a49aad33681659968c4c9d71cca3225f24fc62bfe8546379",
+    "missingImageReferences": []
+  }
+}

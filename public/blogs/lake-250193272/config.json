@@ -1,0 +1,31 @@
+{
+  "title": "第六天学习",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2025-12-24T05:32:01.000Z",
+  "createdAt": "2025-12-24T05:32:01.000Z",
+  "updatedAt": "2026-04-02T02:28:41.000Z",
+  "contentUpdatedAt": "2026-04-02T02:28:40.000Z",
+  "firstPublishedAt": "2025-12-24T05:33:43.322Z",
+  "publishedAt": "2026-04-02T02:28:40.000Z",
+  "summary": "面向对象 : 基本类型包装类 : 基本类型 (代表具体数值) != 引用类型 ( 代表对象的引用 )设计了包装类 ：实现将 基本类型 当作 引用类型来用基本类型包装类 : 继承Number : Integer a = Integer.valueOf(222); == ( 自动装箱机制) Int...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 250193272,
+    "slug": "bogl15s3eiv6hqua",
+    "directory": [
+      "java学习路线",
+      "基础语法学习",
+      "第六天学习"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "2e52d88ae2b8af033d5fb2b2243131f983b200f114f06b5477eb618bc8dba2c2",
+    "missingImageReferences": []
+  }
+}

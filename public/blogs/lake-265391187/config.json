@@ -1,0 +1,31 @@
+{
+  "title": "测试( JUnit白盒 )",
+  "tags": [
+    "JAVA",
+    "Web后端开发 + AI"
+  ],
+  "date": "2026-04-12T06:45:57.000Z",
+  "createdAt": "2026-04-12T06:45:57.000Z",
+  "updatedAt": "2026-04-26T03:47:06.000Z",
+  "contentUpdatedAt": "2026-04-26T03:47:05.000Z",
+  "firstPublishedAt": "2026-04-12T06:46:10.600Z",
+  "publishedAt": "2026-04-26T03:47:05.000Z",
+  "summary": "单元测试介绍测试：是一种用来促进鉴定软件的正确性、完整性、安全性和质量的过程。阶段划分：单元测试、集成测试、系统测试、验收测试。1). 单元测试介绍：对软件的基本组成单位进行测试，最小测试单位。目的：检验软件基本组成单位的正确性。",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 265391187,
+    "slug": "ggte92nzg7kwaczm",
+    "directory": [
+      "Web后端开发 + AI",
+      "Web后端基础",
+      "测试( JUnit白盒 )"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "6258afcf7569ce6b611f86ba1bb58a5642b9656f551336748ea56be5f91313be",
+    "missingImageReferences": []
+  }
+}

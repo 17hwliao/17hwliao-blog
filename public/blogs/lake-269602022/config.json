@@ -1,0 +1,30 @@
+{
+  "title": "线程安全",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-05-13T06:39:24.000Z",
+  "createdAt": "2026-05-13T06:39:24.000Z",
+  "updatedAt": "2026-05-13T09:43:27.000Z",
+  "contentUpdatedAt": "2026-05-13T09:43:27.000Z",
+  "firstPublishedAt": "2026-05-13T06:41:03.126Z",
+  "publishedAt": "2026-05-13T09:43:27.000Z",
+  "summary": "线程安全什么是线程安全？现在有两个协程，同时触发，一个协程对一个全局变量进行100完成++操作，另一个对全局变量—的操作那么，两个协程结束，最后的值应该是0才对Go复制代码package main import ( \"fmt\" \"sync\" ) var num int var wait syn...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 269602022,
+    "slug": "ioh091n79xrbchmp",
+    "directory": [
+      "Goland",
+      "Goland 语言入门",
+      "线程安全"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "14b1fee4552c8cf40dd5e8e3a7acfd3e912a3475e78a80bd3563db7f33db458b",
+    "missingImageReferences": []
+  }
+}

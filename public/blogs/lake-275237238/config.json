@@ -1,0 +1,30 @@
+{
+  "title": "proto文件编译",
+  "tags": [
+    "Goland",
+    "gRPC架构"
+  ],
+  "date": "2026-06-25T13:25:54.000Z",
+  "createdAt": "2026-06-25T13:25:54.000Z",
+  "updatedAt": "2026-06-25T13:27:34.000Z",
+  "contentUpdatedAt": "2026-06-25T13:27:33.000Z",
+  "firstPublishedAt": "2026-06-25T13:26:18.736Z",
+  "publishedAt": "2026-06-25T13:27:33.000Z",
+  "summary": "最全 protoc 编译命令逐字段详解（Go+gRPC 专用）命令原样：bash运行protoc -I . --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275237238,
+    "slug": "qexzlhrf56hq111b",
+    "directory": [
+      "gRPC架构",
+      "proto文件编译"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "b9d8182bf51d0aa4ddf716d515e6707a0bab34a65bfac66cdc2d1bd2c0f71297",
+    "missingImageReferences": []
+  }
+}

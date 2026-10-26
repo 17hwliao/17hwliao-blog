@@ -1,0 +1,30 @@
+{
+  "title": "redis",
+  "tags": [
+    "Goland",
+    "go语言集成redis"
+  ],
+  "date": "2026-06-27T10:32:19.000Z",
+  "createdAt": "2026-06-27T10:32:19.000Z",
+  "updatedAt": "2026-06-28T23:51:41.000Z",
+  "contentUpdatedAt": "2026-06-28T12:10:06.000Z",
+  "firstPublishedAt": "2026-06-27T10:33:34.242Z",
+  "publishedAt": "2026-06-28T12:10:06.000Z",
+  "summary": "go-redis v9 所有命令都需要传 context普通操作 context.Background() 需要超时控制 context.WithTimeout(ctx, 3*time.Second) 需要取消信号 context.WithCancel(ctx)连接redis1.使用docke...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 275447645,
+    "slug": "gqgge46ghnifwx2k",
+    "directory": [
+      "go语言集成redis",
+      "redis"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "3e5a2544ce253bcbede320f90b709fd25bde30b8b663c0efe1d4dfd9a2626851",
+    "missingImageReferences": []
+  }
+}

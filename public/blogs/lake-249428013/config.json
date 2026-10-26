@@ -1,0 +1,28 @@
+{
+  "title": "java学习路线",
+  "tags": [
+    "JAVA"
+  ],
+  "date": "2025-12-18T12:33:49.000Z",
+  "createdAt": "2025-12-18T12:33:49.000Z",
+  "updatedAt": "2026-08-28T08:18:21.000Z",
+  "contentUpdatedAt": "2026-06-01T09:17:50.000Z",
+  "firstPublishedAt": "2025-12-18T12:35:07.734Z",
+  "publishedAt": "2026-06-01T09:17:50.000Z",
+  "summary": "JAVASE --- 基础篇JAVAWEB --- SSM 框架直接上servlet -- 不需要系统学习jdbc -- mybatis 替换mysql --- 直接就有redis --强度拉满 springcloud 微服务架构 ; -- 正式项目框架 springsecurity 加分(加...",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 249428013,
+    "slug": "yhrlsl0di19pp3p8",
+    "directory": [
+      "java学习路线"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "a4b71b388d572d36b2d43b0cd78f0e4acb92bdb36e67cac2ce15deade9d014a5",
+    "missingImageReferences": []
+  }
+}

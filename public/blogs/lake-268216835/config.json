@@ -1,0 +1,32 @@
+{
+  "title": "学习使用 vue工程化开发",
+  "tags": [
+    "JAVA",
+    "Web前端开发 + AI"
+  ],
+  "date": "2026-05-03T04:31:01.000Z",
+  "createdAt": "2026-05-03T04:31:01.000Z",
+  "updatedAt": "2026-05-03T12:49:37.000Z",
+  "contentUpdatedAt": "2026-05-03T12:02:15.000Z",
+  "firstPublishedAt": "2026-05-03T04:31:24.845Z",
+  "publishedAt": "2026-05-03T12:02:15.000Z",
+  "summary": "页面布局准备工作导入资料中准备的基础工程到VsCode。 【复制出来放在自己的工作目录下】启动前端项目，访问该项目打开浏览器，访问 http://localhost:5173",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 268216835,
+    "slug": "ot2vvgoay75gzdvy",
+    "directory": [
+      "Web前端开发 + AI",
+      "Vue3",
+      "Vue 工程化",
+      "学习使用 vue工程化开发"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "86c39387d613316613d665cbfc82d5749994562a8e4fb807b767ee1d018618b3",
+    "missingImageReferences": []
+  }
+}

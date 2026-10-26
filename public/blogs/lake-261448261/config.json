@@ -1,0 +1,30 @@
+{
+  "title": "memory",
+  "tags": [
+    "JAVA",
+    "java学习路线"
+  ],
+  "date": "2026-03-16T12:32:17.000Z",
+  "createdAt": "2026-03-16T12:32:17.000Z",
+  "updatedAt": "2026-03-23T04:04:21.000Z",
+  "contentUpdatedAt": "2026-03-23T04:04:21.000Z",
+  "firstPublishedAt": "2026-03-16T12:34:11.971Z",
+  "publishedAt": "2026-03-23T04:04:21.000Z",
+  "summary": "设置最大的数 : 0x3f3f3f3flambda 表达式 : (a , b) -&gt; {return a - b } ; 具体排序规则见下表中汇总 ; \\总结 : 负数 + 0 为假 , 不会换位置 , 正数 为真, 会实现换位 ; C++ 中对数组自定义排序 ; sort(arr.begin",
+  "category": "JAVA",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "JAVA",
+    "bookId": 73377196,
+    "docId": 261448261,
+    "slug": "kf3k8f27zaeiu23y",
+    "directory": [
+      "java学习路线",
+      "memory"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "f5a1f1e6addfbdf9b035057db09e19413fc7acda6500f71a9cdbfd2fbea4841d",
+    "missingImageReferences": []
+  }
+}

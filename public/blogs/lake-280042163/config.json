@@ -1,0 +1,30 @@
+{
+  "title": "简介和环境搭建",
+  "tags": [
+    "Goland",
+    "GO-Agent"
+  ],
+  "date": "2026-08-03T12:25:39.000Z",
+  "createdAt": "2026-08-03T12:25:39.000Z",
+  "updatedAt": "2026-08-03T13:18:19.000Z",
+  "contentUpdatedAt": "2026-08-03T13:18:19.000Z",
+  "firstPublishedAt": "2026-08-03T12:43:51.887Z",
+  "publishedAt": "2026-08-03T13:18:19.000Z",
+  "summary": "核心特性组件化设计：提供 ChatModel、Embedding、Retriever、Tool 等丰富的原子组件 灵活编排：支持 Chain（链式）和 Graph（图式）两种编排方式 生态集成：支持 OpenAI、ARK、Ollama、Qwen 等多种大模型 高性能：基于 Go 语言，天然支持...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 280042163,
+    "slug": "uam9c3nm8hxb9w76",
+    "directory": [
+      "GO-Agent",
+      "简介和环境搭建"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "aa4c7bbbcecdd2a86186010211121090bef35bf3cc548c6f53881df6d7974ae7",
+    "missingImageReferences": []
+  }
+}

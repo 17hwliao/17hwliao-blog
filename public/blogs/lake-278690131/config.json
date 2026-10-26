@@ -1,0 +1,28 @@
+{
+  "title": "Viper",
+  "tags": [
+    "Goland"
+  ],
+  "date": "2026-07-23T01:13:16.000Z",
+  "createdAt": "2026-07-23T01:13:16.000Z",
+  "updatedAt": "2026-07-24T08:15:33.000Z",
+  "contentUpdatedAt": "2026-07-24T03:50:09.000Z",
+  "firstPublishedAt": "2026-07-23T01:14:00.345Z",
+  "publishedAt": "2026-07-24T03:50:09.000Z",
+  "summary": "Viper 是 Go 语言中最流行的配置管理库之一，可以把它想象成一个集中的配置管理员，负责处理应用所需的所有配置。它最核心的价值在于：将多种来源的配置（文件、环境变量、命令行参数等）统一管理，并提供一个简单、一致的读取方式。go get github.com/spf13/viperviper...",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 278690131,
+    "slug": "kvhe647sdu25525a",
+    "directory": [
+      "Viper"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "523b7463e0d6754473ccc17ba4e323e9bef35860883b78c2e35e43ab0ecc0f7b",
+    "missingImageReferences": []
+  }
+}

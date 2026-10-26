@@ -1,0 +1,30 @@
+{
+  "title": "日志轮询优化(lumberjack)",
+  "tags": [
+    "Goland",
+    "Zap开源日志框架"
+  ],
+  "date": "2026-08-02T10:26:59.000Z",
+  "createdAt": "2026-08-02T10:26:59.000Z",
+  "updatedAt": "2026-08-07T10:43:48.000Z",
+  "contentUpdatedAt": "2026-08-02T11:23:48.000Z",
+  "firstPublishedAt": "2026-08-02T10:29:59.931Z",
+  "publishedAt": "2026-08-02T11:23:48.000Z",
+  "summary": "日志轮询// getWriter 创建带轮转能力的日志写入器 writer //(go get gopkg.in/natefinish/lumberjack.v2) func getWriter(filename string) *lumberjack.Logger { return &amp;lu",
+  "category": "Goland",
+  "source": {
+    "type": "yuque-lakebook",
+    "book": "Goland",
+    "bookId": 78896504,
+    "docId": 279873548,
+    "slug": "pd3gmhf4uplv734m",
+    "directory": [
+      "Zap开源日志框架",
+      "日志轮询优化(lumberjack)"
+    ],
+    "status": 1,
+    "empty": false,
+    "bodySha256": "e4820d50d219d53b80eb320a405298d6006269276cfc25ef0bbc175c4e282733",
+    "missingImageReferences": []
+  }
+}
