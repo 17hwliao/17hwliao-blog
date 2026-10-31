@@ -1,5 +1,22 @@
 [
   {
+    "slug": "go-interview-2026-10-31",
+    "title": "准备面试八股",
+    "tags": [
+      "Go",
+      "面试",
+      "八股文"
+    ],
+    "date": "2026-10-31T11:46:45.357Z",
+    "createdAt": "2026-10-31T11:46:45.357Z",
+    "updatedAt": "2026-10-31T11:46:45.357Z",
+    "contentUpdatedAt": "2026-10-31T11:46:45.357Z",
+    "firstPublishedAt": "2026-10-31T11:46:45.357Z",
+    "publishedAt": "2026-10-31T11:46:45.357Z",
+    "summary": "140 条 Go 面试问题与回答，按 14 个主题梳理语法、切片与 map、接口与泛型、并发调度、锁与内存模型、GC、HTTP、数据库及工程测试，附官方资料与版本差异说明。",
+    "category": "Goland"
+  },
+  {
     "slug": "lake-285420754",
     "title": "MCP",
     "tags": [
