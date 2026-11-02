@@ -38,12 +38,13 @@ export default function Page() {
 		setIsCreateDialogOpen(true)
 	}
 
-	const handleSaveProject = (updatedProject: Project) => {
+	const handleSaveProject = (updatedProject: Project, imageItem?: ImageItem) => {
 		if (editingProject) {
 			setProjects(projects.map(p => (p.url === editingProject.url ? updatedProject : p)))
 		} else {
 			setProjects([...projects, updatedProject])
 		}
+		if (imageItem) setImageItems(prev => new Map(prev).set(updatedProject.url, imageItem))
 	}
 
 	const handleDelete = (project: Project) => {
@@ -53,8 +54,9 @@ export default function Page() {
 	}
 
 	const persist = async () => {
-		await pushProjects({ projects, imageItems })
-		setOriginalProjects(projects)
+		const saved = await pushProjects({ projects, imageItems })
+		setProjects(saved)
+		setOriginalProjects(saved)
 		setImageItems(new Map())
 	}
 

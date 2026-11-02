@@ -6,21 +6,8 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useSize } from '@/hooks/use-size'
 import ImageUploadDialog, { type ImageItem } from './image-upload-dialog'
-
-export interface Project {
-	slug?: string
-	kind?: string
-	positioning?: string
-	readme?: string
-	name: string
-	year: number
-	description: string
-	image: string
-	url: string
-	tags: string[]
-	github?: string
-	npm?: string
-}
+import type { Project } from '../types'
+export type { Project } from '../types'
 
 interface ProjectCardProps {
 	project: Project

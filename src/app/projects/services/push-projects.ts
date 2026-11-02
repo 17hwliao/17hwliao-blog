@@ -9,10 +9,13 @@ export type PushProjectsParams = {
 	imageItems?: Map<string, MediaItem>
 }
 
-export async function pushProjects(params: PushProjectsParams): Promise<void> {
+export async function pushProjects(params: PushProjectsParams): Promise<Project[]> {
 	const { projects, imageItems } = params
+	if (projects.some(project => project.image.startsWith('blob:') && imageItems?.get(project.url)?.type !== 'file')) {
+		throw new Error('项目图片缺少上传文件，请重新选择图片。')
+	}
 
-	await commitFiles({
+	return commitFiles<Project[]>({
 		message: '更新项目列表',
 		prepare: async ctx => {
 			const treeItems: TreeItem[] = []
@@ -32,7 +35,7 @@ export async function pushProjects(params: PushProjectsParams): Promise<void> {
 
 			const sha = await ctx.blobFromJson(updatedProjects)
 			treeItems.push(fileTreeItem('src/app/projects/list.json', sha))
-			return { treeItems }
+			return { treeItems, result: updatedProjects }
 		}
 	})
 }

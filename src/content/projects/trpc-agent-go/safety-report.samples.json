@@ -1,0 +1,84 @@
+[
+  {
+    "decision": "allow",
+    "risk_level": "low",
+    "recommendation": "Command matched no high-risk safety rules.",
+    "tool_name": "workspace_exec",
+    "command": "go test ./...",
+    "backend": "workspaceexec",
+    "blocked": false,
+    "redacted": false,
+    "duration_ms": 0,
+    "safe_summary": "workspaceexec scan allowed command \"go test ./...\"; no high-risk network, path, shell, resource, dependency, or secret patterns matched."
+  },
+  {
+    "decision": "deny",
+    "risk_level": "critical",
+    "rule_id": "dangerous.rm_rf",
+    "evidence": [
+      "rm -rf /"
+    ],
+    "recommendation": "Do not run recursive forced deletion through tool execution.",
+    "tool_name": "workspace_exec",
+    "command": "rm -rf /",
+    "backend": "workspaceexec",
+    "blocked": true,
+    "redacted": false,
+    "duration_ms": 0,
+    "findings": [
+      {
+        "decision": "deny",
+        "risk_level": "medium",
+        "rule_id": "policy.command_not_allowed",
+        "evidence": [
+          "command \"rm\" is not in allowed_commands"
+        ],
+        "recommendation": "Use an allowed command or update allowed_commands in the policy."
+      },
+      {
+        "decision": "deny",
+        "risk_level": "critical",
+        "rule_id": "dangerous.rm_rf",
+        "evidence": [
+          "rm -rf /"
+        ],
+        "recommendation": "Do not run recursive forced deletion through tool execution."
+      },
+      {
+        "decision": "deny",
+        "risk_level": "critical",
+        "rule_id": "sensitive.path_access",
+        "evidence": [
+          "argument references denied path \"/\""
+        ],
+        "recommendation": "Do not access SSH keys, .env files, credential stores, or system directories from tool execution."
+      }
+    ]
+  },
+  {
+    "decision": "needs_human_review",
+    "risk_level": "medium",
+    "rule_id": "dependency.environment_change",
+    "evidence": [
+      "command starts with \"npm install\""
+    ],
+    "recommendation": "Dependency installation or environment mutation should be reviewed and pinned before execution.",
+    "tool_name": "workspace_exec",
+    "command": "npm install left-pad",
+    "backend": "workspaceexec",
+    "blocked": true,
+    "redacted": false,
+    "duration_ms": 0,
+    "findings": [
+      {
+        "decision": "needs_human_review",
+        "risk_level": "medium",
+        "rule_id": "dependency.environment_change",
+        "evidence": [
+          "command starts with \"npm install\""
+        ],
+        "recommendation": "Dependency installation or environment mutation should be reviewed and pinned before execution."
+      }
+    ]
+  }
+]
