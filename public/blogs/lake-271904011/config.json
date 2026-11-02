@@ -1,5 +1,5 @@
 {
-  "title": "bind 绑定器",
+  "title": "Gin 绑定器：Bind 与 ShouldBind",
   "tags": [
     "Goland",
     "Gin-Web框架"

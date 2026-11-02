@@ -1,5 +1,5 @@
 {
-  "title": "静态文件",
+  "title": "Gin：静态文件与路径映射",
   "tags": [
     "Goland",
     "Gin-Web框架"

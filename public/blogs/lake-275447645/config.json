@@ -1,5 +1,5 @@
 {
-  "title": "redis",
+  "title": "Go Redis：数据类型与事务",
   "tags": [
     "Goland",
     "go语言集成redis"

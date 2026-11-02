@@ -1,5 +1,5 @@
 {
-  "title": "MySql操作",
+  "title": "go-zero：MySQL 与 GORM 接入",
   "tags": [
     "Goland",
     "GO-zero"

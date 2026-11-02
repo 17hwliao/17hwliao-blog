@@ -1,5 +1,5 @@
 {
-  "title": "init 和 defer 函数",
+  "title": "Go：init 与 defer 执行顺序",
   "tags": [
     "Goland"
   ],

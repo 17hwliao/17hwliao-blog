@@ -1,5 +1,5 @@
 {
-  "title": "日志轮询优化(lumberjack)",
+  "title": "Zap 日志轮转：Lumberjack",
   "tags": [
     "Goland",
     "Zap开源日志框架"

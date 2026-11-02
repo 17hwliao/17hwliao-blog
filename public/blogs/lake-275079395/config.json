@@ -1,5 +1,5 @@
 {
-  "title": "原生rpc",
+  "title": "Go 原生 RPC：服务注册与调用",
   "tags": [
     "Goland",
     "gRPC架构"

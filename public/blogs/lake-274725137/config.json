@@ -1,5 +1,5 @@
 {
-  "title": "事务",
+  "title": "GORM 事务：提交与回滚",
   "tags": [
     "Goland",
     "GORM"

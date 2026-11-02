@@ -1,5 +1,5 @@
 {
-  "title": "自定义数据类型",
+  "title": "GORM：JSON 与自定义类型",
   "tags": [
     "Goland",
     "GORM"

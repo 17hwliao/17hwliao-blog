@@ -1,5 +1,5 @@
 {
-  "title": "响应文件",
+  "title": "Gin：文件响应与浏览器下载",
   "tags": [
     "Goland",
     "Gin-Web框架"

@@ -1,5 +1,5 @@
 {
-  "title": "binding 内置规则",
+  "title": "Gin：参数校验与自定义规则",
   "tags": [
     "Goland",
     "Gin-Web框架"

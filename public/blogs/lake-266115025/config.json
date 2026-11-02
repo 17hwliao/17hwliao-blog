@@ -1,5 +1,5 @@
 {
-  "title": "JDBC",
+  "title": "JDBC：连接、查询与预编译",
   "tags": [
     "JAVA",
     "数据库"

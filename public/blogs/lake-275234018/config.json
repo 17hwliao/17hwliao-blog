@@ -1,5 +1,5 @@
 {
-  "title": "grpc的流式传输",
+  "title": "gRPC 流式通信与文件传输",
   "tags": [
     "Goland",
     "gRPC架构"

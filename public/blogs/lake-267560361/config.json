@@ -1,5 +1,5 @@
 {
-  "title": "SQL事务",
+  "title": "Spring 事务：回滚与传播行为",
   "tags": [
     "JAVA",
     "Web后端开发 + AI"

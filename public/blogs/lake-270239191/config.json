@@ -1,5 +1,5 @@
 {
-  "title": "redis高级最佳实践",
+  "title": "Redis 优化：键设计与批处理",
   "tags": [
     "JAVA",
     "必要的相关技术"

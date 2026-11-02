@@ -1,5 +1,5 @@
 {
-  "title": "redis 分布式缓存",
+  "title": "Redis：持久化与高可用集群",
   "tags": [
     "JAVA",
     "必要的相关技术"

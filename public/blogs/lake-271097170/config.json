@@ -1,5 +1,5 @@
 {
-  "title": "json响应",
+  "title": "Gin：JSON 响应与结果封装",
   "tags": [
     "Goland",
     "Gin-Web框架"

@@ -1,5 +1,5 @@
 {
-  "title": "Gorm引入",
+  "title": "GORM：数据库连接与映射",
   "tags": [
     "Goland",
     "GORM"

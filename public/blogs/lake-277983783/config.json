@@ -1,5 +1,5 @@
 {
-  "title": "Logrus",
+  "title": "Logrus：日志级别与结构化字段",
   "tags": [
     "Goland",
     "Zap开源日志框架"

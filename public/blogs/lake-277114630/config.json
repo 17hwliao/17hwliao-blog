@@ -1,5 +1,5 @@
 {
-  "title": "proto文件的书写原理",
+  "title": "go-zero：Proto 定义与代码生成",
   "tags": [
     "Goland",
     "GO-zero"

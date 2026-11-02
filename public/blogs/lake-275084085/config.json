@@ -1,5 +1,5 @@
 {
-  "title": "proto文件",
+  "title": "Protobuf：消息类型与服务定义",
   "tags": [
     "Goland",
     "gRPC架构"

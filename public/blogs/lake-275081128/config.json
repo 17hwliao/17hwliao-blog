@@ -1,5 +1,5 @@
 {
-  "title": "grpc 的基础",
+  "title": "gRPC：服务端与客户端实现",
   "tags": [
     "Goland",
     "gRPC架构"

@@ -1,5 +1,5 @@
 {
-  "title": "项目",
+  "title": "Gin 路由封装与中间件注册",
   "tags": [
     "Goland",
     "Gin-Web框架"

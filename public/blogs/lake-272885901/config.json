@@ -1,5 +1,5 @@
 {
-  "title": "通过go语言操作SQL",
+  "title": "Go database/sql：连接与查询",
   "tags": [
     "Goland",
     "GORM"

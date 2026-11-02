@@ -20,7 +20,7 @@ import { isPrivateKeyBusy, useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import { cn } from '@/lib/utils'
 import { saveBlogEdits } from './services/save-blog-edits'
-import { Check } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 import { BlogCoverHoverPreview, useBlogCoverHover } from './components/blog-cover-hover'
 import { CategoryModal } from './components/category-modal'
 
@@ -28,7 +28,7 @@ type DisplayMode = 'day' | 'week' | 'month' | 'year' | 'category'
 
 export default function BlogPage() {
 	const { items, loading, error, retry } = useBlogIndex()
-	const { categories: categoriesFromServer } = useCategories()
+	const { categories: categoriesFromServer, loading: categoriesLoading, error: categoriesError, retry: retryCategories } = useCategories()
 	const { isRead } = useReadArticles()
 	const { isAuth, importPrivateKey, keyStatus } = useAuthStore()
 	const importing = isPrivateKeyBusy(keyStatus)
@@ -38,10 +38,13 @@ export default function BlogPage() {
 
 	const keyInputRef = useRef<HTMLInputElement>(null)
 	const [editMode, setEditMode] = useState(false)
+	const [editOriginalItems, setEditOriginalItems] = useState<BlogIndexItem[]>([])
+	const [editOriginalCategories, setEditOriginalCategories] = useState<string[]>([])
 	const [editableItems, setEditableItems] = useState<BlogIndexItem[]>([])
 	const [selectedSlugs, setSelectedSlugs] = useState<Set<string>>(new Set())
 	const [saving, setSaving] = useState(false)
 	const [displayMode, setDisplayMode] = useState<DisplayMode>('year')
+	const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
 	const [categoryModalOpen, setCategoryModalOpen] = useState(false)
 	const [categoryList, setCategoryList] = useState<string[]>([])
 	const [newCategory, setNewCategory] = useState('')
@@ -55,8 +58,8 @@ export default function BlogPage() {
 	}, [items, editMode])
 
 	useEffect(() => {
-		setCategoryList(categoriesFromServer || [])
-	}, [categoriesFromServer])
+		if (!editMode) setCategoryList(categoriesFromServer || [])
+	}, [categoriesFromServer, editMode])
 
 	const displayItems = editMode ? editableItems : items
 
@@ -130,18 +133,25 @@ export default function BlogPage() {
 	}, [displayItems, displayMode, categoryList])
 
 	const selectedCount = selectedSlugs.size
+	const allExpanded = groupKeys.length > 0 && groupKeys.every(key => expandedGroups.has(key))
 	const buttonText = isAuth ? '保存' : '导入密钥'
 
 	const toggleEditMode = useCallback(() => {
+		if (!editMode && (loading || error || categoriesLoading || categoriesError)) {
+			toast.error('请等待文章和分类加载成功后再编辑。')
+			return
+		}
 		if (editMode) {
 			setEditMode(false)
 			setEditableItems(items)
 			setSelectedSlugs(new Set())
 		} else {
 			setEditableItems(items)
+			setEditOriginalItems(items)
+			setEditOriginalCategories(categoriesFromServer)
 			setEditMode(true)
 		}
-	}, [editMode, items])
+	}, [editMode, items, categoriesFromServer, loading, error, categoriesLoading, categoriesError])
 
 	const toggleSelect = useCallback((slug: string) => {
 		setSelectedSlugs(prev => {
@@ -249,10 +259,14 @@ export default function BlogPage() {
 	}, [items])
 
 	const handleSave = useCallback(async () => {
-		const removedSlugs = items.filter(item => !editableItems.some(editItem => editItem.slug === item.slug)).map(item => item.slug)
+		if (categoriesLoading || categoriesError) {
+			toast.error('分类尚未成功加载，请先重新加载分类后再保存。')
+			return
+		}
+		const removedSlugs = editOriginalItems.filter(item => !editableItems.some(editItem => editItem.slug === item.slug)).map(item => item.slug)
 		const normalizedCategoryList = categoryList.map(c => c.trim()).filter(Boolean)
-		const categoryListChanged = JSON.stringify(normalizedCategoryList) !== JSON.stringify((categoriesFromServer || []).map(c => c.trim()).filter(Boolean))
-		const categoryAssignmentChanged = items.some(origin => {
+		const categoryListChanged = JSON.stringify(normalizedCategoryList) !== JSON.stringify(editOriginalCategories.map(c => c.trim()).filter(Boolean))
+		const categoryAssignmentChanged = editOriginalItems.some(origin => {
 			const next = editableItems.find(editItem => editItem.slug === origin.slug)
 			const originCategory = origin.category || ''
 			const nextCategory = next?.category || ''
@@ -267,7 +281,7 @@ export default function BlogPage() {
 
 		try {
 			setSaving(true)
-			await saveBlogEdits(items, editableItems, normalizedCategoryList)
+			await saveBlogEdits(editOriginalItems, editableItems, normalizedCategoryList, editOriginalCategories)
 			setEditMode(false)
 			setSelectedSlugs(new Set())
 			setCategoryModalOpen(false)
@@ -277,7 +291,7 @@ export default function BlogPage() {
 		} finally {
 			setSaving(false)
 		}
-	}, [items, editableItems, categoryList, categoriesFromServer])
+	}, [editOriginalItems, editableItems, categoryList, categoriesFromServer, editOriginalCategories, categoriesLoading, categoriesError])
 
 	const handleSaveClick = useCallback(() => {
 		if (saving || isPrivateKeyBusy(useAuthStore.getState().keyStatus)) return
@@ -324,38 +338,63 @@ export default function BlogPage() {
 			/>
 
 			<PageIntro label='THE ARCHIVE' title='写下的片段' description='关于生活、学习，还有那些值得多想一会儿的事。' />
-			{!loading && !error && items.length > 0 && <p className='archive-summary'>{items.length} 篇文章 · {displayMode === 'category' ? '分类内按编写时间从新到旧' : '按编写时间从新到旧'}</p>}
+			{!loading && !error && items.length > 0 && (
+				<p className='archive-summary'>
+					{items.length} 篇文章 · {displayMode === 'category' ? '分类内按编写时间从新到旧' : '按编写时间从新到旧'}
+				</p>
+			)}
 			<div className='flex flex-col items-center justify-center gap-6 py-8'>
 				{items.length > 0 && (
-					<motion.div
-						initial={{ opacity: 0, scale: 0.6 }}
-						animate={{ opacity: 1, scale: 1 }}
-						className='card btn-rounded relative mx-auto flex items-center gap-1 p-1 max-sm:hidden'>
-						{[
-							{ value: 'day', label: '日' },
-							{ value: 'week', label: '周' },
-							{ value: 'month', label: '月' },
-							{ value: 'year', label: '年' },
-							...(enableCategories ? ([{ value: 'category', label: '分类' }] as const) : [])
-						].map(option => (
-							<motion.button
-								key={option.value}
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
-								onClick={() => setDisplayMode(option.value as DisplayMode)}
-								className={cn(
-									'btn-rounded px-3 py-1.5 text-xs font-medium transition-all',
-									displayMode === option.value ? 'bg-brand text-white shadow-sm' : 'text-secondary hover:text-brand hover:bg-white/60'
-								)}>
-								{option.label}
-							</motion.button>
-						))}
-					</motion.div>
+					<div className='archive-controls'>
+						<motion.div
+							initial={{ opacity: 0, scale: 0.6 }}
+							animate={{ opacity: 1, scale: 1 }}
+							className='archive-mode-switch'
+							role='group'
+							aria-label='文章分组方式'>
+							{[
+								{ value: 'day', label: '日' },
+								{ value: 'week', label: '周' },
+								{ value: 'month', label: '月' },
+								{ value: 'year', label: '年' },
+								...(enableCategories ? ([{ value: 'category', label: '分类' }] as const) : [])
+							].map(option => (
+								<motion.button
+									key={option.value}
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+									onClick={() => {
+										setDisplayMode(option.value as DisplayMode)
+										setExpandedGroups(new Set())
+										cancelCoverPreview()
+									}}
+									aria-pressed={displayMode === option.value}
+									className='archive-mode-button'>
+									{option.label}
+								</motion.button>
+							))}
+						</motion.div>
+						{!editMode && (
+							<button
+								type='button'
+								className='button-light archive-expand-all'
+								aria-label={allExpanded ? '收起全部文章分组' : '展开全部文章分组'}
+								onClick={() => {
+									setExpandedGroups(allExpanded ? new Set() : new Set(groupKeys))
+									cancelCoverPreview()
+								}}>
+								<ChevronDown size={16} aria-hidden='true' />
+								{allExpanded ? '全部收起' : '全部展开'}
+							</button>
+						)}
+					</div>
 				)}
 
 				{groupKeys.map((groupKey, index) => {
 					const group = groupedItems[groupKey]
 					if (!group) return null
+					const expanded = editMode || expandedGroups.has(groupKey)
+					const contentId = `archive-${displayMode}-${index}`
 
 					return (
 						<motion.div
@@ -363,14 +402,29 @@ export default function BlogPage() {
 							key={groupKey}
 							initial={{ opacity: 0, scale: 0.95 }}
 							whileInView={{ opacity: 1, scale: 1 }}
+							viewport={{ once: true }}
 							transition={{ delay: INIT_DELAY / 2 }}
-							className='card relative w-full max-w-[840px] space-y-6'>
-							<div className='mb-3 flex items-center justify-between gap-3 text-base'>
-								<div className='flex items-center gap-3'>
-									<div className='font-medium'>{getGroupLabel(groupKey)}</div>
-									<div className='h-2 w-2 rounded-full bg-[#D9D9D9]'></div>
-									<div className='text-secondary text-sm'>{group.items.length} 篇文章</div>
-								</div>
+							className='card archive-group relative w-full max-w-[840px]'>
+							<div className='archive-group-heading'>
+								<button
+									type='button'
+									className='archive-group-toggle'
+									aria-expanded={expanded}
+									aria-controls={contentId}
+									disabled={editMode}
+									onClick={() => {
+										setExpandedGroups(previous => {
+											const next = new Set(previous)
+											if (next.has(groupKey)) next.delete(groupKey)
+											else next.add(groupKey)
+											return next
+										})
+										cancelCoverPreview()
+									}}>
+									<span className='archive-group-label'>{getGroupLabel(groupKey)}</span>
+									<span className='archive-group-count'>{group.items.length} 篇文章</span>
+									<ChevronDown size={18} aria-hidden='true' />
+								</button>
 								{editMode &&
 									(() => {
 										const groupAllSelected = group.items.every(item => selectedSlugs.has(item.slug))
@@ -390,7 +444,7 @@ export default function BlogPage() {
 										)
 									})()}
 							</div>
-							<div>
+							<div id={contentId} hidden={!expanded} className='archive-group-articles'>
 								{group.items.map(it => {
 									const hasRead = isRead(it.slug)
 									const isSelected = selectedSlugs.has(it.slug)
@@ -414,7 +468,7 @@ export default function BlogPage() {
 												<span
 													className={cn(
 														'flex h-4 w-4 items-center justify-center rounded-full border text-[10px] font-semibold',
-														isSelected ? 'border-brand bg-brand text-white' : 'border-[#D9D9D9] text-transparent'
+														isSelected ? 'border-brand bg-brand text-bg' : 'border-[#D9D9D9] text-transparent'
 													)}>
 													<Check />
 												</span>
@@ -427,7 +481,7 @@ export default function BlogPage() {
 											</div>
 											<div
 												className={cn(
-													'flex-1 truncate text-sm font-medium transition-all',
+													'archive-article-title flex-1 text-sm font-medium transition-all',
 													editMode ? null : 'group-hover:text-brand group-hover:translate-x-2'
 												)}>
 												{it.title || it.slug}
@@ -450,6 +504,14 @@ export default function BlogPage() {
 			</div>
 
 			<div className='pb-12'>
+				{categoriesError && (
+					<div className='feed-status' role='alert'>
+						分类未能加载。
+						<button className='button-light' onClick={() => void retryCategories()}>
+							重新加载分类
+						</button>
+					</div>
+				)}
 				{error && (
 					<div className='feed-status' role='alert'>
 						文章未能加载。
@@ -504,7 +566,12 @@ export default function BlogPage() {
 							className='rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600 transition-colors disabled:opacity-60'>
 							删除(已选:{selectedCount}篇)
 						</motion.button>
-						<motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSaveClick} disabled={saving || importing} className='brand-btn px-6'>
+						<motion.button
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							onClick={handleSaveClick}
+							disabled={saving || importing}
+							className='brand-btn px-6'>
 							{saving ? '保存中...' : importing ? '私钥处理中…' : buttonText}
 						</motion.button>
 					</>

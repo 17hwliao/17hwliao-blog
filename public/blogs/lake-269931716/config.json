@@ -1,5 +1,5 @@
 {
-  "title": "redis三大数据结构",
+  "title": "Redis：GEO、Bitmap 与 UV 统计",
   "tags": [
     "JAVA",
     "必要的相关技术"

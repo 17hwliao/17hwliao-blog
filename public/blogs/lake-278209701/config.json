@@ -1,5 +1,5 @@
 {
-  "title": "RabbitMQ",
+  "title": "RabbitMQ：消息模式与可靠投递",
   "tags": [
     "Goland",
     "消息队列"

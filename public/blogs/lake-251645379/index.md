@@ -1,6 +1,7 @@
+```java
 package Today;
 
-public class New\_Class&lt;T&gt;\{
+public class New_Class<T>{
 
 String name ;
 
@@ -8,111 +9,111 @@ int date ;
 
 T ws ;
 
-New\_Class\(String name , int date, T ws\)\{
+New_Class(String name , int date, T ws){
 
-this\.name \= name ;
+this.name = name ;
 
-this\.date \= date;
+this.date = date;
 
-this\.ws \= ws;
+this.ws = ws;
 
-System\.out\.println\(name \+ date \+ ws\);
+System.out.println(name + date + ws);
 
-\}
+}
 
-\}
+}
 
 package Today;
 
-import java\.lang\.reflect\.Array;
+import java.lang.reflect.Array;
 
-import java\.util\.Arrays;
+import java.util.Arrays;
 
-import java\.util\.Comparator;
+import java.util.Comparator;
 
-public class Today\{
+public class Today{
 
-public static void main\(String\[\] args\) \{
+public static void main(String[] args) {
 
-New\_Class&lt;String&gt; ws1 \= new New\_Class&lt;&gt;\("ws0" , 1 , "是gay"\) ;
+New_Class<String> ws1 = new New_Class<>("ws0" , 1 , "是gay") ;
 
-Integer s \= test\(21\) ;
+Integer s = test(21) ;
 
-Integer\[\] arr \= \{1 , 2 ,4 ,5 ,4 , 3 ,12 \} ;
+Integer[] arr = {1 , 2 ,4 ,5 ,4 , 3 ,12 } ;
 
-Arrays\.sort\(arr , new Comparator&lt;Integer&gt;\(\)\{
+Arrays.sort(arr , new Comparator<Integer>(){
 
-public int compare\(Integer o1 , Integer o2\)\{
+public int compare(Integer o1 , Integer o2){
 
-return o2 \- o1 ;
+return o2 - o1 ;
 
-\}
+}
 
-\}\) ;
+}) ;
 
-Integer\[\] brr \= Arrays\.copyOf\(arr , 3\) ;
+Integer[] brr = Arrays.copyOf(arr , 3) ;
 
-System\.out\.println\(Arrays\.toString\(arr\)\) ;
+System.out.println(Arrays.toString(arr)) ;
 
-Today\.&lt;String&gt;name\(\) ;
+Today.<String>name() ;
 
-String str \= name\(\) ;
+String str = name() ;
 
-Integer ws2 \= test\(12\) ;
+Integer ws2 = test(12) ;
 
-Tree tree \= new Tree\(\) ;
+Tree tree = new Tree() ;
 
-System\.out\.println\(tree\.study\(",ws真的是gay"\)\);
+System.out.println(tree.study(",ws真的是gay"));
 
-Tec&lt;Integer&gt; tec \= new Tec&lt;&gt;\(12\);
+Tec<Integer> tec = new Tec<>(12);
 
-\}
+}
 
-private static &lt;T extends Number&gt; T test\(T t \)\{
+private static <T extends Number> T test(T t ){
 
 return t ;
 
-\}
+}
 
-private static &lt;T&gt; T name\(\)\{
+private static <T> T name(){
 
 return null ;
 
-\}
+}
 
-interface Study&lt;T&gt;\{
+interface Study<T>{
 
-T study\(T t \) ;
+T study(T t ) ;
 
-\}
+}
 
-static class Tree implements Study&lt;String&gt;\{
+static class Tree implements Study<String>{
 
-public String study\(String str\)\{
+public String study(String str){
 
-return "ws是gay"\+str ;
+return "ws是gay"+str ;
 
-\}
+}
 
-\}
+}
 
-static class Tec&lt;T&gt;\{
+static class Tec<T>{
 
 T name ;
 
-public Tec\(T name\)\{
+public Tec(T name){
 
-this\.name \= name ;
+this.name = name ;
 
-\}
+}
 
-\}
+}
 
-\}
+}
 
 package Today;
 
-public class Ws000&lt;T extends Number&gt; \{
+public class Ws000<T extends Number> {
 
 String name ;
 
@@ -120,14 +121,15 @@ int date ;
 
 T ws ;
 
-public Ws000\(String name, int date , T ws\) \{
+public Ws000(String name, int date , T ws) {
 
-this\.name \= name;
+this.name = name;
 
-this\.date \= date;
+this.date = date;
 
-this\.ws \= ws ;
+this.ws = ws ;
 
-\}
+}
 
-\}
+}
+```

@@ -1,5 +1,5 @@
 {
-  "title": "rpc服务",
+  "title": "go-zero RPC：分组与服务调用",
   "tags": [
     "Goland",
     "GO-zero"

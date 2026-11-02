@@ -1,5 +1,5 @@
 {
-  "title": "redis 多级缓存 + lua语言入门",
+  "title": "多级缓存：Redis 与 OpenResty",
   "tags": [
     "JAVA",
     "必要的相关技术"

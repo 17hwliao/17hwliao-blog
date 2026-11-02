@@ -1,5 +1,5 @@
 {
-  "title": "悲观锁",
+  "title": "PostgreSQL 行锁：FOR UPDATE",
   "tags": [
     "Goland",
     "PgSQL"

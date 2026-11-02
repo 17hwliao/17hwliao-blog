@@ -1,4 +1,5 @@
-public class Person \{
+```java
+public class Person {
 
 String name ;
 
@@ -10,64 +11,65 @@ int cun1 ;
 
 int cun2 ;
 
-void say\_hello\(\)\{
+void say_hello(){
 
-System\.out\.println\(" " \+ name \+ " "\+ age \+ " "\+ gender\);
+System.out.println(" " + name + " "+ age + " "+ gender);
 
-\}
+}
 
-int sum\(int a , int b\)\{
+int sum(int a , int b){
 
-int c \= a \+ b ;
+int c = a + b ;
 
 return c ;
 
-\}
+}
 
-void test\(int a\) \{
+void test(int a) {
 
-for \(int i \= 0; i &lt; 10; i\+\+\) \{
+for (int i = 0; i < 10; i++) {
 
-if \(i \=\= a\) \{
+if (i == a) {
 
 break;
 
-\} else \{
+} else {
 
-System\.out\.println\("hello"\);
+System.out.println("hello");
 
-\}
+}
 
-\}
+}
 
-System\.out\.println\("hhhhhhh"\);
+System.out.println("hhhhhhh");
 
-\}
+}
 
-void swap\(int a, int b\)\{
+void swap(int a, int b){
 
-int temp \= a;
+int temp = a;
 
-a \= b;
+a = b;
 
-b \= temp;
+b = temp;
 
-\}
+}
 
-void swap\(Person person\)\{
+void swap(Person person){
 
-person\.name \= "nitian" ;
+person.name = "nitian" ;
 
-\}
+}
 
-void swap1\(Person person\)\{
+void swap1(Person person){
 
-int temp \= person\.cun1 ;
+int temp = person.cun1 ;
 
-person\.cun1 \= person\.cun2 ;
+person.cun1 = person.cun2 ;
 
-person\.cun2 \= temp ;
+person.cun2 = temp ;
 
-\}
+}
 
-\}
+}
+```

@@ -1,5 +1,5 @@
 {
-  "title": "参数绑定",
+  "title": "Gin：请求参数绑定",
   "tags": [
     "Goland",
     "Gin-Web框架"

@@ -1,5 +1,5 @@
 {
-  "title": "redis的持久化",
+  "title": "Redis 持久化：RDB 与 AOF",
   "tags": [
     "Goland",
     "go语言集成redis"

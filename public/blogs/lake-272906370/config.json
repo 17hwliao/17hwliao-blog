@@ -1,5 +1,5 @@
 {
-  "title": "单表模型和单表操作",
+  "title": "GORM：模型、CRUD 与软删除",
   "tags": [
     "Goland",
     "GORM"

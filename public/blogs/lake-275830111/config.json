@@ -1,5 +1,5 @@
 {
-  "title": "Etcd",
+  "title": "etcd：服务发现与配置管理",
   "tags": [
     "Goland",
     "GO-zero"

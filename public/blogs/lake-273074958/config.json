@@ -1,5 +1,5 @@
 {
-  "title": "单表的高级查询",
+  "title": "GORM：条件查询与分页",
   "tags": [
     "Goland",
     "GORM"
