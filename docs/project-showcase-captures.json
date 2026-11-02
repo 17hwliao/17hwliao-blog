@@ -1,0 +1,240 @@
+{
+  "date": "2026-11-01",
+  "scope": "Local working captures only; not production verification",
+  "records": [
+    {
+      "project": "sql-sentinel",
+      "file": "sql-working-report.png",
+      "sha256": "301d0c2f018077e0ba012111f70d74e66f456ac1d766ce8e7cd71255aaf2803a",
+      "mode": "actual-cli-report-replay",
+      "inputSha256": "f6d410a8dfe96f28f7421e8c65281b1fec8c40b15961fdcaf742ce8de139e027",
+      "boundary": "EXPLAIN 来自仓库归档快照；本次没有启动 MySQL 影子库或重新实测生产负载。"
+    },
+    {
+      "project": "sql-sentinel",
+      "file": "sql-working-plan.png",
+      "sha256": "395200c471e382ecaa93de20a856b601bd7f13e7396b690ca9c86f3d245cbd62",
+      "mode": "actual-cli-report-replay",
+      "inputSha256": "f6d410a8dfe96f28f7421e8c65281b1fec8c40b15961fdcaf742ce8de139e027",
+      "boundary": "优化器估计扫描行数不是本次实际测量；不据此宣称耗时提升。"
+    },
+    {
+      "project": "sql-sentinel",
+      "file": "sql-working-evidence.png",
+      "sha256": "5db4194797237d662ee5b3254481711a35690dffd3fbdbccbf64dcff0e1b16cf",
+      "mode": "actual-cli-report-replay",
+      "inputSha256": "f6d410a8dfe96f28f7421e8c65281b1fec8c40b15961fdcaf742ce8de139e027",
+      "boundary": "这是本地 CLI 产物回放，不代表完整在线诊断任务或数据库环境已验收。"
+    },
+    {
+      "project": "sql-sentinel",
+      "file": "sql-journey-hypothesis.png",
+      "sha256": "0cbd55fdc4ba06e030a9727b37aaed721495bacd35b9eed425d8c25d9555a509",
+      "mode": "actual-cli-report-replay",
+      "boundary": "真实 CLI 产物与归档 EXPLAIN 的只读回放，本次没有重新进行数据库性能测量。取图对长证据使用滚动视窗，未改写数据或判定。"
+    },
+    {
+      "project": "sql-sentinel",
+      "file": "sql-journey-verification.png",
+      "sha256": "3370f7593405615910391740b518c319fdc1045342eca1a00a6d2b90e143b2ac",
+      "mode": "actual-cli-report-replay",
+      "boundary": "真实 CLI 产物与归档 EXPLAIN 的只读回放，本次没有重新进行数据库性能测量。取图对长证据使用滚动视窗，未改写数据或判定。"
+    },
+    {
+      "project": "sql-sentinel",
+      "file": "sql-journey-plan-source.png",
+      "sha256": "35d8752fc371e48f833cf078775bf16355ac92193054d4507baf0a85ef7ba6ca",
+      "mode": "actual-cli-report-replay",
+      "boundary": "真实 CLI 产物与归档 EXPLAIN 的只读回放，本次没有重新进行数据库性能测量。取图对长证据使用滚动视窗，未改写数据或判定。"
+    },
+    {
+      "project": "sql-sentinel",
+      "file": "sql-journey-raw.png",
+      "sha256": "e91f81696a18efd47d8e76a4266e020ed3d4a90fc46e73a56049430c0d705ef7",
+      "mode": "actual-cli-report-replay",
+      "boundary": "真实 CLI 产物与归档 EXPLAIN 的只读回放，本次没有重新进行数据库性能测量。取图对长证据使用滚动视窗，未改写数据或判定。"
+    },
+    {
+      "project": "sql-sentinel",
+      "file": "sql-journey-diagnostic-source.png",
+      "sha256": "3bb25ce65cfce86417654c110638f3e0907c0479a8b800f0edc5503964975411",
+      "mode": "actual-cli-report-replay",
+      "boundary": "真实 CLI 产物与归档 EXPLAIN 的只读回放，本次没有重新进行数据库性能测量。取图对长证据使用滚动视窗，未改写数据或判定。"
+    },
+    {
+      "project": "agentmesh",
+      "file": "mesh-working-call.png",
+      "sha256": "f99cc27ff8db9f849320c94f1d2466d2224c47f9538a8c9fc63bf39f792ade2d",
+      "mode": "live-local-api",
+      "boundary": "使用本地 mock 适配器和临时租户，不代表在线模型质量、实际费用或生产负载。"
+    },
+    {
+      "project": "agentmesh",
+      "file": "mesh-working-stream.png",
+      "sha256": "41a4eb89ff2dc7baaa9dc825e6e099b5609606b5aa55a0c64bd43368ee7087b3",
+      "mode": "live-local-api",
+      "boundary": "回答来自标明用途的本地测试适配器；本次未调用付费大模型。"
+    },
+    {
+      "project": "agentmesh",
+      "file": "mesh-working-models.png",
+      "sha256": "aadcd228f2d714e9787dffb67e43b6de9b4f56920323bee5edd617c0000aca2e",
+      "mode": "live-local-api",
+      "boundary": "本次使用内存演示存储与本地目录适配；没有连接真实账单或生产登录。"
+    },
+    {
+      "project": "agentmesh",
+      "file": "mesh-journey-input.png",
+      "sha256": "37a0e3ecd14a4ebb1b72e262325752e9d94168aa09df93cf4ff399f31ee1ce9a",
+      "mode": "live-local-api",
+      "boundary": "实际本地 Go 网关与临时租户，适配器均为显式 mock；不代表在线模型质量或真实账单。"
+    },
+    {
+      "project": "agentmesh",
+      "file": "mesh-journey-direct-stream.png",
+      "sha256": "fb28edc8a805249542399dc8edbad99ad67c17e922c3e65adadc37e57bce0c65",
+      "mode": "live-local-api",
+      "boundary": "实际本地 Go 网关与临时租户，适配器均为显式 mock；不代表在线模型质量或真实账单。"
+    },
+    {
+      "project": "agentmesh",
+      "file": "mesh-journey-direct-result.png",
+      "sha256": "2b5efdb3e87d7929500d4c89291b7d132bf26505a92bfb7ada15a65d4f3bfaf2",
+      "mode": "live-local-api",
+      "boundary": "实际本地 Go 网关与临时租户，适配器均为显式 mock；不代表在线模型质量或真实账单。"
+    },
+    {
+      "project": "agentmesh",
+      "file": "mesh-journey-error.png",
+      "sha256": "501cb552aa2e32a5a658ac24b9a9f5d43dbdb186db42f6f7d37123f4a38d04b3",
+      "mode": "live-local-api",
+      "boundary": "实际本地 Go 网关与临时租户，适配器均为显式 mock；不代表在线模型质量或真实账单。"
+    },
+    {
+      "project": "agentmesh",
+      "file": "mesh-journey-cancel.png",
+      "sha256": "035348ced37de664e4d4ba12e1a4504030ab2d1e6044522fb5fa3545b99af9e2",
+      "mode": "live-local-api",
+      "boundary": "实际本地 Go 网关与临时租户，适配器均为显式 mock；不代表在线模型质量或真实账单。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-working-orbit.png",
+      "sha256": "011db9dad5ffb8a857a3ad4bbece9014207b51524defbb35a5fe0ef7eeabf141",
+      "mode": "full-app-real-local-library",
+      "boundary": "运行已构建的完整 App，使用隔离配置和传输适配；原文件未提供封面时保留应用自带占位封面，不补造专辑图片。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-working-library.png",
+      "sha256": "7174ba1785f437d4daa544cfa52eb5153d3921b0e666d59695166741f34180f8",
+      "mode": "full-app-real-local-library",
+      "boundary": "未读取日常播放器资料；歌单由应用真实存储模块建立，不使用组件 fixture。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-working-list.png",
+      "sha256": "86f091d595d7e6b30c6f91c494c2dfc7c8b28c6cf5fbdc9243af332bf43e38db",
+      "mode": "full-app-real-local-library",
+      "boundary": "无头 Chromium 静音取图；未启动 Electron 窗口，不将此画面当作桌面更新、媒体键或在线漫游的验收。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-journey-home.png",
+      "sha256": "e2e41bd034e39ca477a99eac5d0f88d38bdd328ad98073bd904eca08b9a5084e",
+      "mode": "full-app-real-local-library",
+      "boundary": "完整 App 与实际 LocalLibrary / PersonalStore，独立资料目录、四首已有音频、静音无头浏览器。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-journey-add.png",
+      "sha256": "b60d4130b688b745cacdbd01246ffd718fdb2e070bf9b0546b07b39d7929fc25",
+      "mode": "full-app-real-local-library",
+      "boundary": "完整 App 与实际 LocalLibrary / PersonalStore，独立资料目录、四首已有音频、静音无头浏览器。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-journey-queue.png",
+      "sha256": "d695d5dcbc6f632c21d2bf456041aad263ed639be291c7099bbefa8afe85013d",
+      "mode": "full-app-real-local-library",
+      "boundary": "完整 App 与实际 LocalLibrary / PersonalStore，独立资料目录、四首已有音频、静音无头浏览器。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-journey-paused.png",
+      "sha256": "ee2eeaf3f89a2cfbbfbb87e0c53c062b83eff956f15322a738ecb9f852e5ccf9",
+      "mode": "full-app-real-local-library",
+      "boundary": "完整 App 与实际 LocalLibrary / PersonalStore，独立资料目录、四首已有音频、静音无头浏览器。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-journey-focus.png",
+      "sha256": "9904f1abc6e37d22fa36702aa1d1e436267f10b17e59fac67c927d825154d332",
+      "mode": "full-app-real-local-library",
+      "boundary": "完整 App 与实际 LocalLibrary / PersonalStore，独立资料目录、四首已有音频、静音无头浏览器。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-journey-liked.png",
+      "sha256": "2a7ecf31273a2e04ce01e10a5680c678b1fff7a7abcd7d6aa9b6cd8a1b2644a1",
+      "mode": "full-app-real-local-library",
+      "boundary": "完整 App 与实际 LocalLibrary / PersonalStore，独立资料目录、四首已有音频、静音无头浏览器。"
+    },
+    {
+      "project": "table-card",
+      "file": "table-working-gomoku.png",
+      "sha256": "c84c500db36025fc8fb17871c12cfb8425b42a763ed4143663925d66988fb9f9",
+      "mode": "actual-go-service-and-tui",
+      "boundary": "本机临时房间与 AI 对手；不表示跨网络多人连通性或生产压力已验收。终端输出在无头页面中渲染取图。"
+    },
+    {
+      "project": "table-card",
+      "file": "table-working-lobby.png",
+      "sha256": "54ab70cb5bfce2e5939e2a587563b1ac4044de1fef764caa84040580c9446b00",
+      "mode": "actual-go-service-and-tui",
+      "boundary": "本机临时服务，没有连接公开玩家或使用既有身份资料。"
+    },
+    {
+      "project": "table-card",
+      "file": "table-working-snake.png",
+      "sha256": "2dcf87384e9958df891280aa12946972a7d6b005b590a20d6806720b80f1ed1c",
+      "mode": "actual-go-service-and-tui",
+      "boundary": "静音取图，不打开终端桌面窗口；不将其当作联网测试。"
+    },
+    {
+      "project": "table-card",
+      "file": "table-journey-selected.png",
+      "sha256": "fe99481995e5bb61e11dfb10edca550c0a7747b0d628d7fb4ab12a8f1d1ec2f9",
+      "mode": "actual-go-service-and-tui",
+      "boundary": "实际 TUI 输出在无头页面中渲染；临时本机 Go 服务，不表示跨网络多人验收。"
+    },
+    {
+      "project": "table-card",
+      "file": "table-journey-room.png",
+      "sha256": "28cb5c685933966069a2b7e662ec6be82d19b34a9fa7f1482ce65b4b52089782",
+      "mode": "actual-go-service-and-tui",
+      "boundary": "实际 TUI 输出在无头页面中渲染；临时本机 Go 服务，不表示跨网络多人验收。"
+    },
+    {
+      "project": "table-card",
+      "file": "table-journey-opening.png",
+      "sha256": "0853595d43fc38c0cce2068e2dba196b5dfef6d55637751203071ed9415138ab",
+      "mode": "actual-go-service-and-tui",
+      "boundary": "实际 TUI 输出在无头页面中渲染；临时本机 Go 服务，不表示跨网络多人验收。"
+    },
+    {
+      "project": "table-card",
+      "file": "table-journey-rules.png",
+      "sha256": "53a21f04b39001f91e1eaf670f17521ecd7ded180e865d5304d650b59231bf89",
+      "mode": "actual-go-service-and-tui",
+      "boundary": "实际 TUI 输出在无头页面中渲染；临时本机 Go 服务，不表示跨网络多人验收。"
+    },
+    {
+      "project": "table-card",
+      "file": "table-journey-running.png",
+      "sha256": "e60aaae3a0e95205bf86c1d52c4f7354004cd751a6e39ba0a26dbc9e4b6c7df0",
+      "mode": "actual-go-service-and-tui",
+      "boundary": "静音运行实际离线引擎；不依赖匹配或网络服务。"
+    }
+  ]
+}
