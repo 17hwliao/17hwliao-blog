@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "source": "characters/zenix-cat",
+  "files": [
+    {
+      "file": "preview/pet.html",
+      "sha256": "603cfae3189aa45a66c147e82469fa7a110a7428f38c233cf3224909484e3fd8"
+    },
+    {
+      "file": "preview/pet.css",
+      "sha256": "c7de7fd71864624515dba904a172959b333535040f249318d46776fd9571be21"
+    },
+    {
+      "file": "preview/pet.mjs",
+      "sha256": "1417706ccb3d3a0e8bfd1e1cacf193cc8ce24ffdceff946ccc5d536af8754135"
+    },
+    {
+      "file": "runtime/catalog.mjs",
+      "sha256": "cfc2b9eeb69d2f1267dac51a689d90ea0f5a0a7455f9950b41237319a1561a17"
+    },
+    {
+      "file": "runtime/controller.mjs",
+      "sha256": "db1a99f19736e2424b0e7693a34e7bf2612246751ac8ed1a189180685391bd20"
+    },
+    {
+      "file": "runtime/rig-pose.mjs",
+      "sha256": "89c5adf65e8f677656c2623188b61b248305bf6104d995a5367bebcfde15bc3b"
+    },
+    {
+      "file": "runtime/canvas-renderer.mjs",
+      "sha256": "c8ec6fd013d1bbe7ca2b3396c2553bd71ab4b4e660facce44ca47fa55c64ce47"
+    },
+    {
+      "file": "runtime/body-mesh.mjs",
+      "sha256": "63dd1ea256ecaf7d3b8ea937649cac37a26d309661252d858ff3b133953897b4"
+    },
+    {
+      "file": "runtime/arm-mesh.mjs",
+      "sha256": "52cd7976b08d796fe4d35e40c15c4185fe9403824e553ef74116962ea3a71623"
+    },
+    {
+      "file": "runtime/agent-link.mjs",
+      "sha256": "f2416758bb232b2f6639a94e5df1e37b02c7cc973e7ff5c51f24e353ec61ef68"
+    },
+    {
+      "file": "runtime/performance-director.mjs",
+      "sha256": "1d52fe1bfa112979f9b622c24816a0fa3caafa23633f85354e0f2fce323515a9"
+    },
+    {
+      "file": "runtime/variety-picker.mjs",
+      "sha256": "df0273e405cfa8bec37777ac30adbba9f161802846ab4fcca5c65bb3e08873af"
+    },
+    {
+      "file": "runtime/speech-catalog.mjs",
+      "sha256": "f32039e627516cec0eab57a192be333a48b48ab718e45b404f3ec0d8590f0a89"
+    },
+    {
+      "file": "runtime/speech-director.mjs",
+      "sha256": "84ea451392fe1923259b303a5eb29415057378f8d797eef423fea77d2f8aea7d"
+    },
+    {
+      "file": "source/v3/manifest.json",
+      "sha256": "05b6c401e419bb0410423c2b0063eba28f75469a61d04f92fe3eda885228105f"
+    },
+    {
+      "file": "source/v3/Tail.png",
+      "sha256": "c1b0c656ef446e9cc74885b32ded022d29f8cafbf8f1bf8764c3b26e94155390"
+    },
+    {
+      "file": "source/v3/HairBack.png",
+      "sha256": "16e9614f9d2f68d7cb2f154bf66e0568996e29318173a8c9adafd314e2da8543"
+    },
+    {
+      "file": "source/v3/EarR.png",
+      "sha256": "ef75bc033d87e7ace7fa9b0f42255fa2f0ae1b274754c4f8e697bef72ca99e0c"
+    },
+    {
+      "file": "source/v3/EarL.png",
+      "sha256": "7e4b5be1010e3f0d763dce0888bdda0118183a7a1b1ad92cc31e01ae1bbfe9c9"
+    },
+    {
+      "file": "source/v3/ArmR.png",
+      "sha256": "4de11190ed5a1695dab9577087d34c3ce459af5bb7f2ea849df884d7743f5c6d"
+    },
+    {
+      "file": "source/v3/ArmL.png",
+      "sha256": "83f3e84271501230a5b7f243f1745c3653ebb4f76b127233f50c336291ffe4d3"
+    },
+    {
+      "file": "source/v3/BodyCore.png",
+      "sha256": "3f7206839068432e5528da39fd7e45dcca25d1437732914f2df88c311bcf3322"
+    },
+    {
+      "file": "source/v3/FaceBase.png",
+      "sha256": "d434ada200e3ac714b0b46b70f7200540a6c4469aae904f7c988c975044212be"
+    },
+    {
+      "file": "source/v3/BlushR.png",
+      "sha256": "a9d69f072b5a150bc94e452058acb8e4a386f8fe220ad84e2f7dfd2e1f9ab8c7"
+    },
+    {
+      "file": "source/v3/BlushL.png",
+      "sha256": "5d699fe823a340b2646441af00fd6bc03108058bf10f70525954b172dd90269e"
+    },
+    {
+      "file": "source/v3/EyeWhiteR.png",
+      "sha256": "216ff350ddcb861c15ef89a05fea02dc47448cf847d2acb1e30f747e6ba36e3e"
+    },
+    {
+      "file": "source/v3/IrisR.png",
+      "sha256": "d6f5ca070e2767ac52d786aff503176231578c7ee98294298e09986dcf4f8691"
+    },
+    {
+      "file": "source/v3/LashR.png",
+      "sha256": "e936ed1f2a26aa1fb7e86c7689e610b5e31aa55389592dfbc8c9d0bfda65fc9b"
+    },
+    {
+      "file": "source/v3/ClosedEyeR.png",
+      "sha256": "58c5a570234137388541a802f7d31048f0f79a0fdfd221ef610108824f93ddf1"
+    },
+    {
+      "file": "source/v3/BrowR.png",
+      "sha256": "b827b24d3265ed9c904b706a705ea107dc51f21398a205233477b217fadb9bc0"
+    },
+    {
+      "file": "source/v3/EyeWhiteL.png",
+      "sha256": "28c435d6357e8fa86d12827408a66c0bc57325efac1d98352cb7577d3f245dc7"
+    },
+    {
+      "file": "source/v3/IrisL.png",
+      "sha256": "b5dbd830af2fa134eef92cdd2e9a99fdb604d5ac540faf9aaa6fe0ba0ffe1200"
+    },
+    {
+      "file": "source/v3/LashL.png",
+      "sha256": "0deca5c785b9e7fbdd0f9e8bcc3f46740fe6a18bb0b93f55e6f752a43c6f806d"
+    },
+    {
+      "file": "source/v3/ClosedEyeL.png",
+      "sha256": "552d7723ca15a888b4a8d7c4401012670ab0f3d573715b3783f3f725c15a8a0d"
+    },
+    {
+      "file": "source/v3/BrowL.png",
+      "sha256": "85a8bd558a2b155cc772f82ce6c469c23b58894a6dd3252c6387a9af40a597aa"
+    },
+    {
+      "file": "source/v3/Mouth.png",
+      "sha256": "7e7cbed0eb0e24ac63e2b8b161adec0b58d5ffb4b7dd5f65231fdc89c4b24b8e"
+    },
+    {
+      "file": "source/v3/MouthOpen.png",
+      "sha256": "d362a057784d19cdacffc10c4b9ca14f2404db00c30298ae76235f8de6e37709"
+    },
+    {
+      "file": "source/v3/MouthO.png",
+      "sha256": "fd38a74502cbb4a25ad095afee46dfc04906b3b5a7e30eca372b63a22edbde2b"
+    },
+    {
+      "file": "source/v3/MouthPout.png",
+      "sha256": "ee141e850c46fed36e613054a879009f7be420ee3adb6d9efe902be02aee610d"
+    },
+    {
+      "file": "source/v3/HairFront.png",
+      "sha256": "d381a98468ef4078514554395a8f9e45f3ec7db6c89b110f3dbe2137a98044fb"
+    },
+    {
+      "file": "source/v3/ClipZ.png",
+      "sha256": "72b2b91a81e9d41586b01d8a6a426eeef22f8e1d3f4046d10f05a33f2fc694a7"
+    }
+  ]
+}
