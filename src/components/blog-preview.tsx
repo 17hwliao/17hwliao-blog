@@ -7,6 +7,8 @@ import { useSize } from '@/hooks/use-size'
 import { BlogSidebar } from '@/components/blog-sidebar'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import type { BlogSource } from '@/app/blog/types'
+import { useRef } from 'react'
+import { ReadingTools } from '@/features/reading/reading-tools'
 
 type BlogPreviewProps = {
 	markdown: string
@@ -19,13 +21,27 @@ type BlogPreviewProps = {
 	createdAt?: string
 	contentUpdatedAt?: string | null
 	source?: BlogSource
+	readingTools?: boolean
 }
 
-export function BlogPreview({ markdown, title, tags, date, summary, cover, slug, createdAt, contentUpdatedAt, source }: BlogPreviewProps) {
+export function BlogPreview({
+	markdown,
+	title,
+	tags,
+	date,
+	summary,
+	cover,
+	slug,
+	createdAt,
+	contentUpdatedAt,
+	source,
+	readingTools = false
+}: BlogPreviewProps) {
 	const { maxSM: isMobile } = useSize()
 	const { content, toc, loading } = useMarkdownRender(markdown)
 	const { siteContent } = useConfigStore()
 	const summaryInContent = siteContent.summaryInContent ?? false
+	const contentRef = useRef<HTMLDivElement>(null)
 
 	if (loading) {
 		return <div className='text-secondary flex h-full items-center justify-center text-sm'>渲染中...</div>
@@ -44,16 +60,34 @@ export function BlogPreview({ markdown, title, tags, date, summary, cover, slug,
 					</div>
 
 					<div className='article-dates text-secondary mt-3 text-center text-sm'>
-						<span>{source ? '编写于 ' : ''}<time dateTime={createdAt}>{date}</time></span>
+						<span>
+							{source ? '编写于 ' : ''}
+							<time dateTime={createdAt}>{date}</time>
+						</span>
 						{source && contentUpdatedAt && contentUpdatedAt !== createdAt && (
-							<span>内容更新于 <time dateTime={contentUpdatedAt}>{new Date(contentUpdatedAt).toLocaleDateString('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' })}</time></span>
+							<span>
+								内容更新于{' '}
+								<time dateTime={contentUpdatedAt}>
+									{new Date(contentUpdatedAt).toLocaleDateString('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' })}
+								</time>
+							</span>
 						)}
 					</div>
-					{source && <p className='article-origin'>原笔记目录：{source.book} / {source.directory.join(' / ')}</p>}
+					{source && (
+						<p className='article-origin'>
+							原笔记目录：{source.book} / {source.directory.join(' / ')}
+						</p>
+					)}
 
 					{summary && summaryInContent && <div className='text-secondary mt-6 cursor-text text-center text-sm'>“{summary}”</div>}
 
-					<div className='prose mt-6 max-w-none cursor-text'>{content}</div>
+					{slug && readingTools ? (
+						<ReadingTools key={slug} slug={slug} title={title} contentRef={contentRef} toc={toc}>
+							{content}
+						</ReadingTools>
+					) : (
+						<div className='prose mt-6 max-w-none cursor-text'>{content}</div>
+					)}
 				</div>
 			</motion.article>
 

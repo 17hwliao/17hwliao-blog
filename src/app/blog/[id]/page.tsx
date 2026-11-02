@@ -72,6 +72,7 @@ export default function Page() {
 	return (
 		<>
 			<BlogPreview
+				readingTools
 				markdown={blog.markdown}
 				title={title}
 				tags={tags}
