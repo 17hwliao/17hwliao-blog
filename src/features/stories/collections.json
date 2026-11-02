@@ -1,0 +1,23 @@
+[
+	{
+		"id": "studio",
+		"title": "一起，开始的地方",
+		"subtitle": "工作室的两次团建，和那些围着一张桌子的时刻。",
+		"pictureIds": ["photo-111-4", "photo-111-2"],
+		"mood": "twenty-two"
+	},
+	{
+		"id": "farewell",
+		"title": "好好说声，再见",
+		"subtitle": "欢送会、留下的照片，以及想要好好保存的回忆。",
+		"pictureIds": ["photo-111-1", "photo-111-7", "photo-111-3"],
+		"mood": "only"
+	},
+	{
+		"id": "fragments",
+		"title": "日常的几个片段",
+		"subtitle": "不急着赋予意义，先把想留下的画面收好。",
+		"pictureIds": ["photo-111-5", "photo-111-6", "photo-111-9"],
+		"mood": "loser"
+	}
+]

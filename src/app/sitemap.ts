@@ -13,12 +13,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 	let posts: BlogIndexItem[] = blogIndex
 
-	const postEntries: MetadataRoute.Sitemap = posts.map(post => ({
-		url: `${baseUrl}/blog/${post.slug}`,
-		lastModified: new Date(post.contentUpdatedAt || post.date),
-		changeFrequency: 'weekly',
-		priority: 0.8
-	}))
+	const postEntries: MetadataRoute.Sitemap = posts
+		.filter(post => !post.hidden)
+		.map(post => ({
+			url: `${baseUrl}/blog/${post.slug}`,
+			lastModified: new Date(post.contentUpdatedAt || post.date),
+			changeFrequency: 'weekly',
+			priority: 0.8
+		}))
 
 	const staticEntries: MetadataRoute.Sitemap = [
 		{
@@ -29,6 +31,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		}
 	]
 
-	const projectEntries: MetadataRoute.Sitemap = projects.map(project => ({ url: `${baseUrl}${project.url}`, changeFrequency: 'monthly', priority: 0.7 }))
-	return [...staticEntries, ...postEntries, { url: `${baseUrl}/projects`, changeFrequency: 'weekly' }, ...projectEntries]
+	const projectEntries: MetadataRoute.Sitemap = projects
+		.filter(project => project.url.startsWith('/') && !project.url.startsWith('//'))
+		.map(project => ({ url: `${baseUrl}${project.url}`, changeFrequency: 'monthly', priority: 0.7 }))
+	return [
+		...staticEntries,
+		...postEntries,
+		...['/projects', '/knowledge', '/pictures', '/pictures/stories'].map(route => ({ url: `${baseUrl}${route}`, changeFrequency: 'weekly' as const })),
+		...projectEntries
+	]
 }

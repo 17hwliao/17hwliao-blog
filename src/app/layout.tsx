@@ -1,6 +1,6 @@
 import '@/styles/globals.css'
 
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import Layout from '@/layout'
 import Head from '@/layout/head'
 import siteContent from '@/config/site-content.json'
@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 		description
 	}
 }
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover', themeColor: '#fcfcfa' }
 
 const htmlStyle: React.CSSProperties & Record<`--${string}`, string> = {
 	'--color-brand': theme.colorBrand,

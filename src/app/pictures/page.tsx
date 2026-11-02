@@ -13,6 +13,7 @@ import { useEditPage } from '@/hooks/use-edit-page'
 import { EditToolbar, EditToolbarActionButton } from '@/components/edit-toolbar'
 import { PageIntro } from '@/components/page-intro'
 import { ContentEmpty } from '@/components/content-empty'
+import Link from 'next/link'
 
 export interface Picture {
 	id: string
@@ -143,8 +144,9 @@ export default function Page() {
 	}
 
 	const persist = async () => {
-		await pushPictures({ pictures, imageItems })
-		setOriginalPictures(pictures)
+		const saved = await pushPictures({ pictures, imageItems })
+		setPictures(saved)
+		setOriginalPictures(saved)
 		setImageItems(new Map())
 	}
 
@@ -159,6 +161,7 @@ export default function Page() {
 			<input ref={keyInputRef} type='file' accept='.pem' className='hidden' onChange={handlePemChange} />
 
 			<PageIntro label='VISUAL DIARY' title='生活的切片' description='用照片保存一些转瞬即逝的日常。' />
+			<div className='feature-heading album-story-entry'><p className='muted'>散开看看，也可以按章节慢慢翻。</p><Link href='/pictures/stories' className='button-light'>打开相册故事集 →</Link></div>
 			{showingDemo && (
 				<div className='album-demo-notice'>
 					<p>效果预览 · 以下为示例插画，不会保存到相册。</p>

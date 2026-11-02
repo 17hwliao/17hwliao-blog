@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { LoaderCircle, Music2, Pause, Play, X } from 'lucide-react'
 import tracks from '@/config/music.json'
+import { musicRequestEvent } from '@/features/music/events'
 
 export function HeaderMusic() {
 	const audioRef = useRef<HTMLAudioElement>(null)
@@ -73,6 +74,18 @@ export function HeaderMusic() {
 			if (requestVersion.current === version) requestPending.current = false
 		}
 	}
+	useEffect(() => {
+		const handle = (event: Event) => {
+			const id = (event as CustomEvent<unknown>).detail
+			const track = tracks.find(item => item.id === id)
+			if (track) {
+				setOpen(true)
+				void playTrack(track)
+			}
+		}
+		window.addEventListener(musicRequestEvent, handle)
+		return () => window.removeEventListener(musicRequestEvent, handle)
+	}, [])
 	return (
 		<div className='header-music' ref={containerRef}>
 			<button

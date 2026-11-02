@@ -15,7 +15,7 @@ const blogs = blogIndex as BlogIndexItem[]
 const escapeXml = (value: string): string =>
 	value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')
 
-const wrapCdata = (value: string): string => `<![CDATA[${value}]]>`
+const wrapCdata = (value: string): string => `<![CDATA[${value.replace(/\]\]>/g, ']]]]><![CDATA[>')}]]>`
 
 const getExtension = (input: string): string | undefined => {
 	const clean = input.split(/[?#]/)[0]
@@ -76,7 +76,7 @@ const serializeItem = (item: BlogIndexItem): string => {
 	return `
 		<item>
 			<title>${title}</title>
-			<link>${link}</link>
+			<link>${escapeXml(link)}</link>
 			<guid isPermaLink="false">${escapeXml(link)}</guid>
 			<description>${description}</description>
 			<pubDate>${pubDate}</pubDate>
@@ -93,7 +93,7 @@ export function GET(): Response {
 	const description = siteContent.meta?.description || 'Latest updates from 2025 Blog'
 
 	const items = blogs
-		.filter(item => item?.slug)
+		.filter(item => item?.slug && !item.hidden)
 		.map(serializeItem)
 		.join('')
 
@@ -101,7 +101,7 @@ export function GET(): Response {
 <rss version="2.0">
 	<channel xmlns:atom="http://www.w3.org/2005/Atom">
 		<title>${escapeXml(title)}</title>
-		<link>${SITE_ORIGIN}</link>
+		<link>${escapeXml(SITE_ORIGIN)}</link>
 		<atom:link href="${FEED_URL}" rel="self" type="application/rss+xml" />
 		<description>${escapeXml(description)}</description>
 		<language>zh-CN</language>

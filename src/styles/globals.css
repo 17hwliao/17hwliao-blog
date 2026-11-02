@@ -4,6 +4,8 @@
 @import './article.css';
 @import './site.css';
 @import './projects.css';
+@import './discovery.css';
+@import './appearance.css';
 
 @plugin 'tailwindcss-animate';
 
