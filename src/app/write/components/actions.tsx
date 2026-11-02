@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useWriteStore } from '../stores/write-store'
@@ -8,10 +8,9 @@ import { usePublish } from '../hooks/use-publish'
 import { PageActions } from '@/components/page-actions'
 
 export function WriteActions() {
-	const { loading, mode, form, loadBlogForEdit, originalSlug, updateForm } = useWriteStore()
+	const { loading, mode, form, originalSlug, updateForm } = useWriteStore()
 	const { openPreview } = usePreviewStore()
 	const { isAuth, importing, onChoosePrivateKey, onPublish, onDelete } = usePublish()
-	const [saving, setSaving] = useState(false)
 	const keyInputRef = useRef<HTMLInputElement>(null)
 	const mdInputRef = useRef<HTMLInputElement>(null)
 	const router = useRouter()
@@ -105,7 +104,7 @@ export function WriteActions() {
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={handleCancel}
-							disabled={saving}
+							disabled={loading || importing}
 							className='bg-card rounded-xl border px-4 py-2 text-sm'>
 							取消
 						</motion.button>

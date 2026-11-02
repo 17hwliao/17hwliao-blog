@@ -3,7 +3,7 @@ import { useWriteStore } from '../stores/write-store'
 import { toast } from 'sonner'
 
 export function useLoadBlog(slug?: string) {
-	const { loadBlogForEdit, loading } = useWriteStore()
+	const { loadBlogForEdit, loading, loadingSlug, loadError } = useWriteStore()
 
 	useEffect(() => {
 		if (slug) {
@@ -14,5 +14,5 @@ export function useLoadBlog(slug?: string) {
 		}
 	}, [slug, loadBlogForEdit])
 
-	return { loading }
+	return { loading: loading || loadingSlug !== slug, error: loadingSlug === slug ? loadError : null, retry: () => loadBlogForEdit(slug || '').catch(() => {}) }
 }

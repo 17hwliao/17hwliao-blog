@@ -1,6 +1,7 @@
 import { commitFiles, addHashedImage, fileTreeItem } from '@/lib/github-commit'
 import { prepareBlogsIndex } from '@/lib/blog-index'
-import type { TreeItem } from '@/lib/github-client'
+import { readTextFileFromRepo, type TreeItem } from '@/lib/github-client'
+import { assertBlogSlug } from '@/lib/blog-slug'
 import type { ImageItem } from '../types'
 import { toast } from 'sonner'
 import { formatDateTimeLocal } from '../stores/write-store'
@@ -17,6 +18,7 @@ export type PushBlogParams = {
 		hidden?: boolean
 		category?: string
 		originalConfig?: BlogConfig
+		originalMarkdown?: string
 	}
 	cover?: ImageItem | null
 	images?: ImageItem[]
@@ -27,7 +29,7 @@ export type PushBlogParams = {
 export async function pushBlog(params: PushBlogParams): Promise<void> {
 	const { form, cover, images, mode = 'create', originalSlug } = params
 
-	if (!form?.slug) throw new Error('需要 slug')
+	assertBlogSlug(form?.slug)
 
 	if (mode === 'edit' && originalSlug && originalSlug !== form.slug) {
 		throw new Error('编辑模式下不支持修改 slug，请保持原 slug 不变')
@@ -39,6 +41,18 @@ export async function pushBlog(params: PushBlogParams): Promise<void> {
 	await commitFiles({
 		message: commitMessage,
 		prepare: async ctx => {
+			const remoteConfig = await readTextFileFromRepo(ctx.token, ctx.owner, ctx.repo, `${basePath}/config.json`, ctx.baseCommit)
+			if (mode === 'create' && remoteConfig !== null) throw new Error('这个文章路径已存在，请更换路径或进入编辑模式。')
+			if (mode === 'edit') {
+				if (remoteConfig === null) throw new Error('原文章不存在，已停止更新。')
+				if (!form.originalConfig || JSON.stringify(JSON.parse(remoteConfig)) !== JSON.stringify(form.originalConfig)) {
+					throw new Error('文章配置已在远程变化，请重新加载后再编辑。')
+				}
+				if (form.originalMarkdown !== undefined) {
+					const remoteMarkdown = await readTextFileFromRepo(ctx.token, ctx.owner, ctx.repo, `${basePath}/index.md`, ctx.baseCommit)
+					if (remoteMarkdown !== form.originalMarkdown) throw new Error('文章正文已在远程变化，请保留草稿并重新加载。')
+				}
+			}
 			const allLocalImages: Array<{ img: Extract<ImageItem, { type: 'file' }>; id: string }> = []
 
 			for (const img of images || []) {
@@ -111,7 +125,7 @@ export async function pushBlog(params: PushBlogParams): Promise<void> {
 					hidden: form.hidden,
 					category: form.category
 				},
-				ctx.branch
+				ctx.baseCommit
 			)
 			treeItems.push(fileTreeItem('public/blogs/index.json', await ctx.blobFromText(indexJson)))
 

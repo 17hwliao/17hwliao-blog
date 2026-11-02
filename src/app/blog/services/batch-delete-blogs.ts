@@ -2,9 +2,11 @@ import { commitFiles, fileTreeItem } from '@/lib/github-commit'
 import { listRepoFilesRecursive, type TreeItem } from '@/lib/github-client'
 import { removeBlogsFromIndex } from '@/lib/blog-index'
 import { toast } from 'sonner'
+import { assertBlogSlug } from '@/lib/blog-slug'
 
 export async function batchDeleteBlogs(slugs: string[]): Promise<void> {
 	const uniqueSlugs = Array.from(new Set(slugs.filter(Boolean)))
+	uniqueSlugs.forEach(assertBlogSlug)
 	if (uniqueSlugs.length === 0) {
 		throw new Error('需要至少选择一篇文章')
 	}
@@ -19,14 +21,14 @@ export async function batchDeleteBlogs(slugs: string[]): Promise<void> {
 
 			for (const slug of uniqueSlugs) {
 				toast.info(`正在收集 ${slug} 文件...`)
-				const files = await listRepoFilesRecursive(ctx.token, ctx.owner, ctx.repo, `public/blogs/${slug}`, ctx.branch)
+				const files = await listRepoFilesRecursive(ctx.token, ctx.owner, ctx.repo, `public/blogs/${slug}`, ctx.baseCommit)
 				for (const path of files) {
 					treeItems.push(fileTreeItem(path, null))
 				}
 			}
 
 			toast.info('正在更新索引...')
-			const indexJson = await removeBlogsFromIndex(ctx.token, ctx.owner, ctx.repo, uniqueSlugs, ctx.branch)
+			const indexJson = await removeBlogsFromIndex(ctx.token, ctx.owner, ctx.repo, uniqueSlugs, ctx.baseCommit)
 			treeItems.push(fileTreeItem('public/blogs/index.json', await ctx.blobFromText(indexJson)))
 
 			return { treeItems }

@@ -1,15 +1,7 @@
 import { toast } from 'sonner'
 import { useAuthStore } from '@/hooks/use-auth'
 import { GITHUB_CONFIG } from '@/consts'
-import {
-	createBlob,
-	createCommit,
-	createTree,
-	getRef,
-	toBase64Utf8,
-	updateRef,
-	type TreeItem
-} from '@/lib/github-client'
+import { createBlob, createCommit, createTree, getRef, toBase64Utf8, updateRef, type TreeItem } from '@/lib/github-client'
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { getFileExt } from '@/lib/utils'
 
@@ -18,6 +10,8 @@ export type CommitContext = {
 	owner: string
 	repo: string
 	branch: string
+	/** Immutable parent used by every repository read in this transaction. */
+	baseCommit: string
 	/** Create a blob from base64 content, returns sha */
 	blobFromBase64: (contentBase64: string) => Promise<string>
 	/** Create a blob from UTF-8 text, returns sha */
@@ -32,12 +26,24 @@ export type CommitFilesOptions<T = void> = {
 	prepare: (ctx: CommitContext) => Promise<{ treeItems: TreeItem[]; result?: T }>
 }
 
+let commitInFlight = false
+
 /**
  * Shared GitHub commit pipeline:
  * getAuthToken → getRef → prepare tree → createTree → createCommit → updateRef
  */
 export async function commitFiles<T = void>(options: CommitFilesOptions<T>): Promise<T> {
-	const { message, successMessage = '发布成功！', prepare } = options
+	if (commitInFlight) throw new Error('已有内容正在提交，请等待本次操作结束。')
+	commitInFlight = true
+	try {
+		return await commitFilesUnlocked(options)
+	} finally {
+		commitInFlight = false
+	}
+}
+
+async function commitFilesUnlocked<T>(options: CommitFilesOptions<T>): Promise<T> {
+	const { message, successMessage = '已提交到仓库，请等待部署后查看页面更新。', prepare } = options
 	const { OWNER: owner, REPO: repo, BRANCH: branch } = GITHUB_CONFIG
 
 	const token = await useAuthStore.getState().getAuthToken()
@@ -53,14 +59,14 @@ export async function commitFiles<T = void>(options: CommitFilesOptions<T>): Pro
 
 	const blobFromText = async (text: string) => blobFromBase64(toBase64Utf8(text))
 
-	const blobFromJson = async (data: unknown, space: string | number = '\t') =>
-		blobFromText(JSON.stringify(data, null, space))
+	const blobFromJson = async (data: unknown, space: string | number = '\t') => blobFromText(JSON.stringify(data, null, space))
 
 	const ctx: CommitContext = {
 		token,
 		owner,
 		repo,
 		branch,
+		baseCommit: latestCommitSha,
 		blobFromBase64,
 		blobFromText,
 		blobFromJson
@@ -76,7 +82,19 @@ export async function commitFiles<T = void>(options: CommitFilesOptions<T>): Pro
 	const commitData = await createCommit(token, owner, repo, message, treeData.sha, [latestCommitSha])
 
 	toast.info('正在更新分支...')
-	await updateRef(token, owner, repo, `heads/${branch}`, commitData.sha)
+	try {
+		await updateRef(token, owner, repo, `heads/${branch}`, commitData.sha)
+	} catch {
+		// A lost response may follow a successful PATCH. Check once; never
+		// replay a repository write just because its acknowledgement was lost.
+		let currentSha: string | undefined
+		try {
+			currentSha = (await getRef(token, owner, repo, `heads/${branch}`)).sha
+		} catch {
+			/* outcome remains unknown */
+		}
+		if (currentSha !== commitData.sha) throw new Error('尚未确认本次提交是否生效。请先查看 GitHub 最新提交；若分支已变化，请保留草稿并重新加载。')
+	}
 
 	toast.success(successMessage)
 
@@ -104,13 +122,13 @@ export async function addHashedImage(
 	const publicPath = `/${dir}/${filename}`
 	const repoPath = `public/${dir}/${filename}`
 
-	if (uploadedHashes.has(hash)) {
+	if (uploadedHashes.has(repoPath)) {
 		return { publicPath, treeItem: null, hash }
 	}
 
 	const contentBase64 = await fileToBase64NoPrefix(file)
 	const sha = await ctx.blobFromBase64(contentBase64)
-	uploadedHashes.add(hash)
+	uploadedHashes.add(repoPath)
 
 	return {
 		publicPath,

@@ -18,10 +18,16 @@ function collectImageUrls(pictures: Picture[]): Set<string> {
 	return urls
 }
 
-export async function pushPictures(params: PushPicturesParams): Promise<void> {
+export async function pushPictures(params: PushPicturesParams): Promise<Picture[]> {
 	const { pictures, imageItems } = params
+	for (const picture of pictures) {
+		const urls = picture.images?.length ? picture.images : picture.image ? [picture.image] : []
+		if (urls.some((url, index) => url.startsWith('blob:') && imageItems?.get(`${picture.id}::${index}`)?.type !== 'file')) {
+			throw new Error('相册图片缺少上传文件，请重新选择图片。')
+		}
+	}
 
-	await commitFiles({
+	return commitFiles<Picture[]>({
 		message: '更新图床列表',
 		prepare: async ctx => {
 			const treeItems: TreeItem[] = []
@@ -53,7 +59,7 @@ export async function pushPictures(params: PushPicturesParams): Promise<void> {
 			const currentImageUrls = collectImageUrls(updatedPictures)
 
 			toast.info('正在检查需要删除的文件...')
-			const previousListJson = await readTextFileFromRepo(ctx.token, ctx.owner, ctx.repo, 'src/app/pictures/list.json', ctx.branch)
+			const previousListJson = await readTextFileFromRepo(ctx.token, ctx.owner, ctx.repo, 'src/app/pictures/list.json', ctx.baseCommit)
 
 			if (previousListJson) {
 				try {
@@ -73,7 +79,7 @@ export async function pushPictures(params: PushPicturesParams): Promise<void> {
 
 			const sha = await ctx.blobFromJson(updatedPictures)
 			treeItems.push(fileTreeItem('src/app/pictures/list.json', sha))
-			return { treeItems }
+			return { treeItems, result: updatedPictures }
 		}
 	})
 }

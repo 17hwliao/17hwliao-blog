@@ -16,7 +16,7 @@ function handle401Error(): void {
 }
 
 function handle422Error(): void {
-	toast.error('操作太快了，请操作慢一点')
+	toast.error('GitHub 未接受本次操作，请检查数据或远程分支是否已变化。')
 }
 
 export function toBase64Utf8(input: string): string {

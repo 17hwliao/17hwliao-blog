@@ -26,7 +26,7 @@ export async function pushSiteContent(
 ): Promise<void> {
 	await commitFiles({
 		message: '更新站点配置',
-		successMessage: '保存成功！',
+		successMessage: '站点配置已提交到仓库，请等待部署更新。',
 		prepare: async ctx => {
 			const treeItems: TreeItem[] = []
 

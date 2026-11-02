@@ -37,6 +37,8 @@ type WriteStore = {
 
 	// Publish state
 	loading: boolean
+	loadError: string | null
+	loadingSlug: string | null
 	setLoading: (loading: boolean) => void
 
 	// Load blog for editing
@@ -56,6 +58,8 @@ const initialForm: PublishForm = {
 	hidden: false,
 	category: ''
 }
+
+let loadGeneration = 0
 
 export const useWriteStore = create<WriteStore>((set, get) => ({
 	// Mode state
@@ -152,13 +156,17 @@ export const useWriteStore = create<WriteStore>((set, get) => ({
 
 	// Publish state
 	loading: false,
+	loadError: null,
+	loadingSlug: null,
 	setLoading: loading => set({ loading }),
 
 	// Load blog for editing
 	loadBlogForEdit: async (slug: string) => {
+		const generation = ++loadGeneration
 		try {
-			set({ loading: true })
+			set({ loading: true, loadingSlug: slug, loadError: null })
 			const blog = await loadBlog(slug)
+			if (generation !== loadGeneration) return
 
 			// Parse images from markdown
 			const images: ImageItem[] = []
@@ -196,7 +204,8 @@ export const useWriteStore = create<WriteStore>((set, get) => ({
 					summary: blog.config.summary || '',
 					hidden: blog.config.hidden || false,
 					category: blog.config.category || '',
-					originalConfig: blog.config
+					originalConfig: blog.config,
+					originalMarkdown: blog.markdown
 				},
 				images,
 				cover,
@@ -205,15 +214,15 @@ export const useWriteStore = create<WriteStore>((set, get) => ({
 
 			toast.success('博客加载成功')
 		} catch (err: any) {
-			console.error('Failed to load blog:', err)
-			toast.error(err?.message || '加载博客失败')
-			set({ loading: false })
+			if (generation !== loadGeneration) return
+			set({ loading: false, loadError: err?.message || '加载博客失败' })
 			throw err
 		}
 	},
 
 	// Reset to create mode
 	reset: () => {
+		loadGeneration += 1
 		// Revoke object URLs
 		const { images, cover } = get()
 		for (const img of images) {
@@ -230,7 +239,10 @@ export const useWriteStore = create<WriteStore>((set, get) => ({
 			originalSlug: null,
 			form: { ...initialForm, date: formatDateTimeLocal() },
 			images: [],
-			cover: null
+			cover: null,
+			loading: false,
+			loadingSlug: null,
+			loadError: null
 		})
 	}
 }))
