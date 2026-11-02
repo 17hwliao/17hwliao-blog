@@ -4,10 +4,13 @@ import Link from 'next/link'
 import { ArrowRight, ArrowUpRight, BookOpen, FolderOpen, Image, Bookmark } from 'lucide-react'
 import { useConfigStore } from './stores/config-store'
 import { BlogFeed } from '@/components/blog-feed'
+import { HomeReading } from '@/features/reading/home-reading'
 
 const collections = [
+	{ href: '/knowledge', title: '知识地图', description: '沿着一条路线，慢慢读', icon: BookOpen },
+	{ href: '/reading', title: '阅读工作台', description: '书签、摘录与那些想法', icon: Bookmark },
 	{ href: '/projects', title: '做过的项目', description: '想法的另一种表达', icon: FolderOpen },
-	{ href: '/pictures', title: '生活的切片', description: '用影像收集日常', icon: Image },
+	{ href: '/pictures/stories', title: '相册故事集', description: '给日常留几个章节', icon: Image },
 	{ href: '/share', title: '值得分享', description: '遇见的好东西', icon: Bookmark }
 ]
 
@@ -43,6 +46,7 @@ export default function Home() {
 					<span className='note-bottom'>A LITTLE SPACE FOR IDEAS.</span>
 				</div>
 			</section>
+			<HomeReading />
 			<div className='home-content'>
 				<section className='latest-section' aria-labelledby='latest-title'>
 					<div className='section-heading'>
