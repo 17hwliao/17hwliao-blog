@@ -1,4 +1,4 @@
-import { createElement, type ReactNode } from 'react'
+import { createElement, Fragment, type ReactNode } from 'react'
 import { Marked } from 'marked'
 import parse, { domToReact, Element, type DOMNode, type HTMLReactParserOptions } from 'html-react-parser'
 
@@ -54,8 +54,9 @@ export function ProjectReadme({ markdown, source, logo }: { markdown: string; so
 		'sub'
 	])
 	const denied = new Set(['script', 'style', 'iframe', 'object', 'embed', 'form', 'input', 'button', 'svg', 'math'])
-	const base = `${source.repository}/blob/${source.branch}/${source.readmePath}`
-	const raw = `${source.repository.replace('github.com', 'raw.githubusercontent.com')}/${source.branch}/${source.readmePath}`
+	const revision = source.revision || source.branch
+	const base = `${source.repository}/blob/${revision}/${source.readmePath}`
+	const raw = `${source.repository.replace('github.com', 'raw.githubusercontent.com')}/${revision}/${source.readmePath}`
 	const safeUrl = (value: string, image = false) => {
 		try {
 			const url = new URL(value, image ? raw : base)
@@ -118,7 +119,28 @@ export function ProjectReadme({ markdown, source, logo }: { markdown: string; so
 				}
 			}
 			if (['br', 'hr'].includes(node.name)) return createElement(node.name)
-			const content = createElement(node.name, props, children() as ReactNode)
+			let renderedChildren: ReactNode
+			if (node.name === 'table') {
+				// Browsers insert tbody around bare rows. Match that structure on the
+				// server so imported README tables hydrate without rebuilding the page.
+				const sections: ReactNode[] = []
+				let rows: DOMNode[] = []
+				const flush = () => {
+					if (rows.length) sections.push(createElement('tbody', { key: `rows-${sections.length}` }, domToReact(rows, options)))
+					rows = []
+				}
+				for (const child of node.children as DOMNode[]) {
+					if (child.type === 'text' && !child.data.trim()) continue
+					if (child instanceof Element && child.name === 'tr') rows.push(child)
+					else {
+						flush()
+						sections.push(createElement(Fragment, { key: `section-${sections.length}` }, domToReact([child], options)))
+					}
+				}
+				flush()
+				renderedChildren = sections
+			} else renderedChildren = children() as ReactNode
+			const content = createElement(node.name, props, renderedChildren)
 			if (node.name === 'table')
 				return (
 					<div className='readme-table-scroll' tabIndex={0} role='region' aria-label='README 表格'>
