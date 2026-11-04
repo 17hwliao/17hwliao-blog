@@ -1,0 +1,21 @@
+{
+  "title": "SQL Sentinel：从计划证据到优化收益测量",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "SQL Sentinel"
+  ],
+  "date": "2026-10-14T04:57:00.000Z",
+  "summary": "把输入准入、候选计划、诊断报告与独立 bench 串联起来，解释什么只能支持进一步验证，什么才能支持性能收益结论。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "sql-sentinel",
+    "order": 6,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "prkxgdohrcbgmhnc",
+    "sourceUpdatedAt": "2026-10-14T04:57:00.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

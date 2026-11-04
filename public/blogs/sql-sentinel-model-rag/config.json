@@ -1,0 +1,21 @@
+{
+  "title": "SQL Sentinel：受限模型提案与 RAG 检索",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "SQL Sentinel"
+  ],
+  "date": "2026-10-10T11:56:10.000Z",
+  "summary": "将模型候选生成与知识检索拆成两条支线，解释证据输入、Prompt、Eino、输出校验和带范围的检索如何配合。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "sql-sentinel",
+    "order": 4,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "as4vrgpxgvl2k8hh",
+    "sourceUpdatedAt": "2026-10-10T11:56:10.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

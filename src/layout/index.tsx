@@ -1,6 +1,7 @@
 'use client'
 
-import { type PropsWithChildren, useEffect } from 'react'
+import { type PropsWithChildren, useEffect, Suspense } from 'react'
+import { FloatingCompanion } from '@/features/assistant/floating-companion'
 import Link from 'next/link'
 import { MotionConfig } from 'motion/react'
 import { SiteToaster } from '@/components/site-toaster'
@@ -11,6 +12,8 @@ import { SiteHeader } from '@/components/site-header'
 import ConfigDialog from '@/app/(home)/config-dialog'
 import { AppearanceProvider } from '@/features/appearance/theme'
 import { useVisualViewport } from '@/features/appearance/use-visual-viewport'
+
+const chatEnabled = process.env.NODE_ENV === 'development'
 
 export default function Layout({ children }: PropsWithChildren) {
 	useCenterInit()
@@ -62,6 +65,7 @@ export default function Layout({ children }: PropsWithChildren) {
 							<Link href='/knowledge'>知识地图</Link>
 							<Link href='/reading'>阅读工作台</Link>
 							<Link href='/about'>关于</Link>
+							{chatEnabled && <button type='button' onClick={() => window.dispatchEvent(new Event('zenix.companion.open'))}>问看板娘</button>}
 							{siteContent.beian.text && (
 								<a href={siteContent.beian.link || 'https://beian.miit.gov.cn/'} target='_blank' rel='noreferrer'>
 									{siteContent.beian.text}
@@ -71,6 +75,7 @@ export default function Layout({ children }: PropsWithChildren) {
 					</footer>
 					<ConfigDialog open={configDialogOpen} onClose={() => setConfigDialogOpen(false)} />
 					<SiteToaster />
+					<Suspense fallback={null}><FloatingCompanion chatEnabled={chatEnabled} /></Suspense>
 				</div>
 			</MotionConfig>
 		</AppearanceProvider>

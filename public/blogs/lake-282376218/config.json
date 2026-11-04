@@ -1,16 +1,17 @@
 {
-  "title": "AgentMesh（待补充）",
+  "title": "AgentMesh：模型网关架构与用量闭环",
   "tags": [
     "Goland",
-    "Agent项目"
+    "Agent项目",
+    "AgentMesh"
   ],
   "date": "2026-08-23T07:34:48.000Z",
   "createdAt": "2026-08-23T07:34:48.000Z",
-  "updatedAt": "2026-10-20T11:59:06.000Z",
-  "contentUpdatedAt": "2026-08-23T07:34:48.000Z",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
   "firstPublishedAt": null,
   "publishedAt": null,
-  "summary": "原笔记为空白文档，保留原始目录与时间。",
+  "summary": "统一模型接入、租户路由和流式响应构成同步主链；Reservation、Outbox 与 Kafka 连接用量处理。本文整理项目的整体职责及其与 SQL Sentinel 的协作边界。",
   "category": "Goland",
   "source": {
     "type": "yuque-lakebook",
@@ -26,5 +27,13 @@
     "empty": true,
     "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "missingImageReferences": []
+  },
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 1,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "nfll01059b5lalsi",
+    "sourceUpdatedAt": "2026-09-11T16:41:36.000Z",
+    "editedAt": "2026-11-04"
   }
 }

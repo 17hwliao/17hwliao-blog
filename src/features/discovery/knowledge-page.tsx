@@ -25,7 +25,7 @@ export function KnowledgePage() {
 			<PageIntro
 				label='CONNECTED NOTES'
 				title='让知识，连成一条路。'
-				description='从一个主题走近文章，也沿着一条路线慢慢读。关联来自已有标签，阅读路线按学习顺序整理。'
+				description='按主题整理我的学习笔记和项目实践，也留下一些从接触概念到动手实现的记录。'
 			/>
 			<div className='feature-heading'>
 				<h2>知识地图</h2>
@@ -121,8 +121,8 @@ export function KnowledgePage() {
 			<section className='reading-routes' aria-labelledby='routes-title'>
 				<div className='feature-heading'>
 					<div>
-						<p className='eyebrow'>FOLLOW A THREAD</p>
-						<h2 id='routes-title'>不急，沿着这条路读。</h2>
+						<p className='eyebrow'>LEARNING THREADS</p>
+						<h2 id='routes-title'>我走过的学习路线</h2>
 					</div>
 					<Link className='text-link' href='/reading'>
 						阅读工作台 <ArrowRight size={14} />

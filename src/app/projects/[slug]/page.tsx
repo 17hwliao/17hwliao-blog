@@ -11,6 +11,8 @@ import { ProjectContribution } from '../components/project-contribution'
 import { ProjectGallery } from '../components/project-gallery'
 import { ProjectAdvantages } from '../components/project-advantages'
 import { projectShowcases } from '@/content/project-showcases'
+import projectArticleData from '@/content/project-articles.json'
+import { ProjectArticles } from '../components/project-articles'
 
 const projects: Project[] = projectData
 
@@ -36,6 +38,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 	const [markdown, sourceJson] = files
 	const source: ReadmeSource = JSON.parse(sourceJson)
 	const showcase = projectShowcases[project.slug]
+	const articleSeries = projectArticleData.find(series => series.project === project.slug)
 	return (
 		<article className='project-detail'>
 			<Link href='/projects' className='subtle-link project-back'>
@@ -57,6 +60,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 					<h2>{showcase.headline}</h2>
 					<p>{showcase.intro}</p>
 					<div className='project-strength-summary' aria-label='核心优势速览'>{showcase.advantages.map(item => <a key={item.title} href='#project-advantages'>{item.title}</a>)}</div>
+					{articleSeries && <a href='#project-articles' className='text-link project-article-jump'>阅读实现文章 · {articleSeries.articles.length} 篇 <ArrowUpRight size={15} /></a>}
 				</div>
 			)}
 			{showcase?.type === 'contribution' ? (
@@ -80,6 +84,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 					<ArrowUpRight size={15} />
 				</a>
 			</div>
+			{articleSeries && <ProjectArticles series={articleSeries} />}
 			<section className='project-documentation' aria-labelledby='readme-title'>
 				<div className='readme-toolbar'>
 					<h2 id='readme-title'>

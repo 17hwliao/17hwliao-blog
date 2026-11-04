@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ArrowUpRight, Settings2, Menu, X } from 'lucide-react'
+import { ArrowUpRight, House, Settings2, Menu, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { siteIcon } from '@/config/brand-assets'
 import { HeaderMusic } from './header-music'
@@ -11,6 +11,8 @@ import { CommandPalette } from '@/features/discovery/command-palette'
 import { ThemeButton } from '@/features/appearance/theme'
 import { DialogModal } from './dialog-modal'
 
+const homeHref = '/'
+
 const links = [
 	['/blog', '文章'],
 	['/projects', '项目'],
@@ -18,8 +20,7 @@ const links = [
 	['/share', '分享'],
 	['/pictures', '相册'],
 	['/bloggers', '收藏'],
-	['/about', '关于'],
-	['/assistant', '问博客']
+	['/about', '关于']
 ]
 
 export function SiteHeader() {
@@ -30,13 +31,16 @@ export function SiteHeader() {
 	return (
 		<header className='site-header'>
 			<div className='header-inner'>
-				<Link href='/' className='site-brand' aria-label={`${siteContent.meta.title} · 首页`}>
+				<Link href={homeHref} className='site-brand' aria-label={`${siteContent.meta.title} · 首页`}>
 					<span className='brand-symbol'>
 						<img src={siteIcon} alt='' width={36} height={36} />
 					</span>
 					<span>{siteContent.meta.title}</span>
 				</Link>
 				<nav className='site-nav' aria-label='主导航'>
+					<Link href={homeHref} aria-label='首页 · 个人介绍' title='个人介绍' aria-current={pathname === homeHref ? 'page' : undefined}>
+						<House size={18} strokeWidth={1.75} aria-hidden='true' />
+					</Link>
 					{links.map(([href, label]) => (
 						<Link key={href} href={href} aria-current={pathname === href || pathname.startsWith(`${href}/`) ? 'page' : undefined}>
 							{label}
@@ -69,7 +73,7 @@ export function SiteHeader() {
 					</button>
 				</div>
 				<nav aria-label='手机主导航'>
-					{[...links, ['/reading', '阅读工作台']].map(([href, label]) => (
+					{[[homeHref, '首页 · 个人介绍'], ...links, ['/reading', '阅读工作台']].map(([href, label]) => (
 						<Link
 							key={href}
 							href={href}

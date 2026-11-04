@@ -1,13 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, ArrowUpRight, BookOpen, FolderOpen, Image, Bookmark } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, BookOpen, FolderOpen, Image, Bookmark, Github, Mail } from 'lucide-react'
 import { useConfigStore } from './stores/config-store'
 import { BlogFeed } from '@/components/blog-feed'
 import { HomeReading } from '@/features/reading/home-reading'
+import { authorAvatar } from '@/config/brand-assets'
+import { HomeCompanionMark } from '@/features/assistant/home-companion-mark'
+import { ContributionWidget } from '@/features/github/contribution-widget'
 
 const collections = [
-	{ href: '/knowledge', title: '知识地图', description: '沿着一条路线，慢慢读', icon: BookOpen },
+	{ href: '/knowledge', title: '学习记录', description: '学过什么，正在做什么', icon: BookOpen },
 	{ href: '/reading', title: '阅读工作台', description: '书签、摘录与那些想法', icon: Bookmark },
 	{ href: '/projects', title: '做过的项目', description: '想法的另一种表达', icon: FolderOpen },
 	{ href: '/pictures/stories', title: '相册故事集', description: '给日常留几个章节', icon: Image },
@@ -18,34 +21,49 @@ export default function Home() {
 	const { siteContent } = useConfigStore()
 	return (
 		<div className='home-page'>
-			<section className='home-hero'>
+			<section className='home-hero' aria-labelledby='home-intro-title'>
 				<div className='hero-copy'>
 					<p className='eyebrow'>
 						<span className='journal-dot' /> PERSONAL JOURNAL
 					</p>
-					<h1>
-						记录日常，
+					<h1 id='home-intro-title'>
+						你好，我是
 						<br />
-						<span>也记录灵感。</span>
+						<span>{siteContent.meta.username}</span>
 					</h1>
 					<p className='hero-description'>{siteContent.meta.description}</p>
-					<Link href='/about' className='text-link'>
-						关于这个小站 <ArrowUpRight size={16} />
-					</Link>
+					<div className='hero-intro-actions'>
+						<Link href='/projects' className='button-dark'>
+							查看项目 <ArrowRight size={16} />
+						</Link>
+						<Link href='/about' className='text-link'>
+							更多关于我 <ArrowUpRight size={16} />
+						</Link>
+					</div>
 				</div>
-				<div className='hero-note' aria-hidden='true'>
-					<span className='note-topline'>
-						NOTES & THOUGHTS <span>↗</span>
-					</span>
-					<BookOpen className='note-book' size={68} strokeWidth={0.8} />
-					<p>
-						保持好奇。
-						<br />
-						慢慢积累。
-					</p>
-					<span className='note-bottom'>A LITTLE SPACE FOR IDEAS.</span>
-				</div>
+				<aside className='hero-profile' aria-label='博主个人资料'>
+					<div className='hero-profile-identity'>
+						<img src={authorAvatar} alt={`${siteContent.meta.username} 的头像`} width={64} height={64} />
+						<div>
+							<p className='hero-profile-name'>{siteContent.meta.username}</p>
+							<p className='hero-profile-role'>后端开发 · 个人成长记录</p>
+						</div>
+					</div>
+					<p className='hero-profile-motto'>或许不必太复杂。</p>
+					<dl className='hero-profile-facts'>
+						<div><dt>学过</dt><dd>Go · Java</dd></div>
+						<div><dt>在学</dt><dd>Agent 工程</dd></div>
+						<div><dt>团队</dt><dd><a href='https://github.com/lec-org' target='_blank' rel='noreferrer'>lec-org <ArrowUpRight size={13} /></a></dd></div>
+						<div><dt>QQ</dt><dd>3594513696</dd></div>
+					</dl>
+					<div className='hero-profile-links'>
+						<a href='https://github.com/17hwliao' target='_blank' rel='noreferrer'><Github size={16} /> GitHub <ArrowUpRight size={13} /></a>
+						<a href='mailto:shiqihaowuliao@qq.com'><Mail size={16} /> 写封邮件 <ArrowUpRight size={13} /></a>
+					</div>
+					<HomeCompanionMark />
+				</aside>
 			</section>
+			<ContributionWidget />
 			<HomeReading />
 			<div className='home-content'>
 				<section className='latest-section' aria-labelledby='latest-title'>

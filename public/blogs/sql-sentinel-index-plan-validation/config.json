@@ -1,0 +1,21 @@
+{
+  "title": "SQL Sentinel：候选索引验证与执行计划对比",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "SQL Sentinel"
+  ],
+  "date": "2026-10-09T07:24:18.000Z",
+  "summary": "围绕同一 SQL、相同数据和 MySQL 版本，检查候选索引如何通过影子库门禁进入 EXPLAIN，以及两份计划如何形成可核对的证据。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "sql-sentinel",
+    "order": 3,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "ad66ygzqkepyzyir",
+    "sourceUpdatedAt": "2026-10-09T07:24:18.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

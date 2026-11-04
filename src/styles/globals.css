@@ -6,6 +6,7 @@
 @import './projects.css';
 @import './discovery.css';
 @import './appearance.css';
+@import './github-contributions.css';
 
 @plugin 'tailwindcss-animate';
 

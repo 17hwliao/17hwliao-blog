@@ -1,1 +1,46 @@
-[]
+[
+  {
+    "name": "DogeSMS",
+    "logo": "/images/share/dogesms.svg",
+    "url": "https://www.dogesms.com/",
+    "description": "提供多个国家和地区的临时虚拟号码，可以在线接收短信验证码。",
+    "tags": [
+      "工具",
+      "短信"
+    ],
+    "stars": 0
+  },
+  {
+    "name": "Wallpaper Abyss",
+    "logo": "/images/share/wallpaper-abyss.svg",
+    "url": "https://wall.alphacoders.com/",
+    "description": "Alpha Coders 的高清壁纸库，可以按主题或分辨率查找桌面壁纸。",
+    "tags": [
+      "工具",
+      "壁纸"
+    ],
+    "stars": 0
+  },
+  {
+    "name": "remove.bg",
+    "logo": "/images/share/remove-bg.svg",
+    "url": "https://www.remove.bg/zh",
+    "description": "上传图片后自动去除背景，做头像和素材时可以用来快速抠图。",
+    "tags": [
+      "工具",
+      "图片"
+    ],
+    "stars": 0
+  },
+  {
+    "name": "SakuraFrp",
+    "logo": "/images/share/sakurafrp.svg",
+    "url": "https://www.natfrp.com/tunnel/",
+    "description": "用 FRP 隧道把局域网里的服务映射到公网，提供免费基础方案。",
+    "tags": [
+      "工具",
+      "内网穿透"
+    ],
+    "stars": 0
+  }
+]

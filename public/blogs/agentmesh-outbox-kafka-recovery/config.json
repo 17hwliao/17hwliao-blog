@@ -1,0 +1,21 @@
+{
+  "title": "AgentMesh：Outbox 投递与 Kafka 故障恢复",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "AgentMesh"
+  ],
+  "date": "2026-09-17T04:09:09.000Z",
+  "summary": "把同步聊天响应与异步事件投递分开，说明 MySQL Outbox 如何保留业务事实，以及 Kafka 不可用时的积压、重试和恢复。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 4,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "gxqdgrub8h7oovdh",
+    "sourceUpdatedAt": "2026-09-17T04:09:09.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

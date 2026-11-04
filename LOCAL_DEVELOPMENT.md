@@ -49,7 +49,7 @@ pnpm dev
 - 相册沿用原版黄金角散落公式、约 -30° 至 +29° 旋转、200px 基准宽度及按图片比例调整缩略图。画布进入视野后等待 1 秒，每张间隔 200ms 从 0.6 倍放大出现；「重播动效」可重新观看。展开后转正、白边从 8px 加厚为 12/24px，浮动便笺按原版从 0.4 倍弹出并可拖动。
 - 文章：`public/blogs/`，清空后保留 `index.json` 与 `categories.json`。
 - 头像及图标：`public/images/avatar.png`、`public/favicon.png`。
-- 作者名当前为 `17hwliao`。浏览器 favicon 和页头使用耿鬼像素图标；头像使用所提供的原始插画。资产地址及缓存版本统一在 `src/config/brand-assets.ts`，256px 像素版另存于 `public/images/site-icon-pixel.png`。
+- 作者名当前为 `17hwliao`。作者头像使用困倦小猫原图，浏览器 favicon 和页头使用从同一张照片缩放得到的像素版。资产地址及缓存版本统一在 `src/config/brand-assets.ts`，256px 像素版另存于 `public/images/site-icon-pixel.png`。
 
 本地前端开发无需私钥。远程保存默认读取 `src/config/github.json` 中本博客的公开仓库、分支和 App ID；`.env.local` 或 Vercel 的 `NEXT_PUBLIC_GITHUB_*` 变量可覆盖它们。部署环境变量变更需要重新构建，不能只修改本地 `.env.local`。设置中的“私钥授权”会显示当前目标仓库与 App ID，私钥仅通过本地文件选择入口读取，不写入仓库。原 `card-styles.json` 数据结构暂为提交链路兼容保留，不再驱动新首页的定位或提供拖拽设置。
 

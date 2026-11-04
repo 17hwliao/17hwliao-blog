@@ -1,0 +1,21 @@
+{
+  "title": "AgentMesh：终态持久化与跨存储恢复",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "AgentMesh"
+  ],
+  "date": "2026-09-30T10:51:30.000Z",
+  "summary": "围绕 MySQL 终态事务、版本条件与双 Outbox，分析 Redis 已完成操作但持久化失败时的恢复路径。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 10,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "ffnfyzceuzz5v8i1",
+    "sourceUpdatedAt": "2026-09-30T10:51:30.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

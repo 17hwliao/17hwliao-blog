@@ -1,0 +1,21 @@
+{
+  "title": "SQL Sentinel：异步 Job、Outbox 与 Kafka 任务链路",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "SQL Sentinel"
+  ],
+  "date": "2026-10-12T13:07:48.000Z",
+  "summary": "沿一个 Webhook 诊断任务追踪 Job 与 Outbox 的事务写入、Relay 发布、Worker 领取，以及执行结果的重试或终态处理。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "sql-sentinel",
+    "order": 5,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "gmqmvmrqz3m87yq6",
+    "sourceUpdatedAt": "2026-10-12T13:07:48.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

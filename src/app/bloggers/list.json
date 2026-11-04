@@ -19,5 +19,19 @@
     "avatar": "/images/blogger/nanda-initial.svg",
     "description": "设计大师，nanda 。页面只用灰色加线条，都让我觉得叹为观止，内容不多，每篇都精雕细琢。跟 Josh 一样，属于技术网站，但它的教程引导更加出神入化，可称为程序艺术家。",
     "stars": 5
+  },
+  {
+    "name": "小林 coding",
+    "avatar": "/images/blogger/xiaolin-initial.svg",
+    "url": "https://xiaolincoding.com/",
+    "description": "复习后端八股文时常翻的网站。计算机网络、操作系统、MySQL 和 Redis 都有图解笔记。",
+    "stars": 5
+  },
+  {
+    "name": "HuanHao 的博客",
+    "avatar": "/images/blogger/huanhao-initial.svg",
+    "url": "https://www.cnblogs.com/huanhao",
+    "description": "我的博客启蒙老师。刚开始搭博客时，看过他写的 Hexo 搭建、Markdown 和图床等基础篇。",
+    "stars": 5
   }
 ]

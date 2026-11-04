@@ -1,16 +1,17 @@
 {
-  "title": "SQL 性能测试：MAD 与缓存冷热",
+  "title": "SQL Sentinel：SQL 优化验证架构与证据链",
   "tags": [
     "Goland",
-    "Agent项目"
+    "Agent项目",
+    "SQL Sentinel"
   ],
   "date": "2026-08-23T09:03:30.000Z",
   "createdAt": "2026-08-23T09:03:30.000Z",
-  "updatedAt": "2026-10-20T11:59:01.000Z",
-  "contentUpdatedAt": "2026-08-23T09:17:38.000Z",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
   "firstPublishedAt": "2026-08-23T09:04:40.982Z",
   "publishedAt": "2026-08-23T09:17:38.000Z",
-  "summary": "准备MAD(Median Absolute Deviation):中位数绝对偏差:一堆数据的median,每个数据和median取绝对值差的队列的median ; 噪声基线:CPU调度,IO波动,内存与缓存干扰 BufferPool 缓存冷热:在启动 Mysql后,数据不在内存的BufferP...",
+  "summary": "从受限候选、影子验证和分级证据建立项目总览，说明 RAG、异步工作流与模型网关在 SQL 优化中的位置。",
   "category": "Goland",
   "source": {
     "type": "yuque-lakebook",
@@ -26,5 +27,13 @@
     "empty": false,
     "bodySha256": "593a12606b1528075fd3086d555376fea5c5d192c8bbd878240a49c689b68845",
     "missingImageReferences": []
+  },
+  "projectArticle": {
+    "project": "sql-sentinel",
+    "order": 1,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "nfll01059b5lalsi",
+    "sourceUpdatedAt": "2026-09-11T16:41:36.000Z",
+    "editedAt": "2026-11-04"
   }
 }

@@ -6,9 +6,9 @@ import { articles, articleHref, projects, readingRoutes } from '@/features/disco
 import { useReading } from './store'
 
 const featuredSlugs = [
-	{ slug: 'lake-269071408', intro: '准备 Go 环境，了解常见系统的安装步骤与工具选择。' },
-	{ slug: 'lake-280042163', intro: '认识 Eino 的模型、工具与图编排，从环境搭建走近 Agent 应用。' },
-	{ slug: 'lake-254956974', intro: '从存储结构与数据库引擎开始，整理 MySQL 的基础概念。' }
+	{ slug: 'lake-269071408', intro: '开始学 Go 时记下的环境搭建和工具选择。' },
+	{ slug: 'lake-280042163', intro: '用 Eino 了解模型、工具调用和图编排时留下的记录。' },
+	{ slug: 'lake-254956974', intro: '复盘 MySQL 的存储结构与数据库引擎。' }
 ]
 const featured = featuredSlugs.flatMap(({ slug, intro }) => {
 	const article = articles.find(item => item.slug === slug)
@@ -44,11 +44,11 @@ export function HomeReading() {
 			<section className='start-here' aria-labelledby='start-here-title'>
 				<div className='section-heading'>
 					<div>
-						<p className='eyebrow'>A FEW GOOD PLACES TO START</p>
-						<h2 id='start-here-title'>初次来，从这里开始。</h2>
+						<p className='eyebrow'>LEARNING NOTES</p>
+						<h2 id='start-here-title'>我的学习记录</h2>
 					</div>
 					<Link className='subtle-link' href='/knowledge'>
-						探索知识地图 <ArrowRight size={15} />
+						查看全部记录 <ArrowRight size={15} />
 					</Link>
 				</div>
 				<div className='starter-layout'>
@@ -70,15 +70,15 @@ export function HomeReading() {
 					<div className='starter-side'>
 						<Link className='starter-route' href={`/knowledge?route=${starterRoute.id}#routes-title`}>
 							<BookOpen size={21} />
-							<span className='eyebrow'>一条阅读路线 · {starterRoute.articles.length} 篇</span>
+							<span className='eyebrow'>一组学习笔记 · {starterRoute.articles.length} 篇</span>
 							<h3>{starterRoute.title}</h3>
 							<p>{starterRoute.detail}</p>
 							<span className='text-link'>
-								顺着这条线读 <ArrowRight size={15} />
+								查看这组笔记 <ArrowRight size={15} />
 							</span>
 						</Link>
 						<div className='starter-projects'>
-							<span className='eyebrow'>也可以，先看一个项目</span>
+							<span className='eyebrow'>关联项目</span>
 							{projects.slice(0, 2).map(project => (
 								<Link href={project.url} key={project.slug}>
 									<img src={project.image} alt='' width={32} height={32} />

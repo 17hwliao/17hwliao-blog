@@ -1,0 +1,21 @@
+{
+  "title": "AgentMesh：Complete 结算分支与幂等控制",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "AgentMesh"
+  ],
+  "date": "2026-09-29T11:44:20.000Z",
+  "summary": "从已预留的会话进入 Complete，核对 attempt 证据、最终 flush、取消或结算分支，以及 Redis 和 MySQL 的幂等边界。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 9,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "ki4ki8uq3lv1p1qb",
+    "sourceUpdatedAt": "2026-09-29T11:44:20.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

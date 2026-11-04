@@ -33,7 +33,7 @@ const definitions = [
 	{
 		id: 'go',
 		title: '从 Go 基础到 Web 服务',
-		detail: '先理解语言，再把请求带进服务。',
+		detail: '从语言基础到 HTTP 服务的学习笔记。',
 		slugs: [
 			'lake-269071408',
 			'lake-269072618',
@@ -50,8 +50,8 @@ const definitions = [
 	},
 	{
 		id: 'agent',
-		title: '给 Agent 接上工具与工作流',
-		detail: '从提示词出发，走向工具、检索与编排。',
+		title: 'Agent 学习与实践',
+		detail: '记录我对提示词、工具调用、检索和编排的尝试。',
 		slugs: [
 			'lake-280042163',
 			'lake-280168079',
@@ -68,7 +68,7 @@ const definitions = [
 	{
 		id: 'data',
 		title: '数据访问、缓存与优化',
-		detail: '从 SQL 到事务、缓存和计划证据。',
+		detail: '从 SQL 笔记到项目中的事务、缓存与执行计划分析。',
 		slugs: [
 			'lake-254956974',
 			'lake-266115025',
@@ -85,7 +85,7 @@ const definitions = [
 	{
 		id: 'web',
 		title: '从网页到完整应用',
-		detail: '把页面、交互和服务接起来。',
+		detail: '记录我把页面、交互和服务接到一起的过程。',
 		slugs: ['lake-261795323', 'lake-263913914', 'lake-264419362', 'lake-264734450', 'lake-264560632', 'lake-268149720', 'lake-265653699', 'lake-268305653'],
 		project: 'zenix'
 	}
