@@ -7,6 +7,8 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:transparent
 #pose,#pose img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;user-select:none}
 #pose{transform-origin:50% 90%;animation:breathe 4.4s ease-in-out infinite}
 #pose img{object-fit:contain}
+#pose .atlas-frame{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none}
+#pose .atlas-frame img{width:200%;height:200%;max-width:none;right:auto;bottom:auto;object-fit:fill;transform:translate(calc(var(--atlas-column) * -50%),calc(var(--atlas-row) * -50%))}
 #pose[data-motion="welcome"]{animation:welcome 1.35s ease-in-out both}
 #pose[data-motion="nod"]{animation:nod .64s ease-in-out both}
 #pose[data-motion="wiggle"]{animation:wiggle .44s ease-in-out infinite}
@@ -17,3 +19,11 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:transparent
 @keyframes wiggle{25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)}}
 @keyframes settle{30%{transform:rotate(-5deg) scaleY(.98)}65%{transform:rotate(2deg)}}
 @media (prefers-reduced-motion:reduce){#figure{transition:none;transform:none}#pose{animation:none!important}}
+
+#pose[data-motion="look"] {
+  animation: look 1.8s ease-in-out both;
+}
+@keyframes look {
+  25% { transform: rotate(-3deg); }
+  70% { transform: rotate(3deg); }
+}

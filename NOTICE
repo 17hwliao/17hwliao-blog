@@ -14,3 +14,12 @@ assets are not relicensed by the source-code license. Their respective rights
 and license terms continue to apply. Project snapshot metadata is recorded in
 src/content/projects/*/source.json. Third-party dependencies retain their own
 license terms.
+
+
+The Xingyin character and costume artwork in public/xingyin originates from
+the site owner's Zenix project (https://github.com/17hwliao/Zenix). The owner
+authorized its use in this blog. Zenix records the character artwork as
+AI-generated. Zenix names and character markings are retained. Artwork
+continues to follow the content-asset terms described above; the GPL source
+license applies to the blog code. The seven original costume atlases and
+their SHA-256 checksums are listed in public/xingyin/asset-sources.json.

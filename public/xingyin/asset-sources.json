@@ -1,0 +1,68 @@
+{
+  "project": "Zenix Xingyin",
+  "sourceRepository": "https://github.com/17hwliao/Zenix",
+  "sourceDirectory": "assets/assistant",
+  "use": "Included in the site owner’s blog by owner authorization.",
+  "artwork": "AI-generated character and costume artwork from the Zenix project.",
+  "atlasLayout": [
+    [
+      "idle",
+      "shy"
+    ],
+    [
+      "greeting",
+      "listening"
+    ]
+  ],
+  "files": [
+    {
+      "file": "atlases/azure-fan.png",
+      "sha256": "219bc3c540d12047bbdc4a7d7995f62371756faa021c65f4135b3482488d6f4a",
+      "bytes": 2806059,
+      "width": 1086,
+      "height": 1448
+    },
+    {
+      "file": "atlases/ink-fox.png",
+      "sha256": "5545f788dbfac575de84ed3cd5d8c20b5f4ec610fa2fb70d7df96fd7795a399b",
+      "bytes": 2777074,
+      "width": 1086,
+      "height": 1448
+    },
+    {
+      "file": "atlases/ivory-dragon.png",
+      "sha256": "e31a073d7a7da931451c528ef7ed0ae2a2fdf3da9889cd4ad1dec52dac099faa",
+      "bytes": 2760751,
+      "width": 1086,
+      "height": 1448
+    },
+    {
+      "file": "atlases/moon-piano.png",
+      "sha256": "89f79ef9337363bd3981f246cf54b8a9ff4e9f0e8314980e53d2c4fe01529f5f",
+      "bytes": 2815926,
+      "width": 1086,
+      "height": 1448
+    },
+    {
+      "file": "atlases/noir-gold.png",
+      "sha256": "bfc3fd91fa76b68fca0f4886da0790eaf407c500c6f728b394604cc4a03fd7e4",
+      "bytes": 2862535,
+      "width": 1086,
+      "height": 1448
+    },
+    {
+      "file": "atlases/ocean-maid.png",
+      "sha256": "77069642ac1f1168ffe2a30ed12837cd1ad98927fea928a33ef9af8a5eb489aa",
+      "bytes": 2463770,
+      "width": 1086,
+      "height": 1448
+    },
+    {
+      "file": "atlases/violet-stars.png",
+      "sha256": "3f01a7db757a363049416931d188ca465f44a7633e3b9b30ddc13ce5f67cfd23",
+      "bytes": 2556652,
+      "width": 1086,
+      "height": 1448
+    }
+  ]
+}

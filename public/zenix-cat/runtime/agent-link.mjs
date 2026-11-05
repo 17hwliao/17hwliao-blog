@@ -1,14 +1,15 @@
 import {PerformanceDirector,normalizePerformance,normalizePerformanceText} from './performance-director.mjs';
 const types=new Set(['begin','meta','status','answer','done','error','cancel','clear']);
-const modes=new Set(['retrieval-only','adk-rag','scope-limit','no-evidence']);
+const modes=new Set(['preset','retrieval-only','adk-rag','scope-limit','no-evidence']);
 export function normalizeAgentEvent(value){
   if(!value||typeof value!=='object'||!types.has(value.type)||!Number.isSafeInteger(value.turn)||value.turn<0)return null;
   const out={type:value.type,turn:value.turn};
   if(value.mode!==undefined){if(!modes.has(value.mode))return null;out.mode=value.mode;}
   if(value.characters!==undefined){if(!Number.isFinite(value.characters)||value.characters<0)return null;out.characters=Math.min(10000,Math.round(value.characters));}
-  if(value.type==='answer'&&value.performance!==undefined){
+  if(value.type==='answer'){
     const p=normalizePerformance(value.performance),text=normalizePerformanceText(value.bubbleText);
-    if(p&&text){out.performance=p;out.bubbleText=text;}
+    if(text)out.bubbleText=text;
+    if(p)out.performance=p;
   }
   return out;
 }

@@ -1,12 +1,8 @@
 import type { Metadata } from 'next'
-import { AssistantPage } from '@/features/assistant/assistant-page'
-import './assistant.css'
 import { redirect } from 'next/navigation'
 
-export const metadata: Metadata = { title: '问博客 · 17hwliao', description: '了解博客功能、页面入口与使用方式。' }
+export const metadata: Metadata = { title: '聊聊小站 · 17hwliao', description: '和看板娘聊聊小站的项目、笔记和日常。' }
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ desktop?: string }> }) {
-	if (process.env.NODE_ENV !== 'development') redirect('/')
-	if ((await searchParams).desktop === '1') return <AssistantPage />
+export default function Page() {
 	redirect('/?chat=1')
 }

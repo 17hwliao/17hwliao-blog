@@ -11,7 +11,7 @@ import { requestMusic } from '@/features/music/events'
 type CommandItem = { id: string; label: string; detail: string; href?: string; trackId?: string }
 const pages = [
 	['/', '首页', '回到小站'],
-	...(process.env.NODE_ENV === 'development' ? [['/assistant', '问博客 · Zenix 助手', '了解博客功能与页面入口']] : []),
+	['/assistant', '聊聊小站', '和看板娘选择话题，了解项目与页面入口'],
 	['/knowledge', '知识地图与阅读路线', '从主题开始探索'],
 	['/reading', '阅读工作台', '书签、进度与摘录'],
 	['/pictures/stories', '相册故事集', '按章节看照片'],

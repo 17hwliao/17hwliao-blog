@@ -5,67 +5,119 @@ import '@/styles/floating-companion.css'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { MessageCircle, Trash2, ArrowUp, Square, X } from 'lucide-react'
-import { decodeAnswer, readAgentEvents, type Answer, type AgentConfig } from './client'
+import { ArrowRight, MessageCircle, Trash2, X } from 'lucide-react'
 import { characterCue } from './performance'
 import type { CharacterEvent } from './character-companion'
-import { companionCharacters, defaultCompanionCharacter, isCompanionCharacter, type CompanionCharacter } from './companion-characters'
+import { companionCharacters, defaultCompanionCharacter, isCompanionCharacter, readCompanionCharacter, saveCompanionCharacter, type CompanionCharacter } from './companion-characters'
+import { pageGuide, type GuideChoice } from './page-guide'
 
-type Quota = { limit: number; used: number; remaining: number; resetAt: string; canAsk: boolean; blockedReason?: string }
-type Turn = { id: number; question: string; answer?: Answer; state: 'pending' | 'complete' | 'stopped' | 'failed' }
-export function decodeQuota(value: unknown): Quota {
-	const v = value as Quota
-	if (!v || v.limit !== 20 || !Number.isInteger(v.used) || v.used < 0 || v.used > 20 || v.remaining !== 20 - v.used || typeof v.canAsk !== 'boolean' || typeof v.resetAt !== 'string' || !Number.isFinite(Date.parse(v.resetAt))) throw Error('提问额度格式异常。')
-	return v
+const dismissedKey = 'zenix.companion.dismissed'
+
+function isDismissed() {
+	try {
+		return sessionStorage.getItem(dismissedKey) === '1'
+	} catch {
+		return false
+	}
 }
-const dismissedKey = 'zenix.companion.dismissed', greetedKey = 'zenix.companion.greeted'
-function readFlag(key: string) { try { return sessionStorage.getItem(key) === '1' } catch { return false } }
-function writeFlag(key: string, enabled: boolean) { try { if (enabled) sessionStorage.setItem(key, '1'); else sessionStorage.removeItem(key) } catch {} }
 
-export function FloatingCompanion({ chatEnabled }: { chatEnabled: boolean }) {
-	const pathname = usePathname(), search = useSearchParams(), router = useRouter()
-	const [visible, setVisible] = useState(false), [open, setOpen] = useState(false), [ready, setReady] = useState(false), [failed, setFailed] = useState(false)
+function saveDismissed(value: boolean) {
+	try {
+		if (value) sessionStorage.setItem(dismissedKey, '1')
+		else sessionStorage.removeItem(dismissedKey)
+	} catch {}
+}
+
+export function FloatingCompanion() {
+	const pathname = usePathname()
+	const search = useSearchParams()
+	const router = useRouter()
+	const guide = pageGuide(pathname)
+	const [visible, setVisible] = useState(false)
+	const [open, setOpen] = useState(false)
+	const [ready, setReady] = useState(false)
+	const [failed, setFailed] = useState(false)
 	const [character, setCharacter] = useState<CompanionCharacter>(defaultCompanionCharacter)
-	const [draft, setDraft] = useState(''), [turns, setTurns] = useState<Turn[]>([]), [busy, setBusy] = useState(false), [error, setError] = useState('')
-	const [quota, setQuota] = useState<Quota | null>(null), [config, setConfig] = useState<AgentConfig | null>(null), [connecting, setConnecting] = useState(false)
-	const iframe = useRef<HTMLIFrameElement>(null), input = useRef<HTMLTextAreaElement>(null), toggle = useRef<HTMLButtonElement>(null), log = useRef<HTMLDivElement>(null)
-	const active = useRef<AbortController | null>(null), generation = useRef(0), history = useRef<CharacterEvent[]>([]), connected = useRef(false), path = useRef(pathname), lastPage = useRef(''), mounted = useRef(false)
-	const selectedCharacter = useRef<CompanionCharacter>(defaultCompanionCharacter), replayPending = useRef(false)
+	const [selection, setSelection] = useState<{ pathname: string; choiceId: string } | null>(null)
+	const iframe = useRef<HTMLIFrameElement>(null)
+	const toggle = useRef<HTMLButtonElement>(null)
+	const panel = useRef<HTMLElement>(null)
+	const generation = useRef(0)
+	const history = useRef<CharacterEvent[]>([])
+	const connected = useRef(false)
+	const currentPath = useRef(pathname)
+	const lastPage = useRef('')
+	const selectedCharacter = useRef<CompanionCharacter>(defaultCompanionCharacter)
+	const replayPending = useRef(false)
 	const scene = companionCharacters[character]
 	const suppressed = pathname === '/live2d' || pathname.startsWith('/write') || pathname.startsWith('/edit') || search.get('desktop') === '1'
-	path.current = pathname
-	const post = useCallback((data: object) => { if (connected.current) iframe.current?.contentWindow?.postMessage(data, location.origin) }, [])
-	const relay = useCallback((event: CharacterEvent) => {
-		if (event.type === 'begin' || event.type === 'clear') history.current = []
-		history.current.push(event); if (history.current.length > 16) history.current.splice(1, history.current.length - 16)
-		post({ type: 'zenix.agent.event', event })
-	}, [post])
+	const selected = selection?.pathname === pathname ? guide.choices.find(choice => choice.id === selection.choiceId) : undefined
+	currentPath.current = pathname
+
+	const post = useCallback((data: object) => {
+		if (connected.current) iframe.current?.contentWindow?.postMessage(data, location.origin)
+	}, [])
+
 	const context = useCallback(() => {
 		const replay = replayPending.current
-		if (!connected.current || (lastPage.current === path.current && !replay)) return
-		const greet = replay || path.current === '/' || !readFlag(greetedKey)
-		post({ type: 'zenix.companion.context', path: path.current, greet, replay })
-		lastPage.current = path.current
+		if (!connected.current || (lastPage.current === currentPath.current && !replay)) return
+		const nextGuide = pageGuide(currentPath.current)
+		post({
+			type: 'zenix.companion.context',
+			path: currentPath.current,
+			text: nextGuide.greeting,
+			greet: currentPath.current === '/' || replay,
+			replay
+		})
+		lastPage.current = currentPath.current
 		replayPending.current = false
-		if (greet) writeFlag(greetedKey, true)
 	}, [post])
-	useEffect(() => { mounted.current = true; setVisible(!readFlag(dismissedKey)); return () => { mounted.current = false; active.current?.abort() } }, [])
+
 	useEffect(() => {
-		if (chatEnabled && search.get('chat') === '1') {
-			writeFlag(dismissedKey, false); setVisible(true); setOpen(true)
-			const next = new URLSearchParams(search.toString()); next.delete('chat'); router.replace(pathname + (next.size ? '?' + next.toString() : ''), { scroll: false })
+		const saved = readCompanionCharacter()
+		selectedCharacter.current = saved
+		setCharacter(saved)
+		setVisible(!isDismissed())
+	}, [])
+
+	useEffect(() => {
+		setSelection(null)
+		history.current = []
+		post({ type: 'zenix.agent.event', event: { type: 'clear', turn: ++generation.current } })
+		context()
+	}, [pathname, context, post])
+
+	useEffect(() => {
+		if (ready) context()
+	}, [ready, context])
+
+	useEffect(() => {
+		if (search.get('chat') !== '1') return
+		saveDismissed(false)
+		setVisible(true)
+		setOpen(true)
+		const next = new URLSearchParams(search.toString())
+		next.delete('chat')
+		router.replace(pathname + (next.size ? '?' + next.toString() : ''), { scroll: false })
+	}, [search, pathname, router])
+
+	useEffect(() => {
+		const restore = () => {
+			saveDismissed(false)
+			setVisible(true)
+			setOpen(true)
 		}
-	}, [chatEnabled, search, pathname, router])
-	useEffect(() => {
-		const restore = () => { if (!chatEnabled) return; writeFlag(dismissedKey, false); setVisible(true); setOpen(true) }
 		const recall = (event: Event) => {
-			if (path.current !== '/') return
+			if (currentPath.current !== '/') return
 			const requested: unknown = (event as CustomEvent<unknown>).detail
 			const next = isCompanionCharacter(requested) ? requested : selectedCharacter.current
+			saveCompanionCharacter(next)
 			replayPending.current = true
-			writeFlag(dismissedKey, false)
+			saveDismissed(false)
 			setVisible(true)
 			if (selectedCharacter.current !== next) {
+				history.current = []
+				generation.current++
 				connected.current = false
 				selectedCharacter.current = next
 				setCharacter(next)
@@ -79,124 +131,182 @@ export function FloatingCompanion({ chatEnabled }: { chatEnabled: boolean }) {
 			window.removeEventListener('zenix.companion.open', restore)
 			window.removeEventListener('zenix.companion.recall', recall)
 		}
-	}, [chatEnabled, context])
+	}, [context])
+
 	useEffect(() => {
-		connected.current = false; lastPage.current = ''; setReady(false); setFailed(false)
+		connected.current = false
+		lastPage.current = ''
+		setReady(false)
+		setFailed(false)
 		if (!visible || suppressed) return
-		const timer = setTimeout(() => { if (!connected.current) setFailed(true) }, 12000)
+		const timer = setTimeout(() => {
+			if (!connected.current) setFailed(true)
+		}, 12000)
 		const receive = (event: MessageEvent) => {
-			if (event.origin !== location.origin || event.source !== iframe.current?.contentWindow || event.data?.type !== 'zenix.character.ready' || event.data.modelId !== character) return
-			connected.current = true; clearTimeout(timer); setReady(true); setFailed(false); context()
-			for (const event of history.current) post({ type: 'zenix.agent.event', event })
+			if (event.origin !== location.origin || event.source !== iframe.current?.contentWindow || event.data?.modelId !== character) return
+			if (event.data.type === 'zenix.companion.talk') {
+				setOpen(true)
+				return
+			}
+			if (event.data.type !== 'zenix.character.ready') return
+			connected.current = true
+			clearTimeout(timer)
+			setReady(true)
+			setFailed(false)
+			context()
+			for (const value of history.current) post({ type: 'zenix.agent.event', event: value })
 		}
 		window.addEventListener('message', receive)
-		return () => { clearTimeout(timer); connected.current = false; window.removeEventListener('message', receive) }
+		return () => {
+			clearTimeout(timer)
+			connected.current = false
+			window.removeEventListener('message', receive)
+		}
 	}, [visible, suppressed, character, context, post])
-	useEffect(() => { if (ready) context() }, [pathname, ready, context])
+
 	useEffect(() => {
 		if (!visible || suppressed) return
 		let previous = 0
 		const move = (event: PointerEvent) => {
 			if (event.pointerType !== 'mouse' || event.timeStamp - previous < 32 || !connected.current) return
-			previous = event.timeStamp; const r = iframe.current?.getBoundingClientRect(); if (!r) return
-			post({ type: 'zenix.companion.pointer', x: Math.max(-.8, Math.min(.8, (event.clientX - r.left - r.width / 2) / Math.max(innerWidth / 2, r.width))), y: Math.max(-.8, Math.min(.8, (event.clientY - r.top - r.height / 2) / Math.max(innerHeight / 2, r.height))) })
+			previous = event.timeStamp
+			const bounds = iframe.current?.getBoundingClientRect()
+			if (!bounds) return
+			post({
+				type: 'zenix.companion.pointer',
+				x: Math.max(-0.8, Math.min(0.8, (event.clientX - bounds.left - bounds.width / 2) / Math.max(innerWidth / 2, bounds.width))),
+				y: Math.max(-0.8, Math.min(0.8, (event.clientY - bounds.top - bounds.height / 2) / Math.max(innerHeight / 2, bounds.height)))
+			})
 		}
 		const blur = () => post({ type: 'zenix.companion.pointer', x: 0, y: 0 })
-		window.addEventListener('pointermove', move, { passive: true }); window.addEventListener('blur', blur)
-		return () => { window.removeEventListener('pointermove', move); window.removeEventListener('blur', blur) }
+		window.addEventListener('pointermove', move, { passive: true })
+		window.addEventListener('blur', blur)
+		return () => {
+			window.removeEventListener('pointermove', move)
+			window.removeEventListener('blur', blur)
+		}
 	}, [visible, suppressed, post])
-	const refreshQuota = useCallback(async () => {
-		const response = await fetch('/api/agent/quota', { signal: AbortSignal.timeout(8000), cache: 'no-store' })
-		if (!response.ok) throw Error('暂时无法读取提问额度，请稍后再试。')
-		const q = decodeQuota(await response.json()); if (mounted.current) setQuota(q)
+
+	const closeChat = useCallback(() => {
+		setOpen(false)
+		toggle.current?.focus({ preventScroll: true })
 	}, [])
+
 	useEffect(() => {
 		if (!open || !visible || suppressed) return
-		let current = true; const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 8000)
-		setConnecting(true); setError('')
-		Promise.all([fetch('/api/agent/config', { signal: controller.signal }), fetch('/api/agent/quota', { signal: controller.signal, cache: 'no-store' })]).then(async responses => {
-			if (responses.some(r => !r.ok)) throw Error('暂时连接不上小站向导，请稍后再试。')
-			const [c, q] = await Promise.all(responses.map(r => r.json()))
-			if (!['retrieval-only', 'adk-rag'].includes(c.mode)) throw Error('向导配置异常。')
-			const usage = decodeQuota(q); if (current) { setConfig(c); setQuota(usage) }
-		}).catch(() => { if (current) { setConfig(null); setQuota(null); setError('暂时连接不上问答服务。你可以继续逛小站，稍后重新打开对话。') } }).finally(() => { clearTimeout(timer); if (current) setConnecting(false) })
-		input.current?.focus({ preventScroll: true })
-		return () => { current = false; controller.abort(); clearTimeout(timer) }
-	}, [open, visible, suppressed])
-	useEffect(() => {
-		if (!open || !quota) return
-		const timer = setTimeout(() => { void refreshQuota().catch(() => {}) }, Math.max(100, Date.parse(quota.resetAt) - Date.now() + 100))
-		const focus = () => { void refreshQuota().catch(() => {}) }; window.addEventListener('focus', focus)
-		return () => { clearTimeout(timer); window.removeEventListener('focus', focus) }
-	}, [open, quota, refreshQuota])
-	useEffect(() => { if (open && log.current) log.current.scrollTop = log.current.scrollHeight }, [turns, open])
-	const closeChat = useCallback(() => { setOpen(false); active.current?.abort(); toggle.current?.focus({ preventScroll: true }) }, [])
-	useEffect(() => {
-		if (!open) return
-		const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !event.defaultPrevented) { event.preventDefault(); closeChat() } }
-		window.addEventListener('keydown', escape); return () => window.removeEventListener('keydown', escape)
-	}, [open, closeChat])
-	function dismiss() { replayPending.current = false; active.current?.abort(); relay({ type: 'clear', turn: ++generation.current }); setBusy(false); setOpen(false); setVisible(false); writeFlag(dismissedKey, true) }
-	async function ask() {
-		const question = draft.trim()
-		if (!question || active.current || !quota?.canAsk || !config || connecting) return
-		if ([...question].length > 1200) { setError('问题请控制在 1200 字以内。'); return }
-		const controller = new AbortController(), id = ++generation.current; active.current = controller
-		setBusy(true); setError(''); setTurns(old => [...old.slice(-19), { id, question, state: 'pending' }])
-		relay({ type: 'begin', turn: id, mode: config.mode })
-		let answer: Answer | undefined, complete = false, limited = false
-		let failureMessage = '暂时没能回复你，请稍后再试。'
-		const update = (patch: Partial<Turn>) => { if (mounted.current && generation.current === id) setTurns(old => old.map(turn => turn.id === id ? { ...turn, ...patch } : turn)) }
-		const timer = setTimeout(() => controller.abort(new DOMException('等待回答超时。', 'TimeoutError')), 55000)
-		try {
-			const response = await fetch('/api/agent/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: question }), signal: controller.signal })
-			if (!response.ok) {
-				const body = await response.json().catch(() => null)
-				if (body?.quota) { const usage = decodeQuota(body.quota); limited = !usage.canAsk; setQuota(usage) }
-				if (response.status === 429 && !limited) failureMessage = '现在有点忙，请稍后再试。'
-				throw Error('request failed')
+		const content = panel.current?.querySelector<HTMLElement>('.companion-guide-content')
+		if (content) content.scrollTop = 0
+		panel.current?.querySelector<HTMLButtonElement>('.companion-choice')?.focus({ preventScroll: true })
+		const escape = (event: KeyboardEvent) => {
+			if (event.key === 'Escape' && !event.defaultPrevented) {
+				event.preventDefault()
+				closeChat()
 			}
-			await readAgentEvents(response, controller.signal, event => {
-				if (generation.current !== id || !mounted.current) return
-				const data = event.data as { text?: string; mode?: string; status?: string; message?: string }
-				if (event.name === 'quota') setQuota(decodeQuota(event.data))
-				if (event.name === 'meta') relay({ type: 'meta', turn: id, mode: data.mode })
-				if (event.name === 'answer') { answer = decodeAnswer(event.data); update({ answer }); relay({ type: 'answer', turn: id, mode: answer.mode, ...characterCue(answer) }) }
-				if (event.name === 'done') complete = data.status === 'complete'
-				if (event.name === 'error') throw Error('reply failed')
-			})
-			if (!complete || !answer) throw Error('回答在途中断开了，请稍后再试。')
-			if (generation.current !== id || !mounted.current) return
-			update({ state: 'complete' }); relay({ type: 'done', turn: id }); setDraft(value => value.trim() === question ? '' : value)
-		} catch (reason) {
-			if (generation.current !== id || !mounted.current) return
-			const stopped = controller.signal.aborted && controller.signal.reason?.name !== 'TimeoutError'
-			update({ state: stopped ? 'stopped' : 'failed' }); relay({ type: stopped ? 'cancel' : 'error', turn: id })
-			if (!stopped && !limited) setError(controller.signal.reason?.name === 'TimeoutError' ? '等得有点久了，请稍后再试。' : failureMessage)
-		} finally {
-			clearTimeout(timer); if (active.current === controller) active.current = null
-			if (mounted.current && generation.current === id) setBusy(false)
-			if (mounted.current) void refreshQuota().catch(() => {})
 		}
+		window.addEventListener('keydown', escape)
+		return () => window.removeEventListener('keydown', escape)
+	}, [open, visible, suppressed, closeChat])
+
+	function dismiss() {
+		replayPending.current = false
+		history.current = []
+		post({ type: 'zenix.agent.event', event: { type: 'clear', turn: ++generation.current } })
+		setOpen(false)
+		setVisible(false)
+		saveDismissed(true)
 	}
-	if (suppressed) return null
-	if (!visible) return null
-	return <aside className={`floating-companion${open ? ' is-chat-open' : ''}`} aria-label='小站看板娘'>
-		<div className='companion-figure'><iframe key={character} ref={iframe} src={scene.src} title={scene.title} sandbox='allow-scripts allow-same-origin' />{failed && <p className='companion-model-error'>人物暂未载入，对话仍可使用。</p>}</div>
-		<div className='companion-actions'>{chatEnabled && <button ref={toggle} type='button' aria-label={open ? '收起看板娘对话' : '打开看板娘对话'} aria-expanded={open} aria-controls='companion-chat' title='对话' onClick={() => open ? closeChat() : setOpen(true)}><MessageCircle size={18} /><span>对话</span></button>}<button type='button' aria-label='关闭看板娘' title='本次浏览隐藏看板娘' onClick={dismiss}><Trash2 size={17} /></button></div>
-		{chatEnabled && open && <section id='companion-chat' className='companion-chat' role='dialog' aria-label='和看板娘对话'>
-			<header><strong>问问小站</strong><button type='button' aria-label='收起对话' onClick={closeChat}><X size={18} /></button></header>
-			<div ref={log} className='companion-messages' role='log' aria-label='看板娘对话记录'>
-				{turns.length === 0 && <p className='companion-welcome'>你好，想看看项目、学习记录，还是找个页面？</p>}
-				{turns.map(turn => <article key={turn.id} className='companion-turn'><p className='companion-question'>{turn.question}</p><div className='companion-answer'>
-					{turn.answer ? <>{turn.answer.paragraphs.map((p, i) => <p key={i}>{p.text}</p>)}{turn.answer.sources.length > 0 && <details><summary>相关页面</summary>{turn.answer.sources.map(source => <Link key={source.id} href={source.path}>{source.title}</Link>)}</details>}</> : <p>{turn.state === 'pending' ? '正在回复…' : turn.state === 'stopped' ? '已停止回复。' : '暂时没能回复。'}</p>}
-					{turn.answer && turn.state !== 'complete' && turn.state !== 'pending' && <small>这次回复未完成。</small>}
-				</div></article>)}
+
+	function choose(choice: GuideChoice) {
+		setSelection({ pathname, choiceId: choice.id })
+		const turn = ++generation.current
+		const performance = {
+			version: 1 as const,
+			motion: choice.motion ?? 'happyNod',
+			expression: choice.motion === 'shyPeek' ? ('shy' as const) : ('happy' as const),
+			bubble: { kind: 'answer' as const, paragraph: 0 },
+			intensity: 'soft' as const,
+			source: 'local' as const
+		}
+		const capabilities = scene.capabilities
+		const supported =
+			capabilities.motions.some(motion => motion === performance.motion) && capabilities.expressions.some(expression => expression === performance.expression)
+		const cue = characterCue({ mode: 'preset', paragraphs: [{ text: choice.text }], performance: supported ? performance : undefined })
+		const events: CharacterEvent[] = [
+			{ type: 'begin', turn, mode: 'preset' },
+			{ type: 'answer', turn, mode: 'preset', ...cue },
+			{ type: 'done', turn }
+		]
+		history.current = events
+		for (const event of events) post({ type: 'zenix.agent.event', event })
+	}
+
+	if (suppressed || !visible) return null
+
+	return (
+		<aside className={'floating-companion' + (open ? ' is-chat-open' : '')} aria-label='小站看板娘'>
+			<div className='companion-figure'>
+				<iframe key={character} ref={iframe} src={scene.src} title={scene.title} sandbox='allow-scripts allow-same-origin' />
+				{failed && <p className='companion-model-error'>人物暂未载入，可以先和我聊聊。</p>}
 			</div>
-			{connecting && <p className='companion-chat-status' role='status'>连接中…</p>}
-			{quota && !quota.canAsk && <p className='companion-chat-notice' role='status'>今天先聊到这里，明天再来找我吧。</p>}
-			{error && <p className='companion-chat-error' role='alert'>{error}</p>}
-			<form aria-busy={connecting} onSubmit={event => { event.preventDefault(); void ask() }}><label className='sr-only' htmlFor='companion-question'>询问小站功能</label><textarea ref={input} id='companion-question' rows={2} maxLength={1200} value={draft} onChange={event => setDraft(event.target.value)} placeholder='问点什么…' onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); event.currentTarget.form?.requestSubmit() } }} /><div className='companion-compose-row'>{busy ? <button type='button' aria-label='停止回答' onClick={() => active.current?.abort()}><Square size={15} /></button> : <button type='submit' aria-label='发送问题' disabled={connecting || !config || !quota?.canAsk || !draft.trim()}><ArrowUp size={18} /></button>}</div></form>
-		</section>}
-	</aside>
+			<div className='companion-actions'>
+				<button
+					ref={toggle}
+					type='button'
+					aria-label={open ? '收起看板娘对话' : '打开看板娘对话'}
+					aria-expanded={open}
+					aria-controls='companion-chat'
+					onClick={() => (open ? closeChat() : setOpen(true))}>
+					<MessageCircle size={18} />
+					<span>聊聊</span>
+				</button>
+				<button type='button' aria-label='关闭看板娘' title='本次浏览隐藏看板娘' onClick={dismiss}>
+					<Trash2 size={17} />
+				</button>
+			</div>
+			{open && (
+				<section ref={panel} id='companion-chat' className='companion-chat companion-guide' role='dialog' aria-label='和看板娘聊聊'>
+					<header>
+						<strong>{guide.title}</strong>
+						<button type='button' aria-label='收起对话' onClick={closeChat}>
+							<X size={18} />
+						</button>
+					</header>
+					<div className='companion-guide-content'>
+						<p className='companion-welcome'>{guide.greeting}</p>
+						<div className='companion-choices' aria-label='选择想聊的话题'>
+							{guide.choices.map(choice => (
+								<button
+									key={choice.id}
+									type='button'
+									className='companion-choice'
+									aria-pressed={selected?.id === choice.id}
+									aria-controls='companion-guide-answer'
+									onClick={() => choose(choice)}>
+									<span>{choice.label}</span>
+									<ArrowRight size={15} aria-hidden='true' />
+								</button>
+							))}
+						</div>
+						<div id='companion-guide-answer' className='companion-guide-answer' role='status' aria-live='polite' aria-atomic='true'>
+							{selected && (
+								<>
+									<p>{selected.text}</p>
+									{selected.links && (
+										<div className='companion-guide-links'>
+											{selected.links.map(link => (
+												<Link key={link.href} href={link.href}>
+													{link.label}
+													<ArrowRight size={14} aria-hidden='true' />
+												</Link>
+											))}
+										</div>
+									)}
+								</>
+							)}
+						</div>
+					</div>
+				</section>
+			)}
+		</aside>
+	)
 }

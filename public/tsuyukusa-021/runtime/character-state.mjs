@@ -69,8 +69,8 @@ export class CharacterState{
     if(e.mode)this.mode=e.mode;
     if(e.type==='answer'){
       this.answerReceived=true;
-      const validSource=(e.performance?.source==='model'&&this.mode==='adk-rag')||(e.performance?.source==='local'&&this.mode==='retrieval-only');
-      this.pending=!this.paused&&!this.userBusy&&validSource?{performance:e.performance,text:e.bubbleText}:null;
+      const validSource=!e.performance||(e.performance?.source==='model'&&['adk-rag'].includes(this.mode))||(e.performance?.source==='local'&&['preset','retrieval-only'].includes(this.mode));
+      this.pending=!this.paused&&!this.userBusy&&validSource&&e.bubbleText?{performance:e.performance,text:e.bubbleText}:null;
     }
     if(e.type==='done'){
       if(!this.answerReceived)return false;
@@ -82,11 +82,11 @@ export class CharacterState{
           this.show(pending.text,'answer',5);
           const p=pending.performance;
           if(!this.activity&&!this.native){
-            const a=this.actions.find(action=>action.id===this.agentNativeActions[p.motion]);if(a&&!this.reduced)this.native={...a,sequence:++this.sequence,until:this.now+a.duration};
-            if(p.motion==='happyNod'&&!this.reduced)this.activity={name:'nod',until:this.now+1.2,started:this.now};
-            if(p.motion==='lookAround'&&!this.reduced)this.activity={name:'look',until:this.now+1.8,started:this.now};
-            if((p.motion==='shyPeek'||p.expression==='shy')&&this.shyExpression)this.expression={name:this.shyExpression,until:this.now+3};
-            if(p.expression==='wink'&&!this.reduced)this.activity={name:'wink',until:this.now+1.1,started:this.now};
+            const a=this.actions.find(action=>action.id===this.agentNativeActions[p?.motion]);if(a&&!this.reduced)this.native={...a,sequence:++this.sequence,until:this.now+a.duration};
+            if(p?.motion==='happyNod'&&!this.reduced)this.activity={name:'nod',until:this.now+1.2,started:this.now};
+            if(p?.motion==='lookAround'&&!this.reduced)this.activity={name:'look',until:this.now+1.8,started:this.now};
+            if((p?.motion==='shyPeek'||p?.expression==='shy')&&this.shyExpression)this.expression={name:this.shyExpression,until:this.now+3};
+            if(p?.expression==='wink'&&!this.reduced)this.activity={name:'wink',until:this.now+1.1,started:this.now};
           }
         }else this.show(this.mode==='no-evidence'?'这次还没找到合适的信息。':this.mode==='scope-limit'?'我可以帮你了解小站的功能。':'希望这些能帮到你。','warm',3);
       }

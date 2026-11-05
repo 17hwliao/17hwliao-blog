@@ -18,7 +18,7 @@ export class PerformanceDirector{
   stage(performance,bubbleText,mode){
     this.pending=null;
     const p=normalizePerformance(performance),text=normalizePerformanceText(bubbleText);
-    if(!p||!text||(p.source==='model'&&mode!=='adk-rag')||(p.source==='local'&&mode!=='retrieval-only'))return false;
+    if(!text||!['preset','retrieval-only','adk-rag','scope-limit','no-evidence'].includes(mode)||(p?.source==='model'&&!['adk-rag'].includes(mode))||(p?.source==='local'&&!['preset','retrieval-only'].includes(mode)))return false;
     this.pending={performance:p,text};return true;
   }
   commit(){
@@ -27,6 +27,10 @@ export class PerformanceDirector{
     // Drop, never queue, if the user is holding/dragging/clicking the character.
     if(this.suspended||c.disposed||c.pointer||c.activity||c.expression){this.lastResult='user-priority';return false;}
     const p=cue.performance;
+    if(!p){
+      this.active={...cue,expires:c.elapsed+5,activity:null,expression:null,motion:null};
+      this.lastResult='bubble-only';return true;
+    }
     const motion=p.intensity==='soft'&&['hello','doubleWave','bounce'].includes(p.motion)?'wave':p.motion;
     const duration=Math.min(8,Math.max(3,[...cue.text].length/20,MOTIONS[motion]?.duration??0));
     this.active={...cue,expires:c.elapsed+duration,activity:null,expression:null,motion:null};
@@ -50,5 +54,5 @@ export class PerformanceDirector{
   }
   setSuspended(value){this.suspended=Boolean(value);if(this.suspended)this.clear('paused');}
   get bubbleText(){this.tick();return this.active?.text??'';}
-  get snapshot(){this.tick();return{pending:Boolean(this.pending),active:Boolean(this.active),motion:this.active?.motion??null,source:this.active?.performance.source??null,bubbleText:this.active?.text??'',result:this.lastResult};}
+  get snapshot(){this.tick();return{pending:Boolean(this.pending),active:Boolean(this.active),motion:this.active?.motion??null,source:this.active?.performance?.source??null,bubbleText:this.active?.text??'',result:this.lastResult};}
 }

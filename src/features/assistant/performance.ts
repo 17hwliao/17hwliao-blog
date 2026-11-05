@@ -40,7 +40,7 @@ export function decodePerformance(value: unknown, paragraphCount: number, mode: 
 		v.bubble.paragraph >= paragraphCount
 	)
 		return
-	if ((v.source === 'model' && mode !== 'adk-rag') || (v.source === 'local' && mode !== 'retrieval-only') || !['model', 'local'].includes(v.source!)) return
+	if ((v.source === 'model' && mode !== 'adk-rag') || (v.source === 'local' && !['retrieval-only', 'preset'].includes(mode)) || !['model', 'local'].includes(v.source!)) return
 	return {
 		version: 1,
 		motion: v.motion!,
@@ -53,8 +53,9 @@ export function decodePerformance(value: unknown, paragraphCount: number, mode: 
 
 export function characterCue(answer: { mode: string; paragraphs: { text: string }[]; performance?: Performance }) {
 	const performance = decodePerformance(answer.performance, answer.paragraphs.length, answer.mode)
-	if (!performance) return {}
-	const text = answer.paragraphs[performance.bubble.paragraph].text
+	const paragraph = answer.paragraphs[performance?.bubble.paragraph ?? 0]
+	if (!paragraph) return {}
+	const text = paragraph.text
 		.replace(/[\u0000-\u001f\u007f]/g, ' ')
 		.replace(/\s+/g, ' ')
 		.trim()

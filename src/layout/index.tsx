@@ -13,8 +13,6 @@ import ConfigDialog from '@/app/(home)/config-dialog'
 import { AppearanceProvider } from '@/features/appearance/theme'
 import { useVisualViewport } from '@/features/appearance/use-visual-viewport'
 
-const chatEnabled = process.env.NODE_ENV === 'development'
-
 export default function Layout({ children }: PropsWithChildren) {
 	useCenterInit()
 	useVisualViewport()
@@ -65,7 +63,7 @@ export default function Layout({ children }: PropsWithChildren) {
 							<Link href='/knowledge'>知识地图</Link>
 							<Link href='/reading'>阅读工作台</Link>
 							<Link href='/about'>关于</Link>
-							{chatEnabled && <button type='button' onClick={() => window.dispatchEvent(new Event('zenix.companion.open'))}>问看板娘</button>}
+							<button type='button' onClick={() => window.dispatchEvent(new Event('zenix.companion.open'))}>聊聊小站</button>
 							{siteContent.beian.text && (
 								<a href={siteContent.beian.link || 'https://beian.miit.gov.cn/'} target='_blank' rel='noreferrer'>
 									{siteContent.beian.text}
@@ -75,7 +73,7 @@ export default function Layout({ children }: PropsWithChildren) {
 					</footer>
 					<ConfigDialog open={configDialogOpen} onClose={() => setConfigDialogOpen(false)} />
 					<SiteToaster />
-					<Suspense fallback={null}><FloatingCompanion chatEnabled={chatEnabled} /></Suspense>
+					<Suspense fallback={null}><FloatingCompanion /></Suspense>
 				</div>
 			</MotionConfig>
 		</AppearanceProvider>
