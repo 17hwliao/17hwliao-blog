@@ -1,5 +1,23 @@
 [
   {
+    "slug": "agent-memory-wiki-dreaming",
+    "title": "Agent 记忆：Transcript、Notes 与 Wiki 的分层设计",
+    "tags": [
+      "Agent",
+      "RAG",
+      "记忆",
+      "Anthropic"
+    ],
+    "date": "2026-11-16T03:36:17.058Z",
+    "createdAt": "2026-11-16T03:36:17.058Z",
+    "updatedAt": "2026-11-16T03:36:17.058Z",
+    "contentUpdatedAt": "2026-11-16T03:36:17.058Z",
+    "firstPublishedAt": "2026-11-16T03:36:17.058Z",
+    "publishedAt": "2026-11-16T03:36:17.058Z",
+    "summary": "从 Anthropic 的 Agent 记忆分层出发，梳理 Transcript、Notes、Wiki 与注入上下文的关系，并对比向量 RAG 的检索方式与工程代价。",
+    "category": "Goland"
+  },
+  {
     "slug": "go-interview-2026-10-31",
     "title": "准备面试八股",
     "tags": [
