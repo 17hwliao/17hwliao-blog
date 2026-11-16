@@ -1,5 +1,23 @@
 [
   {
+    "slug": "anthropic-cookbook-agent-wiki",
+    "title": "Anthropic Cookbook 拆解：Agent Wiki 的设计、实现与未来",
+    "tags": [
+      "Agent",
+      "RAG",
+      "Wiki",
+      "Anthropic"
+    ],
+    "date": "2026-11-16T16:16:53.014Z",
+    "createdAt": "2026-11-16T16:16:53.014Z",
+    "updatedAt": "2026-11-16T16:16:53.014Z",
+    "contentUpdatedAt": "2026-11-16T16:16:53.014Z",
+    "firstPublishedAt": "2026-11-16T16:16:53.014Z",
+    "publishedAt": "2026-11-16T16:16:53.014Z",
+    "summary": "以 knowledge-wiki 和 dreaming 两条 cookbook 为线索，拆解 Agent Wiki 的分层记忆、四阶段构建流水线、无向量检索、工程约束与未来演进。",
+    "category": "Goland"
+  },
+  {
     "slug": "agent-memory-wiki-dreaming",
     "title": "Agent 记忆：Transcript、Notes 与 Wiki 的分层设计",
     "tags": [
