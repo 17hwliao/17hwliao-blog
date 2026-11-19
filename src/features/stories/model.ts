@@ -1,11 +1,12 @@
 import pictures from '@/app/pictures/list.json'
+import type { Picture } from '@/app/pictures/types'
 import collections from './collections.json'
 
-type StoryPicture = { id: string; image?: string; images?: string[]; description?: string; uploadedAt: string }
+const photoList: Picture[] = pictures
 export const stories = collections.map(collection => ({
 	...collection,
 	chapters: collection.pictureIds.flatMap(id => {
-		const picture = (pictures as StoryPicture[]).find(item => item.id === id)
+		const picture = photoList.find(item => item.id === id)
 		if (!picture) return []
 		return (picture.images?.length ? picture.images : picture.image ? [picture.image] : []).map((url, index) => ({
 			id: `${id}:${index}`,
@@ -14,5 +15,5 @@ export const stories = collections.map(collection => ({
 			uploadedAt: picture.uploadedAt
 		}))
 	}),
-	missing: collection.pictureIds.filter(id => !(pictures as StoryPicture[]).some(picture => picture.id === id))
+	missing: collection.pictureIds.filter(id => !photoList.some(picture => picture.id === id))
 }))

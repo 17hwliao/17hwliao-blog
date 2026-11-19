@@ -1,5 +1,22 @@
 [
   {
+    "id": "team-outing-2026-11-08",
+    "uploadedAt": "2026-11-08T16:39:10+08:00",
+    "images": [
+      "/images/pictures/2026-11-08-team-outing/group.jpg",
+      "/images/pictures/2026-11-08-team-outing/dinner-01.jpg",
+      "/images/pictures/2026-11-08-team-outing/dinner-02.jpg",
+      "/images/pictures/2026-11-08-team-outing/dinner-03.jpg"
+    ],
+    "description": "大一来的第一次团建 , 时间过的好快啊 , 都有要被欢送的错觉了"
+  },
+  {
+    "id": "team-outing-2026-11-08-apprentice",
+    "uploadedAt": "2026-11-08T16:39:10+08:00",
+    "image": "/images/pictures/2026-11-08-team-outing/apprentice.jpg",
+    "description": "我的大一小徒弟"
+  },
+  {
     "id": "photo-111-1",
     "uploadedAt": "2026-06-05T20:23:00+08:00",
     "image": "/images/pictures/111/1.jpg",

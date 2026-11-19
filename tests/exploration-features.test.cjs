@@ -82,7 +82,7 @@ test('story chapters all refer to real local photos and preserve their original 
 	const original = require('../src/app/pictures/list.json')
 	assert.equal(
 		stories.reduce((count, story) => count + story.chapters.length, 0),
-		original.length
+		original.reduce((count, picture) => count + (picture.images?.length || (picture.image ? 1 : 0)), 0)
 	)
 	for (const story of stories) {
 		assert.equal(story.missing.length, 0)

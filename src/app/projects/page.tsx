@@ -73,7 +73,7 @@ export default function Page() {
 			<PageIntro
 				label='SELECTED WORK / OPEN SOURCE'
 				title='想法，写成了代码。'
-				description='从 Agent 与基础设施，到音乐和终端游戏。这里收集我正在做的开源项目。'
+				description='记录我做过的项目与开源贡献。点进详情，可以看到使用场景、实现过程和真实工作画面。'
 			/>
 			<div className='collection-page'>
 				{projects.length === 0 && <ContentEmpty title='想法，等待落地。' description='这里还没有项目。点击上方「编辑」，添加你的第一件作品。' />}

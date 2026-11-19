@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { PageIntro } from '@/components/page-intro'
 import { ContentEmpty } from '@/components/content-empty'
 import { PageActions } from '@/components/page-actions'
 import dayjs from 'dayjs'
@@ -11,8 +10,6 @@ import { motion } from 'motion/react'
 dayjs.extend(weekOfYear)
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { INIT_DELAY } from '@/consts'
-import ShortLineSVG from '@/svgs/short-line.svg'
 import { useBlogIndex, type BlogIndexItem } from '@/hooks/use-blog-index'
 import { useCategories } from '@/hooks/use-categories'
 import { useReadArticles } from '@/hooks/use-read-articles'
@@ -20,7 +17,7 @@ import { isPrivateKeyBusy, useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import { cn } from '@/lib/utils'
 import { saveBlogEdits } from './services/save-blog-edits'
-import { Check, ChevronDown } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, Check, ChevronDown } from 'lucide-react'
 import { BlogCoverHoverPreview, useBlogCoverHover } from './components/blog-cover-hover'
 import { CategoryModal } from './components/category-modal'
 
@@ -44,7 +41,7 @@ export default function BlogPage() {
 	const [selectedSlugs, setSelectedSlugs] = useState<Set<string>>(new Set())
 	const [saving, setSaving] = useState(false)
 	const [displayMode, setDisplayMode] = useState<DisplayMode>('year')
-	const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
+	const [expandedGroups, setExpandedGroups] = useState<Set<string> | null>(null)
 	const [categoryModalOpen, setCategoryModalOpen] = useState(false)
 	const [categoryList, setCategoryList] = useState<string[]>([])
 	const [newCategory, setNewCategory] = useState('')
@@ -133,8 +130,18 @@ export default function BlogPage() {
 	}, [displayItems, displayMode, categoryList])
 
 	const selectedCount = selectedSlugs.size
-	const allExpanded = groupKeys.length > 0 && groupKeys.every(key => expandedGroups.has(key))
+	const defaultOpenGroups = groupKeys.slice(0, 1)
+	const openGroups = expandedGroups ?? new Set(defaultOpenGroups)
+	const allExpanded = groupKeys.length > 0 && groupKeys.every(key => openGroups.has(key))
 	const buttonText = isAuth ? '保存' : '导入密钥'
+
+	function jumpToGroup(groupKey: string, index: number) {
+		setExpandedGroups(previous => new Set(previous ?? defaultOpenGroups).add(groupKey))
+		cancelCoverPreview()
+		const heading = document.getElementById(`archive-heading-${displayMode}-${index}`)
+		heading?.focus({ preventScroll: true })
+		heading?.scrollIntoView({ block: 'start' })
+	}
 
 	const toggleEditMode = useCallback(() => {
 		if (!editMode && (loading || error || categoriesLoading || categoriesError)) {
@@ -337,173 +344,19 @@ export default function BlogPage() {
 				}}
 			/>
 
-			<PageIntro label='THE ARCHIVE' title='写下的片段' description='关于生活、学习，还有那些值得多想一会儿的事。' />
-			{!loading && !error && items.length > 0 && (
-				<p className='archive-summary'>
-					{items.length} 篇文章 · {displayMode === 'category' ? '分类内按编写时间从新到旧' : '按编写时间从新到旧'}
-				</p>
-			)}
-			<div className='flex flex-col items-center justify-center gap-6 py-8'>
-				{items.length > 0 && (
-					<div className='archive-controls'>
-						<motion.div
-							initial={{ opacity: 0, scale: 0.6 }}
-							animate={{ opacity: 1, scale: 1 }}
-							className='archive-mode-switch'
-							role='group'
-							aria-label='文章分组方式'>
-							{[
-								{ value: 'day', label: '日' },
-								{ value: 'week', label: '周' },
-								{ value: 'month', label: '月' },
-								{ value: 'year', label: '年' },
-								...(enableCategories ? ([{ value: 'category', label: '分类' }] as const) : [])
-							].map(option => (
-								<motion.button
-									key={option.value}
-									whileHover={{ scale: 1.05 }}
-									whileTap={{ scale: 0.95 }}
-									onClick={() => {
-										setDisplayMode(option.value as DisplayMode)
-										setExpandedGroups(new Set())
-										cancelCoverPreview()
-									}}
-									aria-pressed={displayMode === option.value}
-									className='archive-mode-button'>
-									{option.label}
-								</motion.button>
-							))}
-						</motion.div>
-						{!editMode && (
-							<button
-								type='button'
-								className='button-light archive-expand-all'
-								aria-label={allExpanded ? '收起全部文章分组' : '展开全部文章分组'}
-								onClick={() => {
-									setExpandedGroups(allExpanded ? new Set() : new Set(groupKeys))
-									cancelCoverPreview()
-								}}>
-								<ChevronDown size={16} aria-hidden='true' />
-								{allExpanded ? '全部收起' : '全部展开'}
-							</button>
-						)}
-					</div>
+			<header className='archive-intro'>
+				<div>
+					<p className='eyebrow'>THE ARCHIVE</p>
+					<h1>写下的片段</h1>
+					<p className='archive-description'>关于生活、学习，还有那些值得多想一会儿的事。</p>
+				</div>
+				{!loading && !error && (
+					<p className='archive-total'>
+						<strong>{items.length}</strong> 篇文章
+					</p>
 				)}
-
-				{groupKeys.map((groupKey, index) => {
-					const group = groupedItems[groupKey]
-					if (!group) return null
-					const expanded = editMode || expandedGroups.has(groupKey)
-					const contentId = `archive-${displayMode}-${index}`
-
-					return (
-						<motion.div
-							onMouseLeave={cancelCoverPreview}
-							key={groupKey}
-							initial={{ opacity: 0, scale: 0.95 }}
-							whileInView={{ opacity: 1, scale: 1 }}
-							viewport={{ once: true }}
-							transition={{ delay: INIT_DELAY / 2 }}
-							className='card archive-group relative w-full max-w-[840px]'>
-							<div className='archive-group-heading'>
-								<button
-									type='button'
-									className='archive-group-toggle'
-									aria-expanded={expanded}
-									aria-controls={contentId}
-									disabled={editMode}
-									onClick={() => {
-										setExpandedGroups(previous => {
-											const next = new Set(previous)
-											if (next.has(groupKey)) next.delete(groupKey)
-											else next.add(groupKey)
-											return next
-										})
-										cancelCoverPreview()
-									}}>
-									<span className='archive-group-label'>{getGroupLabel(groupKey)}</span>
-									<span className='archive-group-count'>{group.items.length} 篇文章</span>
-									<ChevronDown size={18} aria-hidden='true' />
-								</button>
-								{editMode &&
-									(() => {
-										const groupAllSelected = group.items.every(item => selectedSlugs.has(item.slug))
-										return (
-											<motion.button
-												whileHover={{ scale: 1.05 }}
-												whileTap={{ scale: 0.95 }}
-												onClick={() => handleSelectGroup(groupKey)}
-												className={cn(
-													'rounded-lg border px-3 py-1 text-xs transition-colors',
-													groupAllSelected
-														? 'border-brand/40 bg-brand/10 text-brand hover:bg-brand/20'
-														: 'text-secondary hover:border-brand/40 hover:text-brand border-transparent bg-white/60 hover:bg-white/80'
-												)}>
-												{groupAllSelected ? '取消全选' : '全选该分组'}
-											</motion.button>
-										)
-									})()}
-							</div>
-							<div id={contentId} hidden={!expanded} className='archive-group-articles'>
-								{group.items.map(it => {
-									const hasRead = isRead(it.slug)
-									const isSelected = selectedSlugs.has(it.slug)
-									return (
-										<Link
-											onMouseEnter={() => onCoverLinkMouseEnter(it.cover)}
-											onMouseLeave={cancelCoverPreview}
-											href={`/blog/${it.slug}`}
-											key={it.slug}
-											onClick={event => handleItemClick(event, it.slug)}
-											className={cn(
-												'group flex min-h-10 items-center gap-3 py-3 transition-all',
-												editMode
-													? cn(
-															'rounded-lg border px-3',
-															isSelected ? 'border-brand/60 bg-brand/5' : 'hover:border-brand/40 border-transparent hover:bg-white/60'
-														)
-													: 'cursor-pointer'
-											)}>
-											{editMode && (
-												<span
-													className={cn(
-														'flex h-4 w-4 items-center justify-center rounded-full border text-[10px] font-semibold',
-														isSelected ? 'border-brand bg-brand text-bg' : 'border-[#D9D9D9] text-transparent'
-													)}>
-													<Check />
-												</span>
-											)}
-											<span className='text-secondary w-[44px] shrink-0 text-sm font-medium'>{dayjs(it.date).format('MM-DD')}</span>
-
-											<div className='relative flex h-2 w-2 items-center justify-center'>
-												<div className='bg-secondary group-hover:bg-brand h-[5px] w-[5px] rounded-full transition-all group-hover:h-4'></div>
-												<ShortLineSVG className='absolute bottom-4' />
-											</div>
-											<div
-												className={cn(
-													'archive-article-title flex-1 text-sm font-medium transition-all',
-													editMode ? null : 'group-hover:text-brand group-hover:translate-x-2'
-												)}>
-												{it.title || it.slug}
-												{hasRead && <span className='text-secondary ml-2 text-xs'>[已阅读]</span>}
-											</div>
-											<div className='flex flex-wrap items-center gap-2 max-sm:hidden'>
-												{(it.tags || []).map(t => (
-													<span key={t} className='text-secondary text-sm'>
-														#{t}
-													</span>
-												))}
-											</div>
-										</Link>
-									)
-								})}
-							</div>
-						</motion.div>
-					)
-				})}
-			</div>
-
-			<div className='pb-12'>
+			</header>
+			<div className='archive-content'>
 				{categoriesError && (
 					<div className='feed-status' role='alert'>
 						分类未能加载。
@@ -514,7 +367,7 @@ export default function BlogPage() {
 				)}
 				{error && (
 					<div className='feed-status' role='alert'>
-						文章未能加载。
+						{items.length ? '文章刷新未成功，以下显示上次读取的内容。' : '文章未能加载。'}
 						<button onClick={() => void retry()} className='button-light'>
 							重新加载
 						</button>
@@ -527,7 +380,200 @@ export default function BlogPage() {
 						</Link>
 					</ContentEmpty>
 				)}
-				{loading && <div className='text-secondary py-6 text-center text-sm'>加载中...</div>}
+				{loading && (
+					<p className='text-secondary py-6 text-sm' role='status'>
+						正在读取文章…
+					</p>
+				)}
+				{groupKeys.length > 0 && (
+					<div className='archive-controls'>
+						<div className='archive-grouping'>
+							<span className='archive-control-label'>分组方式</span>
+							<div className='archive-mode-switch' role='group' aria-label='文章分组方式'>
+								{[
+									{ value: 'day', label: '日' },
+									{ value: 'week', label: '周' },
+									{ value: 'month', label: '月' },
+									{ value: 'year', label: '年' },
+									...(enableCategories ? ([{ value: 'category', label: '分类' }] as const) : [])
+								].map(option => (
+									<button
+										type='button'
+										key={option.value}
+										onClick={() => {
+											if (displayMode === option.value) return
+											setDisplayMode(option.value as DisplayMode)
+											setExpandedGroups(null)
+											cancelCoverPreview()
+										}}
+										aria-pressed={displayMode === option.value}
+										className='archive-mode-button'>
+										{option.label}
+									</button>
+								))}
+							</div>
+						</div>
+						{!editMode && (
+							<button
+								type='button'
+								className='archive-expand-all'
+								data-expanded={allExpanded}
+								aria-label={allExpanded ? '收起全部文章分组' : '展开全部文章分组'}
+								onClick={() => {
+									setExpandedGroups(allExpanded ? new Set() : new Set(groupKeys))
+									cancelCoverPreview()
+								}}>
+								<ChevronDown size={16} aria-hidden='true' />
+								{allExpanded ? '全部收起' : '全部展开'}
+							</button>
+						)}
+					</div>
+				)}
+
+				<div className='archive-browser'>
+					{!editMode && groupKeys.length > 1 && (
+						<nav className='archive-directory' aria-label='文章分组目录'>
+							<p className='archive-directory-title'>
+								分组目录 <ArrowDownRight size={14} aria-hidden='true' />
+							</p>
+							<div className='archive-directory-links'>
+								{groupKeys.map((key, index) => (
+									<button
+										key={key}
+										type='button'
+										aria-controls={`archive-${displayMode}-${index}`}
+										aria-expanded={openGroups.has(key)}
+										onClick={() => jumpToGroup(key, index)}>
+										<span>{getGroupLabel(key)}</span>
+										<span className='archive-directory-count'>{groupedItems[key].items.length}</span>
+									</button>
+								))}
+							</div>
+							<select
+								className='archive-directory-select'
+								aria-label='跳到文章分组'
+								value=''
+								onChange={event => {
+									if (!event.currentTarget.value) return
+									const index = Number(event.currentTarget.value)
+									jumpToGroup(groupKeys[index], index)
+								}}>
+								<option value='' disabled>
+									跳到分组
+								</option>
+								{groupKeys.map((key, index) => (
+									<option key={key} value={index}>
+										{getGroupLabel(key)} · {groupedItems[key].items.length} 篇
+									</option>
+								))}
+							</select>
+						</nav>
+					)}
+					<div className='archive-groups'>
+						{groupKeys.map((groupKey, index) => {
+							const group = groupedItems[groupKey]
+							if (!group) return null
+							const expanded = editMode || openGroups.has(groupKey)
+							const contentId = `archive-${displayMode}-${index}`
+							const headingId = `archive-heading-${displayMode}-${index}`
+
+							return (
+								<section onMouseLeave={cancelCoverPreview} key={groupKey} aria-labelledby={headingId} className='archive-group'>
+									<div className='archive-group-heading'>
+										<h2 id={headingId} tabIndex={-1}>
+											<button
+												type='button'
+												className='archive-group-toggle'
+												aria-expanded={expanded}
+												aria-controls={contentId}
+												disabled={editMode}
+												onClick={() => {
+													setExpandedGroups(previous => {
+														const next = new Set(previous ?? defaultOpenGroups)
+														if (next.has(groupKey)) next.delete(groupKey)
+														else next.add(groupKey)
+														return next
+													})
+													cancelCoverPreview()
+												}}>
+												<span className='archive-group-label'>{getGroupLabel(groupKey)}</span>
+												<span className='archive-group-count'>{group.items.length} 篇文章</span>
+												<ChevronDown size={18} aria-hidden='true' />
+											</button>
+										</h2>
+										{editMode &&
+											(() => {
+												const groupAllSelected = group.items.every(item => selectedSlugs.has(item.slug))
+												return (
+													<motion.button
+														whileHover={{ scale: 1.05 }}
+														whileTap={{ scale: 0.95 }}
+														onClick={() => handleSelectGroup(groupKey)}
+														className={cn(
+															'rounded-lg border px-3 py-1 text-xs transition-colors',
+															groupAllSelected
+																? 'border-brand/40 bg-brand/10 text-brand hover:bg-brand/20'
+																: 'text-secondary hover:border-brand/40 hover:text-brand border-transparent bg-white/60 hover:bg-white/80'
+														)}>
+														{groupAllSelected ? '取消全选' : '全选该分组'}
+													</motion.button>
+												)
+											})()}
+									</div>
+									<div id={contentId} hidden={!expanded} className='archive-group-articles'>
+										{expanded &&
+											group.items.map(it => {
+												const hasRead = isRead(it.slug)
+												const isSelected = selectedSlugs.has(it.slug)
+												return (
+													<Link
+														onMouseEnter={() => onCoverLinkMouseEnter(it.cover)}
+														onMouseLeave={cancelCoverPreview}
+														href={`/blog/${it.slug}`}
+														key={it.slug}
+														onClick={event => handleItemClick(event, it.slug)}
+														className={cn(
+															'archive-article',
+															editMode
+																? cn(
+																		'rounded-lg border px-3',
+																		isSelected ? 'border-brand/60 bg-brand/5' : 'hover:border-brand/40 border-transparent hover:bg-white/60'
+																	)
+																: 'cursor-pointer'
+														)}>
+														{editMode && (
+															<span
+																className={cn(
+																	'flex h-4 w-4 items-center justify-center rounded-full border text-[10px] font-semibold',
+																	isSelected ? 'border-brand bg-brand text-bg' : 'border-[#D9D9D9] text-transparent'
+																)}>
+																<Check />
+															</span>
+														)}
+														<time className='archive-article-date' dateTime={it.date}>
+															{dayjs(it.date).format('MM-DD')}
+														</time>
+														<div className='archive-article-copy'>
+															<span className='archive-article-title'>{it.title || it.slug}</span>
+															{(hasRead || it.tags?.length > 0) && (
+																<span className='archive-article-meta'>
+																	{hasRead && <span className='archive-read-mark'>已阅读</span>}
+																	{(it.tags || []).map(tag => (
+																		<span key={tag}>#{tag}</span>
+																	))}
+																</span>
+															)}
+														</div>
+														{!editMode && <ArrowUpRight size={16} aria-hidden='true' className='archive-article-arrow' />}
+													</Link>
+												)
+											})}
+									</div>
+								</section>
+							)
+						})}
+					</div>
+				</div>
 			</div>
 
 			<PageActions>

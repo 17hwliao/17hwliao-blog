@@ -7,22 +7,57 @@ import type { ProjectJourney, ProjectShot } from '@/content/project-showcases'
 
 function ShotImage({ shot, eager = false }: { shot: ProjectShot; eager?: boolean }) {
 	const [failed, setFailed] = useState(false)
+	const [loaded, setLoaded] = useState(false)
+	const [attempt, setAttempt] = useState(0)
 	const imageRef = useRef<HTMLImageElement>(null)
 	useEffect(() => {
-		// An SSR image can finish with an error before hydration attaches onError.
-		if (imageRef.current?.complete && imageRef.current.naturalWidth === 0) setFailed(true)
-	}, [])
+		// Cached SSR images may finish before hydration attaches the event handlers.
+		if (imageRef.current?.complete) {
+			setFailed(imageRef.current.naturalWidth === 0)
+			setLoaded(imageRef.current.naturalWidth > 0)
+		}
+		const timeout = window.setTimeout(() => {
+			if (!imageRef.current?.naturalWidth) setFailed(true)
+		}, 15000)
+		return () => window.clearTimeout(timeout)
+	}, [attempt])
 	if (failed)
 		return (
 			<div className='showcase-image-error' role='status'>
 				<ImageOff size={24} />
 				<p>这张画面暂时无法加载</p>
-				<button className='button-light' onClick={() => setFailed(false)}>
+				<button
+					className='button-light'
+					onClick={() => {
+						setLoaded(false)
+						setFailed(false)
+						setAttempt(value => value + 1)
+					}}>
 					重新加载
 				</button>
 			</div>
 		)
-	return <img ref={imageRef} src={shot.src} alt={shot.alt} width={1440} height={1000} loading={eager ? 'eager' : 'lazy'} onError={() => setFailed(true)} />
+	return (
+		<div className='gallery-shot-image' aria-busy={!loaded}>
+			{!loaded && (
+				<span className='gallery-loading' role='status'>
+					正在加载画面…
+				</span>
+			)}
+			<img
+				key={attempt}
+				ref={imageRef}
+				src={attempt ? `${shot.src}?retry=${attempt}` : shot.src}
+				alt={shot.alt}
+				width={1440}
+				height={1000}
+				loading={eager ? 'eager' : 'lazy'}
+				onLoad={() => setLoaded(true)}
+				onError={() => setFailed(true)}
+				style={{ visibility: loaded ? 'visible' : 'hidden' }}
+			/>
+		</div>
+	)
 }
 
 export function ProjectGallery({ name, shots, journeys = [] }: { name: string; shots: ProjectShot[]; journeys?: ProjectJourney[] }) {
@@ -30,6 +65,16 @@ export function ProjectGallery({ name, shots, journeys = [] }: { name: string; s
 	const [journeyId, setJourneyId] = useState('all')
 	const [expanded, setExpanded] = useState(false)
 	const galleryRef = useRef<HTMLElement>(null)
+	const choicesRef = useRef<HTMLDivElement>(null)
+	useEffect(() => {
+		const list = choicesRef.current
+		const button = list?.querySelector<HTMLElement>('[aria-pressed="true"]')
+		if (list && button) {
+			// Scroll only the selector strip; keep the document and main image still.
+			const { left, width } = button.getBoundingClientRect()
+			list.scrollLeft += left - list.getBoundingClientRect().left - (list.clientWidth - width) / 2
+		}
+	}, [active, journeyId])
 	useEffect(() => {
 		const selectFromHash = () => {
 			const index = shots.findIndex(item => `#shot-${item.id}` === window.location.hash)
@@ -48,7 +93,9 @@ export function ProjectGallery({ name, shots, journeys = [] }: { name: string; s
 	const shot = shots[active]
 	if (!shot) return null
 	const selectedJourney = journeys.find(item => item.id === journeyId)
-	const visibleIndices = selectedJourney ? selectedJourney.shots.map(id => shots.findIndex(item => item.id === id)).filter(index => index >= 0) : shots.map((_, index) => index)
+	const visibleIndices = selectedJourney
+		? selectedJourney.shots.map(id => shots.findIndex(item => item.id === id)).filter(index => index >= 0)
+		: shots.map((_, index) => index)
 	const position = visibleIndices.indexOf(active)
 	const shotJourney = journeys.find(item => item.shots.includes(shot.id))
 	const select = (index: number) => {
@@ -73,50 +120,86 @@ export function ProjectGallery({ name, shots, journeys = [] }: { name: string; s
 					{String(position + 1).padStart(2, '0')} / {String(visibleIndices.length).padStart(2, '0')}
 				</span>
 			</div>
-			{journeys.length > 0 && <div className='gallery-journeys' role='group' aria-label='按操作链路查看'>
-				<button aria-pressed={journeyId === 'all'} onClick={() => chooseJourney('all')}><strong>全部画面 <span>{shots.length}</span></strong><small>保留所有截图，方便逐张比较。</small></button>
-				{journeys.map(item => <button key={item.id} aria-pressed={journeyId === item.id} onClick={() => chooseJourney(item.id)}><strong>{item.title} <span>{item.shots.length}</span></strong><small>{item.description}</small></button>)}
-			</div>}
-			<div className='gallery-stage'>
-				<div className='gallery-image'>
-					<ShotImage key={shot.src} shot={shot} eager />
-				</div>
-				<div className='gallery-stage-bar'>
-					<span>{shot.provenance}</span>
-					<button className='subtle-link' onClick={() => setExpanded(true)} aria-label={`放大查看${shot.title}`}>
-						<Expand size={14} /> 放大查看
-					</button>
-				</div>
-			</div>
-			<div id={`shot-${shot.id}`} className='gallery-caption' aria-live='polite'>
-				<div>
-					{shotJourney && <p className='gallery-step-label'>{shotJourney.title} · 步骤 {shotJourney.shots.indexOf(shot.id) + 1} / {shotJourney.shots.length}</p>}
-					<h3>{shot.title}</h3>
-					<p>{shot.description}</p>
-				</div>
-				<a href={shot.source} target='_blank' rel='noreferrer' className='subtle-link'>
-					画面来源 <ArrowUpRight size={13} />
-				</a>
-			</div>
-			<div className='gallery-operation' aria-live='polite'><div><span>本次操作</span><p>{shot.capture.action}</p></div><div><span>实际结果</span><p>{shot.capture.result}</p></div></div>
-			<details className='gallery-capture-note'><summary>这张画面的取图说明</summary><p>{shot.capture.boundary}</p></details>
+			{journeys.length > 0 && (
+				<label className='gallery-filter'>
+					查看内容
+					<select value={journeyId} onChange={event => chooseJourney(event.target.value)} aria-label='按功能筛选画面'>
+						<option value='all'>全部画面 · {shots.length} 张</option>
+						{journeys.map(item => (
+							<option key={item.id} value={item.id}>
+								{item.title} · {item.shots.length} 张
+							</option>
+						))}
+					</select>
+				</label>
+			)}
 			{shots.length > 1 && (
-				<div className='gallery-thumbnails' role='group' aria-label='选择项目画面'>
-					{visibleIndices.map((index, order) => { const item = shots[index]; return (
-						<button key={item.id} aria-pressed={active === index} onClick={() => {
-							select(index)
-							galleryRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' })
-							galleryRef.current?.focus({ preventScroll: true })
-						}}>
-							<img src={item.src} alt='' width={176} height={116} loading='lazy' />
-							<span>
-								{String(order + 1).padStart(2, '0')}
-								<strong>{item.title}</strong>
-							</span>
+				<div
+					ref={choicesRef}
+					className='gallery-selectors'
+					role='group'
+					aria-label='选择项目画面'
+					onKeyDown={event => {
+						if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+						event.preventDefault()
+						const next =
+							event.key === 'Home'
+								? 0
+								: event.key === 'End'
+									? visibleIndices.length - 1
+									: Math.max(0, Math.min(visibleIndices.length - 1, position + (event.key === 'ArrowRight' ? 1 : -1)))
+						select(visibleIndices[next])
+						choicesRef.current?.querySelectorAll('button')[next]?.focus({ preventScroll: true })
+					}}>
+					{visibleIndices.map((index, order) => (
+						<button key={shots[index].id} aria-pressed={active === index} aria-controls='project-selected-picture' onClick={() => select(index)}>
+							<span>{String(order + 1).padStart(2, '0')}</span>
+							<strong>{shots[index].title}</strong>
 						</button>
-					) })}
+					))}
 				</div>
 			)}
+			<figure id='project-selected-picture' className='gallery-selected-picture'>
+				<figcaption id={`shot-${shot.id}`} className='gallery-caption' aria-live='polite'>
+					<div>
+						{shotJourney && (
+							<p className='gallery-step-label'>
+								{shotJourney.title} · 步骤 {shotJourney.shots.indexOf(shot.id) + 1} / {shotJourney.shots.length}
+							</p>
+						)}
+						<h3>{shot.title}</h3>
+						<p>{shot.description}</p>
+					</div>
+				</figcaption>
+				<div className='gallery-stage'>
+					<div className='gallery-image'>
+						<ShotImage key={shot.src} shot={shot} eager />
+					</div>
+					<div className='gallery-stage-bar'>
+						<span>{shot.provenance}</span>
+						<button className='subtle-link' onClick={() => setExpanded(true)} aria-label={`放大查看${shot.title}`}>
+							<Expand size={14} /> 放大查看
+						</button>
+					</div>
+				</div>
+			</figure>
+			<div className='gallery-operation' aria-live='polite'>
+				<div>
+					<span>操作过程</span>
+					<p>{shot.capture.action}</p>
+				</div>
+				<div>
+					<span>实际结果</span>
+					<p>{shot.capture.result}</p>
+				</div>
+			</div>
+			<details className='gallery-capture-note'>
+				<summary>截图说明与来源</summary>
+				<p>{shot.capture.boundary}</p>
+				<a href={shot.source} target='_blank' rel='noreferrer' className='subtle-link'>
+					查看画面来源 <ArrowUpRight size={13} />
+				</a>
+			</details>
 			<DialogModal open={expanded} onClose={() => setExpanded(false)} className='gallery-lightbox' ariaLabel={`${name} 画面预览`}>
 				<div
 					onKeyDown={event => {
@@ -135,8 +218,12 @@ export function ProjectGallery({ name, shots, journeys = [] }: { name: string; s
 							<p>{shot.provenance}</p>
 						</div>
 						<div className='gallery-lightbox-actions'>
-							<a href={shot.src} target='_blank' rel='noreferrer' className='button-light' aria-label={`打开${shot.title}原图`}>打开原图 <ArrowUpRight size={14} /></a>
-							<button className='icon-button' aria-label='关闭画面预览' onClick={() => setExpanded(false)}><X size={20} /></button>
+							<a href={shot.src} target='_blank' rel='noreferrer' className='button-light' aria-label={`打开${shot.title}原图`}>
+								打开原图 <ArrowUpRight size={14} />
+							</a>
+							<button className='icon-button' aria-label='关闭画面预览' onClick={() => setExpanded(false)}>
+								<X size={20} />
+							</button>
 						</div>
 					</div>
 					<div className='gallery-lightbox-image' tabIndex={0} aria-label='项目画面，左右方向键切换'>

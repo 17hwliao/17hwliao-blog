@@ -685,9 +685,6 @@
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
 }
-.album-story-entry {
-	margin-top: 0;
-}
 .story-shelves {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));

@@ -20,11 +20,10 @@ export function ProjectRow({ project, index }: { project: Project; index: number
 					<Link href={project.url}>{project.name}</Link>
 				</h2>
 				{project.positioning && <p className='project-positioning'>{showcase?.type === 'contribution' ? '工具执行前的安全防护' : project.positioning}</p>}
-				<p className='project-description'>{showcase?.type === 'contribution' ? showcase.intro : project.description}</p>
-				{showcase?.advantages.length ? <ul className='project-row-advantages' aria-label={`${project.name} 核心优势`}>{showcase.advantages.map(item => <li key={item.title}>{item.title}</li>)}</ul> : null}
+				<p className='project-description'>{showcase?.summary || project.description}</p>
 				<div className='project-row-bottom'>
 					<div className='project-tags'>
-						{project.tags.map(tag => (
+						{(showcase?.type === 'contribution' ? ['Go', '工具安全', '开源贡献'] : project.tags.slice(0, 3)).map(tag => (
 							<span key={tag}>{tag}</span>
 						))}
 					</div>

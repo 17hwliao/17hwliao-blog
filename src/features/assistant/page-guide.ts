@@ -110,21 +110,12 @@ const guides: Record<string, PageGuide> = {
 		]
 	},
 	pictures: {
-		title: '换个心情',
-		greeting: '先把代码放一放，来看看照片吧。',
-		choices: [
-			{ id: 'album', label: '照片可以点开吗？', text: '可以呀，点照片能展开查看，层叠相册里的照片也可以拖动。慢慢翻就好。', motion: 'wave' },
-			{ id: 'stories', label: '想像翻故事书一样看', text: '相册故事集把照片和文字分成章节，还可以逐张翻页。', links: [{ href: '/pictures/stories', label: '打开故事集' }] },
-			{ id: 'company', label: '陪我安静待一会儿', text: '好呀，那就一起看看。偶尔发会儿呆也挺好的。', motion: 'shyPeek' }
-		]
-	},
-	stories: {
 		title: '一页页看日常',
 		greeting: '这边是照片故事集，挑一本感兴趣的翻翻吧。',
 		choices: [
 			{ id: 'pages', label: '故事怎么翻页？', text: '选好故事后，可以点上一张、下一张或缩略图，也可以用键盘左右键翻页。' },
 			{ id: 'sound', label: '想配一点音乐', text: '章节里的音乐按钮可以控制配乐，页头也有音乐入口。等你主动点播放，音乐才会响起。', motion: 'wave' },
-			{ id: 'album', label: '回到普通相册', text: '也可以回层叠相册，换一种方式看看这些日常。', links: [{ href: '/pictures', label: '去相册' }] }
+			{ id: 'company', label: '陪我安静待一会儿', text: '好呀，那就一起看看。偶尔发会儿呆也挺好的。', motion: 'shyPeek' }
 		]
 	},
 	about: {
@@ -279,7 +270,7 @@ export function pageGuide(pathname: string): PageGuide {
 	if (path === '/') return guides.home
 	if (path.startsWith('/blog/')) return guides.article
 	if (path.startsWith('/projects/')) return projectGuides[path.slice('/projects/'.length)] ?? guides.project
-	if (path === '/pictures/stories') return guides.stories
+	if (path === '/pictures/stories') return guides.pictures
 	const section = path.slice(1)
 	return Object.hasOwn(guides, section) ? guides[section] : guides.other
 }

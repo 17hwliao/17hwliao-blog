@@ -4,29 +4,32 @@ import { workingProjectShowcases } from './project-working-evidence'
 export const safetyReports = reportSamples
 
 export type ProjectShot = {
- id: string
- src: string
- title: string
- description: string
- alt: string
- provenance: string
- source: string
- capture: { action: string; result: string; boundary: string }
+	id: string
+	src: string
+	title: string
+	description: string
+	alt: string
+	provenance: string
+	source: string
+	capture: { action: string; result: string; boundary: string }
 }
 export type ProjectAdvantage = {
- title: string
- benefit: string
- mechanism: string
- evidence: string
- shot?: string
+	title: string
+	benefit: string
+	mechanism: string
+	evidence: string
+	shot?: string
 }
 export type ProjectShowcase = {
- type: 'contribution' | 'product'
- headline: string
- intro: string
- advantages: ProjectAdvantage[]
- shots: ProjectShot[]
- journeys?: ProjectJourney[]
+	type: 'contribution' | 'product'
+	headline: string
+	intro: string
+	summary: string
+	work: string
+	technologies: { name: string; purpose: string }[]
+	advantages: ProjectAdvantage[]
+	shots: ProjectShot[]
+	journeys?: ProjectJourney[]
 }
 
 export type ProjectJourney = { id: string; title: string; description: string; shots: string[] }

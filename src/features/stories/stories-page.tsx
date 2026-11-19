@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Music2 } from 'lucide-react'
 import { PageIntro } from '@/components/page-intro'
 import tracks from '@/config/music.json'
@@ -44,9 +43,6 @@ export function StoriesPage() {
 			/>
 			<div className='feature-heading'>
 				<h2>挑一本，慢慢翻。</h2>
-				<Link className='text-link' href='/pictures'>
-					回到层叠相册 ↗
-				</Link>
 			</div>
 			<div className='story-shelves'>
 				{stories.map((item, index) => (

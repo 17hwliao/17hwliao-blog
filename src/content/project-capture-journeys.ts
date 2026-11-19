@@ -3,11 +3,10 @@ import type { ProjectJourney, ProjectShot } from './project-showcases'
 const repositories: Record<string, string> = {
 	'sql-sentinel': 'https://github.com/17hwliao/sql-sentinel/tree/9c5807796663ac1a8d77c3b1d80108db60f88e38',
 	agentmesh: 'https://github.com/17hwliao/AgentMesh/tree/3742edac014fbf32c6daeff027e35218d93a9185',
-	zenix: 'https://github.com/17hwliao/Zenix',
-	'table-card': 'https://github.com/17hwliao/Table-Card'
+	zenix: 'https://github.com/17hwliao/Zenix'
 }
 function frame(project: string, id: string, title: string, action: string, result: string, boundary: string): ProjectShot {
-	const prefix = { 'sql-sentinel': 'sql', agentmesh: 'mesh', zenix: 'zenix', 'table-card': 'table' }[project]
+	const prefix = { 'sql-sentinel': 'sql', agentmesh: 'mesh', zenix: 'zenix' }[project]
 	return {
 		id, title, src: `/images/projects/showcase/${prefix}-journey-${id}.png`, description: result, alt: `${title}：${result}`,
 		source: repositories[project], provenance: project === 'sql-sentinel' ? '真实前端 · CLI 证据回放' : project === 'zenix' ? '完整 App · 隔离实际曲库' : '实际本地运行 · 操作后取图',
@@ -17,7 +16,6 @@ function frame(project: string, id: string, title: string, action: string, resul
 const sqlBoundary = '真实 CLI 产物与归档 EXPLAIN 的只读回放，本次没有重新进行数据库性能测量。取图对长证据使用滚动视窗，未改写数据或判定。'
 const meshBoundary = '实际本地 Go 网关与临时租户，适配器均为显式 mock；不代表在线模型质量或真实账单。'
 const musicBoundary = '完整 App 与实际 LocalLibrary / PersonalStore，独立资料目录、四首已有音频、静音无头浏览器。'
-const tableBoundary = '实际 TUI 输出在无头页面中渲染；临时本机 Go 服务，不表示跨网络多人验收。'
 
 export const projectJourneyAdditions: Record<string, { shots: ProjectShot[]; journeys: ProjectJourney[] }> = {
 	'sql-sentinel': {
@@ -61,20 +59,6 @@ export const projectJourneyAdditions: Record<string, { shots: ProjectShot[]; jou
 			frame('zenix', 'paused', '暂停后保留播放上下文', '关闭队列，在实际播放器点击暂停。', '播放进度与当前曲目仍然保留，控制可继续恢复播放。', musicBoundary),
 			frame('zenix', 'focus', '浏览另一首，保留当前播放', '在多轨环绕中聚焦二十二。', '浏览焦点切到新的曲目，原有播放与暂停上下文仍保留。', musicBoundary),
 			frame('zenix', 'liked', '自己的喜欢列表', '通过实际喜欢操作保存曲目，再打开我的喜欢。', '真实 PersonalStore 中的保存结果由完整应用列表显示。', musicBoundary)
-		]
-	},
-	'table-card': {
-		journeys: [
-			{ id: 'room', title: '选模式与创建房间', description: '连接大厅、配置玩法，再进入真实房间。', shots: ['lobby', 'selected', 'room'] },
-			{ id: 'game', title: '落子与规则', description: '从开局到后续回合，再查看玩法说明。', shots: ['opening', 'gomoku', 'rules'] },
-			{ id: 'offline', title: '离线游戏的运行与暂停', description: '观察实际引擎更新及暂停后的状态。', shots: ['running', 'snake'] }
-		],
-		shots: [
-			frame('table-card', 'selected', '配置五子棋玩法', '从真实服务返回的模式列表选择五子棋，并配置 AI 房间。', '当前模式、席位和操作提示由真实 TUI 模型显示。', tableBoundary),
-			frame('table-card', 'room', '创建房间后的状态', '实际发送房间创建请求，在处理开局事件前取图。', '实际 HTTP 返回的房间资料已进入 TUI，随后由 WebSocket 更新。', tableBoundary),
-			frame('table-card', 'opening', '开局后的第一轮操作', '处理真实开局事件，发送首轮落子并接收服务事件。', '棋盘来自服务端处理后的状态，不是手绘示意。', tableBoundary),
-			frame('table-card', 'rules', '对局中查看规则', '通过实际 F1 输入处理打开规则说明。', '规则面板覆盖当前应用区域，并保留关闭后的对局上下文。', tableBoundary),
-			frame('table-card', 'running', '离线引擎持续推进', '启动实际贪吃蛇并推进输入和时钟。', '真实引擎计算运行中的棋盘与当前分数，随后可暂停。', '静音运行实际离线引擎；不依赖匹配或网络服务。')
 		]
 	}
 }

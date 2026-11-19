@@ -1,6 +1,8 @@
-type Endpoint = 'config' | 'features' | 'search' | 'chat' | 'conversation'
-type Settings = { NODE_ENV?: string; AGENT_SERVICE_URL?: string }
-const methods: Record<Endpoint, string> = { config: 'GET', features: 'GET', search: 'GET', chat: 'POST', conversation: 'DELETE' }
+import { isIP } from 'node:net'
+
+type Endpoint = 'config' | 'features' | 'search' | 'chat' | 'conversation' | 'quota'
+type Settings = { NODE_ENV?: string; AGENT_SERVICE_URL?: string; AGENT_TRUSTED_IP_HEADER?: string }
+const methods: Record<Endpoint, string> = { config: 'GET', features: 'GET', search: 'GET', chat: 'POST', conversation: 'DELETE', quota: 'GET' }
 const noStore = { 'Cache-Control': 'no-store' }
 
 function failure(status: number, code: string, message: string) {
@@ -36,7 +38,7 @@ async function boundedBody(request: Request) {
 }
 
 // The browser only talks to the blog origin. Provider secrets stay in Go;
-// forward only the one opaque agent cookie, never blog/GitHub credentials.
+// Only forward the assistant's own session and device cookies.
 export async function proxyAgent(request: Request, endpoint: string, fetcher: typeof fetch = fetch, settings: Settings = process.env): Promise<Response> {
 	if (!Object.hasOwn(methods, endpoint)) return failure(404, 'not_found', '没有这个助手接口。')
 	if (request.method !== methods[endpoint as Endpoint]) return failure(405, 'method_not_allowed', '请求方式不受支持。')
@@ -70,12 +72,17 @@ export async function proxyAgent(request: Request, endpoint: string, fetcher: ty
 	const target = new URL(`/v1/${endpoint}`, base)
 	if (endpoint === 'search') target.searchParams.set('q', incoming.searchParams.get('q') || '')
 	const headers = new Headers()
-	const cookie = request.headers
+	const cookies = request.headers
 		.get('cookie')
 		?.split(';')
 		.map(value => value.trim())
-		.find(value => /^blog_guide_sid=[a-f0-9]{48}$/.test(value))
-	if (cookie) headers.set('cookie', cookie)
+		.filter(value => /^blog_guide_sid=[a-f0-9]{48}$/.test(value) || /^blog_guide_device=[a-f0-9]{48}\.[a-f0-9]{64}$/.test(value))
+	if (cookies?.length) headers.set('cookie', cookies.join('; '))
+	// Only use an explicitly configured header overwritten by a trusted edge proxy.
+	// Local development ignores all claimed visitor IP headers.
+	const ipHeader = settings.AGENT_TRUSTED_IP_HEADER
+	const visitorIP = settings.NODE_ENV === 'production' && ['cf-connecting-ip', 'x-real-ip'].includes(ipHeader || '') ? request.headers.get(ipHeader!)?.trim() : undefined
+	if (visitorIP && isIP(visitorIP)) headers.set('X-Blog-Client-IP', visitorIP)
 	let body: Uint8Array | undefined
 	if (request.method === 'POST') {
 		if (request.headers.get('content-type')?.split(';')[0] !== 'application/json') return failure(415, 'invalid_content_type', '请以 JSON 提交问题。')
@@ -113,13 +120,14 @@ export async function proxyAgent(request: Request, endpoint: string, fetcher: ty
 		}
 		if (ct) output.set('Content-Type', ct)
 		if (ct.startsWith('text/event-stream')) output.set('X-Accel-Buffering', 'no')
-		const setCookie = upstream.headers.get('set-cookie')
-		const match = setCookie?.match(/^blog_guide_sid=([a-f0-9]{48}|);/)
-		if (match)
-			output.set(
-				'Set-Cookie',
-				`blog_guide_sid=${match[1]}; Path=/api/agent; HttpOnly; SameSite=Strict; Max-Age=${match[1] ? 1800 : 0}${incoming.protocol === 'https:' ? '; Secure' : ''}`
-			)
+		for (const line of upstream.headers.getSetCookie()) {
+			for (const match of line.matchAll(/(?:^|,\s*)(blog_guide_sid|blog_guide_device)=([a-f0-9.]*);/g)) {
+				const [, name, value] = match
+				if (name === 'blog_guide_sid' ? !/^([a-f0-9]{48})?$/.test(value) : !/^[a-f0-9]{48}\.[a-f0-9]{64}$/.test(value)) continue
+				const age = name === 'blog_guide_device' ? 31536000 : value ? 1800 : 0
+				output.append('Set-Cookie', `${name}=${value}; Path=/api/agent; HttpOnly; SameSite=Strict; Max-Age=${age}${incoming.protocol === 'https:' ? '; Secure' : ''}`)
+			}
+		}
 		if (!upstream.body || upstream.status === 204) {
 			cleanup()
 			return new Response(null, { status: upstream.status, headers: output })

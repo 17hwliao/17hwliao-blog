@@ -31,16 +31,17 @@ test('project screenshots are actual available local PNGs with stable unique ide
 			images++
 		}
 	}
-	assert.equal(images, 33)
+	assert.equal(images, 35)
 	assert.equal(captures.length, images)
 })
 
 test('journeys preserve ordered distinct steps and cover every available product capture exactly once', () => {
 	const { projectShowcases } = loadSource()('src/content/project-showcases.ts')
-	for (const showcase of Object.values(projectShowcases)) {
+	for (const [slug, showcase] of Object.entries(projectShowcases)) {
 		if (showcase.type !== 'product') continue
-		assert.equal(showcase.journeys.length, 3)
-		assert.equal(new Set(showcase.journeys.map(journey => journey.id)).size, 3)
+		const expectedJourneyCount = { zenix: 4, 'table-card': 2 }[slug] ?? 3
+		assert.equal(showcase.journeys.length, expectedJourneyCount)
+		assert.equal(new Set(showcase.journeys.map(journey => journey.id)).size, expectedJourneyCount)
 		const covered = showcase.journeys.flatMap(journey => {
 			assert(journey.title && journey.description && journey.shots.length >= 2)
 			for (const id of journey.shots) assert(showcase.shots.some(shot => shot.id === id))

@@ -67,6 +67,7 @@ export function AssistantPage() {
 	const input = useRef<HTMLTextAreaElement>(null)
 	const character = useRef<CharacterHandle>(null)
 	const [native, setNative] = useState(false)
+	const [modelMotions, setModelMotions] = useState<string[]>([])
 	const relayCharacter = useCallback((event: CharacterEvent) => { character.current?.send(event); desktopBridge()?.emit(event) }, [])
 
 	const load = useCallback(async () => {
@@ -221,11 +222,11 @@ export function AssistantPage() {
 				</button>
 			</header>
 			<div className='agent-layout'>
-				{native ? <section className='agent-character'><p className='agent-muted'>桌面人物会跟随这段对话思考、展示回答和恢复待机。</p></section> : <CharacterCompanion ref={character} />}
+				{native ? <section className='agent-character'><p className='agent-muted'>桌面人物会跟随这段对话思考、展示回答和恢复待机。</p></section> : <CharacterCompanion ref={character} onCapabilities={setModelMotions} />}
 				<aside className='agent-catalog' aria-label='博客功能目录'>
 					<h2>随处看看</h2>
 					<p className='agent-muted'>页面入口与使用方式，都在这里。</p>
-					{config?.characterCapabilities?.version === 1 && Array.isArray(config.characterCapabilities.motions) && <details className='agent-action-menu'><summary>让人物动一动</summary><p>点击会发送一条动作请求。</p><div>{config.characterCapabilities.motions.filter(motion => typeof motion.label === 'string' && characterMotions.some(id => id === motion.id)).map(motion => <button type='button' key={motion.id} disabled={busy || resetting} onClick={() => { const request = `请让人物${motion.label}`; setDraft(request); void ask(request) }}>{motion.label}</button>)}</div></details>}
+					{config?.characterCapabilities?.version === 1 && Array.isArray(config.characterCapabilities.motions) && (native || modelMotions.length > 0) && <details className='agent-action-menu'><summary>让人物动一动</summary><p>点击会发送一条当前人物支持的动作请求。</p><div>{config.characterCapabilities.motions.filter(motion => typeof motion.label === 'string' && characterMotions.some(id => id === motion.id) && (native || modelMotions.includes(motion.id))).map(motion => <button type='button' key={motion.id} disabled={busy || resetting} onClick={() => { const request = `请让人物${motion.label}`; setDraft(request); void ask(request) }}>{motion.label}</button>)}</div></details>}
 					<label htmlFor='agent-filter'>筛选功能</label>
 					<input id='agent-filter' type='search' value={filter} onChange={event => setFilter(event.target.value)} placeholder='搜索功能名称…' />
 					{loading && (

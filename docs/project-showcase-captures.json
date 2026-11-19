@@ -181,60 +181,80 @@
       "boundary": "完整 App 与实际 LocalLibrary / PersonalStore，独立资料目录、四首已有音频、静音无头浏览器。"
     },
     {
-      "project": "table-card",
-      "file": "table-working-gomoku.png",
-      "sha256": "c84c500db36025fc8fb17871c12cfb8425b42a763ed4143663925d66988fb9f9",
-      "mode": "actual-go-service-and-tui",
-      "boundary": "本机临时房间与 AI 对手；不表示跨网络多人连通性或生产压力已验收。终端输出在无头页面中渲染取图。"
+      "project": "zenix",
+      "file": "zenix-featured-home.png",
+      "sha256": "f6d5b4a903716f013fb46cb7183b70664008a3be36dff68f0902ebaff78a45a8",
+      "mode": "author-supplied-app-screenshot",
+      "boundary": "作者提供的 Zenix v1.3.0 界面原图。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-featured-stickers.png",
+      "sha256": "7a525d0a74480c69fb550edf05f64cddeae0e523adcf8644eef1a31deaf3c663",
+      "mode": "author-supplied-app-screenshot",
+      "boundary": "作者提供的 Zenix 应用界面原图。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-featured-orbit.png",
+      "sha256": "9e158bf5d735e844c93057a6575410dd0158fb399fadd1f17f0af29219bbf8ec",
+      "mode": "author-supplied-app-screenshot",
+      "boundary": "作者提供的 Zenix 应用界面原图。"
+    },
+    {
+      "project": "zenix",
+      "file": "zenix-featured-lyrics.png",
+      "sha256": "8cb651b22106bef2690ed66af8e6aaae9f6a42d69181e20be82327c73deb5c4d",
+      "mode": "author-supplied-app-screenshot",
+      "boundary": "作者提供的 Zenix 应用界面原图。"
     },
     {
       "project": "table-card",
-      "file": "table-working-lobby.png",
-      "sha256": "54ab70cb5bfce2e5939e2a587563b1ac4044de1fef764caa84040580c9446b00",
-      "mode": "actual-go-service-and-tui",
-      "boundary": "本机临时服务，没有连接公开玩家或使用既有身份资料。"
+      "file": "table-live-mahjong.png",
+      "sha256": "eb906027313c17836f6954600b1034f4174257815fb25665df4eb004bc7bf1b9",
+      "mode": "live-windows-client-and-go-server",
+      "revision": "3f0860ab43d94871e29dcdd418a2f6bc0d706605",
+      "boundary": "四川麻将四人 AI 房间，客户端显示原生牌桌与换牌选中状态。"
     },
     {
       "project": "table-card",
-      "file": "table-working-snake.png",
-      "sha256": "2dcf87384e9958df891280aa12946972a7d6b005b590a20d6806720b80f1ed1c",
-      "mode": "actual-go-service-and-tui",
-      "boundary": "静音取图，不打开终端桌面窗口；不将其当作联网测试。"
+      "file": "table-live-liar-bar.png",
+      "sha256": "3f5672ac97c9945ed6b69d1dc6ac1f7fa61b215f01a7f332beb14077aaebd112",
+      "mode": "live-windows-client-and-go-server",
+      "revision": "3f0860ab43d94871e29dcdd418a2f6bc0d706605",
+      "boundary": "骗子酒馆四人 AI 房间，客户端显示本轮声明牌与待盖手牌。"
     },
     {
       "project": "table-card",
-      "file": "table-journey-selected.png",
-      "sha256": "fe99481995e5bb61e11dfb10edca550c0a7747b0d628d7fb4ab12a8f1d1ec2f9",
-      "mode": "actual-go-service-and-tui",
-      "boundary": "实际 TUI 输出在无头页面中渲染；临时本机 Go 服务，不表示跨网络多人验收。"
+      "file": "table-live-landlord.png",
+      "sha256": "59ce2a66ca27e1c667032b3f326c24df085a01d1a8929df9fd441b2fc7794891",
+      "mode": "live-windows-client-and-go-server",
+      "revision": "3f0860ab43d94871e29dcdd418a2f6bc0d706605",
+      "boundary": "斗地主三人 AI 房间，客户端显示地主、底牌与选中手牌。"
     },
     {
       "project": "table-card",
-      "file": "table-journey-room.png",
-      "sha256": "28cb5c685933966069a2b7e662ec6be82d19b34a9fa7f1482ce65b4b52089782",
-      "mode": "actual-go-service-and-tui",
-      "boundary": "实际 TUI 输出在无头页面中渲染；临时本机 Go 服务，不表示跨网络多人验收。"
+      "file": "table-live-mahjong-guard.png",
+      "sha256": "0d3a6a60ad259d16a5ab379ac4c09ff827f33fea4032249d0b7a341371bc6a26",
+      "mode": "live-windows-client-and-go-server",
+      "revision": "3f0860ab43d94871e29dcdd418a2f6bc0d706605",
+      "boundary": "只选择一张牌就提交换牌，客户端显示三张同花色的要求。"
     },
     {
       "project": "table-card",
-      "file": "table-journey-opening.png",
-      "sha256": "0853595d43fc38c0cce2068e2dba196b5dfef6d55637751203071ed9415138ab",
-      "mode": "actual-go-service-and-tui",
-      "boundary": "实际 TUI 输出在无头页面中渲染；临时本机 Go 服务，不表示跨网络多人验收。"
+      "file": "table-live-liar-verdict.png",
+      "sha256": "82f1d6e7d4b1758747c76477760c46dfd472596e452ebeebb55fac54f4443b82",
+      "mode": "live-windows-client-and-go-server",
+      "revision": "3f0860ab43d94871e29dcdd418a2f6bc0d706605",
+      "boundary": "对局产生质疑，客户端展示服务端判定和翻牌结果。"
     },
     {
       "project": "table-card",
-      "file": "table-journey-rules.png",
-      "sha256": "53a21f04b39001f91e1eaf670f17521ecd7ded180e865d5304d650b59231bf89",
-      "mode": "actual-go-service-and-tui",
-      "boundary": "实际 TUI 输出在无头页面中渲染；临时本机 Go 服务，不表示跨网络多人验收。"
-    },
-    {
-      "project": "table-card",
-      "file": "table-journey-running.png",
-      "sha256": "e60aaae3a0e95205bf86c1d52c4f7354004cd751a6e39ba0a26dbc9e4b6c7df0",
-      "mode": "actual-go-service-and-tui",
-      "boundary": "静音运行实际离线引擎；不依赖匹配或网络服务。"
+      "file": "table-live-landlord-guard.png",
+      "sha256": "1d152fed2ed1266c62a46890b05e0e4213d418f6d82c9e8d6d1f9ebc7c6ed069",
+      "mode": "live-windows-client-and-go-server",
+      "revision": "3f0860ab43d94871e29dcdd418a2f6bc0d706605",
+      "boundary": "提交两张不同点数的牌，服务端返回非法牌型错误。"
     }
   ]
 }

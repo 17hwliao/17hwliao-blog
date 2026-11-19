@@ -2,7 +2,7 @@ import { commitFiles, addHashedImage, fileTreeItem } from '@/lib/github-commit'
 import { readTextFileFromRepo, type TreeItem } from '@/lib/github-client'
 import type { MediaItem } from '@/components/media-upload-dialog'
 import { toast } from 'sonner'
-import { Picture } from '../page'
+import type { Picture } from '../types'
 
 export type PushPicturesParams = {
 	pictures: Picture[]

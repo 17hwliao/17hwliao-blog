@@ -59,16 +59,48 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 				<div className='project-showcase-intro'>
 					<h2>{showcase.headline}</h2>
 					<p>{showcase.intro}</p>
-					<div className='project-strength-summary' aria-label='核心优势速览'>{showcase.advantages.map(item => <a key={item.title} href='#project-advantages'>{item.title}</a>)}</div>
-					{articleSeries && <a href='#project-articles' className='text-link project-article-jump'>阅读实现文章 · {articleSeries.articles.length} 篇 <ArrowUpRight size={15} /></a>}
+					<div className='project-work-scope'>
+						<h3>我的工作与记录</h3>
+						<p>{showcase.work}</p>
+					</div>
+					<div className='project-strength-summary' aria-label='核心优势速览'>
+						{showcase.advantages.map(item => (
+							<a key={item.title} href='#project-advantages'>
+								{item.title}
+							</a>
+						))}
+					</div>
+					{articleSeries && (
+						<a href='#project-articles' className='text-link project-article-jump'>
+							阅读实现文章 · {articleSeries.articles.length} 篇 <ArrowUpRight size={15} />
+						</a>
+					)}
 				</div>
 			)}
+			{showcase?.advantages.length ? <ProjectAdvantages advantages={showcase.advantages} /> : null}
+			{showcase?.technologies.length ? (
+				<section className='project-technologies' aria-labelledby='project-tech-title'>
+					<div className='showcase-section-heading'>
+						<div>
+							<p className='eyebrow'>BUILT WITH</p>
+							<h2 id='project-tech-title'>技术与用途</h2>
+						</div>
+					</div>
+					<dl>
+						{showcase.technologies.map(technology => (
+							<div key={technology.name}>
+								<dt>{technology.name}</dt>
+								<dd>{technology.purpose}</dd>
+							</div>
+						))}
+					</dl>
+				</section>
+			) : null}
 			{showcase?.type === 'contribution' ? (
 				<ProjectContribution />
 			) : showcase?.shots.length ? (
 				<ProjectGallery key={project.slug} name={project.name} shots={showcase.shots} journeys={showcase.journeys} />
 			) : null}
-			{showcase?.advantages.length ? <ProjectAdvantages advantages={showcase.advantages} /> : null}
 			{showcase?.type !== 'contribution' && (
 				<details className='project-flow-details'>
 					<summary>

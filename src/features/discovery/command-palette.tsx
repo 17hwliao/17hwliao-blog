@@ -14,10 +14,9 @@ const pages = [
 	['/assistant', '聊聊小站', '和看板娘选择话题，了解项目与页面入口'],
 	['/knowledge', '知识地图与阅读路线', '从主题开始探索'],
 	['/reading', '阅读工作台', '书签、进度与摘录'],
-	['/pictures/stories', '相册故事集', '按章节看照片'],
+	['/pictures', '相册故事集', '按章节看照片'],
 	['/blog', '全部文章', '文章归档'],
 	['/projects', '全部项目', '项目与 README'],
-	['/pictures', '层叠相册', '散落的生活切片'],
 	['/share', '分享', '值得分享的东西'],
 	['/about', '关于', '认识 17hwliao']
 ].map(([href, label, detail]) => ({ id: href, href, label, detail }))
