@@ -1,0 +1,156 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go：变量声明与输入输出 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go：变量声明与输入输出</h1><time datetime="2026-05-09T13:46:15.000Z">2026年5月9日</time><h2 id="变量定义">变量定义</h2>
+<p>标准的变量定义</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  // 先定义，再赋值
+  var name string
+  name = &quot;枫枫&quot;
+  fmt.Println(name)
+  
+  // var 变量名 类型 = &quot;变量值&quot;
+  var userName string = &quot;枫枫&quot;
+  fmt.Println(userName)
+}
+</code></pre>
+<p>如果一个变量定义了，但是没有赋值，那么这个变量的值就是这个类型的 <code>&quot;零值&quot;</code></p>
+<h3 id="变量类型省略">变量类型省略</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">var name = &quot;枫枫&quot;
+</code></pre>
+<h3 id="简短声明">简短声明</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">name := &quot;枫枫&quot;
+</code></pre>
+<h3 id="全局变量与局部变量">全局变量与局部变量</h3>
+<p>简单点理解 就是</p>
+<p>public --&gt; 属性实质化为 变量名首字母大写</p>
+<p>private --&gt; 就是创建的变量</p>
+<ol>
+<li>定义在函数体（包括main函数）内的变量都是局部变量，定义了就必须使用</li>
+<li>定义在外部的变量就是全局变量，可以只定义不使用</li>
+</ol>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+var userName = &quot;枫枫知道&quot; // 可以不使用
+
+func main() {
+  // var 变量名 类型 = &quot;变量值&quot;
+  var name = &quot;枫枫&quot;
+  // 在函数体内定义的变量，必须要使用
+  fmt.Println(name)
+}
+</code></pre>
+<h3 id="定义多个变量">定义多个变量</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+func main() {
+  var name1, name2, name3 string // 定义多个变量
+
+  var a1, a2 = &quot;枫枫&quot;, &quot;知道&quot; // 定义多个变量并赋值
+  
+  a3, a4 := &quot;枫枫&quot;, &quot;知道&quot;     // 简短定义多个变量并赋值
+}
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+var (
+  name  string = &quot;枫枫&quot;
+  userName   = &quot;枫枫知道&quot;
+)
+
+func main() {
+  fmt.Println(name, userName)
+}
+</code></pre>
+<h3 id="常量定义">常量定义</h3>
+<ol>
+<li>定义的时候就要赋值</li>
+<li>赋值之后就不能再修改了</li>
+</ol>
+<p>Go复制代码</p>
+<pre><code class="language-text">const name string = &quot;枫枫&quot; // 定义就要赋值
+//name = &quot;知道&quot; // 不能再修改了
+fmt.Println(name)
+</code></pre>
+<h3 id="命名规范">命名规范</h3>
+<p>核心思想：首字母大写的变量、函数。方法，属性可在包外进行访问</p>
+<h2 id="输出">输出</h2>
+<p>常用的输出函数</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;枫枫知道&quot;)
+  fmt.Println(1)
+  fmt.Println(true)
+  fmt.Println(&quot;什么&quot;, &quot;都&quot;, &quot;可以&quot;, &quot;输出&quot;)
+}
+</code></pre>
+<h3 id="格式化输出">格式化输出</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Printf(&quot;%v\n&quot;, &quot;你好&quot;)          // 可以作为任何值的占位符输出
+  fmt.Printf(&quot;%v %T\n&quot;, &quot;枫枫&quot;, &quot;枫枫&quot;) // 打印类型
+  fmt.Printf(&quot;%d\n&quot;, 3)             // 整数
+  fmt.Printf(&quot;%.2f\n&quot;, 1.25)        // 小数
+  fmt.Printf(&quot;%s\n&quot;, &quot;哈哈哈&quot;)         // 字符串
+  fmt.Printf(&quot;%#v\n&quot;, &quot;&quot;)           // 用go的语法格式输出，很适合用来判断是空串还是没打印
+  fmt.Printf(&quot;%T  %T\n&quot;, &quot;sjis&quot;, 2.223)  //使用 T 获取类型 
+  //打印 v类型 --&gt;  无论什么类型都可以直接打印 
+
+}
+</code></pre>
+<p>还有一个用的比较多的就是将格式化之后的内容赋值给一个变量</p>
+<p>Go复制代码</p>
+<p>这个就和 C语言中的那种格式化输出一摸一样了 .</p>
+<ul>
+<li><code>fmt.Sprintf</code> 是<strong>格式化后返回字符串</strong>，不直接打印；</li>
+<li><code>%v</code> 是 Go 万能占位符，<strong>任意类型都能适配</strong>，比 C 更省心。</li>
+</ul>
+<pre><code class="language-text">name := fmt.Sprintf(&quot;%v&quot;, &quot;你好&quot;)
+fmt.Println(name)
+</code></pre>
+<h2 id="输入">输入</h2>
+<p>bufio.NewReader 实现读取数据 :</p>
+<p>reader := bufio.NewReader(os.Stdin)</p>
+<p>input , err := reader.ReadString(&#39;\n&#39;) //不断读取知道读到&#39;\n&#39; 为止 ;</p>
+<p>使用 FScan(reader , &amp;变量名) : 实现遇到空格实现停止;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;输入您的名字：&quot;)
+  var name string
+  fmt.Scan(&amp;name)  // 这里记住，要在变量的前面加个&amp;, 后面讲指针会提到
+  fmt.Println(&quot;你输入的名字是&quot;, name)
+}
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<ol>
+<li>变量定义 <a href="https://segmentfault.com/a/1190000042910744?sort=votes">https://segmentfault.com/a/1190000042910744</a></li>
+<li>输入函数 <a href="https://www.php.cn/faq/507954.html">https://www.php.cn/faq/507954.html</a></li>
+<li>格式化 <a href="https://www.php.cn/faq/527489.html">https://www.php.cn/faq/527489.html</a></li>
+</ol>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

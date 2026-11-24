@@ -1,0 +1,114 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 函数式接口与 Optional：组合函数和空值处理 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 函数式接口与 Optional：组合函数和空值处理</h1><time datetime="2026-01-06T08:03:46.000Z">2026年1月6日</time><ul>
+<li>函数式接口</li>
+</ul>
+<p>导包 : import java.util.function.Supplier ;</p>
+<p>Supplier接口 : 内部方法实现返回需要的类型 ;</p>
+<pre><code class="language-text">public void setName(Supplier&lt;String&gt;name){
+    this.name = name.get() ;
+}
+Main : 
+使用lambda表达式 : 
+{			public String get(){} ; }
+        ws0.setName(()-&gt;{
+            return &quot;ws&quot; ;
+        }) ;
+</code></pre>
+<p>Consumer接口 :</p>
+<pre><code class="language-text">public void usename(Consumer&lt;String&gt; consumer){
+        consumer.accept(name) ;
+ }
+ consumer.accept(参数) ; 实现传出参数
+ 实现使用接口型函数+ 方法引用
+ws0.setName(()-&gt;{
+        return &quot;ws&quot; ;
+    }) ;
+    ws0.usename(System.out::println);
+}
+consumer = consumer.andThen(name -&gt; {
+            System.out.println(&quot;ws是gay啊&quot;);
+        }) ; 
+   andThen     实现串联多个接口consumer函数
+</code></pre>
+<p>温习下方法引用:</p>
+<h2 id="具体判断条件表格"><strong>具体判断条件表格</strong></h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>Lambda形式</span></p></td><td><p><span>可替换为</span></p></td><td><p><span>条件</span></p></td></tr><tr><td><p><code><span>x -&gt; x.method()</span></code></p></td><td><p><code><span>ClassName::instanceMethod</span></code></p></td><td><p><span>实例方法，无额外参数</span></p></td></tr><tr><td><p><code><span>x -&gt; obj.method(x)</span></code></p></td><td><p><code><span>obj::instanceMethod</span></code></p></td><td><p><span>调用特定对象的方法</span></p></td></tr><tr><td><p><code><span>(x, y) -&gt; x.method(y)</span></code></p></td><td><p><code><span>ClassName::instanceMethod</span></code></p></td><td><p><span>第一个参数是目标对象</span></p></td></tr><tr><td><p><code><span>(x, y) -&gt; Class.method(x, y)</span></code></p></td><td><p><code><span>Class::staticMethod</span></code></p></td><td><p><span>静态方法</span></p></td></tr><tr><td><p><code><span>() -&gt; new Class()</span></code></p></td><td><p><code><span>Class::new</span></code></p></td><td><p><span>无参构造器</span></p></td></tr><tr><td><p><code><span>x -&gt; new Class(x)</span></code></p></td><td><p><code><span>Class::new</span></code></p></td><td><p><span>带参构造器</span></p></td></tr></tbody></table></div>
+
+<p>区分这两种函数接口 :</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方面</span></p></td><td><p><strong><span>Supplier</span></strong></p></td><td><p><strong><span>Consumer</span></strong></p></td></tr><tr><td><p><strong><span>目的</span></strong></p></td><td><p><span>提供/创建数据</span></p></td><td><p><span>消费/处理数据</span></p></td></tr><tr><td><p><strong><span>方向</span></strong></p></td><td><p><span>数据源头</span></p></td><td><p><span>数据终点</span></p></td></tr><tr><td><p><strong><span>返回值</span></strong></p></td><td><p><span>总是有返回值</span></p></td><td><p><span>总是 void</span></p></td></tr><tr><td><p><strong><span>参数</span></strong></p></td><td><p><span>无参数</span></p></td><td><p><span>至少一个参数</span></p></td></tr><tr><td><p><strong><span>是否纯函数</span></strong></p></td><td><p><span>可以是纯函数（无副作用）</span></p></td><td><p><span>通常有副作用</span></p></td></tr><tr><td><p><strong><span>典型应用</span></strong></p></td><td><p><span>工厂方法、配置加载、懒加载</span></p></td><td><p><span>遍历处理、回调、资源清理</span></p></td></tr><tr><td><p><strong><span>流式操作</span></strong></p></td><td><p><span>用于生成流（</span><code><span>Stream.generate()</span></code></p><p><span>）</span></p></td><td><p><span>用于终端操作（</span><code><span>forEach()</span></code></p><p><span>）</span></p></td></tr><tr><td><p><strong><span>线程安全</span></strong></p></td><td><p><span>通常线程安全（只读）</span></p></td><td><p><span>需要注意（可能修改共享状态）</span></p></td></tr></tbody></table></div>
+
+<ul>
+<li>Function函数类型接口 :</li>
+</ul>
+<p>消费 + 提供 :</p>
+<pre><code class="language-text">public void namelength(Function&lt;String , Integer&gt; function){
+    Integer apply = function.apply(name);
+    System.out.println(&quot;name的长度&quot;+apply);
+ }
+ ws0.namelength(String::length);
+</code></pre>
+<p>实现转化类型</p>
+<pre><code class="language-text">Function&lt;String , byte[]&gt; f = str -&gt; str.getBytes();
+Function&lt;String , Integer&gt; f2 = f.andThen(bytes -&gt; bytes.length) ;
+Function&lt;String , String&gt; f3 = f2.andThen(Integer::toHexString) ;
+</code></pre>
+<p>还有before 反着传值操作</p>
+<p>Function还支持一个函数 Function.identity().apply ( &quot; SSS &quot; ) ;</p>
+<p>功能 : 给啥返回啥</p>
+<p>compose可以实现before操作</p>
+<ul>
+<li>Predicate断言型函数接口:</li>
+</ul>
+<pre><code class="language-text">public void nameInvalid(Predicate&lt;String&gt; predicate){
+    boolean test = predicate.test(name) ;
+    System.out.println(test ? &quot;是gay&quot; : &quot;骗你的还是gay&quot;);
+}
+</code></pre>
+<p>主程序中调用 :</p>
+<p>ws0.nameInvalid(name -&gt; name.length()&gt;=3);</p>
+<p>可以用and实现连接 :</p>
+<pre><code class="language-text">Predicate&lt;String&gt; predicate = name -&gt; name.length()&gt;=3;
+predicate = predicate.and(name -&gt; name.length() &lt; 10);
+</code></pre>
+<p>negate是取反 ; 对test函数取反</p>
+<p>内部equal 可以实现判断是否相等 ;</p>
+<ul>
+<li>Biconsumer : 实现提供俩参数</li>
+</ul>
+<pre><code class="language-text">public void nameid(BiConsumer&lt;String, Integer&gt; biConsumer){
+    biConsumer.accept(name,id);
+}
+</code></pre>
+<ul>
+<li>optional判空包装 ：</li>
+</ul>
+<p>之前 if 判空</p>
+<p>Optional类 :</p>
+<p>ofNullable允许空传入</p>
+<p>ifPresent 不为空会执行后面的操作 , 否则return ;</p>
+<p>Optional.ofNullable(name).ifPresent(s -&gt; System.out.println(s.length()));</p>
+<p>使用方法包装后(传入参数String test ) : String s = Optional.ofNullable(name).get() ; get可以获取对象的引用 , 若包装对象为空 , 会抛出异常</p>
+<p>可以在get处写orElse(&quot;实现为空时的操作&quot;) \ orElseGet( ( ) -&gt; &quot;&quot; )</p>
+<p>可以使用map实现映射操作 : 可以实现转化类型</p>
+<p>get处写map(s -&gt; s.length()),orElse( int类型结果 ) ;</p>
+<p>sout( i ) ;</p>
+<ul>
+<li>Optional在Java9 / 10 /11 版本加强</li>
+</ul>
+<p>之前 : Optional.ofNullable( str ).ifPresent( s -&gt; { 操作 } ) ;</p>
+<p>修改后:Optional.ofNullable(str).ifPresentorElse( s-&gt;{ 操作 }　，　（Ｒｕｎｎａｂｌｅ）－＞｛｝ ) ;</p>
+<p>内部有Runnable函数式接口：返回为空；</p>
+<p>(str).or( () -&gt; Optional.of [必须要使用optioal.of包起来] ( &quot;为空时的输出&quot; ) ).ifZPresent( 输出 ) ;</p>
+<p>orElseThrow() ; 判断是否为空来抛异常</p>
+<pre><code class="language-text">private static void test1(String str) {
+    String result = Optional.ofNullable(str)
+        .filter(s -&gt; s.length() &gt; 2)     //断言 , 判断是否保留
+        .orElse(&quot;(无效输入)&quot;);  // ✅ 为空时返回安全值
+    
+    System.out.println(result);
+}
+</code></pre>
+<p>Optional.ofNullable(str).flagMap(s -&gt; Optional.ofNullable(null)).isEmpty() ;</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

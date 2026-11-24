@@ -1,0 +1,46 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin：请求体读取与复用 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin：请求体读取与复用</h1><time datetime="2026-05-29T06:51:30.000Z">2026年5月29日</time><p>不同的请求体对应的原始内容</p>
+<p>使用 io.ReadAll( c.Request.Body ) 可以创建一个一次性的文件操作流 ;</p>
+<p>可以上传任意形式的文件类型 , 但是只能读取一次 ;</p>
+<h3 id="body阅后即焚问题解决">body阅后即焚问题解决</h3>
+<p>请求体获取之后就会销毁, 需要拿到阅读后的内容蓄一个新的</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">byteData, _ := io.ReadAll(c.Request.Body)
+fmt.Println(string(byteData))
+// 读了之后，body就没了，阅后即焚
+c.Request.Body = io.NopCloser(bytes.NewReader(byteData))
+</code></pre>
+<h3 id="form-data">form-data</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">----------------------------853882779395683818968400
+Content-Disposition: form-data; name=&quot;name&quot;
+
+枫枫
+----------------------------853882779395683818968400
+Content-Disposition: form-data; name=&quot;age&quot;
+
+1234
+----------------------------853882779395683818968400--
+</code></pre>
+<p>对应的分隔符就是</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">Content-Type:[multipart/form-data; boundary=--------------------------052455317193517003536866]
+</code></pre>
+<h3 id="x-www-form-urlencoded">x-www-form-urlencoded</h3>
+<p>url编码</p>
+<p>中文状态下可以实现输出</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">name=%E6%9E%AB%E6%9E%AB&amp;age=1234
+</code></pre>
+<h3 id="json-重中之重">json 重中之重</h3>
+<h2 id="urlparsequery-完全详解"><code>url.ParseQuery</code> 完全详解</h2>
+<p><code>url.ParseQuery</code> 是 Go 标准库 <code>net/url</code> 包中的一个函数，用于<strong>解析查询字符串</strong>（query string），将其转换为可操作的键值对结构。</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">{
+    &quot;name&quot;: &quot;枫枫&quot;,
+    &quot;age&quot;: 23
+ }
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

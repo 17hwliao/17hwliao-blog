@@ -1,0 +1,228 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Spring Boot 项目：分层与接口 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Spring Boot 项目：分层与接口</h1><time datetime="2026-04-19T01:21:32.000Z">2026年4月19日</time><h3 id="一-创建一个idea的空项目">一 : 创建一个idea的空项目 ;</h3>
+<p>配置JDK; //project structure ;</p>
+<p>检查项目创建时候的Maven的路径 :</p>
+<p>setting --&gt; build -&gt; tools -&gt; Maven : Override 使用系统配置好的路径实现覆盖 ;</p>
+<p>修改字符集 : Editor : File Encording : 全部修改为UTF- 8 ;</p>
+<h3 id="二-创建模块部分">二 : 创建模块部分 :</h3>
+<p>实现配置 : 创建springboot 模块 : Package name : 去除当前的模块名即可 , 匹配JDK;</p>
+<p>-&gt; 安装依赖 :</p>
+<p>工具类 : Lombok : 自动生成代码+@DATA 实现类中元素的get , set 内部实现方法 ;</p>
+<p>Springboot Web : 让你的 Spring Boot 项目拥有 Web 开发能力，能够接收 HTTP 请 求、返回数据、启动内嵌的 Web 服务器。</p>
+<p>操作数据库 : 使用的数据库需要安装的驱动 + Mybatis 的framework 依赖(启动类, 自动配置)</p>
+<p>只保留项目中的 <strong>iml文件 和 xml文件</strong></p>
+<p><strong>直接将内部的properties 在resource 下创建application.yml 底层配置文件;</strong></p>
+<p><strong>创建的格式 :</strong></p>
+<pre><code class="language-text">spring:
+  application:
+    name: lec_diaosi_management
+
+# 数据库的连接信息
+  datasource:
+    url: jdbc:mysql://localhost:3306/自己的表名
+    username: root
+    password: zjq17hwliao
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+# 配置MyBatis的相关配置
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+# 实现的Mapper同包同名 ; 不需要配置
+</code></pre>
+<p><strong>准备要使用的数据表 :</strong></p>
+<p>在java的com.项目名包下创建三层架构 :</p>
+<p>controller , pojo , service , mapper ;</p>
+<p>pojo : 内部创建实体类 :</p>
+<pre><code class="language-text">@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class User {
+    private int id ;
+    private String name ;
+    private String password ;
+    private String track ;
+    private String major ;
+    private LocalDateTime create_time ;
+    private LocalDate update_time ;
+}
+</code></pre>
+<p>本项目中的全部增删改查操作 都需要输出对应的Result 内部实现方法,成功输出对象, 失败输出报错信息 ;</p>
+<pre><code class="language-text">public class Result {
+
+    private Integer id ;    //输出运行编码
+    private String fault;   //报错
+    private Object data ;
+
+    public static Result success(){
+        Result result = new Result() ;
+        result.id = 0 ;
+        result.fault = &quot;success&quot; ;
+        result.data = null ;
+        return result ;
+    }
+
+    public static Result success(Object object){
+        Result result = new Result() ;
+        result.id = 1 ;
+        result.data = object ;
+        result.fault = &quot;success&quot; ;
+        return result ;
+    }
+
+    public static Result error(String fault){
+        Result result = new Result() ;
+        result.id = 1 ;
+        result.fault = fault ;
+        result.data = null ;
+        return result ;
+    }
+}
+</code></pre>
+<h3 id="三-开始maven-三层架构的编写-高内聚低耦合原则-面向接口式编程">三 : 开始Maven 三层架构的编写 高内聚低耦合原则, 面向接口式编程</h3>
+<p>mapper层 下创建 接口 @Mapper</p>
+<p>Service 层下 创建接口 UserService , 创建一个子包内部创建多个对象得到接口后实现业务处理 放入容器中;</p>
+<p>内部创建的 impl 包 , 创建包内的类 ;</p>
+<p>Controller 层下 创建的是Java类 :</p>
+<p>@RestController :</p>
+<pre><code class="language-text">内部实现传递给容器(@Controller) 
+直接传递值给前端(@ResponseBody)
+</code></pre>
+<h3 id="四-开始面向接口编程">四 : 开始面向接口编程 :</h3>
+<p>按照请求的开始到结束 : controller -&gt; service -&gt; mapper -&gt; 数据库;</p>
+<ul>
+<li>Controller</li>
+</ul>
+<p>编写处理前端请求的Controller 内部的方法 :</p>
+<p>@Autowird</p>
+<p>内部创建一个获取Service层应该传回的一个对象 ;</p>
+<p>先写 注释 @RequestMapping(&#39;从接口文档中找&#39;) ;</p>
+<p>编写文档中需要返回的参数 ,,使用静态方法实现返回参数组 ;</p>
+<ul>
+<li>Service</li>
+</ul>
+<p>面向接口 : 总的接口中编写的是返回controller中需要的数据类型的方法 ; \</p>
+<p>内部实现类 : 先获取一个从下一层返回的Mapper对象,</p>
+<p>然后在内部实现 接口文件中提供的具体需要实现的方法 :</p>
+<ul>
+<li>Mapper 从数据库中获取信息</li>
+</ul>
+<p>使用@Select(&quot;SQL&quot;)实现编写查询语句</p>
+<p>下面写写一个接口方法即可 ;</p>
+<h3 id="五-需要限定访问的方式">五 : 需要限定访问的方式</h3>
+<p>RequestMapping( value =&#39; &#39; , method = RequesMethod.GET )</p>
+<p>请求方式 + Mapping(&#39;/&#39;) 可以直接实现上述的效果</p>
+<h3 id="六-创建带前端返回参数的接口">六 : 创建带前端返回参数的接口 ;</h3>
+<p>Controller : 内部处理方法 选用的返回参数都是 Result 类型的参数 ;</p>
+<p>避免手动实现类型转化, 还调用Param方法获取返回参数,使用注释直接自动绑定 选取的参数 ; @RequestParam</p>
+<p>下面的方式针对简单的参数可以直接使用 ;</p>
+<p>确实可以自动将 HTTP 请求中的参数转换为你指定的形参类型。</p>
+<p>注意 : 使用这个参数时 , 内部的参数配置 (value= &quot;&quot; ,required= (default = true)) 可以直接修改为 false ; 否则当前端返回 的申请 为 null 时 会直接报错, 修改为 false 时 , 可以正常实现功能, 可以避免返回空的值出现的报错;</p>
+<pre><code class="language-text">@DeleteMapping(&quot;/user&quot;)  //内部接口文档使用的是 这个接口 , 调用的方法使用的是delete实现的
+public Result delete(@RequestParam(&quot;id&quot;) Integer id){
+注意:当
+    System.out.println(&quot;实现删除id为&quot;+id+&quot;的用户&quot;);
+    return Result.success() ;
+}
+
+public Result delete(@RequestParam(&quot;id&quot;) Integer id,
+    @RequestParam(&quot;force&quot;) Boolean force)) 可以直接使用来获取多个参数,内部也可以直接转化为参数对应的形式
+</code></pre>
+<h3 id="七-实现一个功能接口的完整路径">七 : 实现一个功能接口的完整路径 :</h3>
+<p>创建一个Controller 中的请求方法 : 内部实现 使用静态方法实现返回 后 ,内部使用 Service层的deleteById 方法 ; 先去创建一个 Service 下的接口函数 , 实现 具体的方法 直接调用对象内部实现的deleteById的方法;</p>
+<p>去 Mapper 层下实现这个deleteById 的方法 , 直接注释使用 SQL 语句 下面跟上一个声明就行 ;</p>
+<pre><code class="language-text">放心用#{} , 传入需要使用的参数就行
+@Delete(&quot;delete from member where id = #{id}&quot;)
+Integer deleteById(Integer id);
+@Select(&quot;select * from member where id = #{id}&quot;)  
+User selectById(Integer id);
+</code></pre>
+<h3 id="八-可以自己实现一个自己想要的接口了-多个接口下合作使用-mapper中放置的都是实现单独的业务逻辑的sql实现项-想要实现复杂的业务逻辑-主要实现的思路要在service层中去-实现-在需要实现复杂功能的方法中调用多个简单的实现方法-实现返回参数改变-最后在controller-中实现调用返回-对应的参数-类型-就可以直接实现复杂的功能">八 : 可以自己实现一个自己想要的接口了 , 多个接口下合作使用 , Mapper中放置的都是实现单独的业务逻辑的SQL实现项 , 想要实现复杂的业务逻辑 , 主要实现的思路要在Service层中去 实现, 在需要实现复杂功能的方法中调用多个简单的实现方法 , 实现返回参数改变 , 最后在Controller 中实现调用返回 对应的参数 类型 就可以直接实现复杂的功能 ;</h3>
+<h3 id="九-从请求体中获取到-json格式的数据-jing">九 : 从请求体中获取到 JSON格式的数据 : jing</h3>
+<p>尽可能不要使用 基本的数据类型 : 当前端传回的JSON 数据中缺少当前普通类型的字段时 , 会爆出4000 的错 误 , 使用 Integer 可以直接承受 null 空值 ;</p>
+<h3 id="十-使用-insert的时候需要属性名-mysql中-使用属性名-内部-含有3939-的字段名-在成为属性名后会-自动使用驼-峰-命名法升级为大写字符-需要注意在实现传参数的时候自己实现-驼峰命名">十 : 使用 insert的时候需要属性名 ; mysql中 使用属性名 内部 含有&#39;_&#39; 的字段名 , 在成为属性名后会 自动使用驼 峰 命名法升级为大写字符 ; 需要注意在实现传参数的时候自己实现 驼峰命名 :</h3>
+<pre><code class="language-text">@Insert(&quot;insert into member( name, password , track , major , create_time , update_time) values(#{user.name}, #{password}, #{track}, #{major}, #{createTime}, #{updateTime})&quot;)
+void insert(User user);
+</code></pre>
+<p>十一 : 通过使用 PathVariable 可以直接获取到访问的后面的 id 值 ;</p>
+<pre><code class="language-text">@GetMapping(&quot;/user/{id}&quot;)
+public Result getInfo(@PathVariable(&quot;id&quot;)Integer id){
+    System.out.println(&quot;现在查询的id是&quot;+id );
+    return Result.success() ;
+}
+</code></pre>
+<p>注意可以减少 : 当路径中的参数名和@PathVariable中传入的形参名一致时 , 可以直接省略写成　: @PathVariable Integer id 实现功能 ;</p>
+<p>若是出现 405报错 ,可能是因为接口多 无法实现选择导致报错,</p>
+<p>也可能是因为 使用了不属于 方法的请求方式 请求 接口导致的 ;</p>
+<p>总结 :</p>
+<p>一 : @RequestParam 获取到的参数 /user?name=&#39;shds&#39; ;</p>
+<p>public Result getuser(@RequestParam String name, @RequestParam Integer age)</p>
+<p>请求方式 : GET /user?name=张三&amp;age=25</p>
+<p>二 : @PathVariable 获取到的参数 /id ; 路径中的参数</p>
+<p>public Result getUser(@PathVariable Integer id, @PathVariable String type)</p>
+<p>请求方式 : GET /user/100/vip</p>
+<p>三 : @RequestBody 使用post请求中请求体中携带的JSON 数据 ;</p>
+<p>请求方式 : POST /user</p>
+<p>Content-Type: application/json</p>
+<p>{ &quot;name&quot;: &quot;张三&quot;,</p>
+<p>&quot;age&quot;: 25,</p>
+<p>&quot;email&quot;: &quot;zhangsan@test.com&quot;}</p>
+<p>彼此之间可以实现混着使用 :</p>
+<p>public Result queryUser(@RequestParam String type, @RequestBody User user)</p>
+<p>无论增删改查 全部的方法 : 都是采用的公共的 &#39;/user&#39; 只有请求的方式不同来区分;</p>
+<p>优化代码 :</p>
+<p>针对一个类实现增删改查 :</p>
+<p>都是基于一个 请求的路径 可以直接优化到类的 头上去申明 ;</p>
+<pre><code class="language-text">@RequestMapping(&quot;/user&quot;)
+@RestController
+</code></pre>
+<p>下面实现方法请求头</p>
+<p>@RequestMapping 后面无需加上路径括号;</p>
+<h3 id="日志使用环节">日志使用环节</h3>
+<p>先配置 log,xml 的完整文件 :</p>
+<pre><code class="language-text">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+    &lt;!-- 控制台输出 --&gt;
+    &lt;appender name=&quot;STDOUT&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;
+        &lt;encoder class=&quot;ch.qos.logback.classic.encoder.PatternLayoutEncoder&quot;&gt;
+            &lt;!-- 格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度，%logger{50}：最长50个字符(超出则切割) --&gt;
+            &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;appender name = &quot;FILE&quot; class=&quot;ch.qos.logback.core.FileAppender&quot;&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.SizeBasedRollingPolicy&quot;&gt;
+        &lt;fileNamePattern&gt;C:/log/lec_diaosi_management-%d{yyyy-MM-dd}.%i.log&lt;/fileNamePattern&gt;
+        &lt;MaxHistory&gt;30&lt;/MaxHistory&gt;
+        &lt;maxFileSize&gt;10MB&lt;/maxFileSize&gt;
+        &lt;/rollingPolicy&gt;
+        &lt;encoder class=&quot;ch.qos.logback.classic.encoder.PatternLayoutEncoder&quot;&gt;
+            &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;!-- 日志输出级别 --&gt;
+    &lt;root level=&quot;ALL&quot;&gt;
+        &lt;appender-ref ref=&quot;STDOUT&quot; /&gt;
+        &lt;appender-ref ref=&quot;FILE&quot; /&gt;
+    &lt;/root&gt;
+&lt;/configuration&gt;
+</code></pre>
+<p>使用方法 :</p>
+<p>可以先直接定义一个常量 :</p>
+<p>//private static final Logger log = LoggerFactory.getLogger(UserController.class);</p>
+<p>当使用 lombok (自动化补充语句后) 可以直接使用 @Slf4j 注释省略编写常量的环节 ;</p>
+<p>后面的增删改查 中的Controller : 之前使用 sout 实现日志记录的内容 现在可以直接使用log,----替换</p>
+<p>写法技巧 , 无论需要占位的数据类型 : 直接使用 {} 就可以直接实现替换 -&gt; , 补充需要填充使用的参数项即可 ;</p>
+<p><strong>后期项目升级后的方案 :</strong></p>
+<p>创建Mapper层接口 , pojo 实体类 的时候 :</p>
+<p>实现完整的项目表结构</p>
+<p>但在创建项目的Service , Controller 层的时候, 内部实现关联的表可以直接不写</p>
+<p>例如 部门的归属类的关系类 ;</p>
+<h5 id="在之后查看日志的时候从下向上直接看">在之后查看日志的时候从下向上直接看 ;</h5>
+<p>主要看关键词 near , 后面因该有报错的详细信息 ;</p>
+<h5 id="在-使用-mapper-层-传入的数据类型中有时间类型的时候">在 使用 Mapper 层 传入的数据类型中有时间类型的时候 :</h5>
+<p>需要使用 @DateTimeFormat (pattern = &quot;yyyy-MM-dd&quot;) 实现传参的格式定义 ;</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

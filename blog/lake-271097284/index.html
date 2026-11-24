@@ -1,0 +1,42 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin：HTML 模板与数据渲染 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin：HTML 模板与数据渲染</h1><time datetime="2026-05-24T03:21:05.000Z">2026年5月24日</time><p><code>LoadHTMLGlob</code>加载一个目录下的所有html文件</p>
+<p>使用 name 字段 实现多个html 实现 ;</p>
+<p><code>LoadHTMLFiles</code>加载单个html文件</p>
+<p>load之后，下面才能用这个文件名</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;github.com/gin-gonic/gin&quot;
+
+func main() {
+  r := gin.Default()
+  // 加载模板 只有这里加载了模板，下面才能用
+  r.LoadHTMLGlob(&quot;templates/*&quot;)
+  //r.LoadHTMLFiles(&quot;templates/index.html&quot;)
+  r.GET(&quot;&quot;, func(c *gin.Context) {
+    c.HTML(200, &quot;index.html&quot;, nil)
+  })
+  r.Run(&quot;:8080&quot;)
+}
+</code></pre>
+<p>HTML的第三个参数是可以向HTML中传递数据</p>
+<p>但是现在都是前后端分离的时代了，也很少使用后端返回模板了，知道怎么用就好</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">c.HTML(200, &quot;index.html&quot;, map[string]any{
+    &quot;title&quot;: &quot;这是网页标题&quot;,
+  })
+</code></pre>
+<p>html文件中使用</p>
+<p>HTML复制代码</p>
+<pre><code class="language-text">&lt;title&gt;{{.title}}&lt;/title&gt;
+</code></pre>
+<p>其实借助这个功能，可以很方便的修改网站的标题和logo</p>
+<p>简单的扩展一下</p>
+<p>关于部署：</p>
+<ol>
+<li>前端单独部署，后端单独部署</li>
+<li>前端打包之后，后端统一部署</li>
+</ol>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,37 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin 入门：引擎与响应状态码 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin 入门：引擎与响应状态码</h1><time datetime="2026-05-24T03:18:47.000Z">2026年5月24日</time><p>安装下载适用 Gin 框架 :</p>
+<pre><code class="language-text">go get -u github.com/gin-gonic/gin
+</code></pre>
+<p>type H map[string]interface{} 内部提前封装</p>
+<ul>
+<li>内层 JSON 里的 code：业务自定义码</li>
+</ul>
+<p>作用：描述业务逻辑执行结果。</p>
+<p>HTTP 状态码太少，无法区分复杂业务场景，所以前后端约定一套自定义编码，前端根据这个码 做 页面交互、逻辑跳转。</p>
+<p>约定示例（通用规则）</p>
+<p>200 = 业务成功</p>
+<p>1001 = 账号不存在</p>
+<p>1002 = 密码错误</p>
+<p>1003 = 权限不足</p>
+<ul>
+<li>实现对 any 这种泛型的 传空, 由于前端要写为 gin.H{} 或者是 map[string]{}</li>
+</ul>
+<p>使用 GIn 切换到Release 发布状态 :</p>
+<p>gin.SetMode(&quot;release&quot;)</p>
+<p>使用 GET 的基本模式</p>
+<p>r := gin.Default() ; 创建并初始化 Gin 引擎实例</p>
+<pre><code class="language-text">等价于：
+go
+运行
+r := gin.New()
+r.Use(gin.Logger(), gin.Recovery())
+● gin.New()：纯空引擎，无中间件
+● gin.Logger()：日志中间件，打印请求日志
+● gin.Recovery()：崩溃恢复，panic 不导致服务宕机
+</code></pre>
+<pre><code class="language-text">r.GET(&quot;/索引地址&quot; , 处理函数(c *gin.Context){})
+*gin.Context     Gin 框架的核心上下文对象  
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

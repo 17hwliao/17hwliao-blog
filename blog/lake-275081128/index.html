@@ -1,0 +1,170 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>gRPC：服务端与客户端实现 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>gRPC：服务端与客户端实现</h1><time datetime="2026-06-24T11:14:59.000Z">2026年6月24日</time><h2 id="编写protobuf文件">编写protobuf文件</h2>
+<ul>
+<li><strong>service</strong>：关键字，定义一个<strong>RPC 服务类</strong>，类比 Java 接口</li>
+<li><strong>HelloService</strong>：自定义服务名称</li>
+<li><strong>rpc</strong>：定义远程调用方法的固定关键字</li>
+<li><strong>SayHello</strong>：自定义接口方法名</li>
+<li><strong>(HelloRequest)</strong>：<strong>请求入参</strong>，必须是自定义 message</li>
+<li><strong>(HelloResponse)</strong>：<strong>响应出参</strong>，必须是自定义 message</li>
+<li>末尾空大括号：proto3 普通调用写法，无额外配置</li>
+</ul>
+<p>Go复制代码</p>
+<pre><code class="language-text">syntax = &quot;proto3&quot;; // 指定proto版本
+package hello_grpc;     // 指定默认包名
+
+// 指定golang包名
+option go_package = &quot;./hello_grpc&quot;;
+
+//定义rpc服务
+service HelloService {
+  // 定义函数
+  rpc SayHello (HelloRequest) returns (HelloResponse) {}
+}
+
+// HelloRequest 请求内容
+message HelloRequest {
+  string name = 1;
+  string message = 2;
+}
+
+// HelloResponse 响应内容
+message HelloResponse{
+  string name = 1;
+  string message = 2;
+}
+</code></pre>
+<p>proto文件没有高亮的话去下载一个grpc的插件</p>
+<p>在grpc_proto目录下执行</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">protoc -I . \
+  --go_out=. \
+  --go-grpc_out=. \
+  .\hello.proto
+</code></pre>
+<p>或者在根目录下执行</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">protoc -I . --go_out=plugins=grpc:.\grpc_proto .\grpc_proto\hello.proto
+</code></pre>
+<p>我们可以编写一个bat文件，方便转换</p>
+<p>set.bat</p>
+<p>Bash复制代码</p>
+<pre><code class="language-text">protoc -I . \
+  --go_out=.\grpc_proto \
+  --go_opt=paths=source_relative \
+  --go-grpc_out=.\grpc_proto \
+  --go-grpc_opt=paths=source_relative \
+  .\grpc_proto\hello.proto
+</code></pre>
+<h2 id="服务端">服务端</h2>
+<ol>
+<li>编写一个结构体，名字叫什么不重要</li>
+<li>重要的是得实现protobuf中的所有方法</li>
+<li>监听端口</li>
+<li>注册服务</li>
+</ol>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;context&quot;
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;google.golang.org/grpc/grpclog&quot;
+  &quot;grpc_study/grpc_proto/hello_grpc&quot;
+  &quot;net&quot;
+)
+
+// HelloServer1 得有一个结构体，需要实现这个服务的全部方法,叫什么名字不重要
+type HelloServer1 struct {
+}
+
+func (HelloServer1) SayHello(ctx context.Context, request *hello_grpc.HelloRequest) (pd *hello_grpc.HelloResponse, err error) {
+  fmt.Println(&quot;入参：&quot;, request.Name, request.Message)
+  pd = new(hello_grpc.HelloResponse)
+  pd.Name = &quot;你好&quot;
+  pd.Message = &quot;ok&quot;
+  return
+}
+
+func main() {
+  // 监听端口
+  listen, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)
+  if err != nil {
+    grpclog.Fatalf(&quot;Failed to listen: %v&quot;, err)
+  }
+  
+  // 创建一个gRPC服务器实例。
+  s := grpc.NewServer()
+  server := HelloServer1{}
+  // 将server结构体注册为gRPC服务。
+  hello_grpc.RegisterHelloServiceServer(s, &amp;server)
+  fmt.Println(&quot;grpc server running :8080&quot;)
+  // 开始处理客户端请求。
+  err = s.Serve(listen)
+}
+</code></pre>
+<h2 id="客户端">客户端</h2>
+<ol>
+<li>建立连接</li>
+<li>调用方法</li>
+</ol>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;context&quot;
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;google.golang.org/grpc/credentials/insecure&quot;
+  &quot;grpc_study/grpc_proto/hello_grpc&quot;
+  &quot;log&quot;
+)
+
+func main() {
+  addr := &quot;:8080&quot;
+  // 使用 grpc.Dial 创建一个到指定地址的 gRPC 连接。
+  // 此处使用不安全的证书来实现 SSL/TLS 连接
+  conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+  if err != nil {
+    log.Fatalf(fmt.Sprintf(&quot;grpc connect addr [%s] 连接失败 %s&quot;, addr, err))
+  }
+  defer conn.Close()
+  // 初始化客户端
+  client := hello_grpc.NewHelloServiceClient(conn)
+  result, err := client.SayHello(context.Background(), &amp;hello_grpc.HelloRequest{
+    Name:    &quot;枫枫&quot;,
+    Message: &quot;ok&quot;,
+  })
+  fmt.Println(result, err)
+}
+</code></pre>
+<p>如果需要经常操作这个连接对象，我们可以复用</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func initClient() hello_grpc.HelloServiceClient {
+  addr := &quot;:8080&quot;
+  conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+  if err != nil {
+    log.Fatalf(fmt.Sprintf(&quot;grpc connect addr [%s] 连接失败 %s&quot;, addr, err))
+  }
+  client := hello_grpc.NewHelloServiceClient(conn)
+  return client
+}
+
+func main() {
+  client := initClient()
+  result, err := client.SayHello(context.Background(), &amp;hello_grpc.HelloRequest{
+    Name:    &quot;枫枫&quot;,
+    Message: &quot;ok&quot;,
+  })
+  result, err = client.SayHello(context.Background(), &amp;hello_grpc.HelloRequest{
+    Name:    &quot;哈哈哈&quot;,
+    Message: &quot;ok1&quot;,
+  })
+  
+  fmt.Println(result, err)
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

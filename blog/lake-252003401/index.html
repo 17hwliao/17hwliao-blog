@@ -1,0 +1,104 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 实践：组合函数与空值处理 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 实践：组合函数与空值处理</h1><time datetime="2026-01-06T12:02:42.000Z">2026年1月6日</time><pre><code class="language-text">package Today;
+
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier ;
+
+public class Today {
+    public static void main(String[]args){
+        Ws0&lt;String&gt; ws0 = new Ws0&lt;String&gt;();
+
+        ws0.setName(()-&gt;{
+            return &quot;ws&quot; ;
+        }) ;
+
+        Consumer&lt;String&gt; consumer = name -&gt; {
+            if(name.length() &lt; 10 ){
+                System.out.println(&quot;ws是gay&quot;);
+            }else{
+                System.out.println(&quot;ws一直是gay&quot;);
+            }
+        };
+
+        consumer = consumer.andThen(name -&gt; {
+            System.out.println(&quot;ws是gay啊&quot;);
+        }) ;
+
+        ws0.usename(consumer);
+
+        ws0.namelength(String::length);
+
+        Function&lt;String , byte[]&gt; f = str -&gt; str.getBytes();
+        Function&lt;String , Integer&gt; f2 = f.andThen(bytes -&gt; bytes.length) ;
+        Function&lt;String , String&gt; f3 = f2.andThen(Integer::toHexString) ;
+
+        ws0.nameInvalid(name -&gt; name.length()&gt;=3);
+
+        Predicate&lt;String&gt; predicate = name -&gt; name.length()&gt;=3;
+        predicate = predicate.and(name -&gt; name.length() &lt; 10);
+
+    }
+
+        private static void test1(String str){
+            System.out.println(Optional.ofNullable(str).filter(s-&gt;s.length()&gt;2).get());
+        }
+
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+import java.util.Optional;
+import java.util.function.*;
+
+public class Ws0&lt;T&gt; {
+    private String name ;
+    int id ;
+    T  score ;
+
+
+    public void Ws(String name , int id , T score ){
+        this.name = name;
+        this.id = id;
+        this.score = score;
+    }
+
+    public void setName(Supplier&lt;String&gt; supplier){
+        this.name = supplier.get() ;
+    }
+
+    public String getname(){
+        String name = new String();
+        name = this.name ;
+        return  name ;
+    }
+
+    public void usename(Consumer&lt;String&gt; consumer){
+        consumer.accept(name) ;
+    }
+
+    public void namelength(Function&lt;String , Integer&gt; function){
+        Integer apply = function.apply(name);
+        System.out.println(&quot;name的长度&quot;+apply);
+     }
+
+    public void nameInvalid(Predicate&lt;String&gt; predicate){
+        boolean test = predicate.test(name) ;
+        System.out.println(test ? &quot;是gay&quot; : &quot;骗你的还是gay&quot;);
+    }
+
+    public void nameid(BiConsumer&lt;String, Integer&gt; biConsumer){
+        biConsumer.accept(name,id);
+    }
+
+    private static void test(String name){
+        System.out.println(name) ;
+        Optional.ofNullable(name).ifPresent(s -&gt; System.out.println(s.length()));
+    }
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

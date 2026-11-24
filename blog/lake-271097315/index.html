@@ -1,0 +1,130 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin：文件响应与浏览器下载 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin：文件响应与浏览器下载</h1><time datetime="2026-05-24T03:21:26.000Z">2026年5月24日</time><p>用于浏览器直接请求这个接口唤起下载</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">c.Header(&quot;Content-Type&quot;, &quot;application/octet-stream&quot;)              // 表示是文件流，唤起浏览器下载，一般设置了这个，就要设置文件名
+c.Header(&quot;Content-Disposition&quot;, &quot;attachment; filename=3.文件下载.go&quot;) // 用来指定下载下来的文件名
+c.File(&quot;3.文件下载.go&quot;)
+</code></pre>
+<ol>
+<li>要设置Content-Type，唤起浏览器下载</li>
+<li>只能是get请求</li>
+</ol>
+<p>前端请求后端接口，然后唤起浏览器下载</p>
+<p>JavaScript复制代码</p>
+<pre><code class="language-text">c.Header(&quot;fileName&quot;, &quot;xxx.png&quot;)
+c.Header(&quot;msg&quot;, &quot;文件下载成功&quot;)
+c.File(&quot;uploads/12.png&quot;)
+</code></pre>
+<p>前端唤起浏览器下载的本质</p>
+<p>JavaScript复制代码</p>
+<pre><code class="language-text">&lt;a href=&quot;文件地址&quot; download=&quot;文件名&quot;&gt;文件下载&lt;/a&gt;
+</code></pre>
+<p>JavaScript复制代码</p>
+<pre><code class="language-text">async downloadFile(row) {
+   this.$http({
+      method: &#39;post&#39;,
+      url: &#39;file/upload&#39;,
+      data:postData,
+      responseType: &quot;blob&quot;
+   }).then(res =&gt; {
+      const _res = res.data
+      let blob = new Blob([_res], {
+            type: &#39;application/png&#39;
+          });
+      let downloadElement = document.createElement(&quot;a&quot;);
+      let href = window.URL.createObjectURL(blob); //创建下载的链接
+      downloadElement.href = href;
+      downloadElement.download = res.headers[&quot;fileName&quot;]; //下载后文件名
+      document.body.appendChild(downloadElement);
+      downloadElement.click(); //点击下载
+      document.body.removeChild(downloadElement); //下载完成移除元素
+      window.URL.revokeObjectURL(href); //释放掉blob对象
+    })}
+</code></pre>
+<pre><code class="language-text">r.GET(&quot;/file/*filepath&quot;, func(c *gin.Context) {
+		fp := c.Param(&quot;filepath&quot;)
+		fp = strings.TrimPrefix(fp, &quot;/&quot;)
+		// 防止路径穿越
+		clean := filepath.Clean(fp)
+		if strings.Contains(clean, &quot;..&quot;) {
+			c.JSON(http.StatusBadRequest, gin.H{&quot;error&quot;: &quot;invalid path&quot;})
+			return}
+		info, err := os.Stat(clean)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{&quot;error&quot;: &quot;file not found&quot;})
+			return
+		}
+		if info.IsDir() {
+			c.JSON(http.StatusBadRequest, gin.H{&quot;error&quot;: &quot;not a file&quot;})
+			return
+		}
+		c.File(clean)
+	})
+</code></pre>
+<p>方法解读 :</p>
+<h3 id="1-stringstrimprefix">1. strings.TrimPrefix()</h3>
+<p><strong>函数</strong>：<code>strings.TrimPrefix(s, prefix string) string</code><strong>作用</strong>：<strong>删除字符串开头指定前缀</strong></p>
+<ul>
+<li><p>本例：<code>strings.TrimPrefix(fp, &quot;/&quot;)</code></p>
+</li>
+<li><p>场景：路由拿到的路径可能自带开头 <code>/</code>，统一删掉</p>
+</li>
+<li><p>例子：</p>
+</li>
+<li><p><code>/a/b.txt</code> → <code>a/b.txt</code></p>
+</li>
+<li><p><code>file.txt</code> → 不变<strong>用途</strong>：统一路径格式，避免前缀斜杠干扰路径判断</p>
+</li>
+</ul>
+<h3 id="2-filepathclean">2. filepath.Clean()</h3>
+<p><strong>函数</strong>：<code>filepath.Clean(path string) string</code><strong>核心功能（路径标准化）</strong></p>
+<ol>
+<li>消除 <code>.</code> 当前目录、<code>..</code> 上级目录</li>
+<li>合并多余连续斜杠</li>
+<li>去掉末尾多余 <code>/</code></li>
+<li>自动修正非法路径格式</li>
+</ol>
+<p><strong>示例</strong></p>
+<ul>
+<li><code>a/../b</code> → <code>b</code></li>
+<li><code>./upload//1.txt</code> → <code>upload/1.txt</code></li>
+<li><code>../../etc/passwd</code> → <code>../../etc/passwd</code>（<strong>不会自动删掉</strong>）</li>
+</ul>
+<p><strong>安全意义</strong>：把用户传入的<strong>杂乱路径转为系统标准路径</strong>，方便后续判断是否存在越界。</p>
+<h3 id="3-osstat">3. os.Stat()</h3>
+<p><strong>函数</strong>：<code>os.Stat(name string) (FileInfo, error)</code><strong>作用</strong>：<strong>获取文件 / 目录元信息，不打开文件</strong> 返回两个值：</p>
+<ol>
+<li><code>FileInfo</code>：文件信息（大小、修改时间、是否文件夹）</li>
+<li><code>err</code>：错误（文件不存在、权限不足等）</li>
+</ol>
+<p><strong>常用判断</strong></p>
+<ul>
+<li><code>err != nil</code> → 文件不存在 → 返回 404</li>
+<li><code>info.IsDir()</code> → 是文件夹，拒绝访问</li>
+</ul>
+<p><strong>特点</strong>：轻量查询，只读属性，<strong>不读取文件内容</strong>。</p>
+<p>标准库中的方法汇总 :</p>
+<ul>
+<li><code>r.GET()</code>：注册 GET 请求路由</li>
+<li><code>c.Param()</code>：获取路由占位符参数</li>
+<li><code>c.JSON()</code>：返回 JSON 格式响应</li>
+<li><code>c.File()</code>：直接响应本地文件</li>
+<li><code>http.StatusXXX</code>：HTTP 状态码常量</li>
+<li><code>strings.TrimPrefix</code>：剔除前缀字符串</li>
+<li><code>filepath.Clean</code>：路径清洗标准化</li>
+<li><code>os.Stat</code>：获取文件状态信息</li>
+<li><code>info.IsDir()</code>：判断是否为目录</li>
+</ul>
+<p>最好的做法 :</p>
+<p>调下载接口的请求，后端不返回实际文件内容，而是生成一个临时下载地址</p>
+<p>前端构造a标签，再请求这个接口唤起浏览器下载</p>
+<h2 id="content-type-命令表">Content-Type 命令表</h2>
+<p><strong>HTTP 报文头部字段</strong>，用来告诉客户端 / 服务端：<strong>本次传输的数据是什么格式</strong>，浏览器 / 服务器会根据它解析内容。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><strong><span>取值</span></strong></p></td><td><p><strong><span>用途</span></strong></p></td></tr><tr><td><p><code><span>text/html; charset=utf-8</span></code></p></td><td><p><span>返回 HTML 页面</span></p></td></tr><tr><td><p><code><span>application/json; charset=utf-8</span></code></p></td><td><p><span>返回 JSON 数据</span></p></td></tr><tr><td><p><code><span>text/plain; charset=utf-8</span></code></p></td><td><p><span>纯文本</span></p></td></tr><tr><td><p><code><span>application/octet-stream</span></code></p></td><td><p><span>二进制流，</span><strong><span>文件下载</span></strong></p></td></tr><tr><td><p><code><span>multipart/form-data</span></code></p></td><td><p><span>表单 + 文件上传（客户端用）</span></p></td></tr><tr><td><p><code><span>image/jpeg</span></code></p><p><span> / </span><code><span>image/png</span></code></p></td><td><p><span>图片</span></p></td></tr></tbody></table></div>
+
+<h2 id="content-disposition">Content-Disposition</h2>
+<p>属于 <strong>HTTP 响应头</strong>，作用：告诉浏览器<strong>收到内容后，是直接展示还是当成文件下载</strong>。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><strong><span>固定取值</span></strong></p></td><td><p><strong><span>用途</span></strong></p></td></tr><tr><td><p><code><span>inline</span></code></p></td><td><p><span>内容在浏览器内直接打开</span></p></td></tr><tr><td><p><code><span>attachment; filename=&quot;xxx.xxx&quot;</span></code></p></td><td><p><span>强制触发文件下载，指定默认文件名</span></p></td></tr></tbody></table></div>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

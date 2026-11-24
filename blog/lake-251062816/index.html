@@ -1,0 +1,82 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 算法练习：排序、二分与递归 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 算法练习：排序、二分与递归</h1><time datetime="2025-12-30T09:47:10.000Z">2025年12月30日</time><pre><code class="language-text">package Today ;
+
+import java.util.*;
+
+public class Main{
+    public static void main(String[]args){
+        int[] arr = {24,43,65,743,35,34,25,61,1,9} ;
+        Bubble_Sort(arr);
+        System.out.println(Arrays.toString(arr));
+        Scanner cin  = new Scanner(System.in) ;
+        String s = cin.nextLine();
+        char[] arr1 = s.toCharArray() ;
+        Class ws = new Class(&quot;ws&quot; , &quot;122&quot; , &quot;是gay&quot;) ;
+        Class ws1 = new Class(&quot;ws1&quot; , &quot;gay&quot; , 11) ;
+
+        Integer value = (Integer) ws1.value ;
+        String name = (String)ws.value ;
+        Object name1 = (String)ws.value ;
+    }
+
+    private  static void Bubble_Sort(int[] arr){
+        for(int i= 0  ; i &lt; arr.length -1 ; i ++){
+            boolean flag = false;
+            for(int j = 0 ; j &lt; arr.length  -1 - i ; j++){
+                if(arr[j] &gt; arr[j+1]){
+                    int temp = arr[j];
+                    arr[j] = arr[j+1];
+                    arr[j+1] = temp;
+                    flag = true ;
+                }
+            }
+            if(!flag) break ;
+        }
+    }
+
+    private static int Bin_find( int[]arr , int x ){    //实现最小化查找( &gt;= ) r 返回第一个满足条件的数
+        int l = -1 ;                                    //实现最大化查找( &lt;= ) l 返回最后一个满足条件的数
+        int r = arr.length  ;
+        while(l +  1 &lt; r ){
+            int mid = (l + r ) &gt;&gt; 1 ;
+            if(arr[mid] &lt;= x) l = mid ;
+            else r = mid ;
+        }
+        return l ;
+    }
+
+    private static int Fibo(int n){
+        if( n &lt;= 2 ) return 1 ;
+        int[] dp = new int[n+1] ;
+        dp[1] = dp[2] = 1 ;
+        for(int i = 3 ; i &lt;= n ; i++){
+            dp[i] = dp[i -1 ] + dp[i -2] ;
+        }
+        return dp[n] ;
+    }
+
+    private static boolean Palind(String s) {
+        char[] arr2 = s.toCharArray();
+        for (int i = 0; i &lt; s.length() / 2; i++) {
+            if (arr2[i] != arr2[s.length() - 1 - i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    //参数 : 盘子数 , 起点 , 终点 , 辅助点
+    private static void Hanoi(int n , char a , char b , char c  ){
+        if(n == 1 ){
+            System.out.println(a + &quot;-&gt;&quot; + b );
+        }else{
+            Hanoi(n -1 , a , c , b ) ;
+            System.out.println(a + &quot;-&gt;&quot; + b );
+            Hanoi(n - 1, c, b , a ) ;
+        }
+    }
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

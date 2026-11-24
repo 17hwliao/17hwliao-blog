@@ -1,0 +1,443 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AgentMesh：服务启动与依赖组装 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>AgentMesh：服务启动与依赖组装</h1><time datetime="2026-09-21T14:18:04.000Z">2026年9月21日</time><p><a href="../../projects/agentmesh/index.html#project-articles">AgentMesh 项目展示</a> · <a href="../../blog/lake-282376218/index.html">系列目录</a> · 5 / 12</p>
+<p>从 main.go 梳理监听配置、限流运行时、Provider、认证与租户路由的组装过程，解释接口依赖如何进入 Gateway。</p>
+<blockquote>
+<p>实现说明与运行记录基于 2026-09-21 更新的原稿。正文中的文件行号、实现状态与验证结果按该历史快照理解。</p>
+</blockquote>
+<h2 id="实现概览">实现概览</h2>
+<ul>
+<li>启动阶段创建依赖并装配 HTTP 路由，不等于已经执行一次聊天请求。</li>
+<li>Reservation 协调器与用量 Summary 具有独立的创建和使用边界。</li>
+<li>接口抽象用于连接不同实现，具体行为仍由调用位置决定。</li>
+</ul>
+<h2 id="实现细节">实现细节</h2>
+<p>源码追踪从请求边界展开，依次核对：</p>
+<pre><code class="language-text">一个请求从哪里进入
+→ 哪个函数创建对象
+→ 参数怎么传递
+→ 哪个接口抽象了依赖
+→ 哪个 if 决定分支
+→ 状态在哪里落库
+→ 出错从哪里返回
+→ 哪个测试证明这个行为
+</code></pre>
+<p>AgentMesh 的源码入口与调用顺序</p>
+<pre><code class="language-text">main.go
+  → HTTP Server / root mux
+  → AuthenticatedHandler
+  → withRateLimit
+  → handleChat 前半段
+  → Reservation.Begin
+  → Router.StreamWithAttemptHook
+  → SSE emit
+  → Reservation.Complete / Cancel
+  → MySQL Outbox
+  → Relay
+  → Kafka Worker
+</code></pre>
+<p>不要跳到 Kafka，也不要先背状态机。先把“一个 <code>POST /v1/chat/completions</code> 在 Go 代码里如何被一层层调用”追完整。</p>
+<h3 id="maingo-文件主要实现组装依赖">main.go  文件主要实现组装依赖 :</h3>
+<h4 id="1-启动参数服务能监听在哪里">1.  启动参数：服务能监听在哪里</h4>
+<pre><code class="language-text">address := flags.String(&quot;addr&quot;, &quot;127.0.0.1:18080&quot;, ...)
+allowContainerListen := flags.Bool(&quot;allow-container-listen&quot;, false, ...)
+providerOrder := flags.String(&quot;providers&quot;, &quot;mock&quot;, ...)
+</code></pre>
+<p>这里先限制默认只监听 <code>127.0.0.1</code>。只有 Docker 容器内显式传入 <code>--allow-container-listen</code>，才允许监听 <code>0.0.0.0</code>。 设计当前可以使用到的 AI 供应商的 IP , 然后实现配置</p>
+<h4 id="2-先创建限流运行时">2. 先创建限流运行时</h4>
+<pre><code class="language-text">rateRuntime, err := ratelimit.OpenConfiguredRuntime(os.Getenv)
+</code></pre>
+<p>注意它只读取环境变量，不处理 HTTP 请求。</p>
+<p>它最终返回一个统一的 <code>rateRuntime.Gate</code>：</p>
+<ul>
+<li>未配置或配置 <code>memory</code>：使用进程内 Token Bucket；</li>
+<li>配置 <code>redis</code>：使用 Redis Lua 的共享 Token Bucket；</li>
+<li>Redis 配置缺失或不可连接：启动失败，而不是偷偷降级为本地限流。</li>
+</ul>
+<p>随后第 120 行把这个接口塞进 Gateway：</p>
+<pre><code class="language-text">server.SetRateGate(rateRuntime.Gate)
+</code></pre>
+<p>这就是依赖注入。Gateway 不需要知道“限流是 Redis 还是内存”，它只会调用 <code>Gate.Admit(...)</code>。</p>
+<h4 id="3-创建-provider认证租户路由">3. 创建 Provider、认证、租户路由</h4>
+<p>第 70–105 行按这个顺序组装：</p>
+<pre><code class="language-text">runtime.Selection
+→ auth.OpenConfiguredRuntime
+→ runtime.Build
+→ embedding.Build
+→ tenant.NewResolver
+</code></pre>
+<p>它们的区别很关键：</p>
+<ul>
+<li><code>runtime.Selection(...)</code>：验证逻辑 Provider 名称及顺序，例如 <code>mock</code>、<code>ark,ollama</code>。</li>
+<li><code>runtime.Build(...)</code>：真正创建 Provider 对象。</li>
+<li><code>auth.OpenConfiguredRuntime(...)</code>：创建 API Key 存储，例如 MySQL 认证存储。</li>
+<li><code>tenant.NewResolver(...)</code>：把“已经认证出的 tenant + 请求 model”映射到可用的 Provider 路由。</li>
+</ul>
+<p>因此，一个请求到来时，不是客户端提交“我属于哪个 tenant、我想用哪个 Provider”就直接相信它；客户端只给 API Key 和 model，服务端认证后才得到可信 tenant，再由 tenant route 选 Provider。</p>
+<h4 id="4-创建-reservation-与可观测性组件">4. 创建 Reservation 与可观测性组件</h4>
+<p>第 106–125 行：</p>
+<pre><code class="language-text">reservationGate, cleanupReservation, err :=
+    reservation.OpenConfiguredCoordinator(os.Getenv)
+
+server := gateway.NewWithTenantRoutingAndRecorderAndReservations(
+    resolver,
+    observability.NewRecorder(...),
+    reservationGate,
+)
+</code></pre>
+<p>这里把三类依赖交给 Gateway：</p>
+<pre><code class="language-text">resolver         决定 tenant/model 是否允许、该走哪条 Provider 路由
+recorder         记录 trace
+reservationGate  管理额度预扣、结算、取消与持久化证据
+</code></pre>
+<p><code>gateway.Server</code> 不直接初始化 Redis、MySQL、Kafka；它只依赖接口。这是后续测试能替换 fake store、fake provider 的原因。</p>
+<h4 id="5-构造最终-http-路由">5. 构造最终 HTTP 路由</h4>
+<p>真正决定线上请求链的是第 127–148 行：</p>
+<pre><code class="language-text">protected := server.AuthenticatedHandler(func(next http.Handler) http.Handler {
+    return auth.Authenticate(store, next)
+})
+
+root := http.NewServeMux()
+root.HandleFunc(&quot;/healthz&quot;, ...)
+root.HandleFunc(&quot;/readyz&quot;, ...)
+root.Handle(&quot;/admin/&quot;, adminHandler)
+root.Handle(&quot;/&quot;, protected)
+</code></pre>
+<p>这里必须理解两层 Mux：</p>
+<p>Mux : httpServeMux :  Http 多路复用器(路由器)</p>
+<p>把请求的 URL 路径分发到对应的 handler。</p>
+<p>这里分两层是为了把“公开/管理/受保护”三类流量切开：</p>
+<pre><code class="language-text">root mux：顶层路由，先处理公开端点（/healthz、/readyz）和 /admin/（管理端有自己的中间件链）
+protected mux：单独的路由表，只挂业务端点（/v1/chat/completions 等），整个 mux 外面套一层中间件（认证 → 限流），这样所有受保护接口统一走同一套前置检查
+</code></pre>
+<pre><code class="language-text">root mux
+  /healthz、/readyz             公开
+  /admin/                       管理端单独处理
+  /                             其余请求进入 protected
+
+protected mux
+  /v1/chat/completions          认证 → 限流 → handleChat
+  /v1/embeddings                认证 → embedding handler
+  /v1/observability/traces/...  认证 → trace 查询
+</code></pre>
+<p>也就是说，<code>main.go</code> 只负责把请求送到 Gateway；真正的聊天逻辑还没开始。</p>
+<p>这段是 <code>cmd/api/main.go</code> 的“应用装配与 HTTP 启动层”。它不实现具体业务规则，而是把限流、额度结算、路由、认证、Embedding、管理接口和 HTTP 服务拼成一个可运行的 AgentMesh API。</p>
+<p>整体启动顺序是：</p>
+<pre><code class="language-text">读取配置
+→ 初始化 Reservation 配额协调器
+→ 初始化用量 Summary 查询
+→ 创建 Gateway
+→ 装入限流器、Embedding Handler
+→ 注册 health / ready / admin / API 路由
+→ 启动 HTTP Server
+</code></pre>
+<h2 id="相关的一些补充">相关的一些补充</h2>
+<h3 id="1-初始化额度-reservation-协调器">1. 初始化额度 Reservation 协调器</h3>
+<pre><code class="language-text">reservationGate, cleanupReservation, err :=
+    reservation.OpenConfiguredCoordinator(os.Getenv)
+</code></pre>
+<p>这里根据环境变量创建“额度预扣与结算”的协调器。</p>
+<p>在 Compose 的 Redis + MySQL 配置下，它的职责是：</p>
+<pre><code class="language-text">请求开始
+→ Redis Lua 原子预扣 quota units
+→ 创建/维护 Reservation 状态
+
+请求结束
+→ settle 实际用量，释放未使用额度
+或 cancel，释放全部预扣额度
+
+终态落库
+→ quota_reservations
+→ usage_outbox
+→ usage_kafka_outbox
+</code></pre>
+<p>返回值含义：</p>
+<pre><code class="language-text">reservationGate
+→ 传给 Gateway；处理聊天请求时实际调用它。
+
+cleanupReservation
+→ 服务结束时关闭 Reservation 使用的 MySQL / Redis 等资源。
+
+err
+→ 配额组件的配置或依赖初始化错误。
+</code></pre>
+<pre><code class="language-text">if err != nil {
+    if code := reservation.Code(err); code != &quot;&quot; {
+        log.Fatal(code)
+    }
+    log.Fatal(&quot;quota_configuration_invalid&quot;)
+}
+</code></pre>
+<p>这里将已知的 Reservation 错误映射为稳定错误码；无法识别时统一报配置错误，并拒绝启动。</p>
+<p>这是 fail-closed：</p>
+<pre><code class="language-text">额度配置错误
+→ API 不启动
+→ 不允许绕过配额控制继续提供模型服务
+</code></pre>
+<pre><code class="language-text">defer cleanupReservation()
+</code></pre>
+<p>正常退出时释放资源。</p>
+<p>注意一个 Go 细节：<code>log.Fatal</code> 内部会调用 <code>os.Exit(1)</code>，<strong>不会执行 defer</strong>。因此目前正常返回路径会清理资源；若后续初始化阶段使用 <code>log.Fatal</code> 退出，操作系统会回收进程资源，但不是优雅关闭。生产环境可进一步改为统一返回错误、由 <code>main</code> 做优雅退出。</p>
+<hr>
+<h3 id="2-初始化用量链路的只读-summary">2. 初始化用量链路的只读 Summary</h3>
+<pre><code class="language-text">usageSummary, cleanupUsageSummary, err := openUsageSummary(os.Getenv)
+</code></pre>
+<p>它不是 Kafka Worker，也不负责消费消息。</p>
+<p>它只为管理接口提供“当前异步用量链路状态”的查询能力，例如：</p>
+<pre><code class="language-text">pending outbox 数
+published outbox 数
+usage projection 数
+</code></pre>
+<p>后续被挂到：</p>
+<pre><code class="language-text">/admin/usage/outbox-summary
+</code></pre>
+<p>如果这里失败：</p>
+<pre><code class="language-text">log.Fatal(&quot;usage_kafka_summary_configuration_invalid&quot;)
+</code></pre>
+<p>说明配置了 Summary 能力但 MySQL 连接不合法，服务拒绝启动。</p>
+<pre><code class="language-text">defer cleanupUsageSummary()
+</code></pre>
+<p>服务正常退出时关闭它单独持有的 MySQL 连接池。</p>
+<hr>
+<h3 id="3-openusagesummary-如何工作">3. <code>openUsageSummary</code> 如何工作</h3>
+<pre><code class="language-text">func openUsageSummary(lookup func(string) string) (*usagekafka.MySQLStore, func(), error)
+</code></pre>
+<p>这是一个“可选能力”的初始化函数。</p>
+<pre><code class="language-text">if lookup == nil {
+    return nil, func() {}, nil
+}
+</code></pre>
+<p>没有配置读取器时，不启用 Summary，但也不报错。</p>
+<pre><code class="language-text">dsn := lookup(&quot;AGENTMESH_USAGE_KAFKA_MYSQL_DSN&quot;)
+if dsn == &quot;&quot; {
+    return nil, func() {}, nil
+}
+</code></pre>
+<p>如果没有设置 MySQL DSN，也不启用 Summary。</p>
+<p>这意味着：</p>
+<pre><code class="language-text">没有 DSN
+→ API 仍可启动
+→ admin 中不会挂载 usage summary
+</code></pre>
+<p>如果 DSN 存在：</p>
+<pre><code class="language-text">_, db, err := reservation.OpenMySQLRepository(dsn, nil)
+</code></pre>
+<p>复用 Reservation 已有的 MySQL 初始化与 DSN 校验逻辑，拿到 <code>*sql.DB</code>。</p>
+<pre><code class="language-text">return &amp;usagekafka.MySQLStore{DB: db},
+    func() { _ = db.Close() },
+    nil
+</code></pre>
+<p>把这个连接包装成 <code>usagekafka.MySQLStore</code>，之后它只用于执行 Summary 查询。</p>
+<hr>
+<h3 id="4-创建-gateway-主对象">4. 创建 Gateway 主对象</h3>
+<pre><code class="language-text">server := gateway.NewWithTenantRoutingAndRecorderAndReservations(
+    resolver,
+    observability.NewRecorder(observability.DefaultCapacity, nil, nil),
+    reservationGate,
+)
+</code></pre>
+<p>这里把三个核心依赖交给 Gateway：</p>
+<pre><code class="language-text">resolver
+→ tenant + model 应该使用哪个 Provider、fallback 是谁。
+
+Recorder
+→ 为一次请求记录 trace：attempt、耗时、结果、取消、fallback 等。
+
+reservationGate
+→ 请求开始预扣、请求结束结算或释放额度。
+</code></pre>
+<p>也就是说，聊天主链会拥有：</p>
+<pre><code class="language-text">认证后的 tenant
+→ 限流
+→ Reservation 预扣
+→ Provider / SSE
+→ Reservation 结算
+→ trace
+</code></pre>
+<hr>
+<h3 id="5-装入限流器">5. 装入限流器</h3>
+<pre><code class="language-text">server.SetRateGate(rateRuntime.Gate)
+</code></pre>
+<p><code>rateRuntime.Gate</code> 来自你前面看的 <code>OpenConfiguredRuntime</code>。</p>
+<p>当前 Compose 中配置的是：</p>
+<pre><code class="language-text">AGENTMESH_RATE_LIMIT_STORE=redis
+</code></pre>
+<p>所以这里装入的是 Redis Lua 共享 Token Bucket，而不是单进程内存桶。</p>
+<p>请求真正进入 Gateway 时，按 tenant 进行限流：</p>
+<pre><code class="language-text">tenant-a 请求
+→ Redis 中读取 tenant-a 的 bucket
+→ Lua 原子补充 / 扣减令牌
+→ 放行或返回 429
+</code></pre>
+<hr>
+<h3 id="6-装入-embedding-接口">6. 装入 Embedding 接口</h3>
+<pre><code class="language-text">embeddingHandler, err := embedding.NewHandler(store, embeddingProviders)
+if err != nil {
+    log.Fatal(&quot;embedding_handler_configuration_invalid&quot;)
+}
+server.SetEmbeddingHandler(embeddingHandler)
+</code></pre>
+<p>AgentMesh 不只有聊天接口，也提供兼容 OpenAI 风格的 embedding 调用。</p>
+<p>这里：</p>
+<pre><code class="language-text">store
+→ 查询 tenant 对 embedding model 的授权与路由配置。
+
+embeddingProviders
+→ 实际 embedding Provider，例如 mock / Ollama / 云模型。
+
+embeddingHandler
+→ 处理 /v1/embeddings 请求。
+</code></pre>
+<p>如果 tenant 配置中允许某个 embedding model，但对应 Provider 没有初始化，启动时就失败，而不是等用户请求到来才出错。</p>
+<hr>
+<h3 id="7-创建认证保护层">7. 创建认证保护层</h3>
+<pre><code class="language-text">protected := server.AuthenticatedHandler(func(next http.Handler) http.Handler {
+    return auth.Authenticate(store, next)
+})
+</code></pre>
+<p>这是 HTTP Middleware 的组合。</p>
+<p>可以理解成：</p>
+<pre><code class="language-text">外层：auth.Authenticate
+  → 验证 Bearer API Key
+  → 从服务端 store 得到可信 tenant
+  → tenant 写进 request context
+
+内层：server.AuthenticatedHandler
+  → 限流
+  → 路由
+  → Reservation
+  → Provider SSE
+  → trace
+</code></pre>
+<p>因此客户端不能随便传一个 <code>tenant_id</code> 就冒充其他租户；tenant 来自服务端 API Key 认证结果。</p>
+<hr>
+<h3 id="8-注册-http-路由">8. 注册 HTTP 路由</h3>
+<pre><code class="language-text">root := http.NewServeMux()
+</code></pre>
+<p><code>ServeMux</code> 是 Go 标准库 HTTP 路由器。</p>
+<h4 id="healthz"><code>/healthz</code></h4>
+<pre><code class="language-text">root.HandleFunc(&quot;/healthz&quot;, ...)
+</code></pre>
+<p>返回：</p>
+<pre><code class="language-text">{&quot;status&quot;:&quot;ok&quot;}
+</code></pre>
+<p>表示 API 进程还活着。</p>
+<h4 id="readyz"><code>/readyz</code></h4>
+<pre><code class="language-text">root.HandleFunc(&quot;/readyz&quot;, ...)
+</code></pre>
+<p>返回：</p>
+<pre><code class="language-text">{&quot;status&quot;:&quot;ready&quot;}
+</code></pre>
+<p>当前实现只是静态返回，并没有实时检查 MySQL、Redis、Kafka 是否可用。</p>
+<p>所以严格来说：</p>
+<pre><code class="language-text">当前 /readyz
+≈ API 进程已经启动
+
+真正生产级 /readyz
+≈ API 已启动 + 关键依赖可用 + 必要配置已加载
+</code></pre>
+<p>这是一个可继续增强的可观测性点。</p>
+<h4 id="admin"><code>/admin/</code></h4>
+<pre><code class="language-text">if configuredStore.Lifecycle != nil {
+    adminHandler := admin.NewHandler(...)
+    ...
+    root.Handle(&quot;/admin/&quot;, adminHandler)
+}
+</code></pre>
+<p>只有认证存储实现了 API Key 生命周期管理能力时，才开放管理接口。</p>
+<pre><code class="language-text">/admin/
+→ API Key 创建、撤销或管理
+→ tenant route 校验
+→ usage outbox summary
+</code></pre>
+<pre><code class="language-text">adminHandler.SetUsageSummary(...)
+</code></pre>
+<p>只有 <code>usageSummary != nil</code> 时，才向 admin handler 注入异步用量链路统计能力。</p>
+<p>注意：<code>/admin/</code> 不走普通聊天 API 的认证 Middleware；它由 <code>adminHandler</code> 自己使用 Admin Token 等独立机制保护。</p>
+<h4 id="section"><code>/</code></h4>
+<pre><code class="language-text">root.Handle(&quot;/&quot;, protected)
+</code></pre>
+<p>这是兜底路由，所有未被前面更具体路径匹配的请求都会进入 <code>protected</code>。</p>
+<p>例如：</p>
+<pre><code class="language-text">/v1/chat/completions
+/v1/embeddings
+</code></pre>
+<p>都会走：</p>
+<pre><code class="language-text">认证
+→ Gateway Handler
+→ 限流 / 路由 / Provider / SSE / trace / Reservation
+</code></pre>
+<p>Go 的 <code>ServeMux</code> 会优先匹配更具体的路径，因此：</p>
+<pre><code class="language-text">/healthz  → health handler
+/readyz   → readiness handler
+/admin/   → admin handler
+/v1/...   → protected gateway handler
+</code></pre>
+<hr>
+<h3 id="9-地址校验为什么默认只允许-127001">9. 地址校验：为什么默认只允许 <code>127.0.0.1</code></h3>
+<pre><code class="language-text">func validateServerAddress(address string, allowContainerListen bool) error
+</code></pre>
+<p>这个函数限制 API 的监听地址，避免开发者无意间将本地网关暴露到局域网或公网。</p>
+<pre><code class="language-text">if err := gateway.ValidateListenAddress(address); err == nil {
+    return nil
+}
+</code></pre>
+<p>默认允许的典型地址：</p>
+<pre><code class="language-text">127.0.0.1:8080
+</code></pre>
+<p>即仅允许本机访问。</p>
+<p>如果监听地址不符合默认本地回环规则：</p>
+<pre><code class="language-text">if !allowContainerListen {
+    return fmt.Errorf(&quot;listen address must be 127.0.0.1:PORT&quot;)
+}
+</code></pre>
+<p>没有显式授权时，拒绝启动。</p>
+<p>Docker 中则需要：</p>
+<pre><code class="language-text">host, port, err := net.SplitHostPort(address)
+if err != nil || host != &quot;0.0.0.0&quot; || port == &quot;&quot; {
+    return fmt.Errorf(&quot;container listen address must be 0.0.0.0:PORT&quot;)
+}
+</code></pre>
+<p>容器内部通常必须监听：</p>
+<pre><code class="language-text">0.0.0.0:18080
+</code></pre>
+<p>否则 Docker 端口映射无法把流量送进容器。</p>
+<p>但 Compose 再把宿主机端口限制为：</p>
+<pre><code class="language-text">127.0.0.1:18080:18080
+</code></pre>
+<p>最终效果是：</p>
+<pre><code class="language-text">容器内：0.0.0.0:18080，供 Docker 网络访问
+宿主机：127.0.0.1:18080，仅本机访问
+</code></pre>
+<p>所以它既满足容器运行，又避免默认暴露公网。</p>
+<hr>
+<h3 id="10-最后启动服务">10. 最后启动服务</h3>
+<pre><code class="language-text">if err := newHTTPServer(*address, root).ListenAndServe(); err != nil {
+    log.Print(err)
+}
+</code></pre>
+<p><code>newHTTPServer</code> 创建 HTTP Server，<code>ListenAndServe()</code> 开始监听端口、接收请求。</p>
+<p>最终请求流如下：</p>
+<pre><code class="language-text">/v1/chat/completions
+→ auth.Authenticate
+→ Gateway
+→ Redis 限流
+→ tenant Resolver
+→ Reservation 预扣
+→ Provider 流式 SSE 输出
+→ Reservation 结算
+→ MySQL 双 Outbox
+→ trace
+
+/admin/usage/outbox-summary
+→ admin handler
+→ usageSummary 查询 MySQL
+
+/healthz、/readyz
+→ 直接返回状态 JSON
+</code></pre>
+<hr>
+<p>上一篇：<a href="../../blog/agentmesh-outbox-kafka-recovery/index.html">AgentMesh：Outbox 投递与 Kafka 故障恢复</a></p>
+<p>下一篇：<a href="../../blog/agentmesh-handle-chat/index.html">AgentMesh：handleChat 请求处理与响应收口</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,334 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 协程：Channel 与 select · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 协程：Channel 与 select</h1><time datetime="2026-05-13T02:06:43.000Z">2026年5月13日</time><h2 id="协程">协程</h2>
+<p>Goroutine是Go运行时管理的轻量级线程</p>
+<p>在go中，开启一个协程是非常简单的</p>
+<pre><code class="language-text">startTime := time.Now()
+fmt.Println(time.Since(startTime))
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;time&quot;
+)
+
+func sing() {
+  fmt.Println(&quot;唱歌&quot;)
+  time.Sleep(1 * time.Second) // 数字 * 时间单位 --&gt; 时间
+  fmt.Println(&quot;唱歌结束&quot;)
+}
+
+func main() {
+  go sing()
+  go sing()
+  go sing()
+  go sing()
+  time.Sleep(2 * time.Second)
+}
+</code></pre>
+<p>如果我把这个主线程中的延时去掉之后，你会发现程序没有任何输出就结束了</p>
+<p>这是为什么呢</p>
+<p>那是因为主线程结束协程自动结束，主线程不会等待协程的结束</p>
+<p>最后打印的时候 ,主线程运行一下, 全部的子线程都在跑自己内部的方法 会强行制止</p>
+<h3 id="waitgroup">WaitGroup</h3>
+<p>我们只需要让主线程等待协程就可以了，它的用法是这样的</p>
+<p>wait = sync.WaitGroup{} //官方sync包中定义的结构体</p>
+<pre><code class="language-text">var wait = sync.WaitGroup{}  / var wait sync.WaitGroup
+创建一个初始计数为 0 的 WaitGroup。
+Add(1)  → 计数器 +1
+Done()  → 计数器 -1
+wait.Wait()
+表示当前 goroutine 在这里阻塞，直到 WaitGroup 的计数器变为 0。
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">func main() {
+    var wait sync.WaitGroup
+    wait.Add(4)
+    go shopping(&quot;ws1&quot;, &amp;wait)
+    go shopping(&quot;ws2&quot;, &amp;wait)
+    go shopping(&quot;ws3&quot;, &amp;wait)
+    go shopping(&quot;ws4&quot;, &amp;wait)
+    wait.Wait()
+}
+
+func shopping(name string, wait *sync.WaitGroup) {
+    fmt.Println(name + &quot; is shopping&quot;)
+    wait.Done()
+}
+</code></pre>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;sync&quot;
+  &quot;time&quot;
+)
+
+var (
+  wait = sync.WaitGroup{}  //官方sync包中定义的结构体
+)
+
+func sing() {
+  fmt.Println(&quot;唱歌&quot;)
+  time.Sleep(1 * time.Second)
+  fmt.Println(&quot;唱歌结束&quot;)
+  wait.Done()
+}
+
+func main() {
+  wait.Add(4)  //需要实现的
+  go sing()
+  go sing()
+  go sing()
+  go sing()
+  wait.Wait()
+  fmt.Println(&quot;主线程结束&quot;)
+}
+</code></pre>
+<h2 id="channel">channel</h2>
+<p>一个结构体指针 ;</p>
+<p>var money_Copy = make(chan int) 创建信道</p>
+<p>: 方法内部 money_Copy &lt;- money 传回数据</p>
+<p>主线程 : money, ok := &lt;-money_Copy 获取到数据</p>
+<p>var wait sync.WaitGroup 创建一个 官方的协程工具</p>
+<p>wait.add( 数字 ) --&gt; 计数器 ; 主线程</p>
+<p>go func(){</p>
+<p>wait.Wait() --&gt; 等待协程全部结束后运行 否则会直接死锁 --&gt; add(0)</p>
+<p>close(moneyChan) --&gt; 关闭信道</p>
+<p>}()</p>
+<p>有没有想过一个问题，我在协程里面产生了数据，咋传递给主线程呢？</p>
+<p>或者是怎么传递给其他协程函数呢？</p>
+<p>这个时候 channel来了</p>
+<pre><code class="language-text">func main() {
+    var wait sync.WaitGroup
+    wait.Add(4)
+    go shopping(&quot;ws1&quot;, 2, &amp;wait)
+    go shopping(&quot;ws2&quot;, 3, &amp;wait)
+    go shopping(&quot;ws3&quot;, 4, &amp;wait)
+    go shopping(&quot;ws4&quot;, 5, &amp;wait)
+
+    //2. 启动一个协程：等所有任务完成 → 关闭通道
+    最后的小括号 --&gt; 将创建出的匿名方法直接执行
+    go func(){
+        wait.Wait()
+        close(moneyChan)
+    }()
+
+    for {
+       money, ok := &lt;-money_Copy  
+       fmt.Println(money, ok)
+       if !ok {
+          break
+       }
+    }   //还是会报错 , 消息通道被阻塞 , 需要添加使用 go func 协程函数
+
+    wait.Wait()  //修改逻辑
+}
+
+    // 3. 主协程 阻塞读取通道（直到通道关闭才退出）
+var money_Copy = make(chan int)
+
+func shopping(name string, money int, wait *sync.WaitGroup) {
+    fmt.Println(name + &quot; is shopping&quot;)
+    time.Sleep(1 * time.Second)
+    fmt.Println(name + fmt.Sprintf(&quot;%d&quot;, money) + &quot; is shopping&quot;)
+
+    money_Copy &lt;- money    
+
+    wait.Done()   --&gt; 告诉协程这个逻辑已经结束
+}
+</code></pre>
+<p><img src="../../blogs/_assets/lakebook/e5678ff0022a641d2323d390.png" loading="lazy" alt=""></p>
+<h3 id="基本定义">基本定义</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  var c chan int // 声明一个传递整形的通道
+  // 初始化通道
+  c = make(chan int, 1) //  初始化一个 有一个缓冲位的通道
+  c &lt;- 1
+  //c &lt;- 2 // 会报错 deadlock 
+  fmt.Println(&lt;-c) // 取值 
+  //fmt.Println(&lt;-c) // 再取也会报错  deadlock
+
+  c &lt;- 2
+  n, ok := &lt;-c
+  fmt.Println(n, ok)
+  close(c) // 关闭信道
+  c &lt;- 3   // 关闭之后就不能再写或读了  send on closed channel
+  fmt.Println(c)
+}
+</code></pre>
+<p>当然，在同步模式下，channel没有任何意义</p>
+<p>需要在异步模式下使用channel，在协程函数里面写，在主线程里面接收数据</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+ 
+import (
+  &quot;fmt&quot;
+  &quot;sync&quot;
+  &quot;time&quot;
+)
+
+var moneyChan = make(chan int) // 声明并初始化一个长度为0的信道
+
+func pay(name string, money int, wait *sync.WaitGroup) {
+  fmt.Printf(&quot;%s 开始购物\n&quot;, name)
+  time.Sleep(1 * time.Second)
+  fmt.Printf(&quot;%s 购物结束\n&quot;, name)
+
+  moneyChan &lt;- money  //向信道中存入数据 
+
+  wait.Done()
+}
+
+// 协程
+func main() {
+  var wait sync.WaitGroup
+  startTime := time.Now()
+  // 现在的模式，就是购物接力
+  //shopping(&quot;张三&quot;)
+  //shopping(&quot;王五&quot;)
+  //shopping(&quot;李四&quot;)
+  wait.Add(3)
+  // 主线程结束，协程函数跟着结束
+  go pay(&quot;张三&quot;, 2, &amp;wait)
+  go pay(&quot;王五&quot;, 3, &amp;wait)
+  go pay(&quot;李四&quot;, 5, &amp;wait)
+
+  go func() {
+    defer close(moneyChan)
+    // 在协程函数里面等待上面三个协程函数结束
+    wait.Wait()
+  }()
+
+  for {
+    money, ok := &lt;-moneyChan
+    fmt.Println(money, ok)
+    if !ok {
+      break
+    }
+  }
+
+  //time.Sleep(2 * time.Second)
+
+  fmt.Println(&quot;购买完成&quot;, time.Since(startTime))
+  fmt.Println(&quot;moneyList&quot;, moneyList)
+}
+</code></pre>
+<p>如果这样接收数据不太优雅，那还有更优雅的写法</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">for money := range moneyChan {
+    moneyList = append(moneyList, money)
+  }
+</code></pre>
+<p>如果通道被close，for循环会自己结束，十分优雅</p>
+<h2 id="select">select</h2>
+<p>如果一个协程函数，往多个channel里面写东西，在主线程里面怎么拿数据呢？</p>
+<p>go为我们提供了select，用于异步的从多个channel里面去取数据</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;sync&quot;
+  &quot;time&quot; 
+)
+
+var moneyChan1 = make(chan int)    // 声明并初始化一个长度为0的信道
+var nameChan1 = make(chan string)  // 声明并初始化一个长度为0的信道
+var doneChan = make(chan struct{}) // 声明一个用于关闭的信道
+
+func send(name string, money int, wait *sync.WaitGroup) {
+  fmt.Printf(&quot;%s 开始购物\n&quot;, name)
+  time.Sleep(1 * time.Second)
+  fmt.Printf(&quot;%s 购物结束\n&quot;, name)
+
+  moneyChan1 &lt;- money
+  nameChan1 &lt;- name
+
+  wait.Done()
+} 
+
+// 协程
+func main() {
+  var wait sync.WaitGroup
+  startTime := time.Now()
+
+  wait.Add(3)
+  // 主线程结束，协程函数跟着结束
+  go send(&quot;张三&quot;, 2, &amp;wait)
+  go send(&quot;王五&quot;, 3, &amp;wait)
+  go send(&quot;李四&quot;, 5, &amp;wait)
+
+  go func() {   --&gt; 多个协程
+    defer close(moneyChan1)
+    defer close(nameChan1)
+    defer close(doneChan)
+    wait.Wait()
+  }()
+
+  var moneyList []int
+  var nameList []string
+
+  var event = func() {
+    for {    --&gt; 多协程使用 for + select
+      select {
+      case money := &lt;-moneyChan1:
+        moneyList = append(moneyList, money)
+      case name := &lt;-nameChan1:
+        nameList = append(nameList, name)
+      case &lt;-doneChan:    --&gt; 不接受任何信息  --&gt; 使用close == 发送消息给信道--&gt; 运行 case .关闭程序
+        return   --&gt; 退出 event 函数 
+      }
+    }
+  }
+  event()
+  fmt.Println(&quot;购买完成&quot;, time.Since(startTime))
+  fmt.Println(&quot;moneyList&quot;, moneyList)
+  fmt.Println(&quot;nameList&quot;, nameList)
+
+}
+</code></pre>
+<h2 id="协程超时处理">协程超时处理</h2>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;time&quot;
+)
+
+var done = make(chan struct{})  
+//创建一个【空结构体通道】，专门用来发「通知 / 信号」，不存任何数据！
+
+func event() {
+  fmt.Println(&quot;event执行开始&quot;)
+  time.Sleep(2 * time.Second)
+  fmt.Println(&quot;event执行结束&quot;)
+  close(done)
+}
+
+func main() {
+  go event()
+
+  select {
+  case &lt;-done:
+    fmt.Println(&quot;协程执行完毕&quot;)
+  case &lt;-time.After(1 * time.Second):
+    fmt.Println(&quot;超时&quot;)
+    return
+  }
+
+}
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<p>go channel <a href="https://zhuanlan.zhihu.com/p/643013131">https://zhuanlan.zhihu.com/p/643013131</a></p>
+<p>go select <a href="https://zhuanlan.zhihu.com/p/617487667">https://zhuanlan.zhihu.com/p/617487667</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

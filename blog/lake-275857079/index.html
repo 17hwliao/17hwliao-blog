@@ -1,0 +1,408 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>go-zero API：代码生成与路由 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>go-zero API：代码生成与路由</h1><time datetime="2026-06-30T12:44:29.000Z">2026年6月30日</time><p>api文件就是对这个服务所有api的描述</p>
+<p>服务名，函数名，路径，请求方法，请求参数，响应参数</p>
+<p>我们以用户管理的两个重要接口为例，去编写它的api文件</p>
+<p><code>@handler</code> <strong>是 go-zero API 语法注解</strong>，作用：<strong>指定当前路由对应的业务处理函数名</strong>。</p>
+<ul>
+<li>代码生成器（<code>goctl api go</code>）根据这个名字自动生成 handler 层代码</li>
+<li>决定生成的文件名、结构体、方法名</li>
+<li>绑定<strong>路由 → 业务逻辑入口</strong><code>internal/types</code> <strong>是统一存放请求体、响应体、枚举、公共结构体的地方 由</strong> <code>goctl</code> <strong>自动把</strong> <code>.api</code> <strong>里的</strong> <code>type</code> <strong>结构体统一抽离生成</strong></li>
+</ul>
+<p>Go复制代码</p>
+<pre><code class="language-text">type LoginRequest {
+  UserName string `json:&quot;userName&quot;`
+  Password string `json:&quot;password&quot;`
+}
+
+type Response {
+  Code int    `json:&quot;code&quot;`
+  Data string `json:&quot;data&quot;`
+  Msg  string `json:&quot;msg&quot;`
+}
+
+type UserInfo {
+  UserName string `json:&quot;userName&quot;`
+  Addr     string `json:&quot;addr&quot;`
+  Id       uint   `json:&quot;id&quot;`
+}
+
+type UserInfoResponse {
+  Code int      `json:&quot;code&quot;`
+  Data UserInfo `json:&quot;data&quot;`
+  Msg  string   `json:&quot;msg&quot;`
+}
+
+service users {
+  @handler login
+  post /api/users/login (LoginRequest) returns (Response)
+  
+  @handler userInfo
+  get /api/users/info returns (UserInfoResponse)
+}
+
+//goctl api go -api user.api -dir ./
+</code></pre>
+<p>通过这个示例，我们发现实际操作起来还是有些问题</p>
+<ol>
+<li>响应如何封装？</li>
+<li>统一api前缀</li>
+<li>用户信息接口应该要进行jwt验证</li>
+<li>api文档</li>
+</ol>
+<h3 id="响应封装">响应封装</h3>
+<p>不把code，data，msg写在api里面，我们通过封装统一响应</p>
+<p>在统一响应里面去加上code data msg</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type LoginRequest {
+  UserName string `json:&quot;userName&quot;`
+  Password string `json:&quot;password&quot;`
+}
+
+type UserInfoResponse {
+  UserName string `json:&quot;userName&quot;`
+  Addr     string `json:&quot;addr&quot;`
+  Id       uint   `json:&quot;id&quot;`
+}
+
+service users {
+  @handler login
+  post /login (LoginRequest) returns (string)
+  
+  @handler userInfo
+  get /info returns (UserInfoResponse)
+}
+
+// goctl api go -api v1.api -dir .
+</code></pre>
+<p>在common/response/enter.go中</p>
+<p>这个文件中使用到的httpx 接口 :</p>
+<p>它是 go-zero 自己封装的 HTTP 工具包</p>
+<ul>
+<li><code>httpx.WriteJson</code> → 写 JSON 响应</li>
+<li><code>httpx.OkJson</code> → 成功返回</li>
+<li><code>httpx.ErrorCtx</code> → 错误返回</li>
+<li><code>httpx.Parse</code> → 自动绑定参数<strong>Go Package...</strong></li>
+</ul>
+<p>Go复制代码</p>
+<pre><code class="language-text">package response
+
+import (
+  &quot;github.com/zeromicro/go-zero/rest/httpx&quot;
+  &quot;net/http&quot;
+)
+
+type Body struct {
+  Code uint32      `json:&quot;code&quot;`
+  Msg  string      `json:&quot;msg&quot;`
+  Data interface{} `json:&quot;data&quot;`
+}
+
+// Response http返回
+func Response(r *http.Request, w http.ResponseWriter, resp interface{}, err error) {
+  if err == nil {
+    //成功返回
+    r := &amp;Body{
+      Code: 0,
+      Msg:  &quot;成功&quot;,
+      Data: resp,
+    }
+    httpx.WriteJson(w, http.StatusOK, r)
+    return
+  }
+  //错误返回
+  errCode := uint32(10086)
+  // 可以根据错误码，返回具体错误信息
+  errMsg := &quot;服务器错误&quot;
+
+  httpx.WriteJson(w, http.StatusBadRequest, &amp;Body{
+    Code: errCode,
+    Msg:  errMsg,
+    Data: nil,
+  })
+
+}
+</code></pre>
+<p>修改一下handler的响应逻辑</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">l := logic.NewLoginLogic(r.Context(), svcCtx)
+resp, err := l.Login(&amp;req)
+response.Response(r, w, resp, err)
+</code></pre>
+<p>然后完善逻辑即可</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func (l *LoginLogic) Login(req *types.LoginRequest) (resp string, err error) {
+  // todo: add your logic here and delete this line
+  fmt.Println(req.UserName, req.Password)
+  return &quot;xxxx.xxxx.xxx&quot;, nil
+}
+</code></pre>
+<h4 id="模板定制化">模板定制化</h4>
+<p>当然官方提供了修改模板的方式，避免每次生成都要去改</p>
+<p><a href="https://go-zero.dev/docs/tutorials/customization/template">https://go-zero.dev/docs/tutorials/customization/template</a></p>
+<p>先全局搜一下 <code>handler.tpl</code>这个文件</p>
+<p>如果没有就先用这个命令生成</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">goctl template init
+</code></pre>
+<p>修改为：</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package handler
+
+import (
+    &quot;net/http&quot;
+    &quot;github.com/zeromicro/go-zero/rest/httpx&quot;
+    &quot;go_test/common/response&quot;
+    {{.ImportPackages}}
+)
+
+func {{.HandlerName}}(svcCtx *svc.ServiceContext) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        {{if .HasRequest}}var req types.{{.RequestType}}
+        if err := httpx.Parse(r, &amp;req); err != nil {
+            httpx.Error(w, err)
+            return
+        }{{end}}
+
+        l := logic.New{{.LogicType}}(r.Context(), svcCtx)
+        {{if .HasResp}}resp, {{end}}err := l.{{.Call}}({{if .HasRequest}}&amp;req{{end}})
+        {{if .HasResp}}response.Response(r, w, resp, err){{else}}response.Response(r, w, nil, err){{end}}
+
+    }
+}
+</code></pre>
+<h3 id="api前缀">api前缀</h3>
+<p>对于用户服务而言，api的前缀都是 /api/users</p>
+<p><code>/api</code> <strong>前缀 = 隔离路由 + 版本控制 + 统一中间件 + 方便部署 + 前端好管理</strong>。</p>
+<p>Gin 小项目可以不加，但 go-zero / 微服务 / 线上项目 <strong>必须加</strong>，规范就是效率。</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">@server (
+    prefix: /api/users
+)
+service users {
+    @handler login
+    post /login (LoginRequest) returns (string)
+
+    @handler userInfo
+    get /info returns (UserInfoResponse)
+}
+</code></pre>
+<h3 id="jwt及验证">jwt及验证</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">type LoginRequest {
+  UserName string `json:&quot;userName&quot;`
+  Password string `json:&quot;password&quot;`
+}
+
+type UserInfoResponse {
+  UserName string `json:&quot;userName&quot;`
+  Addr     string `json:&quot;addr&quot;`
+  Id       uint   `json:&quot;id&quot;`
+}
+
+@server(
+  prefix: /api/users
+)
+service users {
+  @handler login
+  post /login (LoginRequest) returns (string)
+}
+
+
+@server(
+  jwt: Auth
+  prefix: /api/users
+)
+service users {
+  @handler userInfo
+  get /info returns (UserInfoResponse)
+}
+</code></pre>
+<p>转换之后，修改配置文件</p>
+<p>AccessExpire的单位是秒</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">Name: users
+Host: 0.0.0.0
+Port: 8888
+Auth:
+  AccessSecret: 12345678
+  AccessExpire: 3600
+</code></pre>
+<p>jwt公共代码</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package jwts
+
+import (
+  &quot;errors&quot;
+  &quot;github.com/golang-jwt/jwt/v4&quot;
+  &quot;time&quot;
+)
+
+// JwtPayLoad jwt中payload数据
+type JwtPayLoad struct {
+  UserID   uint   `json:&quot;user_id&quot;`
+  Username string `json:&quot;username&quot;` // 用户名
+  Role     int    `json:&quot;role&quot;`     // 权限  1 普通用户  2 管理员
+}
+
+type CustomClaims struct {
+  JwtPayLoad
+  jwt.RegisteredClaims
+}
+
+// GenToken 创建 Token(实现签发jwt)
+func GenToken(user JwtPayLoad, accessSecret string, expires int64) (string, error) {
+  claim := CustomClaims{
+    JwtPayLoad: user,
+    RegisteredClaims: jwt.RegisteredClaims{
+      ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(expires))),
+    },
+  }
+
+  token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+  return token.SignedString([]byte(accessSecret))
+}
+
+// ParseToken 解析 token
+func ParseToken(tokenStr string, accessSecret string, expires int64) (*CustomClaims, error) {
+
+  token, err := jwt.ParseWithClaims(tokenStr, &amp;CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+    return []byte(accessSecret), nil
+  })
+  if err != nil {
+    return nil, err
+  }
+  if claims, ok := token.Claims.(*CustomClaims); ok &amp;&amp; token.Valid {
+    return claims, nil
+  }
+  return nil, errors.New(&quot;invalid token&quot;)
+}
+</code></pre>
+<p>在登录成功之后签发jwt</p>
+<p>loginlogic.go</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func (l *LoginLogic) Login(req *types.LoginRequest) (resp string, err error) {
+  // todo: add your logic here and delete this line
+  auth := l.svcCtx.Config.Auth
+  token, err := jwts.GenToken(jwts.JwtPayLoad{
+    UserID:   1,
+    Username: &quot;枫枫&quot;,
+    Role:     1,
+  }, auth.AccessSecret, auth.AccessExpire)
+  if err != nil {
+    return &quot;&quot;, err
+  }
+  return token, err
+}
+</code></pre>
+<p>然后在userinfologic里面加上必要的逻辑</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func (l *UserInfoLogic) UserInfo() (resp *types.UserInfoResponse, err error) {
+  // todo: add your logic here and delete this line
+
+  userId := l.ctx.Value(&quot;user_id&quot;).(json.Number)
+  fmt.Printf(&quot;%v, %T, \n&quot;, userId, userId)
+  username := l.ctx.Value(&quot;username&quot;).(string)
+  uid, _ := userId.Int64()
+
+  return &amp;types.UserInfoResponse{
+    UserId:   uint(uid),
+    Username: username,
+  }, nil
+}
+</code></pre>
+<p>userinfo这个接口就已经自动加上jwt的验证了</p>
+<p>不过这个token是需要这样加</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">headers:{
+  Authorization: &quot;Bearer token&quot;
+} 
+</code></pre>
+<p>没有通过jwt的响应是401，这个需要留意一下</p>
+<p>当然，也能修改jwt验证的响应</p>
+<p>在main中，加上jwt验证的回调函数即可</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func main() {
+  flag.Parse()
+
+  var c config.Config
+  conf.MustLoad(*configFile, &amp;c)
+
+  server := rest.MustNewServer(c.RestConf, rest.WithUnauthorizedCallback(JwtUnauthorizedResult))
+  defer server.Stop()
+
+  ctx := svc.NewServiceContext(c)
+  handler.RegisterHandlers(server, ctx)
+
+  fmt.Printf(&quot;Starting server at %s:%d...\n&quot;, c.Host, c.Port)
+  server.Start()
+}
+
+// JwtUnauthorizedResult jwt验证失败的回调
+func JwtUnauthorizedResult(w http.ResponseWriter, r *http.Request, err error) {
+  fmt.Println(err) // 具体的错误，没带token，token过期？伪造token？
+  httpx.WriteJson(w, http.StatusOK, response.Body{10087, &quot;鉴权失败&quot;, nil})
+}
+</code></pre>
+<h3 id="生成api文档">生成api文档</h3>
+<p>后端对外的api，肯定要和前端进行对接</p>
+<p>那么在go-zero里面怎么生成api接口文档呢</p>
+<ol>
+<li>安装goctl-swagger</li>
+</ol>
+<p>Go复制代码</p>
+<pre><code class="language-text">go install github.com/zeromicro/goctl-swagger@latest
+</code></pre>
+<ol>
+<li>生成app.json</li>
+</ol>
+<p>如果没有doc目录，需要创建</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">goctl api plugin -plugin goctl-swagger=&quot;swagger -filename app.json -host localhost:8888 -basepath /&quot; -api v1.api -dir ./doc
+</code></pre>
+<ol>
+<li>使用docker，查看这个swagger页面</li>
+</ol>
+<p>Go复制代码</p>
+<pre><code class="language-text">docker run -d --name swag -p 8087:8080 -e SWAGGER_JSON=/opt/app.json -v D:\IT\go_project3\go_test\v1\api\doc\:/opt swaggerapi/swagger-ui
+</code></pre>
+<p>可以再完善下api信息</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">@server(
+  prefix: /api/users
+)
+service users {
+  @doc(
+    summary: &quot;用户登录&quot;
+  )
+  @handler login
+  post /login (LoginRequest) returns (string)
+}
+
+@server(
+  jwt: Auth
+  prefix: /api/users
+)
+service users {
+  @doc(
+    summary: &quot;获取用户信息&quot;
+  )
+  @handler userInfo
+  get /info returns (UserInfoResponse)
+}
+</code></pre>
+<p>改为再重新生成一下 json</p>
+<p><img src="../../blogs/_assets/lakebook/f2e3f65835c24d29e4475e8c.png" loading="lazy" alt=""></p>
+<p>但是，我发现这个swagger体验不怎么好，使用了自定义响应之后，swag这里改不了</p>
+<p>公司项目的话，都是有自己的api平台</p>
+<p>团队项目的话，也可以用apifox</p>
+<p>所以，个人用swagger的话，凑活着用也不是不行</p>
+<h2 id="参考文档">参考文档</h2>
+<p>api语法 <a href="https://blog.csdn.net/chinus_yan/article/details/129674455">https://blog.csdn.net/chinus_yan/article/details/129674455</a></p>
+<p>官方api规范 <a href="https://go-zero.dev/docs/tutorials#token">https://go-zero.dev/docs/tutorials#token</a></p>
+<p>go-zero使用jwt <a href="https://blog.csdn.net/Mr_XiMu/article/details/128343072">https://blog.csdn.net/Mr_XiMu/article/details/128343072</a></p>
+<p>自定义jwt错误 <a href="https://blog.csdn.net/gzyx1988/article/details/128991504">https://blog.csdn.net/gzyx1988/article/details/128991504</a></p>
+<p>goctl-swagger的坑 <a href="https://www.cnblogs.com/eatfishcat/p/17238521.html">https://www.cnblogs.com/eatfishcat/p/17238521.html</a></p>
+<p>goctl-swagger使用 <a href="https://blog.csdn.net/weixin_49369316/article/details/129439722">https://blog.csdn.net/weixin_49369316/article/details/129439722</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

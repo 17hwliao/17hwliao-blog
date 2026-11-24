@@ -1,0 +1,164 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 接口：实现与类型断言 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 接口：实现与类型断言</h1><time datetime="2026-05-13T00:31:30.000Z">2026年5月13日</time><p>接口是一组仅包含方法名、参数、返回值的未具体实现的方法的集合</p>
+<p>像是一种数据类型, 实际的数据关系是 对象中需要包含接口中的全部的方法 :</p>
+<p>然后具备多种内部函数的不同对象就可以直接使用接口的类型实现匹配了 :</p>
+<p>var u Animal</p>
+<p>fmt(u.(cat).haqi)</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+// Animal 定义一个animal的接口，它有唱，跳，rap的方法
+type Animal interface {
+  sing()
+  jump()
+  rap()
+}
+
+// Chicken 需要全部实现这些接口
+type Chicken struct {
+  Name string
+}
+
+func (c Chicken) sing() {
+  fmt.Println(&quot;chicken 唱&quot;)
+}
+
+func (c Chicken) jump() {
+  fmt.Println(&quot;chicken 跳&quot;)
+}
+func (c Chicken) rap() {
+  fmt.Println(&quot;chicken rap&quot;)
+}
+
+// 全部实现完之后，chicken就不再是一只普通的鸡了
+
+func main() {
+  var animal Animal
+
+  animal = Chicken{&quot;ik&quot;}
+
+  animal.sing()
+  animal.jump()
+  animal.rap()
+
+}
+</code></pre>
+<p>接口本身不能绑定方法</p>
+<p>接口是值类型，保存的是：值+原始类型</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+// Animal 定义一个animal的接口，它有唱，跳，rap的方法
+type Animal interface {
+  sing()
+  jump()
+  rap()
+}
+
+// Chicken 需要全部实现这些接口
+type Chicken struct {
+  Name string
+}
+
+func (c Chicken) sing() {
+  fmt.Println(&quot;chicken 唱&quot;)
+}
+
+func (c Chicken) jump() {
+  fmt.Println(&quot;chicken 跳&quot;)
+}
+func (c Chicken) rap() {
+  fmt.Println(&quot;chicken rap&quot;)
+}
+
+// Cat 需要全部实现这些接口
+type Cat struct {
+  Name string
+}
+
+func (c Cat) sing() {
+  fmt.Println(&quot;cat 唱&quot;)
+}
+
+func (c Cat) jump() {
+  fmt.Println(&quot;cat 跳&quot;)
+}
+func (c Cat) rap() {
+  fmt.Println(&quot;cat rap&quot;)
+}
+
+func sing(obj Animal) {
+  obj.sing()
+}
+
+// 全部实现完之后，chicken就不再是一只普通的鸡了
+
+func main() {
+  chicken := Chicken{&quot;ik&quot;}
+  cat := Cat{&quot;阿狸&quot;}
+  sing(chicken)
+  sing(cat)
+}
+</code></pre>
+<p>实现接口：</p>
+<p>一个类型实现了接口的所有方法</p>
+<p>即实现了该接口</p>
+<h2 id="类型断言">类型断言</h2>
+<p>在使用接口的时候，我还是希望知道此是的具体类型是什么，我们可以通过断言来获取</p>
+<p>可以直接使用 ch , ok := c.(类型) 可以实现断言类型</p>
+<p>使用 switch 可以实现 传 一个参数</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func sing(obj Animal ) {
+  // 通过断言来获取此时的具体类型
+  switch obj.(type) {
+  case Chicken:
+    fmt.Println(&quot;鸡&quot;)
+  case Cat:
+    fmt.Println(&quot;猫&quot;)
+  }
+  obj.sing()
+}
+</code></pre>
+<p>或者是断言某个类型</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func sing(obj Animal) {
+  c, ok := obj.(Chicken) // 两个参数    断言之后的类型   是否是对应类型
+  fmt.Println(c, ok)
+  d := obj.(Cat) // 一个参数 就是断言之后的类型,注意，类型不对是要报错的 main.Animal is main.Chicken, not main.Cat
+  fmt.Println(d)
+}
+</code></pre>
+<h2 id="空接口">空接口</h2>
+<p>空接口可以接受任何类型</p>
+<p>换一种，任何类型都实现了空接口的定义</p>
+<pre><code class="language-text">type Student struct {
+    Name string
+}
+
+type Teacher interface{}
+
+func Print(v Teacher) {  //(可以不实现)  // func Print(v interface{})  //any
+    fmt.Println(v)
+}
+
+func main() {
+    user1 := User{&quot;ws1&quot;}
+    student1 := Student{&quot;ws2&quot;}
+  
+    Print(student1)
+    Print(user1)
+}
+</code></pre>
+<p>可以实现输出</p>
+<p>{ws2}</p>
+<p>{ws1}</p>
+<h2 id="参考文档">参考文档</h2>
+<p>什么是接口 <a href="https://studygolang.com/articles/20117">https://studygolang.com/articles/20117</a></p>
+<p>Go接口 <a href="https://zhuanlan.zhihu.com/p/453799496">https://zhuanlan.zhihu.com/p/453799496</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

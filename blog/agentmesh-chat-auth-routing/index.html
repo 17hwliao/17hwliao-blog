@@ -1,0 +1,384 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AgentMesh：聊天请求的认证、路由与流式响应 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>AgentMesh：聊天请求的认证、路由与流式响应</h1><time datetime="2026-09-15T02:23:36.000Z">2026年9月15日</time><p><a href="../../projects/agentmesh/index.html#project-articles">AgentMesh 项目展示</a> · <a href="../../blog/lake-282376218/index.html">系列目录</a> · 3 / 12</p>
+<p>沿一次聊天请求追踪认证、租户识别、令牌桶限流、模型路由与 SSE 返回，说明首块前 fallback 和取消传播的边界。</p>
+<blockquote>
+<p>实现说明与运行记录基于 2026-09-15 更新的原稿。正文中的文件行号、实现状态与验证结果按该历史快照理解。</p>
+</blockquote>
+<h2 id="实现概览">实现概览</h2>
+<ul>
+<li>外部契约、启动入口和实际请求处理分别承担不同职责。</li>
+<li>认证建立可信租户，路由根据租户与模型选择 Provider。</li>
+<li>首块后不混合模型回答，断连信号沿调用链传播。</li>
+</ul>
+<h2 id="实现细节">实现细节</h2>
+<p>在整体架构之上，这一部分聚焦 AgentMesh 聊天入口，说明认证、路由、流式输出与取消传播。Reservation、Outbox、Kafka 和 Embedding 在各自的专题中继续展开。</p>
+<pre><code class="language-latex">Client
+  → POST /v1/chat/completions
+  → API Key 认证，服务端确定 tenant
+  → 本地 per-tenant Token Bucket
+  → tenant/model 路由
+  → primary Provider 的 SSE
+  → trace + context 取消传播
+  └→ 首块前失败才使用 fallback Provider
+</code></pre>
+<h2 id="请求主链的关键行为">请求主链的关键行为</h2>
+<p>这条请求链需要明确以下四个行为边界：</p>
+<ol>
+<li>为什么认证必须在路由和业务处理之前？</li>
+<li>为什么 fallback 只能发生在 SSE 首块发送之前？</li>
+<li>为什么客户端取消必须传播到 Provider？</li>
+<li>trace 记录了什么，它为什么不是 usage ledger？</li>
+</ol>
+<h2 id="架构关系与职责回顾">架构关系与职责回顾</h2>
+<p>架构关系可以拆为以下三条链路：</p>
+<pre><code class="language-latex">AgentMesh：聊天链、用量异步链、Embedding 链
+SQL Sentinel：SQL 证据链、RAG 知识旁路、Webhook Kafka 异步链
+</code></pre>
+<p>然后口述一句定位：</p>
+<ul>
+<li>AgentMesh 是 <strong>Go 多租户 LLM Gateway</strong>，不是自动规划工具调用的聊天 Agent。</li>
+<li>SQL Sentinel 是 <strong>受控 SQL 诊断 Agent</strong>，不是自动执行 SQL/DDL 的改库工具。</li>
+</ul>
+<p>三条链路分别说明同步响应、用量处理与 SQL 验证，不应合并为一条阻塞调用链。</p>
+<h2 id="聊天主链的运行与证据记录">聊天主链的运行与证据记录</h2>
+<p>项目目录：</p>
+<pre><code class="language-latex">C:\Users\17hwliao\Documents\Codex\2026-09-09\new-chat\work\agentmesh-interview-complete
+</code></pre>
+<p>运行：</p>
+<pre><code class="language-powershell">Set-Location C:\Users\17hwliao\Documents\Codex\2026-09-09\new-chat\work\agentmesh-interview-complete
+
+.\scripts\demo-stage-1.ps1
+go test -count=1 ./internal/gateway/...
+</code></pre>
+<p>记录三条事实：</p>
+<ol>
+<li>primary 在首块前失败时，fallback 成功的 trace 是怎样记录 attempts 的？</li>
+<li><code>trace_query</code> 返回了哪些字段？</li>
+<li>cancellation 测试证明了哪一段 context 被取消？</li>
+</ol>
+<p>不要记录整段日志，只记录“现象 → 对应机制 → 对应代码/测试”。</p>
+<p>已运行成功。三条记录如下：</p>
+<ol>
+<li><strong>primary 首块前失败，fallback 成功</strong></li>
+</ol>
+<p>属于 router 包，负责AI模型多提供者的路由与故障降级重试逻辑，不关心HTTP细节，专注模型调用的候选提供者轮转、钩子回调、事件观测，是AgentMesh网关的核心调度模块。</p>
+<ol>
+<li>自定义错误</li>
+</ol>
+<ul>
+<li><p> ErrNoProvider ：没有配置可用模型提供者</p>
+</li>
+<li><p> ErrProvidersUnavailable ：全部候选提供者都失败，且没有输出任何数据分片</p>
+</li>
+<li><p> ErrStreamInterrupted ：已经向客户端返回部分流数据，此时禁止切换到下一个后端</p>
+</li>
+</ul>
+<p>核心约束：一旦已经发出第一个数据块，就不能再fallback切换其他模型，避免客户端收到混合不同模型的输出，保证流式语义正确性。</p>
+<ol>
+<li>接口定义</li>
+</ol>
+<p>1. Streamer：基础接口，定义流式对话调用 Stream</p>
+<p>2. AttemptHook（同步钩子）：调用生命周期同步回调，用于配额预留这类强可靠业务，会阻塞调用流程。</p>
+<ul>
+<li><p> BeforeAttempt ：发起调用前</p>
+</li>
+<li><p> BeforeEmit ：每个分片向外发送前</p>
+</li>
+<li><p> AfterEmit ：每个分片向外发送后</p>
+</li>
+<li><p> FinishAttempt ：单次调用尝试结束</p>
+</li>
+</ul>
+<p>3. HookedStreamer：扩展接口，在 Streamer 之上增加带钩子的调用 StreamWithAttemptHook</p>
+<p>4. Observer / NonBlockingObserver：事件观测器，只做日志、监控、指标采集，禁止改变路由逻辑。普通观察者启动goroutine异步执行；标记 NonBlockingObserver 直接在当前协程执行，内部必须保证无阻塞。</p>
+<ol>
+<li>数据结构与常量</li>
+</ol>
+<ul>
+<li><p> AttemptEvent ：路由生命周期事件，记录提供者名称、事件类型、结果、用量信息，不携带请求报文、原始错误详情，做安全的观测上报。</p>
+</li>
+<li><p>事件常量： AttemptStarted 调用开始、 AttemptFirstChunk 收到首个分片、 AttemptFinished 调用结束。</p>
+</li>
+<li><p> Router 结构体：保存候选提供者数组、观测器实例。</p>
+</li>
+<li><p> New() 、 NewWithObserver() ：构造Router实例。</p>
+</li>
+</ul>
+<ol>
+<li>核心业务函数  StreamWithAttemptHook</li>
+</ol>
+<p>1. 如果提供者列表为空，直接返回 ErrNoProvider 。</p>
+<p>2. 按顺序遍历候选provider：</p>
+<p>1. 检查上下文是否已经取消；执行 BeforeAttempt 钩子。</p>
+<p>2. 触发 AttemptStarted 观测事件。</p>
+<p>3. 调用provider的 Stream 进行流式请求；在分片回调中：</p>
+<ul>
+<li><p>执行 BeforeEmit 钩子；收到第一个分片触发 AttemptFirstChunk 事件，标记 emitted=true 。</p>
+</li>
+<li><p>将分片转发给上层 emit 回调，执行 AfterEmit 钩子。</p>
+</li>
+</ul>
+<p>4. 调用结果分支处理</p>
+<ul>
+<li><p>成功：执行结束钩子，上报成功事件，函数返回，不再尝试下一个provider。</p>
+</li>
+<li><p>上下文被取消：上报cancelled事件，返回取消错误。</p>
+</li>
+<li><p> emitted=true （已经输出内容）：上报interrupted，返回 ErrStreamInterrupted ，终止，不做重试。</p>
+</li>
+<li><p>失败但还未输出任何分片：上报 failed_before_first_chunk ，继续循环尝试下一个候选提供者。</p>
+</li>
+</ul>
+<p>3. 全部提供者尝试完毕均失败，返回 ErrProvidersUnavailable 。</p>
+<p>4.  hookFailureAfterProgress ：钩子执行失败的统一处理，完成结束钩子后返回原始错误。</p>
+<ol>
+<li>observe 事件分发</li>
+</ol>
+<ul>
+<li><p>观测器为空直接跳过。</p>
+</li>
+<li><p>如果是 NonBlockingObserver ，包装recover捕获panic，当前协程执行Observe。</p>
+</li>
+<li><p>普通Observer：新开goroutine异步执行观测逻辑，加recover防止观测代码panic把整个请求搞崩。</p>
+</li>
+</ul>
+<p>整体功能概括</p>
+<p>Router实现有序多模型候选策略：仅在还没有输出任何流分片时，才允许失败重试切换下一个模型后端；一旦有内容流出，就禁止fallback。</p>
+<p>同时支持同步生命周期钩子（配额预留）和异步观测器（监控指标），将路由策略和底层provider实现解耦。</p>
+<p>结合上一份 main.go ，main会组装Router，作为网关内部模型调度的核心组件。</p>
+<ol>
+<li><p><code>trace_query</code><strong>返回字段</strong></p>
+</li>
+<li><p><strong>cancellation 取消的 context</strong></p>
+</li>
+</ol>
+<h2 id="外部契约启动组装与请求入口">外部契约、启动组装与请求入口</h2>
+<p>阅读顺序：</p>
+<ol>
+<li><code>specs/001-local-mock-stream-gateway/spec.md</code></li>
+<li><code>cmd/api/main.go</code></li>
+<li><code>internal/gateway/server.go</code></li>
+</ol>
+<p>每个文件只回答一个问题：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>要找到的答案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>spec.md</code></td>
+<td>对 HTTP、SSE、fallback 的外部合同是什么？</td>
+</tr>
+<tr>
+<td><code>main.go</code></td>
+<td>Provider、tenant route、trace recorder、handler 在哪里被组装？</td>
+</tr>
+<tr>
+<td><code>server.go</code></td>
+<td>认证、限流、路由、调用 Provider、写 SSE、记录 trace 的先后顺序是什么？</td>
+</tr>
+</tbody></table></div>
+<p>输出一张时序图：</p>
+<pre><code class="language-latex">client → gateway → auth/tenant → rate gate → router → primary provider
+                                                     ↘ fallback provider
+gateway → trace recorder
+</code></pre>
+<h3 id="1-specmd外部合同">1. <code>spec.md</code>：外部合同</h3>
+<ul>
+<li>HTTP：提供 <code>POST /v1/chat/completions</code>；初版只允许回环监听，<code>/healthz</code> 可用。</li>
+<li>SSE：每块格式为 <code>data: {json}\n\n</code>，成功结束为 <code>data: [DONE]\n\n</code>。</li>
+<li>fallback：仅当 primary 在首个 SSE 块前失败，才按 Router 顺序切换；一旦已发送首块，后续失败只返回规范化流错误，绝不切换。</li>
+<li>取消：请求 Context 必须传给 Provider，客户端取消要终止 mock 流。</li>
+</ul>
+<h3 id="2-maingo在哪里组装">2. <code>main.go</code>：在哪里组装</h3>
+<ul>
+<li>Provider：<code>runtime.Selection</code> 校验逻辑 Provider 顺序，<code>runtime.Build</code> 创建 mock／Ark／Ollama Provider。</li>
+<li>tenant route：<code>auth.OpenConfiguredRuntime</code> 创建身份 Store；<code>tenant.NewResolver(...)</code> 把 Store、逻辑 Provider 与真实 Provider 组装为租户路由 Resolver。</li>
+<li>trace recorder：<code>observability.NewRecorder(...)</code>。</li>
+<li>handler：<code>gateway.NewWithTenantRoutingAndRecorderAndReservations(...)</code> 创建 Gateway；再设置 Rate Gate、Embedding Handler；最后用 <code>AuthenticatedHandler(...)</code> 套上认证，交给 <code>http.Server</code> 启动。</li>
+</ul>
+<h3 id="3-servergo实际执行顺序">3. <code>server.go</code>：实际执行顺序</h3>
+<pre><code class="language-text">client
+  │ POST /v1/chat/completions
+  ▼
+gateway.AuthenticatedHandler
+  │
+  ├─ auth.Authenticate：验证 API Key，写入 tenantID 到 request.Context
+  ▼
+rate gate
+  │ 依据 tenantID 限流；拒绝则直接 429
+  ▼
+handleChat
+  │
+  ├─ decodeChatRequest：校验 JSON、model、messages、stream=true
+  ├─ trace recorder.Start：创建 trace，写 X-AgentMesh-Trace-ID
+  ├─ tenant resolver：按 tenant + model 找到 Provider Router
+  ├─ quota gate / reservation.Begin：先预留配额
+  ▼
+router.Stream(request.Context)
+  │
+  ├─ primary provider
+  │    ├─ 首块前失败 → trace attempt=failed_before_first_chunk
+  │    └─ 首块成功 → gateway 写 SSE；后续失败不 fallback
+  │
+  └─ fallback provider（仅 primary 首块前失败）
+       └─ 成功 → trace attempt=succeeded
+  ▼
+gateway
+  ├─ reservation.Complete
+  ├─ trace recorder.Complete
+  └─ 写 data: [DONE]\n\n
+</code></pre>
+<p>对应顺序的核心代码是</p>
+<p><code>cmd/api/main.go</code>、</p>
+<p><code>internal/gateway/server.go:124</code>、</p>
+<p><code>internal/router/router.go:89</code>。</p>
+<h2 id="首块边界与取消传播">首块边界与取消传播</h2>
+<p>阅读：</p>
+<ol>
+<li><code>internal/gateway/auth_test.go</code></li>
+<li><code>internal/gateway/providers_test.go</code></li>
+<li><code>internal/gateway/context_propagation_test.go</code></li>
+<li><code>internal/gateway/trace_test.go</code></li>
+</ol>
+<p>写出下面两个问题的标准答案：</p>
+<h3 id="追问-a为什么首块后不能-fallback">追问 A：为什么首块后不能 fallback？</h3>
+<p>答案必须含有：HTTP 响应已经提交、SSE 内容已经被客户端消费、切换会导致一条回答混入两个 Provider、无法可靠回滚已发送 token。</p>
+<h3 id="追问-b为什么取消要传播给-provider">追问 B：为什么取消要传播给 Provider？</h3>
+<p>答案必须含有：客户端断开后继续生成会浪费模型配额和连接资源、context 是 Go 的取消边界、trace 需要记录 cancelled 结果。</p>
+<h3 id="追问-a为什么首块后不能-fallback-1">追问 A：为什么首块后不能 fallback？</h3>
+<p>首块后不能 fallback，因为这时 HTTP 响应已经提交，Gateway 已经写出并 flush 了 SSE 数据，SSE 内容已经被客户端消费。</p>
+<p>如果此时从 primary 切换到 fallback，一条回答会混入两个 Provider 的输出：前半段来自 primary，后半段来自 fallback。两者的上下文、采样结果和 token 序列都无法保证连续一致；更关键的是，已发送 token 无法可靠回滚。</p>
+<p>所以项目把 fallback 边界定在“首块前”：首块前 primary 失败可切换；首块后失败记录 <code>stream_interrupted</code> 并返回流错误，不调用 fallback。</p>
+<p>证据：</p>
+<ul>
+<li><code>internal/gateway/providers_test.go:38</code> 验证 Ark 已发出 <code>ark partial</code> 后，Ollama 调用次数仍为 0。</li>
+<li><code>internal/router/router.go:154</code> 对已产生首块的错误返回 <code>ErrStreamInterrupted</code>；只有首块前失败才继续下一 Provider。</li>
+<li><code>internal/gateway/server.go:331</code> 已开始 SSE 后把错误作为流内错误处理。</li>
+</ul>
+<h3 id="追问-b为什么取消要传播给-provider-1">追问 B：为什么取消要传播给 Provider？</h3>
+<p>客户端断开后，如果 Provider 仍继续生成，会白白消耗模型配额和连接资源，也会占用服务端 goroutine、HTTP/SSE 连接及下游连接池。</p>
+<p>在 Go 里，<code>context</code> 是请求级取消边界。Gateway 将 <code>request.Context()</code> 传给 Router，Router 再将同一个 <code>ctx</code> 传给 <code>candidate.Stream(...)</code>；因此客户端取消能让 Provider 立即结束阻塞或生成。</p>
+<p>同时，trace 必须记录 <code>cancelled</code> 结果，否则运维侧无法区分“Provider 不可用”“流中断”和“用户主动取消”。</p>
+<p>证据：</p>
+<ul>
+<li><code>internal/gateway/context_propagation_test.go:16</code> 证明已取消的 request context 会传到认证和 tenant route。</li>
+<li><code>internal/router/router.go:106</code> 将同一 <code>ctx</code> 传给 Provider。</li>
+<li><code>internal/gateway/server.go:327</code> 捕获 <code>context.Canceled</code>／DeadlineExceeded 后写入 <code>trace.cancelled=true</code>。</li>
+<li><code>internal/gateway/trace_test.go:14</code> 验证 trace 查询仅返回安全摘要且受租户隔离。</li>
+</ul>
+<h2 id="认证限流配额与路由的职责">认证、限流、配额与路由的职责</h2>
+<p>完成表格：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>当前主链中的作用</th>
+<th>不应该怎么理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>API Key</td>
+<td>认证并获得服务端可信 tenant 上下文</td>
+<td>不是客户端自报 tenant 的“双重认证”。</td>
+</tr>
+<tr>
+<td>Router</td>
+<td>按 tenant/model 配置选择 Provider；支持首块前 fallback</td>
+<td>不是已实现的实时健康度智能调度。</td>
+</tr>
+<tr>
+<td>Token Bucket</td>
+<td>单进程、按 tenant 进行入口削峰</td>
+<td>不是用户余额或用量账本。</td>
+</tr>
+<tr>
+<td>trace</td>
+<td>记录 provider attempts、耗时、结果与取消</td>
+<td>不是财务级 usage ledger。</td>
+</tr>
+</tbody></table></div>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>当前主链中的作用</th>
+<th>不应该怎么理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>API Key</td>
+<td>认证请求，并从服务端 Key Store 得到可信的 <code>tenantID</code><br>，写入 <code>request.Context</code><br>。</td>
+<td>不是客户端自报 tenant 的“双重认证”；请求体没有资格决定租户身份。</td>
+</tr>
+<tr>
+<td>Router</td>
+<td>根据已认证 tenant 和 model 的 route 配置选择 Provider；primary 首块前失败时可尝试 fallback。</td>
+<td>不是已实现的实时健康度智能调度；当前没有基于动态健康分数自动选路。</td>
+</tr>
+<tr>
+<td>Token Bucket</td>
+<td>单进程内、按 tenant 的入口削峰；超额请求在调用 Provider 前被拒绝。</td>
+<td>不是用户余额、配额结算或用量账本；多 API 副本间也不共享状态。</td>
+</tr>
+<tr>
+<td>trace</td>
+<td>记录 Provider attempts、首块／总耗时、结果码、取消状态和是否观察到 usage。</td>
+<td>不是财务级 usage ledger；不用于余额扣减、账单对账，也不保存 prompt、SSE 内容或密钥。</td>
+</tr>
+</tbody></table></div>
+<h2 id="请求链路的关键问题">请求链路的关键问题</h2>
+<p>录一段 90 秒介绍：</p>
+<p>AgentMesh 是一个 Go 多租户 LLM Gateway。聊天请求先通过 API Key 认证并由服务端确定 tenant，再经过本地 Token Bucket 限流和 tenant/model 路由调用 Provider。网关通过 SSE 流式返回结果；如果 primary 在第一块数据发送前失败，才能安全切换到 fallback Provider，首块后不会切换，以避免混合两个模型的输出。请求全过程记录 trace，并将客户端取消传播到 Provider，避免无效生成和资源浪费。</p>
+<p>请求链路的四个关键问题：</p>
+<ol>
+<li>AgentMesh 为什么是网关而不是 Agent？</li>
+<li>认证、限流、路由为什么要按此顺序？</li>
+<li>fallback 为什么有“首块前”条件？</li>
+<li>客户端取消时系统为什么还要关心 Provider？</li>
+</ol>
+<h3 id="90-秒介绍稿">90 秒介绍稿</h3>
+<p>AgentMesh 是一个用 Go 实现的多租户 LLM Gateway，不负责自主规划和工具调用，更像是模型能力的统一接入与治理层。</p>
+<p>一次聊天请求进入后，首先通过 API Key 认证。API Key 不只是校验身份，服务端还会根据它查到可信的 tenant，上游请求不能自行声明 tenant。然后进入按 tenant 的本地 Token Bucket 限流，先在入口削峰，避免请求直接压到下游模型。通过限流后，系统按照 tenant 和 model 的路由配置选择 Provider，例如 mock、Ark 或 Ollama。</p>
+<p>返回层使用 SSE 流式转发。Router 有一个关键边界：只有 primary 在第一个数据块发送前失败，才允许切换 fallback；如果已经发出首块，就不能切换，因为客户端已经消费了部分内容，切换会把两个 Provider 的结果混在同一条回答中，而且已发 token 无法回滚。</p>
+<p>整个过程会记录 trace，包括 Provider attempts、首块延迟、总耗时、结果码、取消状态和 usage 是否被观察到。客户端断开时，请求 Context 会继续传给 Provider，让下游停止生成，避免浪费模型配额、连接和计算资源。</p>
+<h3 id="四个问题的回答与实现依据">四个问题的回答与实现依据</h3>
+<ol>
+<li><strong>为什么是网关而不是 Agent？</strong></li>
+</ol>
+<p>它没有自主目标分解、规划循环、工具选择和记忆决策。它的核心职责是认证、限流、路由、流式转发、可观测性和可靠性边界，所以定位是 LLM Gateway。</p>
+<ol>
+<li><strong>认证、限流、路由为什么按此顺序？</strong></li>
+</ol>
+<p>先认证，才能从服务端得到可信 tenant；限流依赖 tenant 维度，所以必须在认证后；路由和 Provider 调用成本更高，应放在限流通过后。这样无效或超额请求不会消耗路由、配额或模型资源。</p>
+<ol>
+<li><strong>fallback 为什么有首块前条件？</strong></li>
+</ol>
+<p>首块前还没向客户端提交实际回答，切换 Provider 不会破坏响应语义。首块后 HTTP/SSE 内容已被客户端消费，切换会混入两个 Provider 的输出，已发送 token 也无法可靠回滚，所以只能返回流中断错误。</p>
+<ol>
+<li><strong>客户端取消时为什么还要关心 Provider？</strong></li>
+</ol>
+<p>客户端已经离开，但 Provider 可能仍在生成。若不取消，会继续消耗模型配额、连接资源和服务端 goroutine。Go 的 <code>context</code> 是取消边界，Gateway 将请求 Context 传到 Provider；同时 trace 会记录 <code>cancelled</code>，便于区分用户取消与 Provider 故障。</p>
+<h2 id="请求链路复盘附录原稿模板">请求链路复盘附录（原稿模板）</h2>
+<pre><code class="language-latex">任务 0 的六条流程图：
+demo/test 的三条证据：
+聊天请求时序图：
+两个高频追问的标准答案：
+90 秒录音后的不足：
+今天最答不出的一个问题：
+</code></pre>
+<h2 id="接口行为与验证范围">接口行为与验证范围</h2>
+<ul>
+<li>能在纸上复现聊天请求主链。</li>
+<li>能指出 <code>specs/001</code>、<code>cmd/api/main.go</code>、<code>internal/gateway/server.go</code> 的职责。</li>
+<li>能用“响应是否已经提交”解释 fallback 边界。</li>
+<li>请求主链明确后，可继续追踪 Reservation 状态机与配额结算。</li>
+</ul>
+<hr>
+<p>上一篇：<a href="../../blog/agentmesh-call-usage-flow/index.html">AgentMesh：模型调用与用量处理的整体链路</a></p>
+<p>下一篇：<a href="../../blog/agentmesh-outbox-kafka-recovery/index.html">AgentMesh：Outbox 投递与 Kafka 故障恢复</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

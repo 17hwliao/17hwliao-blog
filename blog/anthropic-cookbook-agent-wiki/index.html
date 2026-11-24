@@ -1,0 +1,234 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Anthropic Cookbook 拆解：Agent Wiki 的设计、实现与未来 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Anthropic Cookbook 拆解：Agent Wiki 的设计、实现与未来</h1><time datetime="2026-11-16T16:16:53.014Z">2026年11月17日</time><blockquote>
+<p>相关笔记：<a href="../../blog/agent-memory-wiki-dreaming/index.html">Agent 记忆：Transcript、Notes 与 Wiki 的分层设计</a>。这一篇更偏工程实现，主要对照 Anthropic 的 knowledge-wiki 与 dreaming 两条 cookbook。</p>
+</blockquote>
+<p>如果把 RAG 理解成“每次提问都去资料里现查”，那么 Anthropic 的 Agent Wiki 更像“提前把资料读成一张带索引、带出处、带冲突标记的笔记网”。</p>
+<p>这两者解决的不是同一个问题。RAG 优化的是<strong>检索路径</strong>，Wiki 优化的是<strong>知识组织</strong>。前者让模型更容易找到相关段落，后者让模型不用每次重新理解同一批资料。</p>
+<h2 id="一为什么从-rag-走向-wiki">一、为什么从 RAG 走向 Wiki</h2>
+<p>向量 RAG 的典型链路是：切块、embedding、相似度召回、塞进上下文。它擅长找“相关段落”，但有三类事实很难靠单段召回得到：</p>
+<ul>
+<li>两个文档对同一个指标用了不同口径，需要比较后才能回答。</li>
+<li>同一家公司在不同文件里有不同名字，需要实体归一。</li>
+<li>后一份文件修正了前一份文件的数字，需要判断当前值和历史值。</li>
+</ul>
+<p>这些问题的共同点是：<strong>答案不在任何单个 chunk 里，而在 chunk 之间的关系里。</strong></p>
+<p>所以 cookbook 的思路不是提高召回率，而是提前把关系读出来、写下来。</p>
+<p>Anthropic 用了一个认知科学类比：海马体在经历发生时快速记录，睡眠期间大脑重放近期经历，把重要的部分巩固到新皮层。对应到 Agent：</p>
+<ul>
+<li><strong>Session / transcript</strong>：当下的经历。</li>
+<li><strong>Memory notes</strong>：当下判断“值得记”的片段。</li>
+<li><strong>Dreaming</strong>：会话之间的离线整理。</li>
+<li><strong>Wiki / memory representations</strong>：巩固后的长期知识。</li>
+<li><strong>Injected context</strong>：下次会话自动带上的少量索引。</li>
+</ul>
+<p>这个类比决定了一个关键设计：<strong>写入和整理分开。</strong> 会话中只做快速记录，不做大规模重构；整理放到会话之外，用独立算力慢慢做。这样既不影响主任务，也允许反复校验。</p>
+<p>文章里还有一句话很关键：<strong>记忆是对未来的预测。</strong> 写下一个规则，等于预测未来还会遇到类似情况；写下一个事实，等于预测未来会直接依赖它，而不重新验证。所以记忆一定会错，也一定会过时。这就是为什么 Wiki 不能只写，还必须能回读原文校验。</p>
+<h2 id="二两条-cookbook两种输入">二、两条 cookbook，两种输入</h2>
+<h3 id="1-knowledge-wiki文档到-wiki">1. knowledge-wiki：文档到 Wiki</h3>
+<p>适用场景：一批慢变文档，被反复提问，且问题经常需要跨文档综合。</p>
+<p>整个构建是一个 dynamic workflow，由 lead agent 写工作流并启动，分为四个阶段：</p>
+<pre><code class="language-text">extract  →  resolve  →  analyze  →  organize
+</code></pre>
+<p>角色分工：</p>
+<ul>
+<li><strong>extractor</strong>：每个 batch 一个，读文档并写入 Wiki。</li>
+<li><strong>resolver</strong>：所有 batch 抽取完后运行一次，处理 open questions。</li>
+<li><strong>analyzer</strong>：每个 batch 一个，拿 Wiki 回读原文，校验、补充、纠错。</li>
+<li><strong>organizer</strong>：最后单独运行，合并重复、修链接、补索引。</li>
+</ul>
+<p>官方示例的 <code>core</code> 数据集是 8 份文件、2.8MB 文本，被切成 25 个 batch，最终是 25 个 extractor、1 个 resolver、25 个 analyzer、1 个 organizer。构建约 23 分钟，成本约 16 美元。</p>
+<h3 id="2-dreaming会话到记忆">2. dreaming：会话到记忆</h3>
+<p>适用场景：Agent 已经跑了很多 session，需要把经验沉淀下来。</p>
+<p>流程更短：</p>
+<pre><code class="language-text">transcript-analyzer（每个 transcript 一个）→ memory-organizer（一个）
+</code></pre>
+<p>它读的是 Agent 的历史会话，不是业务文档。官方示例里，11 个 transcript、283KB，成本约 0.36 美元、2.5 分钟；50 个长会话、约 12MB，成本约 8 美元、10 分钟。</p>
+<p>这条流水线重点记录：</p>
+<ul>
+<li>命令、参数、文件路径这类“下次还会用到”的事实。</li>
+<li>决策及其原因。</li>
+<li>踩过的坑和失败路径。</li>
+<li>带日期的过时关系：旧值保留，新值标注 <code>valid_from</code>。</li>
+</ul>
+<h2 id="三wiki-的数据模型">三、Wiki 的数据模型</h2>
+<p>Wiki 的物理形态不是数据库，而是一个 memory store，里面是普通 Markdown 文件：</p>
+<pre><code class="language-text">_index.md                 全局目录，先读这个
+_schema.md                布局与写作规则
+SKILL.md                  怎么读这座 Wiki
+escalations.md            风险清单
+
+entities/&lt;slug&gt;.md        一个实体一个文件
+relations/&lt;doc-slug&gt;.md   一份文档里的关系
+metrics/&lt;doc-slug&gt;.md     一份文档里的指标
+open_questions/&lt;doc-slug&gt;.md  尚未解决的问题
+</code></pre>
+<p>每个文件开头是 YAML frontmatter：</p>
+<pre><code class="language-yaml">---
+name: payment-service
+description: 支付服务的重试与降级策略
+aliases: [&quot;pay-svc&quot;, &quot;支付网关&quot;]
+metadata:
+  type: service
+---
+</code></pre>
+<p>正文一行一条事实，末尾带出处：</p>
+<pre><code class="language-markdown">## Current picture
+- 当前重试上限 3 次，超限进入死信队列 [source: run-2026-11-12 | as-of: 2026-11-12]
+
+## Failure handling
+- 网关超时后重试 3 次，仍失败进入死信队列 [source: run-2026-11-12 | as-of: 2026-11-12]
+- 早期版本重试 5 次，因重复扣款降为 3 次 [source: incident-0918 | as-of: 2026-09-18]
+</code></pre>
+<p>几个细节很能体现设计意图：</p>
+<ul>
+<li><strong>一行一条事实</strong>：方便 grep，也方便按行引用。</li>
+<li><strong><code>Current picture</code> 最多 30 行</strong>：长文件顶部只放当前最可能被问到的值。</li>
+<li><strong><code>[[wikilink]]</code> 是边</strong>：实体之间形成可导航的图。</li>
+<li><strong><code>[source | as-of]</code> 是证据</strong>：回答时必须能指回原文。</li>
+<li><strong><code>CONFLICT</code> 不强行合并</strong>：两个来源冲突时保留双方和日期。</li>
+</ul>
+<h2 id="四构建阶段的关键约束">四、构建阶段的关键约束</h2>
+<p>cookbook 不是“让模型随便写”，而是加了很多硬约束。</p>
+<p><strong>Schema 先行。</strong> <code>_schema.md</code> 是 store 的第一个 memory，所有 Agent 先读它。它规定目录、slug、frontmatter、事实格式和链接写法。</p>
+<p><strong>单写者规则。</strong> <code>relations/</code>、<code>metrics/</code>、<code>open_questions/</code> 只能写自己文档对应的文件，避免并发覆盖。共享实体节点采用“读、合并、回读确认”的方式。</p>
+<p><strong>Batch 控制。</strong> 每个 batch 约 12 万字符，大文档切成多段，每段保留 provenance header。这样单个 Agent 不会因为上下文过大而漏读。</p>
+<p><strong>原文优先。</strong> extractor 只记录文档实际写了什么；不确定的放 <code>open_questions</code>，不猜。合同类文档要求关键条款逐字保留，不能只写摘要。</p>
+<p><strong>时间纪律。</strong> 新值覆盖旧值时，不删除旧值，而是用 <code>valid_from</code> / <code>valid_to</code> 标注；这样历史问题和当前问题都能回答。</p>
+<p><strong>不记录“全局不存在”。</strong> 只能说“这份文档里没有”，不能说“世界上没有”。这是一个很容易被模型违反、但在尽调场景非常致命的约束。</p>
+<p><strong>Analyzer 回读校验。</strong> analyzer 不是“再总结一遍”，而是拿 Wiki 里的每条 claim 回原文找证据：</p>
+<ul>
+<li>有证据：保留。</li>
+<li>证据不足：降级或标注不确定。</li>
+<li>原文矛盾：标 <code>CONFLICT</code>。</li>
+<li>原文更新：保留旧值作为历史。</li>
+</ul>
+<p><strong>Organizer 只整理，不分析。</strong> 它合并重复文件、重命名、修断链、补 <code>_index.md</code>、更新 <code>SKILL.md</code>，但不删除事实行。合并时用 <code>MOVED TO [[slug]]</code> 占位，避免并发写丢失。</p>
+<h2 id="五查询阶段没有-embedding怎么找记忆">五、查询阶段：没有 embedding，怎么找记忆</h2>
+<p>查询侧的 Wiki 是<strong>只读挂载</strong>。每个问题开一个全新 session，Agent 只能读，不能写。</p>
+<p>读取顺序是固定的：</p>
+<ol>
+<li>先读 <code>_index.md</code> 前 60 行，找到相关入口。</li>
+<li>如果目录里没有名字，用 <code>glob</code> 找文件、用 <code>grep</code> 搜内容。</li>
+<li>打开文件先读前 60 行，看 <code>Current picture</code>。</li>
+<li>需要细节再定位到某个 <code>##</code> 章节，只读需要的行。</li>
+<li>顺着 <code>[[wikilink]]</code> 跳到相关实体。</li>
+<li>每条结论带 <code>[source | as-of]</code>。</li>
+<li>遇到 <code>CONFLICT</code> 就报告冲突。</li>
+<li>找不到就说 <code>Not in the wiki</code>，并指出缺哪份文档。</li>
+</ol>
+<p>所以它的召回是三种通道的组合：</p>
+<blockquote>
+<p><strong>目录（预计算的相关性）+ grep（精确匹配）+ 链接（图扩散）</strong></p>
+</blockquote>
+<p>这解释了它为什么在某些任务上比向量检索强：</p>
+<ul>
+<li>精确标识符不会被“语义相近”搞混。</li>
+<li>跨文档关系已经提前建好，不需要查询时再拼。</li>
+<li>每条事实有出处，冲突不会被摘要抹平。</li>
+</ul>
+<p>但它也解释了为什么它不适合所有场景：<strong>建库成本被提前支付了。</strong></p>
+<h2 id="六cookbook-自己总结的设计规则">六、cookbook 自己总结的设计规则</h2>
+<p>notebook 最后有一段 “Design rules our runs support”，比模型选择更值得记住：</p>
+<ol>
+<li><strong>事实的正确性主要在抽取阶段决定。</strong> 规则要花在 extractor 上，而不是指望查询时补救。</li>
+<li><strong>Wiki 是写给一个只能看到 Wiki 的读者。</strong> 查询 Agent 看不到原始文档，所以 Wiki 必须自包含。</li>
+<li><strong>“没有”永远只是一个待验证假设。</strong> 抽取、回答、评分甚至人工答案键都可能错误地声称“未披露”。</li>
+<li><strong>检查实际跑了什么，而不是描述了什么。</strong> 不要相信 lead agent 的叙述，要对照平台记录检查每个 batch 是否真的被读取。</li>
+<li><strong>排版要照顾按行付费的读者。</strong> 索引顶部放地图，长文件顶部放 <code>Current picture</code>，风险文件顶部放摘要。</li>
+</ol>
+<p>这几条其实比“用哪个模型”更重要。Wiki 的质量上限，主要取决于 schema、抽取规则和校验流程。</p>
+<h2 id="七当前的局限">七、当前的局限</h2>
+<p>cookbook 没有回避这些问题，反而在文档里写得很清楚。</p>
+<ul>
+<li><strong>构建贵且慢。</strong> 8 份文件就要 23 分钟、16 美元；它适合高价值、慢变、重复提问的知识，不适合每天新增大量文档的场景。</li>
+<li><strong>新鲜度是硬伤。</strong> 新文档需要重新 build；会话记忆靠 dreaming 增量更新。它不是实时索引。</li>
+<li><strong>并发写仍会丢内容。</strong> 共享实体页是并发写热点，官方承认最繁忙的页面大约有 5% 的行会丢失。</li>
+<li><strong>会过度抽象，也会抽象不足。</strong> 有的任务里 Wiki 长得比原始文档还大；有的关键合同事实因为共享表格被覆盖，57 条只剩 41 条。</li>
+<li><strong>评测依赖任务。</strong> 跨文档综合、重复提问收益明显；单文档可检索的问题，Wiki 不一定更好。</li>
+<li><strong>平台绑定。</strong> knowledge-wiki 跑在 Managed Agents 的 memory store 和 dynamic workflow 上；Dreams 目前是 research preview，不支持 ZDR/HIPAA，有模型和额度限制。</li>
+<li><strong>治理成本高。</strong> schema 要设计，prompt 要调，写入要防注入，冲突要人工兜底，版本要审计。</li>
+</ul>
+<h2 id="八未来的发展方向">八、未来的发展方向</h2>
+<h3 id="1-从手写-workflow-到平台原语">1. 从手写 workflow 到平台原语</h3>
+<p>Dreams API 已经把“读 memory store + 读 1 到 100 个 session，输出一个新 store”做成了异步任务：</p>
+<ul>
+<li>输入 store 不被修改。</li>
+<li>输出 store 可以审查、丢弃或替换。</li>
+<li>支持 <code>instructions</code> 做高层 steering，但不支持“改某一行”这种精确编辑。</li>
+</ul>
+<p>未来大概率会补齐：定时 dreaming、增量 dreaming、只处理最近变化的记忆、输出 store 的 diff/review/merge，以及更细的写入权限。</p>
+<h3 id="2-记忆分层会越来越像缓存体系">2. 记忆分层会越来越像缓存体系</h3>
+<pre><code class="language-text">Injected context   ← L1，每次会话都带
+Wiki / index       ← L2，按需导航
+Notes              ← L3，热数据
+Transcripts        ← L4，冷存储 / ground truth
+</code></pre>
+<p>未来会根据访问频率、变化频率、冲突率，自动决定哪些内容上升，哪些内容下沉。这其实和 CPU 缓存、数据库的 hot/cold storage 是同一类问题。</p>
+<h3 id="3-从单-agent-记忆走向团队共享记忆">3. 从单 Agent 记忆走向团队共享记忆</h3>
+<p>一个 session 已经可以挂 8 个 store，这暗示了未来的组织方式：</p>
+<ul>
+<li>一个用户一个 store。</li>
+<li>一个团队一个 store。</li>
+<li>一个项目一个 store。</li>
+<li>一份只读的公共规范 store，挂给所有 session。</li>
+</ul>
+<p>接下来会出现更多“记忆所有权”问题：谁能写、谁负责清理、冲突由谁裁决、员工离职后记忆怎么迁移、多租户之间怎么隔离。</p>
+<h3 id="4-评测会从答对没有扩展到记忆质量">4. 评测会从“答对没有”扩展到“记忆质量”</h3>
+<p>除了准确率，还要看：</p>
+<ul>
+<li>事实召回率、精确率。</li>
+<li>过时事实比例。</li>
+<li>冲突识别率。</li>
+<li>引用可追溯率。</li>
+<li>每回答一次的成本和 token。</li>
+<li>记忆写入后的回归率。</li>
+</ul>
+<p>没有这些指标，Wiki 很容易变成“看起来很有条理，但实际不可靠”的知识库。</p>
+<h3 id="5-安全与治理会成为核心竞争点">5. 安全与治理会成为核心竞争点</h3>
+<p>只要记忆可写，就有新的攻击面：</p>
+<ul>
+<li>文档或工具结果里的 prompt injection 被写进记忆。</li>
+<li>恶意内容通过共享 store 影响其他用户。</li>
+<li>PII、密钥、内部信息被持久化。</li>
+<li>错误记忆被反复引用，形成“记忆投毒”。</li>
+</ul>
+<p>所以未来大概率会出现：默认只读、写入白名单、来源签名、写入前审查、敏感级别分区、TTL 和删除权、完整审计日志和版本回滚。</p>
+<h3 id="6-不会取代向量检索而是形成混合架构">6. 不会取代向量检索，而是形成混合架构</h3>
+<p>最现实的未来不是“Wiki 一统天下”，而是：</p>
+<ul>
+<li>向量 / BM25：负责模糊语义、长尾问题、快速召回。</li>
+<li>Wiki：负责跨文档综合、稳定结论、冲突和历史。</li>
+<li>知识图谱：负责实体关系和多跳查询。</li>
+<li>SQL / 数据仓库：负责精确数值和聚合。</li>
+<li>Agentic retrieval：根据问题选择走哪条路。</li>
+</ul>
+<p>cookbook 的实验也支持这个判断：Wiki + search 比单独 Wiki 更好；单文档问题用 search 就够。</p>
+<h2 id="九如果要自己落地">九、如果要自己落地</h2>
+<p>不要一上来就建 35 万文件的 Wiki。按 cookbook 的经验，最小可行路径是：</p>
+<ol>
+<li><strong>先从 session 记忆开始</strong>，不要先做文档 Wiki。</li>
+<li><strong>只建三个东西</strong>：<code>_index.md</code>、<code>notes/</code>、<code>entities/</code>。</li>
+<li><strong>每个 session 一个 analyzer，每晚一个 organizer。</strong></li>
+<li><strong>查询侧只读</strong>，强制引用，找不到就说找不到。</li>
+<li><strong>先量四个指标</strong>：回答准确率、每题 token、过时事实比例、构建成本。</li>
+<li><strong>确认“重复提问”足够多</strong>，再考虑扩到文档 Wiki。</li>
+</ol>
+<p>一个很实用的判断标准是：</p>
+<blockquote>
+<p>如果同一批知识一个月内不会被问超过几十次，Wiki 的构建成本大概率收不回来；如果每天都在问，而且问题经常跨文档，Wiki 就很值得。</p>
+</blockquote>
+<h2 id="小结">小结</h2>
+<p>Anthropic 的 cookbook 把“记忆”从一个检索技巧，变成了一个<strong>有 schema、有写者约束、有回读校验、有版本审计的知识维护系统</strong>。</p>
+<p>它当前最适合“慢变、重复、跨文档”的高价值知识；未来会朝着平台化 dreaming、分层缓存、团队共享、混合检索和安全治理演进，但短期内不会取代向量 RAG，而是成为 RAG 之上的一层知识组织。</p>
+<h2 id="参考资料">参考资料</h2>
+<ul>
+<li><a href="https://www.anthropic.com/research/components-of-agent-memory">The components of agent memory - Anthropic</a></li>
+<li><a href="https://github.com/anthropics/claude-quickstarts/tree/main/managed-agents/knowledge-wiki">Knowledge wiki with a dynamic workflow - cookbook</a></li>
+<li><a href="https://platform.claude.com/cookbook/managed-agents-cma-dreaming-with-a-dynamic-workflow">Dreaming with a dynamic workflow - cookbook</a></li>
+<li><a href="https://platform.claude.com/docs/en/managed-agents/dreams">Dreams - Claude Platform Docs</a></li>
+<li><a href="https://platform.claude.com/docs/en/managed-agents/memory">Memory stores - Claude Platform Docs</a></li>
+<li><a href="https://platform.claude.com/docs/en/managed-agents/workflow-runs">Workflow runs - Claude Platform Docs</a></li>
+</ul>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,78 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 数值实践：包装类与高精度计算 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 数值实践：包装类与高精度计算</h1><time datetime="2025-12-24T08:51:49.000Z">2025年12月24日</time><pre><code class="language-text">package io_17hwlioa;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+
+public class Exercise {
+
+    public static void main(String[] args) throws CloneNotSupportedException {
+        Student s = new Student() ;
+        s.setName(system.SLEEP);
+        System.out.println(s.getName().getName());
+
+        Dingdan m = new Dingdan(1 , &quot;chabaidao&quot; , &quot;xinan&quot;) ;
+        Dingdan m1 = new Dingdan(2 , &quot;chabaidao&quot; , &quot;xinan&quot;) ;
+        System.out.println(m);
+
+        Integer q = 222 ;
+
+        Integer a = 10 , b = 2  ;
+
+        int p = a.intValue() * b.intValue() ;
+        Integer c = 10 ;
+        System.out.println( a == c );
+
+        Integer a1 = 1221 ;
+        Integer b1 = 1222 ;
+        int c1 = a1 ;
+        System.out.println(a1.compareTo(b1));
+
+        BigInteger a2 = BigInteger.valueOf(1211212223423423L);
+        BigInteger b2 = BigInteger.valueOf(Long.MAX_VALUE);
+        BigInteger c2 = BigInteger.valueOf(Long.MAX_VALUE);
+        BigInteger a3 = b2.multiply(a2);
+        System.out.println(a3);
+        System.out.println(a3.bitLength());
+        System.out.println(a3.pow(1));
+
+        BigDecimal d = BigDecimal.valueOf(29);
+        BigDecimal result = d.divide(BigDecimal.valueOf(3) , 1 , RoundingMode.HALF_UP);
+        System.out.println(result);
+;
+        String[] str ;
+        str = new String[]{ &quot;qqqq &quot;, &quot;sssss&quot; , &quot;wwwwww&quot;};
+
+        test(222,str ) ;
+
+        for (String arg : args) {
+            System.out.println(arg);
+        }
+
+        String s1 = &quot;hell o &quot; ;
+        String[] brr = s1.split(&quot; &quot;);
+        System.out.println(s1.replace(&quot;hell&quot;, &quot;ciall&quot; ));
+
+        for (String string : brr) {
+            System.out.println(string);
+        }
+
+        char[] chara = {&#39;1&#39; ,&#39;2&#39; , &#39;3&#39;} ;
+        System.out.println(new String(chara));
+
+    }
+
+    private static void test(  int si  ,String... text){
+        System.out.println(&quot;传入参数&quot; + text.length);
+        for(var it : text){
+            System.out.println(it);
+        }
+        System.out.println(si);
+    }
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

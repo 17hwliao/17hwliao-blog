@@ -1,0 +1,90 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 字符串处理、正则表达式与 switch 模式匹配 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 字符串处理、正则表达式与 switch 模式匹配</h1><time datetime="2025-12-25T10:02:25.000Z">2025年12月25日</time><ul>
+<li>StringBuilder类 :</li>
+</ul>
+<p>实现优化</p>
+<p>String str = &quot;杰哥&quot; + &quot;你干嘛&quot; ;</p>
+<p>System.out.println(str + str2 + str3 + str4);</p>
+<p>实现多个相加内部 : 使用StringBuilder实现 :</p>
+<pre><code class="language-text">StringBuilder builder = new StringBuilder() ;
+builder.append(&quot;AAA&quot;) ;     //实现拼接字符串
+builder.insert(1 , &quot;BBB&quot;) ; //实现定位插入
+builder.delete(2 , 3 ) ;   //实现定位删除
+builder.indexOf(&quot;BBB&quot;) ;    //实现定位 
+System.out.println(builder.toString());    //转化为字符串
+</code></pre>
+<ul>
+<li>(Java11 修改)</li>
+</ul>
+<p>str.strip() 实现去除字符串中的空格</p>
+<pre><code class="language-text">System.out.println(str2.stripLeading());   //去除前列的空格
+System.out.println(str3.stripTrailing());  //去除后列的空格
+System.out.println(str5.isBlank());   //是否全为空格
+</code></pre>
+<ul>
+<li>文本块</li>
+</ul>
+<pre><code class="language-text">String mu = &quot;&quot;&quot;
+        shiqihaowuliao@qq.com, 
+        17hwliao.io
+        相
+        &quot;&quot;&quot; ;
+</code></pre>
+<ul>
+<li>正则表达式 : 判断输入的字符是否符合规格</li>
+</ul>
+<p>变量名.matches( &quot;( 无需判断的前面字符串 )字符 + 限定符&quot; )</p>
+<p>判断字符+( 判断该字符出现一次或多次 ) : 只能判断 ( &quot; ( 多个字符 )c&quot; ,&quot;(多个字符)cc&quot; , &quot;ccc&quot; ... 类型的 ) ;</p>
+<p>&quot;( 可以去判断 )*&quot; : 判断零个或多个</p>
+<p>? 判断字符在 需要判断的字符串中出现零次或一次( 多次会返回false )</p>
+<p>zo{2,} 判断字符出现固定的次数 ;</p>
+<p>[A-Za-z ]{2,5} 判断是否全为英文字母 , 并且出现次数为2 -5 次</p>
+<p>^ 取反[^ 字符] 实现判断除去英文字符 的全部字符</p>
+<p>.{2,4} 可以判断任何字符</p>
+<p>[\s\S] 匹配所有 包含换行符等</p>
+<p>因为 . 是特殊的符号 , 所以要实现\\来规范标准的点号</p>
+<p>[A-Za-z0-9]*@[A-zA-z0-9]{1,5}\\.com&quot;) 实现判断是否为邮箱地址</p>
+<p>[A-Za-z0-9] 判断字符加数字的判断</p>
+<ul>
+<li>switch 模式匹配( 变量实现变量操作 )</li>
+</ul>
+<p>不需要变量承载值 可以直接使用_ 来进行判断即可</p>
+<pre><code class="language-text">String result = switch (obj) {
+    case String s -&gt; {
+        // 🔥 这里可以使用变量 s 访问字符串的方法！
+        int length = s.length();
+        String upper = s.toUpperCase();
+        yield &quot;字符串: &#39;&quot; + s + &quot;&#39;，长度: &quot; + length + &quot;，大写: &quot; + upper;
+    }
+    case Integer i -&gt; {
+        // 🔥 这里可以使用变量 i 进行数学计算！
+        int square = i * i;
+        double root = Math.sqrt(i);
+        yield &quot;整数: &quot; + i + &quot;，平方: &quot; + square + &quot;，平方根: &quot; + root;
+    }
+    default -&gt; &quot;其他类型&quot;;
+};
+</code></pre>
+<pre><code class="language-text">String t = switch (obj) {
+    case String s -&gt; &quot;String&quot;;
+    case Integer h -&gt; &quot;String&quot;;
+    case null -&gt; &quot;NULL&quot;;   //可以判断是否为空
+    default -&gt; &quot;Other&quot;;
+    }
+</code></pre>
+<pre><code class="language-text">String type = String.valueOf(switch (str){
+    case String s when s.isEmpty() -&gt; &quot;Empty&quot; ;
+    case String s when s.isBlank() -&gt; &quot;Blank&quot; ;
+    case String s when s.length() &gt; 2 -&gt; &quot;haohaiyou&quot; ;
+    default -&gt; &quot;Other&quot;;
+</code></pre>
+<pre><code class="language-text">return switch (score) {
+    case Integer c when c &gt;= 90 -&gt; &quot;优秀&quot;;
+    case Integer c when c &gt;= 80 -&gt;&quot;良好&quot; ;
+    case Integer c when c &gt;= 70 -&gt; &quot;及格&quot; ;
+    default -&gt; &quot;滚蛋&quot;;
+};
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

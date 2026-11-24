@@ -1,0 +1,35 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 测试：断言与表驱动用例 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 测试：断言与表驱动用例</h1><time datetime="2026-08-02T12:44:23.000Z">2026年8月2日</time><p>Go 测试基础：</p>
+<ol>
+<li>文件命名<br>logger/logger.go → 源代码<br>logger/logger_test.go → 测试文件</li>
+<li>测试函数命名<br>func TestXxx(t *testing.T) {<br> // 测试逻辑<br>}</li>
+</ol>
+<ul>
+<li>必须以 Test 开头</li>
+<li>参数必须是 *testing.T</li>
+</ul>
+<ol>
+<li>运行测试<br>go test ./logger/... # 运行 logger 包的所有测试<br>go test -run TestXxx # 运行特定测试<br>go test -v # 详细输出</li>
+<li>测试结构<br>func TestInitWritesJSONLog(t *testing.T) {<br> // 1. 准备（Arrange）<br> dir := t.TempDir()<br> normalFile := filepath.Join(dir, &quot;normal.log&quot;) // 2. 执行（Act）<br> cleanup, err := Init(&quot;test&quot;, config.LogConfig{...}) // 3. 断言（Assert）<br> if err != nil {<br> t.Fatalf(&quot;init logger: %v&quot;, err)<br> } // 4. 清理<br> cleanup()</li>
+</ol>
+<p>}<br>5. 常用断言方法<br>方法<br>t.Fatalf()<br>t.Errorf()<br>t.Log()<br>t.TempDir()<br>6. 测试流程图<br>编写测试函数<br> ↓<br>运行 go test<br> ↓<br>检查断言是否通过<br> ↓<br> ├── 通过 → PASS<br> └── 失败 → FAIL + 错误信息<br>7. 实际示例<br>func TestAdd(t *testing.T) {<br> // 测试用例<br> tests := []struct {<br> name string<br> a, b int<br> expected int<br> }{<br> {&quot;正数相加&quot;, 1, 2, 3},<br> {&quot;负数相加&quot;, -1, -2, -3},<br> {&quot;零&quot;, 0, 0, 0},<br> }</p>
+<pre><code class="language-text">for _, tt := range tests {
+    t.Run(tt.name, func(t *testing.T) {
+        result := Add(tt.a, tt.b)
+        if result != tt.expected {
+            t.Errorf(&quot;Add(%d, %d) = %d, want %d&quot;, 
+                tt.a, tt.b, result, tt.expected)
+        }
+    })
+}
+</code></pre>
+<p>}<br>总结：</p>
+<ul>
+<li>测试文件以 _test.go 结尾</li>
+<li>测试函数以 Test 开头</li>
+<li>使用 t.Fatalf() 失败断言</li>
+<li>运行 go test 执行测试</li>
+</ul>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

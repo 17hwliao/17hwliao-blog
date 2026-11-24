@@ -1,0 +1,103 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 手写顺序表与单链表 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 手写顺序表与单链表</h1><time datetime="2026-01-12T11:40:24.000Z">2026年1月12日</time><pre><code class="language-text">package Today.Study.Study;
+
+import java.util.ArrayList;
+public class LinkList&lt;T&gt; {
+    private Node&lt;T&gt; head = new Node&lt;T&gt;(null) ;
+
+    private int size = 0 ;
+
+    public void add(T element , int pos){
+        if(pos &lt; 0 || pos &gt; size)
+            throw new IndexOutOfBoundsException(&quot;ws+gay&quot;) ;
+        Node&lt;T&gt; prev = head ;
+        for(int i = 0 ; i &lt; pos ; i ++ )
+            prev = prev.next ;
+        Node&lt;T&gt; node = new Node&lt;&gt;(element) ;
+        node.next = prev.next ;
+        prev.next = node ;
+    }
+    public T remove(int pos){
+        if(pos &lt; 0 || pos &gt; size)
+            throw new IndexOutOfBoundsException(&quot;ws&quot;) ;
+        Node&lt;T&gt; prev = head ;
+        for(int i = 0 ; i &lt; pos ; i ++ )
+            prev = prev.next ;
+        T t = prev.next.element;
+        prev.next = prev.next.next;  //JVM自动回收机制魅力时刻
+        return t ;
+    }
+
+    private static class Node&lt;T&gt; {      //节点类
+       T element ;                      //节点储存元素
+       Node&lt;T&gt; next;                    //下一个节点的索引
+       Node(T element) {
+           this.element = element;
+       }
+   }
+}
+</code></pre>
+<pre><code class="language-text">package Today.Study.Study;
+
+import java.util.ArrayList;
+
+public class SequentialList&lt;T&gt; {
+    private int size = 0 ;   //顺序表大小
+
+    private int len = 100 ;
+
+    private Object[] array = new Object[len] ;
+
+    public void add(T element , int pos){
+        if(pos &lt; 0 || pos &gt; len)
+            throw new IndexOutOfBoundsException(&quot;超出数组范围&quot; + size);
+        if(size &gt;= len){
+            int Len = len + (len &gt;&gt; 1 ) ;    //扩容1.5 倍
+            Object[] newArray = new Object[Len] ;
+            System.arraycopy(array, 0, newArray, 0, len);
+            array = newArray ;
+            len = Len ;
+        }
+        for( int i = size ; i &gt; pos ; i--)
+                array[i] = array[i-1] ;
+            array[pos] = element ;
+            size++ ;
+    }
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public T remove(int pos){
+        if(pos &lt; 0 || pos &gt; len)
+            throw new IndexOutOfBoundsException(&quot;ws是gay&quot;) ;
+        T result = (T)array[pos] ;
+        for(int i = pos ; i &lt; size ; i++ )
+            array[i] = array[i+1] ;
+        size -- ;
+        return result ;
+    }
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        for(int i = 0 ; i &lt; size ; i++) builder.append(array[i]).append(&quot; &quot;);
+        return builder.toString();
+    }
+}
+</code></pre>
+<pre><code class="language-text">package Today.Study;
+
+import Today.Study.Study.SequentialList;
+
+import java.util.ArrayList;
+
+public class Main {
+
+    public static void main(String[] args) {
+        SequentialList&lt;String&gt; list = new SequentialList&lt;&gt;();
+        list.add(&quot;WS&quot; , 0) ;
+        list.add(&quot;是gay&quot;, 0 ) ;
+        System.out.println(list.toString());
+    }
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

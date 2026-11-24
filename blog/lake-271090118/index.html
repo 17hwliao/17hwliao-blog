@@ -1,0 +1,66 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go net/http：请求与响应 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go net/http：请求与响应</h1><time datetime="2026-05-24T02:03:17.000Z">2026年5月24日</time><p>在go中写一个web服务非常发方便快速</p>
+<p>当前最新的 go-modole 已经默认整合到了go普通项目构建 (内部只要有 go.mod就行)</p>
+<p>远端仓库的 环境变量 要配置 国人维护的七牛云 :</p>
+<p><a href="https://goproxy.cn,direct">https://goproxy.cn,direct</a></p>
+<p>Web 开发 : 一个请求 一个响应 --&gt; <strong>w http.ResponseWriter, r *http.Request ;</strong></p>
+<p><code>ioutil.ReadFile</code><strong>Go1.16 + 废弃</strong>，统一改用 <code>os.ReadFile</code></p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;encoding/json&quot;
+  &quot;fmt&quot;
+  &quot;io&quot;
+  &quot;net/http&quot;
+)
+
+type Response struct {
+  Code int    `json:&quot;code&quot;`
+  Data any    `json:&quot;data&quot;`
+  Msg  string `json:&quot;msg&quot;`
+}
+
+func GET(res http.ResponseWriter, req *http.Request) {
+  // 获取参数
+  fmt.Println(req.URL.String())
+
+  byteData, _ := json.Marshal(Response{
+    Code: 0,
+    Data: map[string]any{},
+    Msg:  &quot;成功&quot;,
+  })
+  res.Write(byteData)
+
+}
+
+func POST(res http.ResponseWriter, req *http.Request) {
+  // 获取参数
+  byteData, _ := io.ReadAll(req.Body)
+  fmt.Println(string(byteData))
+  byteData, _ = json.Marshal(Response{
+    Code: 0,
+    Data: map[string]any{},
+    Msg:  &quot;成功&quot;,
+  })
+  res.Write(byteData)
+}
+
+func main() {
+
+  http.HandleFunc(&quot;/get&quot;, GET)
+  http.HandleFunc(&quot;/post&quot;, POST)
+
+  fmt.Println(&quot;http server running: http://127.0.0.1:8080&quot;)
+  http.ListenAndServe(&quot;:8080&quot;, nil)
+}
+</code></pre>
+<p>但是在实际项目中使用原生go http库那会非常不方便。</p>
+<p>主要体现在</p>
+<ol>
+<li>参数解析与验证</li>
+<li>路由不太明了</li>
+<li>响应处理比较原始</li>
+</ol>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

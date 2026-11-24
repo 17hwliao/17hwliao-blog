@@ -1,0 +1,297 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AgentMesh：终态持久化与跨存储恢复 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>AgentMesh：终态持久化与跨存储恢复</h1><time datetime="2026-09-30T10:51:30.000Z">2026年9月30日</time><p><a href="../../projects/agentmesh/index.html#project-articles">AgentMesh 项目展示</a> · <a href="../../blog/lake-282376218/index.html">系列目录</a> · 10 / 12</p>
+<p>围绕 MySQL 终态事务、版本条件与双 Outbox，分析 Redis 已完成操作但持久化失败时的恢复路径。</p>
+<blockquote>
+<p>实现说明与运行记录基于 2026-09-30 更新的原稿。正文中的文件行号、实现状态与验证结果按该历史快照理解。</p>
+</blockquote>
+<h2 id="实现概览">实现概览</h2>
+<ul>
+<li>MySQL 事务保护终态与 Outbox 的原子提交，不覆盖 Redis。</li>
+<li>版本检查防止错误状态迁移，但需要结合实际失败时点理解。</li>
+<li>Reconciler 根据保留的执行证据推进补偿，而非盲目退款。</li>
+</ul>
+<h2 id="实现细节">实现细节</h2>
+<p><strong>Complete() 的执行流程（以预留 100 单位、初始余额 200 为例）</strong></p>
+<ol>
+<li><strong>谁调用它</strong></li>
+</ol>
+<pre><code class="language-go">reservationSession.Complete(
+    request.Context(),
+    streamErrorCode(err),   // 转换后的错误码
+    errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded),
+)
+</code></pre>
+<ol>
+<li><p><strong>进入 Complete()</strong> (<code>coordinator.go:181</code>)</p>
+</li>
+<li><p><strong>settlement() 决定消耗量</strong> (<code>coordinator.go:226-245</code>)</p>
+</li>
+</ol>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>证据情况</th>
+<th>consumed</th>
+<th>released</th>
+<th>最终 Redis 余额</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>零 attempt</td>
+<td>0 (走 Cancel)</td>
+<td>100</td>
+<td>200</td>
+</tr>
+<tr>
+<td>单次 attempt 有 usage 35</td>
+<td>35</td>
+<td>65</td>
+<td>165</td>
+</tr>
+<tr>
+<td>两次 attempt usage 合计 50</td>
+<td>50</td>
+<td>50</td>
+<td>150</td>
+</tr>
+<tr>
+<td>任意 attempt 缺 usage（Ark/Ollama/mock 实际走这条）</td>
+<td>100</td>
+<td>0</td>
+<td>100</td>
+</tr>
+<tr>
+<td>最后一次 flush 失败 → persistenceUncertain=true</td>
+<td>100</td>
+<td>0</td>
+<td>100</td>
+</tr>
+</tbody></table></div>
+<ol>
+<li><strong>Redis 结算</strong> (<code>coordinator.go:202</code>, <code>redis.go:226-235</code>)</li>
+</ol>
+<pre><code class="language-lua">released = reserved - consumed          -- 要退还的额度
+available = INCRBY balance released   -- 把额度加回租户余额
+</code></pre>
+<ol>
+<li><p><strong>MySQL 终态 + 双 outbox</strong>（仅在 Redis 结算成功后执行）</p>
+</li>
+<li><p><strong>客户端断开或跨存储失败的边界</strong></p>
+</li>
+<li><p><strong>对应的单元测试</strong>（<code>coordinator_test.go</code>）</p>
+</li>
+</ol>
+<p><strong>一句话总结</strong>：<br><code>Complete()</code> 先看是否曾启动过 Provider attempt；未启动就取消并全额退回，已启动则根据每次 attempt 的 Provider usage 结算。证据缺失或进度持久化不可靠时保守占用预留额度。Redis Lua 用操作结果键防止同一结算重试时重复退款，MySQL 随后写入终态；跨存储窗口需靠 Reconciler 手动补偿。</p>
+<h2 id="终态事务与恢复">终态事务与恢复</h2>
+<h2 id="1-complete-的两条路径代码直接对应">1. <code>Complete()</code> 的两条路径（代码直接对应）</h2>
+<pre><code class="language-go">// coordinator.go:181
+func (s *coordinatorSession) Complete(ctx context.Context, _ string, _ bool) error
+</code></pre>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>条件</th>
+<th>Redis 操作</th>
+<th>MySQL 操作</th>
+<th>资金流向（例：预留 100，余额 200→100）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>len(s.attempts) == 0</code></td>
+<td><code>Cancel(100)</code><br>→ INCRBY 100</td>
+<td><code>MarkCancelled()</code><br>→ state=cancelled</td>
+<td>余额 100 → <strong>200</strong>（全退）</td>
+</tr>
+<tr>
+<td><code>len(s.attempts) &gt; 0</code></td>
+<td><code>Settle(100, consumed)</code><br>→ INCRBY (100−consumed)</td>
+<td><code>MarkSettled()</code><br>→ state=settled</td>
+<td>余额 100 → <strong>100+(100−consumed)</strong></td>
+</tr>
+</tbody></table></div>
+<p>关键点：<strong>后两个参数</strong><code>_ string, _ bool</code><strong>当前完全不参与金额计算</strong>，只看内存里的 attempt/usage 证据。</p>
+<hr>
+<h2 id="2-mysql-终态事务到底原子保护了什么">2. MySQL 终态事务到底原子保护了什么</h2>
+<h3 id="21-marksettled-完整流程persistencego313-338">2.1 <code>MarkSettled()</code> 完整流程（persistence.go:313-338）</h3>
+<pre><code class="language-go">func (r *SQLRepository) MarkSettled(...) (PersistentReservation, error) {
+    tx, _ := r.db.BeginTx(ctx, nil)
+    defer tx.Rollback()
+
+    // ① 终态 CAS 更新
+    result, _ := tx.ExecContext(ctx, markSettledSQL, 
+        settledUnits, releasedUnits, usageObserved, kind, now, now,
+        reservationID, tenantID, expectedVersion)   // persistence.go:613
+    if exactlyOne(result) != nil { return err }     // 恰好 1 行，否则 VersionConflict
+
+    // ② 同事务插 usage_outbox（快照当前行）
+    r.insertUsageOutbox(ctx, tx, tenantID, reservationID, expectedVersion)
+
+    // ③ 同事务插 usage_kafka_outbox（event_id = SHA2(reservation:version)）
+    // persistence.go:350-354
+
+    // ④ 读回最新行 + Commit
+    value, _ := scanReservation(tx.QueryRowContext(ctx, reservationByIDSQL, ...))
+    tx.Commit()
+    return value, nil
+}
+</code></pre>
+<h3 id="22-两条终态-sql-的关键-where-条件persistencego613-618">2.2 两条终态 SQL 的关键 WHERE 条件（persistence.go:613, 618）</h3>
+<pre><code class="language-sql">-- MarkSettled：要求 attempt 行存在
+UPDATE quota_reservations ...
+WHERE version = ? AND state IN (&#39;reserved&#39;,&#39;expired_pending&#39;)
+  AND EXISTS (SELECT 1 FROM provider_attempts WHERE reservation_id = ?)
+
+-- MarkCancelled：要求 attempt 行 NOT 存在
+UPDATE quota_reservations ...
+WHERE version = ? AND state IN (&#39;creating&#39;,&#39;reserved&#39;,&#39;expired_pending&#39;)
+  AND NOT EXISTS (SELECT 1 FROM provider_attempts WHERE reservation_id = ?)
+</code></pre>
+<p><strong>硬约束</strong>：</p>
+<p>调用过 Provider（有 attempt 行）<strong>不能</strong>走 Cancel 全退；</p>
+<p>没调用过 Provider（无 attempt 行）<strong>不能</strong>走 Settle。这不只是业务约定，是数据库层面的 CHECK。</p>
+<h3 id="23-同事务双-outbox">2.3 同事务双 Outbox</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>表</th>
+<th>作用</th>
+<th>幂等键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>usage_outbox</code></td>
+<td>终态快照，供 DrainUsageOutbox 投影成 <code>usage_records</code></td>
+<td>无（由 reservation_id + operation_version 唯一）</td>
+</tr>
+<tr>
+<td><code>usage_kafka_outbox</code></td>
+<td>发给 Kafka 的事件</td>
+<td><code>event_id = SHA2(reservation_id:operation_version)</code></td>
+</tr>
+</tbody></table></div>
+<p><strong>任何一条 Outbox 插入失败 → 整个事务回滚，终态也不提交。</strong></p>
+<hr>
+<h2 id="3-跨存储边界redis-与-mysql-不是同一事务">3. 跨存储边界：Redis 与 MySQL 不是同一事务</h2>
+<pre><code class="language-text">时间轴
+─────────────────────────────────────────────────────►
+Redis Settle 成功 (INCRBY 65, 余额 165)
+       │
+       ▼
+MySQL MarkSettled 事务开始
+       │
+       ├─ 成功 → Commit，终态落库，Outbox 入库 ✅
+       │
+       └─ 失败/超时 → Rollback，**Redis 已退 65 不自动回滚** ❌
+</code></pre>
+<ul>
+<li>Redis 幂等键 = <code>operation:{tenant}:{res}:{version}:settle</code></li>
+<li>MySQL 终态成功后 version +1</li>
+<li><strong>若中间失败，Redis 已退款、MySQL 仍非终态</strong> → 跨存储不一致窗口</li>
+</ul>
+<hr>
+<h2 id="4-reconciler-如何补偿coordinatorgo279-325">4. Reconciler 如何补偿（coordinator.go:279-325）</h2>
+<pre><code class="language-go">func (r *Reconciler) Reconcile(ctx, before, limit) (int, error) {
+    candidates, _ := r.records.ClaimExpired(ctx, before, limit) // FOR UPDATE SKIP LOCKED
+    for _, c := range candidates {
+        if c.AttemptStarted || c.ForwardedRunes &gt; 0 {
+            // 有 attempt 或已转发数据 → 保守全额 Settle
+            r.quota.Settle(..., reservedUnits, reservedUnits)  // consumed=reserved, released=0
+            r.records.MarkSettled(..., reservedUnits, 0, false, &quot;estimated&quot;)
+        } else {
+            // 无 attempt → 查 Redis 是否真扣了
+            applied, _ := r.quota.ReserveApplied(ctx, tenantID, reservationID)
+            if applied {
+                r.quota.Cancel(..., reservedUnits)   // 退回全额
+                r.records.MarkCancelled(...)
+            } else {
+                r.records.MarkCancelled(...)         // Redis 根本没扣，只标 cancelled
+            }
+        }
+    }
+}
+</code></pre>
+<ul>
+<li><strong>无内置定时器</strong>，需外部显式调用（如 cron 任务）</li>
+<li><code>ClaimExpired</code> 用 <code>FOR UPDATE SKIP LOCKED</code> 保证并发唯一认领</li>
+<li><strong>不修复</strong>“Redis 已退 65、MySQL 终态失败、version 已推进”的窗口（见下）</li>
+</ul>
+<hr>
+<h2 id="5-三个数字场景完整走一遍原余额-200预留-100">5. 三个数字场景完整走一遍（原余额 200、预留 100）</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>Redis 余额</th>
+<th>MySQL 终态</th>
+<th>Outbox</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>正常</strong>&lt;br&gt;Settle 35，MarkSettled 成功</td>
+<td>165 (退 65)</td>
+<td>settled, consumed=35, released=65</td>
+<td>双写入</td>
+<td>完美终结</td>
+</tr>
+<tr>
+<td><strong>Redis 成、MySQL 败</strong>&lt;br&gt;Settle 35 成功，MarkSettled Commit 前失败</td>
+<td>165 (已退 65)</td>
+<td>仍 reserved/creating</td>
+<td>无</td>
+<td><strong>跨库不一致窗口</strong>；需 Reconciler 介入，但 version 已变，幂等键失效，可能再次 Settle(100) → consumed=100, released=0，MySQL 记 100，Redis 仍 165</td>
+</tr>
+<tr>
+<td><strong>零 attempt 中断</strong>&lt;br&gt;Redis 预扣 100 (余额 100)，MySQL 还在 creating</td>
+<td>100</td>
+<td>creating</td>
+<td>无</td>
+<td>过期后 Reconciler 确认 ReserveApplied=true → Cancel 退 100 → MarkCancelled，最终余额 200</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="6-版本变化导致的潜在账实不一致面试必讲">6. 版本变化导致的潜在账实不一致（面试必讲）</h2>
+<pre><code class="language-text">原请求 version=2：Settle(100, 35) → Redis 退 65，键 operation:...:2:settle
+MySQL MarkSettled 失败
+        │
+        ▼ 过期，Reconciler ClaimExpired
+        更新 state=expired_pending，version 2→3
+        │
+        ▼ Reconciler 用 version=3 再次 Settle
+        Settle(100, 100) → released=0，键 operation:...:3:settle（新键，不命中旧幂等）
+        Redis 不再退款，余额仍 165
+        MySQL MarkSettled(version=3) 成功 → consumed=100, released=0
+结果：Redis 余额 165，MySQL 记录 consumed=100 → **账实不一致 65**
+</code></pre>
+<p>现有测试 <strong>未覆盖</strong> 此精确窗口；代码逻辑推演存在该风险，面试时应主动说明“当前实现无法宣称完全修复跨库失败”。</p>
+<hr>
+<h2 id="7-测试怎么读只抓四个断言方向">7. 测试怎么读（只抓四个断言方向）</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>测试文件</th>
+<th>行号</th>
+<th>验证点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>persistence_test.go</code></td>
+<td>110+</td>
+<td>① 版本冲突 → <code>CodeVersionConflict</code><br>&lt;br&gt;② 正常终态 → 双 Outbox 同事务提交&lt;br&gt;③ Outbox 插入失败 → 事务回滚，终态不提交&lt;br&gt;④ 模拟 Commit 失败 → 不能视为已成功提交</td>
+</tr>
+<tr>
+<td><code>coordinator_test.go</code></td>
+<td>178+</td>
+<td>Reconciler：有 attempt → 保守 Settle；无 attempt 但 ReserveApplied → Cancel 退款</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="8-终态事务与恢复机制小结">8. 终态事务与恢复机制小结</h2>
+<p><strong>MySQL 事务保证“终态 + 双 Outbox”原子提交，不会出现终态已落库而对应事件丢失的情况。</strong><br><strong>但 Redis 结算与 MySQL 终态没有共同事务；Redis 成功、MySQL 失败会产生跨库不一致窗口。</strong><br><strong>Reconciler 能处理过期未终结记录，但对“已退款后 version 推进导致幂等键失效”的窗口，当前实现无法保证完全修复，也没有内置定时调度。</strong></p>
+<p>DrainUsageOutbox 在同一事务中读取未投递的 usage_outbox 行，然后在同一事务里为每条记录插入 usage_records 并更新 outbox 的 projected_at，同时向 usage_kafka_outbox 写入事件。<br>因为所有写入都在同一个事务里，要么全部成功提交，要么全部回滚，保证 Reservation 终态与两条 Outbox 同时提交或全部回滚。<br>这样 MySQL 能保证 Reservation 终态与两条 Outbox 一起提交，而 Redis 结算与 MySQL 并非同一事务，恢复时需依赖幂等键和 Reconciler 手动处理。</p>
+<hr>
+<p>上一篇：<a href="../../blog/agentmesh-settlement-idempotency/index.html">AgentMesh：Complete 结算分支与幂等控制</a></p>
+<p>下一篇：<a href="../../blog/agentmesh-dual-outbox-delivery/index.html">AgentMesh：双 Outbox、异步落账与 Kafka 可靠投递</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

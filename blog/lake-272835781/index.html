@@ -1,0 +1,93 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin 中间件：拦截与参数传递 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin 中间件：拦截与参数传递</h1><time datetime="2026-06-06T13:14:45.000Z">2026年6月6日</time><h3 id="局部中间件">局部中间件</h3>
+<p>直接作用于单个路由</p>
+<p>Go复制代码<br>c . Abort() --&gt; 实现的是 拦截网络访问的需求 ;</p>
+<p>c.Next() --&gt; 放行 ;</p>
+<pre><code class="language-text">// /3.中间件.go
+package main
+
+import (
+  &quot;fmt&quot;
+  &quot;github.com/gin-gonic/gin&quot;
+)
+
+func Home(c *gin.Context) {
+  fmt.Println(&quot;Home&quot;)
+  c.String(200, &quot;Home&quot;)
+}
+func M1(c *gin.Context) {
+  fmt.Println(&quot;M1 请求部分&quot;)
+  c.Next()
+  fmt.Println(&quot;M1 响应部分&quot;)
+} 
+func M2(c *gin.Context) {
+  fmt.Println(&quot;M2 请求部分&quot;)
+  c.Next()
+  fmt.Println(&quot;M2 响应部分&quot;)
+}
+
+func main() {
+  r := gin.Default()
+  r.GET(&quot;&quot;, M1, M2, Home)
+  r.Run(&quot;:8080&quot;)
+}
+</code></pre>
+<p>可以使用Abort进行拦截，使用Abort拦截之后，会原路返回</p>
+<h3 id="全局中间件">全局中间件</h3>
+<p>全局也就是路由组。这也就是给路由分组的意义</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">// /3.中间件.go
+package main
+
+import (
+  &quot;fmt&quot;
+  &quot;github.com/gin-gonic/gin&quot;
+)
+
+func Home(c *gin.Context) {
+  fmt.Println(&quot;Home&quot;)
+  c.String(200, &quot;Home&quot;)
+}
+func M1(c *gin.Context) {
+  fmt.Println(&quot;M1 请求部分&quot;)
+  c.Abort()
+  fmt.Println(&quot;M1 响应部分&quot;)
+}
+func M2(c *gin.Context) {
+  fmt.Println(&quot;M2 请求部分&quot;)
+  c.Next()
+  fmt.Println(&quot;M2 响应部分&quot;)
+}
+
+func GM1(c *gin.Context) {
+  fmt.Println(&quot;GM1 请求部分&quot;)
+  c.Next()
+  fmt.Println(&quot;GM1 响应部分&quot;)
+}
+
+func GM2(c *gin.Context) {
+  fmt.Println(&quot;GM2 请求部分&quot;)
+  c.Next()
+  fmt.Println(&quot;GM2 响应部分&quot;)
+}
+
+func AuthMiddleware(c *gin.Context) {
+
+}
+
+func main() {
+  r := gin.Default()
+  g := r.Group(&quot;api&quot;)
+  g.Use(GM1, GM2)
+  g.GET(&quot;users&quot;, Home)
+  r.Run(&quot;:8080&quot;)
+}
+</code></pre>
+<h3 id="中间件传递参数">中间件传递参数</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">c.Set(&quot;GM1&quot;, &quot;GM1&quot;)
+fmt.Println(c.Get(&quot;GM1&quot;))
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

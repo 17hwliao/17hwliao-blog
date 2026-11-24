@@ -1,0 +1,115 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 泛型：类型参数与约束 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 泛型：类型参数与约束</h1><time datetime="2026-05-13T08:13:37.000Z">2026年5月13日</time><p>从1.18版本开始，Go添加了对泛型的支持，即类型参数</p>
+<h2 id="泛型函数">泛型函数</h2>
+<p>如果我们要实现一个对int类型的求和函数</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func add(a, b int) int {
+  return a + b
+}
+</code></pre>
+<p>但是这样写了之后，如果参数是float类型，int32类型这些，就没办法使用了</p>
+<p>难道要为每个类型都写一个这样的函数吗？</p>
+<p>显然这就不合理</p>
+<p>这个时候，泛型就上场了</p>
+<p>具体规定 T 的数据类型, 可赋值 无数种类型</p>
+<p>建议直接放 any 类型 == interface , 可以接收任何类型 ;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func add[T int | float64 | int32](a, b T) T {
+  return a + b
+}
+</code></pre>
+<pre><code class="language-text">func dunc[K int | uint, V string | int](a K, b V) {
+    println(a, b)
+}
+</code></pre>
+<h2 id="泛型结构体">泛型结构体</h2>
+<p><strong>使用泛型定义一个结构体中数据</strong></p>
+<p><strong>获取到数据后</strong></p>
+<p><strong>实现调用直接传 结构体 + 类型就行</strong></p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;encoding/json&quot;
+  &quot;fmt&quot;
+)
+
+type Response[T any] struct {
+  Code int    `json:&quot;code&quot;`
+  Msg  string `json:&quot;msg&quot;`
+  Data T      `json:&quot;data&quot;`
+}
+ 
+func main() {
+  type User struct {
+    Name string `json:&quot;name&quot;`
+  }
+
+  type UserInfo struct {
+    Name string `json:&quot;name&quot;`
+    Age  int    `json:&quot;age&quot;`
+  }
+
+  //user := Response{
+  //  Code: 0,
+  //  Msg:  &quot;成功&quot;,
+  //  Data: User{
+  //    Name: &quot;枫枫&quot;,
+  //  },
+  //}
+  //byteData, _ := json.Marshal(user)
+  //fmt.Println(string(byteData))
+  //userInfo := Response{
+  //  Code: 0,
+  //  Msg:  &quot;成功&quot;,
+  //  Data: UserInfo{
+  //    Name: &quot;枫枫&quot;,
+  //    Age:  24,
+  //  },
+  //}
+  //byteData, _ = json.Marshal(userInfo)
+  //fmt.Println(string(byteData))
+  获取对象传入调用类型
+  var userResponse Response[User]
+  使用 json 反序列化自动填充到 User 中
+  json.Unmarshal([]byte(`{&quot;code&quot;:0,&quot;msg&quot;:&quot;成功&quot;,&quot;data&quot;:{&quot;name&quot;:&quot;枫枫&quot;}}`), &amp;userResponse)
+  可以使用泛型实现调用子属性
+  fmt.Println(userResponse.Data.Name)
+  
+  var userInfoResponse Response[UserInfo]
+  json.Unmarshal([]byte(`{&quot;code&quot;:0,&quot;msg&quot;:&quot;成功&quot;,&quot;data&quot;:{&quot;name&quot;:&quot;枫枫&quot;,&quot;age&quot;:24}}`), &amp;userInfoResponse)
+  fmt.Println(userInfoResponse.Data.Name, userInfoResponse.Data.Age)
+}
+</code></pre>
+<h2 id="泛型切片">泛型切片</h2>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+type MySlice[T any] []T
+
+func main() {
+  var mySlice MySlice[string]
+  mySlice = append(mySlice, &quot;枫枫&quot;)
+
+  var intSlice MySlice[int]
+  intSlice = append(intSlice, 2)
+}
+</code></pre>
+<h2 id="泛型map">泛型map</h2>
+<p>Go复制代码</p>
+<p><strong>创建泛型的 map 的时候 : 创建出的 map 的 键 类型只能使用 基本数据类型 ;</strong></p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+type MyMap[K string | int, V any] map[K]V
+
+func main() {
+  var myMap = make(MyMap[string, string])
+  myMap[&quot;name&quot;] = &quot;枫枫&quot;
+  fmt.Println(myMap)
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

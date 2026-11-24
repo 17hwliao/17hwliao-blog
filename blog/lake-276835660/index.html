@@ -1,0 +1,221 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>go-zero：MySQL 与 GORM 接入 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>go-zero：MySQL 与 GORM 接入</h1><time datetime="2026-07-08T02:40:05.000Z">2026年7月8日</time><h2 id="go-zero原生操作mysql">go-zero原生操作mysql</h2>
+<h4 id="代码生成">代码生成</h4>
+<p>v1/model/user.sql</p>
+<p>SQL复制代码</p>
+<pre><code class="language-text">CREATE TABLE user
+(
+    id        bigint AUTO_INCREMENT,
+    username  varchar(36) NOT NULL,
+    password  varchar(64) default &#39;&#39;,
+    UNIQUE name_index (username),
+    PRIMARY KEY (id)
+) ENGINE = InnoDB COLLATE utf8mb4_general_ci;
+</code></pre>
+<p>生成go代码</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">goctl model mysql ddl --src user.sql --dir .
+</code></pre>
+<p>生成的go代码，自动为我们生成了增删改查的代码</p>
+<p>我们如何使用呢？</p>
+<h3 id="代码使用">代码使用</h3>
+<p>在config里面写上mysql配置</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package config
+
+import &quot;github.com/zeromicro/go-zero/rest&quot;
+
+type Config struct {
+  rest.RestConf
+  Mysql struct {
+    DataSource string
+  }
+  Auth struct {
+    AccessSecret string
+    AccessExpire int64
+  }
+}
+</code></pre>
+<p>配置文件</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">Name: users
+Host: 0.0.0.0
+Port: 8888
+Mysql :
+  DataSource: root:zjq17hwliao@tcp(127.0.0.1:3306)/zero_db?charset=utf8mb4&amp;parseTime=True&amp;loc=
+Auth:
+  AccessSecret: dfff1234
+  AccessExpire: 3600
+</code></pre>
+<p>先在依赖注入的地方创建连接</p>
+<p>v1/api/internal/svc/servicecontext.go</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package svc
+
+import (
+  &quot;github.com/zeromicro/go-zero/core/stores/sqlx&quot;
+  &quot;go_test/v1/api/internal/config&quot;
+  &quot;go_test/v1/model&quot;
+)
+
+type ServiceContext struct {
+  Config     config.Config
+  UsersModel model.UserModel
+}
+
+func NewServiceContext(c config.Config) *ServiceContext {
+  mysqlConn := sqlx.NewMysql(c.Mysql.DataSource)
+  return &amp;ServiceContext{
+    Config:     c,
+    UsersModel: model.NewUserModel(mysqlConn),
+  }
+}
+</code></pre>
+<p>为了简单，我就直接在登录逻辑里面，写逻辑了</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func (l *LoginLogic) Login(req *types.LoginRequest) (resp string, err error) {
+  // 增
+  l.svcCtx.UsersModel.Insert(context.Background(), &amp;model.User{
+    Username: &quot;枫枫&quot;,
+    Password: &quot;123456&quot;,
+  })
+
+  // 查
+  user, err := l.svcCtx.UsersModel.FindOne(context.Background(), 1)
+  fmt.Println(user, err)
+  // 查
+  user, err = l.svcCtx.UsersModel.FindOneByUsername(context.Background(), &quot;枫枫&quot;)
+  fmt.Println(user, err)
+
+  // 改
+  l.svcCtx.UsersModel.Update(context.Background(), &amp;model.User{
+    Username: &quot;枫枫1&quot;,
+    Password: &quot;1234567&quot;,
+    Id:       1,
+  })
+  user, err = l.svcCtx.UsersModel.FindOne(context.Background(), 1)
+  fmt.Println(user, err)
+  // 删
+  l.svcCtx.UsersModel.Delete(context.Background(), 1)
+  user, err = l.svcCtx.UsersModel.FindOne(context.Background(), 1)
+  fmt.Println(user, err)
+  return
+}
+</code></pre>
+<pre><code class="language-text">l          → *LoginLogic        (登录逻辑结构体)
+l.svcCtx   → *svc.ServiceContext (服务上下文，go-zero 标准)
+l.svcCtx.Config → 你的自定义配置类型
+在 go-zero 项目中，svcCtx 的典型定义如下：
+// internal/svc/servicecontext.go
+type ServiceContext struct {
+    Config config.Config    // ← l.svcCtx.Config 的类型
+    // 其他依赖，如 DB、缓存等
+}
+而 Config 通常定义在 etc/xxx.yaml 对应的结构体中：
+// internal/config/config.go
+type Config struct {
+    rest.RestConf
+    // 你的自定义配置字段，例如：
+    // MySQL  MySQLConfig
+    // Redis  RedisConf
+    // JWT    JWTConfig
+}
+你之前提到的 MySQL 配置
+结合你给的连接串 root:root@tcp(127.0.0.1:3306)/zero_db，你的配置可能类似：
+type Config struct {
+    rest.RestConf
+    MySQL MySQLConfig
+}
+type MySQLConfig struct {
+    DataSource string  // &quot;root:zjq17hwliao@tcp(127.0.0.1:3306)/zero_db?charset=utf8mb4&amp;parseTime=True&amp;loc=&quot;
+}
+使用示例
+func (l *LoginLogic) Login(req *types.LoginRequest) (resp string, err error) {
+    // 访问配置
+    dsn := l.svcCtx.Config.MySQL.DataSource
+    
+    // 或者直接使用 svcCtx 中初始化好的连接
+    // l.svcCtx.Conn  (如果你在 ServiceContext 中初始化了 DB 连接)
+    return
+}
+</code></pre>
+<h2 id="结合gorm">结合gorm</h2>
+<p>以上情况，差不多是直接使用原生sql进行查询的</p>
+<p>其实大部分场景，结合gorm会更加高效</p>
+<p>当然也可以使用其他的orm</p>
+<p>直接编写model文件</p>
+<p>因为直接编写sql文件再转换，会有些地方有问题</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package model
+
+import &quot;gorm.io/gorm&quot;
+
+type UserModel struct {
+  gorm.Model
+  Username string `gorm:&quot;size:32&quot; json:&quot;username&quot;`
+  Password string `gorm:&quot;size:64&quot; json:&quot;password&quot;`
+}
+</code></pre>
+<p>在common里面写上gorm的连接语句</p>
+<p>common/init_db/init_gorm.go</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package init_db
+
+import (
+  &quot;fmt&quot;
+  &quot;gorm.io/driver/mysql&quot;
+  &quot;gorm.io/gorm&quot;
+)
+
+// InitGorm gorm初始化
+func InitGorm(MysqlDataSource string) *gorm.DB {
+  db, err := gorm.Open(mysql.Open(MysqlDataSource), &amp;gorm.Config{})
+  if err != nil {
+    panic(&quot;连接mysql数据库失败, error=&quot; + err.Error())
+  } else {
+    fmt.Println(&quot;连接mysql数据库成功&quot;)
+  }
+  return db
+}
+</code></pre>
+<p>然后在context里面进行注入</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package svc
+
+import (
+  &quot;go_test/common/init_db&quot;
+  &quot;go_test/v1/api/internal/config&quot;
+  &quot;go_test/v1/model&quot;
+  &quot;gorm.io/gorm&quot;
+)
+
+type ServiceContext struct {
+  Config config.Config
+  DB     *gorm.DB
+}
+
+func NewServiceContext(c config.Config) *ServiceContext {
+  mysqlDb := init_db.InitGorm(c.Mysql.DataSource)
+  mysqlDb.AutoMigrate(&amp;model.User{})
+  return &amp;ServiceContext{
+    Config: c,
+    DB:     mysqlDb,
+  }
+}
+</code></pre>
+<p>使用就很简单了，和gorm是一模一样的</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func (l *LoginLogic) Login(req *types.LoginRequest) (resp string, err error) {
+  var user models.UserModel
+  err = l.svcCtx.DB.Take(&amp;user, &quot;username = ? and password = ?&quot;, req.Username, req.Password).Error
+  if err != nil {
+    return &quot;&quot;, errors.New(&quot;登录失败&quot;)
+  }
+  return user.Username, nil
+}
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<p>sqlx使用 <a href="https://blog.csdn.net/Mr_XiMu/article/details/131658247">https://blog.csdn.net/Mr_XiMu/article/details/131658247</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

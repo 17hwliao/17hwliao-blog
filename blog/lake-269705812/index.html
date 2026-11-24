@@ -1,0 +1,163 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 单元测试：子测试与 TestMain · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 单元测试：子测试与 TestMain</h1><time datetime="2026-05-14T01:45:41.000Z">2026年5月14日</time><h2 id="死规定">死规定 :</h2>
+<h3 id="单元测试文件必须叫原文件名-testgo"><strong>单元测试文件必须叫：原文件名 + _test.go</strong></h3>
+<h3 id="必须在同一个包package里面"><strong>必须在同一个包（package）里面</strong></h3>
+<h3 id="测试用例函数必须以test开头一般来说就是test被测试的函数名">测试用例函数必须以Test开头，一般来说就是Test+被测试的函数名</h3>
+<p><strong>测试 泛型函数的 时候不能传泛型的 类型直接传值 即可 ;</strong></p>
+<p>Go语言中自带有一个轻量级的测试框架testing和自带的go test命令来实现单元测试和性能测试，testing框架和其他语言的测试框架相似，可以基于这个框架写针对相应函数的测试用例，也可以基于该框架写相应的压力测试用例。通过单元测试，可以解决：</p>
+<ol>
+<li>确保每个函数是可运行，并且运行结果是正确的</li>
+<li>确保写出来的代码性能是好的</li>
+<li>单元测试能及时的发现程序设计或实现的逻辑错误，使问题暴露，便于问题的定位解决，而性能测试的重点在于发现程序设计上的一些问题，让程序能够在高并发的情况下还能保持稳定</li>
+</ol>
+<p>Go 语言推荐测试文件和源代码文件放在一块，测试文件以 <code>_test.go</code> 结尾</p>
+<p>需要注意的是</p>
+<ol>
+<li>测试用例文件名必须以_test.go结尾</li>
+<li>测试用例函数必须以Test开头，一般来说就是Test+被测试的函数名</li>
+</ol>
+<h2 id="单元测试">单元测试</h2>
+<p>例如我现在有两个用于计算的文件，叫calc.go</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+func Add(a int, b int) int {
+    return a + b
+}
+
+func Mul(a int, b int) int {
+    return a * b
+}
+</code></pre>
+<p>那么我的测试文件就是calc_test.go</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;testing&quot;
+
+func TestAdd(t *testing.T) {
+  if ans := Add(1, 2); ans != 3 {
+    // 如果不符合预期，那就是测试不通过
+    t.Errorf(&quot;1 + 2 expected be 3, but %d got&quot;, ans)
+  }
+
+  if ans := Add(-10, -20); ans != -30 {
+    t.Errorf(&quot;-10 + -20 expected be -30, but %d got&quot;, ans)
+  }
+}
+</code></pre>
+<p>测试的话，就在界面上点绿色的按钮就可以了</p>
+<p>如果是命令的话</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">go test // 可以运行某个包下的所有测试用例
+</code></pre>
+<p><code>-v</code> 参数会显示每个用例的测试结果</p>
+<p><code>-run</code>参数可以指定测试某个函数</p>
+<p>单元测试框架提供的日志方法</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方 法</span></p></td><td><p><span>备 注</span></p></td><td><p><span>测试结果</span></p></td></tr><tr><td><p><span>Log</span></p></td><td><p><span>打印日志，同时结束测试</span></p></td><td><p><span>PASS</span></p></td></tr><tr><td><p><span>Logf</span></p></td><td><p><span>格式化打印日志，同时结束测试</span></p></td><td><p><span>PASS</span></p></td></tr><tr><td><p><span>Error</span></p></td><td><p><span>打印错误日志，同时结束测试</span></p></td><td><p><span>FAIL</span></p></td></tr><tr><td><p><span>Errorf</span></p></td><td><p><span>格式化打印错误日志，同时结束测试</span></p></td><td><p><span>FAIL</span></p></td></tr><tr><td><p><span>Fatal</span></p></td><td><p><span>打印致命日志，同时结束测试</span></p></td><td><p><span>FAIL</span></p></td></tr><tr><td><p><span>Fatalf</span></p></td><td><p><span>格式化打印致命日志，同时结束测试</span></p></td><td><p><span>FAIL</span></p></td></tr></tbody></table></div>
+
+<h2 id="子测试">子测试</h2>
+<p>如果需要给一个函数，调用不同的测试用例，可以使用子测试</p>
+<p><strong>子测试里面的Fatal，是不会终止程序的</strong></p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;testing&quot;
+)
+
+func TestAdd(t1 *testing.T) {
+  t1.Run(&quot;add1&quot;, func(t *testing.T) {
+    if ans := Add(1, 2); ans != 3 {
+      // 如果不符合预期，那就是测试不通过
+      t.Fatalf(&quot;1 + 2 expected be 3, but %d got&quot;, ans)
+    }
+  })
+  t1.Run(&quot;add2&quot;, func(t *testing.T) {
+    if ans := Add(-10, -20); ans != -30 {
+      t.Fatalf(&quot;-10 + -20 expected be -30, but %d got&quot;, ans)
+    }
+  })
+
+}
+</code></pre>
+<p>如果测试用例很多，还可以用一个类似表格去表示</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;testing&quot;
+)
+
+func TestAdd(t *testing.T) {
+  cases := []struct {
+    Name           string
+    A, B, Expected int
+  }{
+    {&quot;a1&quot;, 2, 3, 5},
+    {&quot;a2&quot;, 2, -3, -1},
+    {&quot;a3&quot;, 2, 0, 2},
+  }
+
+  for _, c := range cases {
+    t.Run(c.Name, func(t *testing.T) {
+      if ans := Add(c.A, c.B); ans != c.Expected {
+        t.Fatalf(&quot;%d * %d expected %d, but %d got&quot;,
+          c.A, c.B, c.Expected, ans)
+      }
+    })
+  }
+}
+</code></pre>
+<h2 id="testmain函数">TestMain函数</h2>
+<h3 id="运行-go-test-时-一定会先自动跑-testmain再跑其他测试函数"><strong>运行 go test 时 → 一定会先自动跑 TestMain，再跑其他测试函数！</strong></h3>
+<p>它的作用：</p>
+<ul>
+<li><strong>统一做测试前准备</strong>（打开数据库、创建文件、初始化环境）</li>
+<li><strong>统一做测试后清理</strong>（关闭连接、删除临时文件）</li>
+</ul>
+<p>它是测试的入口</p>
+<p>我们可以在TestMain里面实现测试流程的生命周期</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;os&quot;
+  &quot;testing&quot;
+)
+
+// 测试前执行
+func setup() {
+  fmt.Println(&quot;Before all tests&quot;)
+}
+
+// 测试后执行
+func teardown() {
+  fmt.Println(&quot;After all tests&quot;)
+}
+
+func Test1(t *testing.T) {
+  fmt.Println(&quot;I&#39;m test1&quot;)
+}
+
+func Test2(t *testing.T) {
+  fmt.Println(&quot;I&#39;m test2&quot;)
+}
+
+// 必须叫这个名字  测试主入口
+func TestMain(m *testing.M) {
+  // 测试前执行
+  setup()
+  code := m.Run()
+  // 测试后执行
+  teardown()
+  os.Exit(code)
+}
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<p>go单元测试 <a href="https://blog.csdn.net/m0_56719679/article/details/131461113">https://blog.csdn.net/m0_56719679/article/details/131461113</a></p>
+<p>go test <a href="https://blog.csdn.net/rhx_qiuzhi/article/details/129481723">https://blog.csdn.net/rhx_qiuzhi/article/details/129481723</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

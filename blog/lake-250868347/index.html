@@ -1,0 +1,80 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 时间实践：时区与时间差 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 时间实践：时区与时间差</h1><time datetime="2025-12-29T06:32:27.000Z">2025年12月29日</time><pre><code class="language-text">package Today;
+
+import java.text.* ;
+import java.time.* ;
+import java.time.format.DateTimeFormatter;
+import java.util.* ;
+
+public class Main {
+    public static void main(String[] args) {
+        LocalDate date = LocalDate.now();
+        LocalDate date1 = LocalDate.of(2023,12 , 21) ;
+        LocalDate date2 = LocalDate.ofYearDay(2025,365) ;
+
+        System.out.println(date);
+
+        date = date.plusDays(1) ;  //实现在原本日期基础上++ ;
+
+        System.out.println(date1);
+        System.out.println(date2);
+        System.out.println(date);
+        System.out.println(date.getDayOfWeek());
+        System.out.println(date.getMonth());
+        System.out.println(date.getMonthValue());
+        System.out.println(date.getDayOfMonth());
+        System.out.println(date.getDayOfYear());
+        System.out.println(date.getYear());
+        LocalDate today1 = LocalDate.MAX;
+        LocalDate today2 = LocalDate.MIN;
+        LocalTime today3 = LocalTime.MAX;
+        LocalTime today4 = LocalTime.MIN;
+        LocalTime today5 = LocalTime.MIDNIGHT;
+        LocalTime today6 = LocalTime.NOON;
+        LocalDateTime today7 = LocalDateTime.of(1232, 11 , 2 , 2 , 21);
+        LocalDateTime today8 = LocalTime.now().atDate(LocalDate.now()) ;   //实现自动补全
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;);
+
+        LocalDateTime today9 = LocalDateTime.from(dtf.parse(&quot;2025-09-09 07:12:34&quot;));
+
+        System.out.println(LocalDateTime.parse(&quot;2023-09-09 10:09:22&quot; ,dtf));
+
+        DateTimeFormatter dtf3 = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;);
+        LocalDateTime time = LocalDateTime.now() ;
+        System.out.println(dtf3.format(time));
+
+        OffsetDateTime hhh = OffsetDateTime.now(ZoneId.of(&quot;UTC-6&quot;));
+        System.out.println(hhh);
+
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(&quot;UTC-6&quot;));
+
+        ZonedDateTime zoneId = ZonedDateTime.now() ;
+        System.out.println(zoneId);
+
+        Instant intant = Instant.now() ;
+        Instant.ofEpochSecond(1) ;    //通过时间戳创建日期
+        Instant.ofEpochSecond(0,1) ; //实现精确到毫秒
+
+        LocalDateTime stf10 =  LocalDateTime.ofInstant(intant , ZoneId.of(&quot;UTC+8&quot;));
+
+        Duration duration = Duration.ofHours(1);
+        Duration s = Duration.between(LocalDateTime.now(),LocalDateTime.now().plusDays(1)) ;
+        Period period = Period.ofDays(1);
+        System.out.println(duration);
+        System.out.println(s.getSeconds());
+
+        Period period1 = Period.between(LocalDate.now(),LocalDate.now().plusDays(56));
+        System.out.println(period1.getDays());
+
+
+
+    }
+
+
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

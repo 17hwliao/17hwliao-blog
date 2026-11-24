@@ -1,0 +1,530 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Eino：ChatModel 与提示词模板 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Eino：ChatModel 与提示词模板</h1><time datetime="2026-08-04T11:05:49.000Z">2026年8月4日</time><h4 id="建议的项目结构">建议的项目结构 :</h4>
+<pre><code class="language-text">eino-project/
+|--- cmd : main.go (主程序入口)
+|--- internal : agent(Agent实现)/tools(自定义工具)/config(配置管理)
+|--- pkg : utils (公共工具)
+|--- go.mod / ---go.sum / --- README.md 
+</code></pre>
+<h2 id="chatmodel-基础使用">ChatModel 基础使用</h2>
+<h5 id="简介-chatmodel-是eino使用在大语言模型交互的核心组件提供的统一接口来自于不同的大模型服务">简介 : ChatModel 是Eino使用在大语言模型交互的核心组件,提供的统一接口来自于不同的大模型服务 ;</h5>
+<h5 id="chatmodel-的核心能力">ChatModel 的核心能力</h5>
+<ul>
+<li>对话生成:Generate() -- 一次性获取完整响应</li>
+<li>流式输出:Stream() -- 实时流式获取响应 (类似打印机的效果)</li>
+<li>工具调用:支持 Function Calling / Tool Calling</li>
+<li>参数控制:Temperature , Top-P , Max Tokens 等</li>
+</ul>
+<h3 id="控制多轮对话">控制多轮对话</h3>
+<p>在使用 schema 传入对话的 Message 时候 : 不传入 schema.UserMessage()</p>
+<pre><code class="language-text">reader := bufio.NewReader(os.Stdin)
+for {
+     input , err := reader.ReadString(&#39;\n&#39;)
+     if err != nil {
+     fmt(&quot;输入结束&quot;)
+     break
+     }
+     userInput := strings.TrimSpace(input)
+     if userInput == &quot;exit&quot; {
+         fmt(&quot;再见&quot;)
+         break
+     }
+     if userInput == &quot;&quot; {
+         continue
+     }
+     messages = append(messages , schema.UserMessage(userInput))
+
+     response , err := chatModel.Generate(ctx , messages)
+     if err != nil {
+         log.Printf(&quot;生成失败 %v&quot; , err)
+         continue
+     }
+     messages = append(messages , response)
+     fmp(&quot;%s&quot; , response.Content)
+}
+</code></pre>
+<h3 id="流式输出">流式输出</h3>
+<p>就是一个打印机的效果 :</p>
+<pre><code class="language-text">// 流式生成
+stream , err := chatModel.Stream(ctx , messages)
+if err != nil {log.Fatal}
+defer Stream.Close() 
+//打印机实现
+for {
+    chunk , err := stream.Recv() 
+    if err != nil {
+        if errors.Is(err, io.EOF) {
+            break
+        }
+        log.Fatalf(&quot;接收失败 %v&quot; , err)
+    }
+    fmp(chunk.Content)
+}
+fmp(&quot;完成&quot;) 
+</code></pre>
+<p>实现获取完整的 chatModel 响应 :</p>
+<pre><code class="language-text">var fullContent strings.Builder
+每次实现读写 都使用 fullContent.WriteString(printer.Content)
+最后直接输出 fullContent.String() 实现总结全部输出
+</code></pre>
+<p>整合了 <code>多轮对话</code> 和 <code>流失输出</code> 的核心功能 :</p>
+<pre><code class="language-text">reader := bufio.NewReader(os.stdin)
+
+for {
+    fmt.Print(&quot;\n你：&quot;)
+    // 读入直到遇到换行符 ; 
+    input, err := reader.ReadString(&#39;\n&#39;)
+    if err != nil {
+        fmt.Println(&quot;输入结束&quot;)
+        break
+    }
+    // 去除对话末尾的空格
+    userInput := strings.TrimSpace(input)
+    
+    if userInput == &quot;exit&quot; {
+        fmt.Println(&quot;再见！&quot;)
+        break
+    }
+    
+    if userInput == &quot;&quot; {
+        continue
+    }
+    // 将用户消息加入多轮对话历史
+    messages = append(messages, schema.UserMessage(userInput))
+
+    stream, err := chatModel.Stream(ctx, messages)
+    if err != nil {
+        fmt.Printf(&quot;流式创建失败：%v\n&quot;, err)
+
+        // 本轮没有成功得到 AI 回复，撤销刚加入的用户消息
+        messages = messages[:len(messages)-1]
+        continue
+    }
+
+    // 它保存的是“本轮 AI 完整回复”，不是全部 history
+    var assistantReply strings.Builder
+    streamFailed := false
+
+    fmt.Print(&quot;AI：&quot;)
+
+    for {
+        chunk, err := stream.Recv()
+
+        if errors.Is(err, io.EOF) {
+            break // 正常接收完毕
+        }
+
+        if err != nil {
+            log.Printf(&quot;接收失败：%v\n&quot;, err)
+            streamFailed = true
+            break
+        }
+
+        // 不要 fmt.Printf(chunk.Content)，内容里若有 % 会被误认为格式化符
+        fmt.Print(chunk.Content)
+
+        // 保存每个流式文字块
+        assistantReply.WriteString(chunk.Content)
+    }
+
+    stream.Close()
+    fmt.Println()
+
+    if streamFailed {
+        // AI 回复不完整，不把它写入历史；同时撤销本轮用户消息
+        messages = messages[:len(messages)-1]
+        continue
+    }
+
+    // 将完整 AI 回复写入历史，下一轮才是真正多轮对话
+    messages = append(
+        messages,
+        schema.AssistantMessage(assistantReply.String(), nil),
+    )
+}
+</code></pre>
+<h2 id="参数配置">参数配置</h2>
+<p>ChatModel 中的控制生成行为 的多种参数 :</p>
+<pre><code class="language-text">- 基础配置 : 
+APIKey / Model / BaseURL / Timeout 
+
+- 生成参数 : 
+Temperature(控制生成随机性,越高越随机[0.0~2.0])
+TopP(核采样参数,越低越聚焦,[0.0~1.0])
+MaxTokens(限制最大生成的token数量,[1~8192])
+
+- 停止序列 (读取的时候读取到这些文本的时候会直接停止生成)
+Stop: []string{&quot;exit&quot; , &quot;结束&quot;}
+
+- 惩罚参数 (控制重复度)
+PresencePenalty(存在惩罚,范围[-2.0~2.0],正值增加新话题可能性)
+FrequencyPenalty(频率乘法,范围[-2.0~2.0],正值减少重复词语)
+</code></pre>
+<h3 id="ollama-本地模型">Ollama (本地模型)</h3>
+<p>Ollama 开源的agent 工具, 可以在本地实现运行大语言模型 . 无需联网, 完全免费</p>
+<h4 id="ollama安装步骤">Ollama安装步骤</h4>
+<ol>
+<li>下载安装 Ollama</li>
+</ol>
+<p><code>Windows : https://ollama.com/download/windows</code></p>
+<ol>
+<li>启动 Ollama 服务</li>
+</ol>
+<pre><code class="language-text">- 拉取模型
+ollama pull 模型名称; 
+- 列出获取到的模型
+ollama list 
+- 实现命令测试模型
+ollama run 模型名称 ; 
+- 手动启动 Ollama
+ollama server
+</code></pre>
+<pre><code class="language-text">package main
+
+import (
+	&quot;bufio&quot;
+	&quot;context&quot;
+	&quot;errors&quot;
+	&quot;fmt&quot;
+	&quot;io&quot;
+	&quot;log&quot;
+	&quot;os&quot;
+	&quot;strings&quot;
+
+	&quot;github.com/cloudwego/eino-ext/components/model/ollama&quot;
+	&quot;github.com/cloudwego/eino/schema&quot;
+)
+
+func main() {
+	ctx := context.Background()
+
+	chatModel, err := ollama.NewChatModel(ctx, &amp;ollama.ChatModelConfig{
+		BaseURL: &quot;http://127.0.0.1:11434&quot;,
+		Model:   &quot;qwen2.5:7b&quot;,
+	})
+	if err != nil {
+		log.Fatalf(&quot;创建失败: %v&quot;, err)
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	messages := []*schema.Message{}
+
+	for {
+		input, err := reader.ReadString(&#39;\n&#39;)
+		if err != nil {
+			fmt.Printf(&quot;输入结束&quot;)
+			break
+		}
+
+		userInput := strings.TrimSpace(input)
+
+		if userInput == &quot;exit&quot; {
+			break
+		}
+		if userInput == &quot;&quot; {
+			continue
+		}
+		// 上下文记录本地输入消息
+		messages = append(messages, schema.UserMessage(userInput))
+
+		stream, err := chatModel.Stream(ctx, messages)
+		if err != nil {
+			fmt.Printf(&quot;流式创建失败 %v&quot;, err)
+			continue
+		}
+
+		var history strings.Builder
+
+		for {
+			printer, err := stream.Recv()
+			if err != nil {
+				if errors.Is(err, io.EOF) {
+					break
+				}
+				log.Fatalf(&quot;接收失败 %v&quot;, err)
+			}
+			fmt.Printf(printer.Content)
+			history.WriteString(printer.Content)
+		}
+		stream.Close()
+		fmt.Println()
+
+		messages = append(messages, schema.AssistantMessage(history.String(), nil))
+	}
+}
+</code></pre>
+<h2 id="prompt-和-chattemplate">Prompt 和 ChatTemplate</h2>
+<h4 id="chattemplate">ChatTemplate</h4>
+<p>不使用模板的问题 :</p>
+<pre><code class="language-text">messages := []*schema.Message{
+    schema.SystemMessage(&quot;&quot;) , 
+    schema.UserMessage(&quot;&quot;) , 
+}
+</code></pre>
+<p>使用模板的优势 ;</p>
+<pre><code class="language-text">template := prompt.FromMessages{
+    schema.FString , 
+    schema.SystemMessage(),
+    schema.UserMessage(),
+}
+</code></pre>
+<h3 id="基础使用">基础使用</h3>
+<h4 id="基础格式">基础格式</h4>
+<pre><code class="language-text">ctx := context.Background()
+  - 创建一个 chattemplate (prompt.FromMessage)
+	template := prompt.FromMessages(
+		schema.FString,
+		schema.SystemMessage(&quot;你是一个{role}&quot;),
+		schema.UserMessage(&quot;{question}&quot;),
+	)
+  - 匹配变量
+	variables := map[string]any{
+		&quot;role&quot;:     &quot;专业的GO语言工程师&quot;,
+		&quot;question&quot;: &quot;什么是interface?&quot;,
+	}
+
+  - 格式化组装消息
+	message, err := template.Format(ctx, variables)
+	if err != nil {
+		log.Fatalf(&quot;格式化失败 : %v&quot;, err)
+	}
+
+	fmt.Println(&quot;生成的消息&quot;)
+	for i, msg := range message {
+		fmt.Println(&quot;%d. [%s] %s\\n&quot;, i+1, msg.Role, msg.Content)
+	}
+</code></pre>
+<h4 id="多种消息">多种消息</h4>
+<pre><code class="language-text">ctx := context.Background()
+
+// 支持多种角色的消息
+template := prompt.FromMessages(
+    schema.FString,
+    // System: 系统提示，定义 AI 的角色和行为
+    schema.SystemMessage(&quot;你是{role}, 你的专长是{expertise}&quot;),
+    
+    // User: 用户消息
+    schema.UserMessage(&quot;我的问题是: {question}&quot;),
+    
+    // Assistant: AI 的历史回复 (用于多轮对话)
+    schema.AssistantMessage(&quot;我理解了, 让我思考一下...&quot;, nil),
+    
+    // User: 继续对话
+    schema.UserMessage(&quot;请详细说明&quot;),
+)
+</code></pre>
+<h4 id="结构体封装">结构体封装</h4>
+<pre><code class="language-text">type UserProfile struct {
+    Name      string
+    Age       int
+    Interests []string
+    VIPLevel  int
+}
+
+func main(){
+  ctx; 
+   : {template := prompt.FromMessages(
+    schema.FString,
+    schema.SystemMessage(&quot;你是一个智能推荐助手&quot;),
+    schema.UserMessage(`用户信息:
+                  姓名: {name}
+                  年龄: {age}
+                  兴趣: {interests}
+                  VIP等级: {vip_level}
+                  请根据以上信息推荐合适的内容。`),
+)}
+
+  user := UserProfile{} 创建实例化对象
+
+    variables := map[string]any{
+    &quot;name&quot;:       user.Name,
+    &quot;age&quot;:        user.Age,
+    &quot;interests&quot;:  fmt.Sprintf(&quot;%v&quot;, user.Interests),
+    &quot;vip_level&quot;:  user.VIPLevel,
+}
+
+  messages, err := template.Format(ctx, variables)
+if err != nil {
+    log.Fatalf(&quot;格式化失败: %v&quot;, err)
+}
+for _, msg := range messages {
+    fmt.Printf(&quot;[%s]\\n%s\\n\\n&quot;, msg.Role, msg.Content)
+}
+}
+</code></pre>
+<h4 id="提示词模板库">提示词模板库</h4>
+<pre><code class="language-text">//创建提示词模板管理
+type PromptTemplates struct{} 
+//翻译助手模板
+func(p *PromptTemplates) Translator (sourceLang , targetLang string) prompt.ChatTemplate {
+    return prompt.FromMessages(
+      schema.FString , 
+      schema.SystemMessage(fmt.Sprintf(
+        &quot;你是一个专业的翻译助手.请将%s翻译为%s.\n&quot; + 
+        &quot;要求 : \n&quot; + 
+        ... , 
+        sourceLang , targetLang , 
+      )) , 
+      schema.UserMessage(&quot;{text}&quot;)
+    )
+}
+//代码审查模板
+func(p *PromptTemplates)CodeReviewer(language string) prompt.ChatTemplate {
+    return prompt.FromMessages{
+    schema.FString,
+    schema.SystemMessage(fmp.Sprintf(
+      &quot;你是一个资深的%s开发专家....&quot; , 
+      language, 
+    )),
+    schema.UserMessage(&quot;请审查以下代码:\n {language} \n {code}&quot;)
+    }
+}
+//技术面试官模板
+func(p *PromptTemplates) TechInterviewer(position , level string) prompt.ChatTemplate {
+  return prompt.FromMessages{
+    schema.FString , 
+    schema.SystemMessage(fmt.Sprintf( , position , level , )) , 
+    schema.UserMessage(&quot;{answer}&quot;)
+  }
+}
+后续的 func main(){} : 
+实例化函数调用对象 : templates := &amp;PromptTemplates{} 
+// 调用实例的方法 : 
+templates.Translator(&quot;中文&quot; ,&quot;英文&quot;)
+templates.CodeReviewer(&quot;GO&quot;) 
+templates.TechInterviewer(&quot;C&quot;:/17hwliao&quot;,&quot;111&quot;)
+// 后续都是获取提示词然后直接输出一下最后的回复 ; 
+messages , _ := translatorTemplate.Format(ctx , map[string]any{//补全内部参数&quot;1&quot;:&quot;2&quot;})
+chatModel.Generate(ctx,message).var --&gt; (response , err)
+</code></pre>
+<h4 id="few-shot-learning-少样本学习">Few-Shot Learning (少样本学习)</h4>
+<pre><code class="language-text">ctx := context.Background()
+// 创建 Few-Shot 模板
+template := prompt.FromMessages(
+    schema.FString,
+    schema.SystemMessage(&quot;你是一个情感分析助手。请分析文本的情感倾向，返回格式：情感：[正面/负面/中性] | 置信度：[0-100]&quot;),
+    // 提供示例 (Few-Shot Examples)
+    schema.UserMessage(&quot;这个产品质量很好，非常满意！&quot;),
+    schema.AssistantMessage(&quot;情感：正面 | 置信度：95&quot;, nil),
+    schema.UserMessage(&quot;一般般吧，没什么特别的。&quot;),
+    schema.AssistantMessage(&quot;情感：中性 | 置信度：80&quot;, nil),
+    schema.UserMessage(&quot;太差了，完全不能用！&quot;),
+    schema.AssistantMessage(&quot;情感：负面 | 置信度：98&quot;, nil),
+    // 实际要分析的文本
+    schema.UserMessage(&quot;{text}&quot;),
+)
+</code></pre>
+<h4 id="chain-of-thought-思维链">Chain of Thought (思维链)</h4>
+<pre><code class="language-text">template := prompt.FromMessage(`1`)
+// Chain of Thought 模板
+template := prompt.FromMessages(
+    schema.FString,
+    schema.SystemMessage(`你是一个逻辑推理专家。
+请按照以下步骤解决问题：
+1. 理解问题：复述问题的要求
+2. 分析：列出解决问题需要的步骤
+3. 计算：逐步计算
+4. 验证：检查答案是否合理
+5. 结论：给出最终答案`),
+    schema.UserMessage(&quot;{problem}&quot;),
+)
+然后就是提示词.Format(ctx,map)-&gt;message,chatModel.Generate(ctx,message).var(回复+报错)
+</code></pre>
+<h4 id="动态模板生成">动态模板生成</h4>
+<p>实现按照不同场景动态创建模板</p>
+<pre><code class="language-text">type ConversationStyle string
+const (
+    StyleProfessional ConversationStyle = &quot;professional&quot; // 专业
+    StyleCasual       ConversationStyle = &quot;casual&quot;       // 随意
+    StyleFriendly     ConversationStyle = &quot;friendly&quot;     // 友好
+    StyleFormal       ConversationStyle = &quot;formal&quot;       // 正式
+)
+func createDynamicTemplate(style ConversationStyle, domain string) prompt.ChatTemplate {
+    var systemPrompt string
+    switch style {
+    case StyleProfessional:
+        systemPrompt = fmt.Sprintf(&quot;你是一位专业的%s专家，请用专业、准确的语言回答问题。&quot;, domain)
+    case StyleCasual:
+        systemPrompt = fmt.Sprintf(&quot;你是一个懂%s的朋友，请用轻松、通俗的方式聊天。&quot;, domain)
+    case StyleFriendly:
+        systemPrompt = fmt.Sprintf(&quot;你是一个热情友好的%s助手，请用温暖、鼓励的语气交流。&quot;, domain)
+    case StyleFormal:
+        systemPrompt = fmt.Sprintf(&quot;你是一位正式的%s顾问，请使用严谨、正式的表达方式。&quot;, domain)
+    default:
+        systemPrompt = fmt.Sprintf(&quot;你是一个%s助手。&quot;, domain)
+    }
+
+    return prompt.FromMessages(
+      schema.FString,
+      schema.SystemMessage(systemPrompt),
+      schema.UserMessage(&quot;{query}&quot;)
+    )
+  }
+</code></pre>
+<h3 id="提示词工程">提示词工程</h3>
+<h4 id="1提示词工程原则">1.提示词工程原则</h4>
+<p><img src="../../blogs/_assets/lakebook/403690cf6751e14de04b5718.png" loading="lazy" alt=""></p>
+<h4 id="2变量命名规范">2.变量命名规范</h4>
+<p><img src="../../blogs/_assets/lakebook/e263beb980bd2291d1a4709d.png" loading="lazy" alt=""></p>
+<h4 id="3模板组织">3.模板组织</h4>
+<p><img src="../../blogs/_assets/lakebook/672f2cab3e7bf1efefb0e436.png" loading="lazy" alt=""></p>
+<pre><code class="language-text">type CodeAssistant struct {
+	chatModel *ollama.ChatModel
+}
+
+func NewCodeAssistant(apikey string) (*CodeAssistant, error) {
+	ctx := context.Background()
+	chatModel, err := ollama.NewChatModel(ctx, &amp;ollama.ChatModelConfig{
+		BaseURL: &quot;http://127.0.0.1:11434&quot;,
+		Model:   &quot;qwen2.5:7b&quot;,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &amp;CodeAssistant{chatModel: chatModel}, nil
+}
+
+func (ca *CodeAssistant) ExplainCode(ctx context.Context, code, language string) (string, error) {
+	template := prompt.FromMessages(
+		schema.FString,
+		schema.SystemMessage(&quot;1223&quot;),
+		schema.UserMessage(&quot;2222&quot;),
+	)
+	message, err := template.Format(ctx, nil)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+
+	response, err := ca.chatModel.Generate(ctx, message)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+	return response.Content, nil
+}
+
+func (ca *CodeAssistant) optimizeCode(ctx context.Context, code, language string) (string, error) {
+	template := prompt.FromMessages(
+		schema.FString,
+		schema.SystemMessage(&quot;sunyuhan&quot;),
+		schema.UserMessage(&quot;{boyfirend} , {girfriend}&quot;),
+	)
+
+	message, err := template.Format(ctx, map[string]any{
+		&quot;boyfirend&quot;: &quot;zhaojiaqi&quot;,
+		&quot;girfriend&quot;: &quot;sunyuhan&quot;,
+	})
+	if err != nil {
+		return &quot;&quot;, nil
+	}
+
+	response, err := ca.chatModel.Generate(ctx, message)
+	if err != nil {
+		return &quot;&quot;, nil
+	}
+
+	return response.Content, nil
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

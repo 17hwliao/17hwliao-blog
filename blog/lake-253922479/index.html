@@ -1,0 +1,56 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java Map：遍历、更新与合并 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java Map：遍历、更新与合并</h1><time datetime="2026-01-20T07:18:25.000Z">2026年1月20日</time><pre><code class="language-text">import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args)  {
+        Map&lt;Integer , String&gt; map = new HashMap&lt;&gt;() ;
+        map.put(1,&quot;xiao&quot;) ;
+        map.put(2,&quot;ming&quot;) ;
+        map.putIfAbsent(2,&quot;xiao&quot;) ;
+        System.out.println(map);
+        System.out.println(map.get(2));
+        System.out.println(map.getOrDefault(4, &quot;gay&quot;));
+        Map&lt;Integer, String&gt; map2 = new LinkedHashMap&lt;&gt;() ;
+        System.out.println(map.containsKey(1));
+        Set&lt;Map.Entry&lt;Integer , String&gt;&gt; entries = map.entrySet() ;
+
+        for(Map.Entry&lt;Integer , String &gt; entry : entries) {
+            Integer key = entry.getKey() ;
+            String value = entry.getValue() ;
+            System.out.println(&quot;key = &quot;+key+&quot;value = &quot;+value);
+        }
+        map.forEach((key , value) -&gt; {
+            System.out.println(&quot;key = &quot;+key+&quot;value = &quot;+value);
+        });
+        map.compute(1,(key , va) -&gt; {
+            System.out.println(&quot;key = &quot;+key+&quot;value = &quot;+va);
+            return va ;
+        } ) ;
+        map.merge(1,&quot;qaa&quot; , (o1 ,o2) -&gt; o1 + o2 );
+        System.out.println(map.get(1));
+
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;(Arrays.asList(1,2,3,4)) ;
+        Collections.sort(list);
+        System.out.println(list);
+
+    }
+    static class  Student  {
+        int age ;
+        String name ;
+        public Student(int age, String name) {
+            this.age = age;
+            this.name = name;
+        }
+        public String toString() {
+            return &quot;Student [age=&quot; + age + &quot;, name=&quot; + name + &quot;]&quot;;
+        }
+    }
+
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

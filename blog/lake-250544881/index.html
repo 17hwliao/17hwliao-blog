@@ -1,0 +1,130 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 实践：内部类与 Lambda · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 实践：内部类与 Lambda</h1><time datetime="2025-12-26T07:56:56.000Z">2025年12月26日</time><pre><code class="language-text">package Today;
+
+public interface Add {
+    public int add(int a , int b )  ;
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+public class Fulei {
+    String name  ;
+
+    public Fulei(String name){
+        this.name = name ;
+    }
+
+    public String Lulao(){
+        return (&quot;得得得得得得得得得&quot;);
+    }
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+public interface haoa {
+    int  haoa(String a) ;
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+public class Main {
+    public static void main(String[]args){
+        Test s = new Test(&quot;ws1&quot;);
+        Test.Inner inner = new Test.Inner(&quot;wss1&quot;) ;
+        inner.text(&quot;ws0&quot;);
+
+        Test s1 = new Test(&quot;ws2&quot;) ;
+        Test.Inner inner1 = new Test.Inner(&quot;wss2&quot;) ;
+        inner1.text(&quot;ws00&quot;);
+
+        class Inner{
+            void text(){
+                System.out.println(&quot;ws是gay&quot;);
+            }
+        }
+
+        Inner inner0 = new Inner() ;
+        inner.text(&quot;ws00&quot;);
+
+        class Inner11 extends Person{
+            @Override
+            public void study() {} ;
+        }
+
+        Person p = new Person(){
+            String name  = &quot;,ws说自己是gay&quot; ;
+            public void study(){
+                System.out.println(&quot;ws是gay&quot; + name );
+            } ;
+        } ;
+        p.study();
+
+        Fulei f = new Fulei(&quot;ws&quot;){
+            {
+                System.out.println(name + &quot;是gay&quot;);
+            }
+        } ;
+
+        Add ws1 = (a , b ) -&gt; a + b  ;
+        System.out.println(ws1.add(1,2));
+
+        Add ws2 = Integer:: sum ;
+        System.out.println(ws2.add(1,2));
+
+        Fulei ws22 = new Fulei(&quot;卢姥爷&quot;);
+        Study ss =  ws22::Lulao;
+        System.out.println(ss.study());
+
+        haoa a = String::length;
+        String ws111 = &quot;得得得得得得得得得&quot; ;
+        System.out.println(a.haoa(ws111));
+    }
+
+    private static void test(Study s){
+        s.study() ;
+    }
+
+
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+public abstract class Person {
+    String name ;
+    public abstract void study() ;
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+public interface Study {
+    public String study();
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+public class Test {
+
+    String name ;
+    public Test(String name){
+        this.name = name ;
+    }
+
+    static class Inner{
+        String name ;
+
+        public Inner(String name){
+            this.name = name;
+        }
+
+        public void text(String name) {
+            System.out.println(name + &quot;是gay&quot;);
+            System.out.println(this.name + &quot;是gay&quot;);
+
+        }
+    }
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

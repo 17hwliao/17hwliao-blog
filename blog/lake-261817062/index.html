@@ -1,0 +1,160 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Docker 入门：容器与数据卷 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Docker 入门：容器与数据卷</h1><time datetime="2026-03-18T11:50:57.000Z">2026年3月18日</time><h2 id="简介">简介</h2>
+<p>使用Linux内核的两大原生功能 :</p>
+<p>Cgroups : 实现限制和隔离进程的资源使用 , 为容器设置CPU , 内存,</p>
+<p>网络等资源的使用上限 , 确保不相互影响 ;</p>
+<p>Namespaces : 容器只能查看到内部进程ID , 网络相关资源而看不到宿主机 , 容器本身算一种特殊的进程 ,</p>
+<p>但内部像独立的系统 .</p>
+<p>使用dockers exec 容器ID Linux命令 可以直接在容器内部使用Linux 命令 ;</p>
+<p>使用 : sudo docker exec ID号 Linux命令</p>
+<p>常见用法 :</p>
+<p>ps -ef Linux命令实现查看容器进程</p>
+<p>sudo docker exec -it 容器名 /bin/sh 从运行的docker 容器内部获取到一个交互式的命令行环境 ;</p>
+<p>cd 目录 ;</p>
+<p>ls 查看文件, vi 文件名 .( 内部可能为节俭删除 )</p>
+<p>容器内部安装操作系统工具　:</p>
+<p>cat /etc/os-release 先判断自己的Linux的发行版本</p>
+<p>针对 Debian : apt install vim 实现安装工具 ;</p>
+<p>vi 目标文件 ;</p>
+<h2 id="构建操作">构建操作</h2>
+<h3 id="pull命令">Pull命令</h3>
+<p>docker pull docker.io( 官方仓库可省 )/library ( 命名空间 == 作者名,官方可不写 )/nginx:lastest( 版本或最新 , 不写也是最新 ) ;</p>
+<p>docker.io( 官方仓库可省 )/library ( 命名空间 == 作者名,官方可不写 )/nginx 储存的是镜像库 : 存放一个镜像的不同版本 ;</p>
+<p>docker.io : 仓库地址 ,注册表 ;</p>
+<h3 id="修改配置文件">修改配置文件</h3>
+<p>修改配置文件解决网速 : sudo vi /etc/docker/daemon.json ;</p>
+<p>I -&gt; insert , O -&gt; 换行, ( 填写内容 )ESC + : + wq! + 回车;</p>
+<p>填写内容 : registy-mirror : 输入镜像站 ;</p>
+<h3 id="重启命令">重启命令</h3>
+<p>重启一下 : sudo service docker restrart ;</p>
+<h3 id="列举和删除全部镜像">列举和删除全部镜像</h3>
+<p>sudo docker images ; 列举全部的镜像;</p>
+<p>sudo docker rmi + 镜像名 / ID ; 删除镜像;</p>
+<h3 id="运行和投射镜像-可以直接使用run-目标镜像不存在可以自动拉取">运行和投射镜像 (可以直接使用run , 目标镜像不存在可以自动拉取)</h3>
+<p>sudo docker run -d nginx; 实现镜像运行 ( 注意加-d 后台输出日志防止占用窗口 );</p>
+<p>sudo docker ps( process status 进程状态) // 查看进程状态;</p>
+<p>端口映射 ( run ):<br>docker run -p 宿主机端口 : 容器端口 容器名字 ;</p>
+<p>-p 实现端口映射; 实现宿主机和容器交互 , 打破隔离 ;</p>
+<p>-p 宿主机端口 : 容器内部端口; 先外后内 ;</p>
+<p>localhost:宿主机端口号 ;</p>
+<h2 id="挂载卷--v-volume">挂载卷 (-v ( volume ))</h2>
+<h3 id="实现临时的宿主机-和-容器直接直接实现文件-传输">实现临时的宿主机 和 容器直接直接实现文件 传输 :</h3>
+<p>临时复制（docker cp）</p>
+<p>docker cp 本地文件 容器名:/容器路径</p>
+<p>docker cp 容器名:/容器路径/文件 本地路径</p>
+<h3 id="使用的宿主机的文件目录">使用的宿主机的文件目录</h3>
+<p>docker cp D:\test.txt linux-lab:/root/ 直接使用cp 命令实现复制文件 , 也可以实现向容器放文件的效果 ;</p>
+<p>sudo docker run -d -p 80 : 80 -v /相对路径 : 相对路径 容器名 ;</p>
+<p>实现将宿主机的文件目录和容器内部的目录进行绑定;</p>
+<p>实现的作用 : 防止删除容器后容器的目录+数据全部丢失 , 使用绑定后可以永久保留数据 ;</p>
+<p>docker run -v 宿主机目录 : 容器内目录 ;</p>
+<p>cd 宿主机目录下 ( 通过修改宿主机直接可以实现修改容器文件的效果 ) ; 创建文件 sudo vi xxxx . html 文件 ; 直接编辑即可 ; 删除挂载卷 : sudo docker rm -f( 正在运行中的容器删除需要force ) ID / name ; ( 镜像 : rmi )</p>
+<h3 id="直接创建挂载卷-十分方便">直接创建挂载卷 : 十分方便 ;</h3>
+<p>创建一个挂载卷 : sudo docker volume create 挂载卷的名字;</p>
+<p>之后再创建 -v 连接操作 : 宿主机的文件目录 == 创建好的挂载卷的名字;</p>
+<p>查找挂载卷在宿主机上的目标地址 :</p>
+<p>sudo docker volume inspect 新建的挂载卷的名字 ;</p>
+<p>需要将显示出的配置文件 中的Mountpoint 后的路径复制</p>
+<p>先使用 sudo -i 切换为 root 用户 ;</p>
+<p>cd 复制出的路径</p>
+<p>路径# vi 新创建文件.文件格式 ;</p>
+<p>之后再访问就可以实现映射容器端口;</p>
+<h3 id="查询挂载卷">查询挂载卷</h3>
+<p>sudo docker volume list 查询全部的挂载卷 ;</p>
+<p>sudo docker volume rm 挂载卷的名字 ;</p>
+<p>sudo docker volume prune -a + y + 回车 删除所有没有任何容器在使用的卷 ;</p>
+<h3 id="预设账号和密码">预设账号和密码 :</h3>
+<p>sudo docker run -d \ -p ....</p>
+<p>( 一般的合适的配置信息格式在下面都有 )</p>
+<p>\ -e 容器名_INITDB_ROOT_USERNAME = 17hwliao</p>
+<p>\ -e 容器名_INITDB_ROOT_PASSWORD = ok</p>
+<p>\ 容器名;</p>
+<p>实现访问 : 容器名 &quot;容器名 : // 用户名 : 密码 @ 公网IP : 映射端口号&quot;</p>
+<h3 id="设置别名">设置别名</h3>
+<p>sudo docket run -d --name 别名 容器名 ;</p>
+<p>sudo docket ps ; 查看是否修改成功 ;</p>
+<p>删除同样可以采用 rm -f 别名 删除对应的容器 ;</p>
+<h3 id="临时调试容器">临时调试容器</h3>
+<p>sudo docket run --it( 控制台直接进入容器 ) --rm ( 容器停止时会删除容器 ) 容器名 ; ( apline 轻量级的Linux 系统 ) ;</p>
+<h3 id="重启策略">重启策略</h3>
+<p>sudo docket run -d --restart xxx nginx ;</p>
+<p>填写内容　：　</p>
+<p>always( 停止后立即重启 ) : 防止断电等场景;</p>
+<p>unless-stopped : 除手动外其他都会重连接</p>
+<h2 id="调试容器">调试容器</h2>
+<pre><code class="language-text"># 后台运行容器
+docker run -d --name mycontainer nginx
+
+# 进入正在运行的容器
+docker exec -it mycontainer /bin/bash
+</code></pre>
+<p>每次的docker run 都会自动启动一个容器</p>
+<p>针对一个容器的启动和停止 :</p>
+<p>sudo docker stop 容器名; 实现停止当前容器 ;</p>
+<p>sudo docker ps -a (all) 全部包含停止的容器 ;</p>
+<p>sudo docker start 容器名 : 实现启动停止的容器 ;</p>
+<p>忘记了容器的相关配置 :</p>
+<p>sudo docker inspect 容器ID ;</p>
+<p>单纯创建容器 : sudo docker create -p 端口号 容器名 ;</p>
+<p>查看容器日志 : sudo docker logs 容器名 -f( follow 实现追踪日志自动更新) ;</p>
+<h2 id="dockerflie">Dockerflie</h2>
+<p>不想学 , 制作想学自己后面去学;</p>
+<h2 id="docker-网络">Docker 网络</h2>
+<h2 id="直接映射到宿主机的全部端口-直接通过宿主机访问不同端口-可以直接实现-将不同实现的容器-连接到一块-实现项目">直接映射到宿主机的全部端口 , 直接通过宿主机访问不同端口 , 可以直接实现 将不同实现的容器 连接到一块 实现项目</h2>
+<p>SHOW VARIABLES LIKE &#39;port&#39;; 在mysql 容器中查看连接到的宿主机的端口号</p>
+<h3 id="bridge-模式">bridge 模式</h3>
+<p>默认是bridge ,桥接模式, 每个都是不同的ip地址, 互相隔离 ;</p>
+<p>sudo docker network create network1 创建子网 ;</p>
+<pre><code class="language-text">sudo docker run -d --name container1 --network network1 nginx
+sudo docker run -d --name container2 --network network1 redis
+</code></pre>
+<p>同一个子网内部的容器可以相互访问 , 而且可以直接用名字相互访问 ,其他需要使用ip ; ( 内部的DNS机制, 名字 == IP )</p>
+<p>跨子网不可以访问 ;</p>
+<p>sudo docker run -d \ ..... \ --network network1 \ 需要同一子网的一个容器 ;</p>
+<h3 id="host-模式">Host 模式 :</h3>
+<p>容器直接共享宿主网络, 共享ip ;</p>
+<p>sudo docker run -d --network host nginx ;</p>
+<p>sudo docker exec -it 容器名 /bin/sh 查看容器内部配置 ;</p>
+<p>提前需要安装工具 :</p>
+<p>apt update ;</p>
+<p>apt install iproute2</p>
+<p>之后直接使用 ip addr show ; 查看ip即可;</p>
+<h3 id="none-模式">None 模式</h3>
+<p>sudo docker network list 展示所有的网络设置 ;</p>
+<p>sudo docker network rm 删除不需要的子网;</p>
+<h2 id="docker-compose">Docker Compose</h2>
+<p>实现多个容器管理 , 将不同的模块都打包成不同的容器实现的管理系统 ;</p>
+<p>通过yml文件实现管理多个容器 ; ( 多个docker run 命令 )</p>
+<p>添加同一个子网实现管理 :</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2026/png/63728767/1773927331346-6420337f-d52d-4139-91b4-20bec9add3d0.png" loading="lazy" alt=""></p>
+<p>区别只有左边设计的子网设置 ; //严格识别配置文件, 不可修改文件名;</p>
+<p>非要改 : sudo docker compose -f 文件路径 up -d</p>
+<p>vi docker-compose.yaml 创建一个配置文件 ,</p>
+<p>sudo docker compose up -d ; 后台直接运行文件 ;</p>
+<p>sudo docker compose down -d ; 后台直接运行文件 ; 只停止不删除 ;</p>
+<p>sudo docker compose start 启动停下的容器 ;</p>
+<h2 id="使用docker容器">使用Docker容器 :</h2>
+<p>开启容器 :</p>
+<p>PS C:\Users\17hwliao&gt; docker start mysql</p>
+<p>进入容器 :</p>
+<p>PS C:\Users\17hwliao&gt; docker exec -it mysql bash<br>bash-5.1# mysql -uroot -p --进入root用户 ;</p>
+<p>当前测试的密码 : zjq17hwliao</p>
+<pre><code class="language-text"># 启动容器（如果未运行）
+docker start linux-lab
+
+# 进入容器交互式 shell
+docker exec -it linux-lab /bin/bash
+</code></pre>
+<p>使用命令即可 :</p>
+<p>企业级需要Kubernetes想学自己去学 ;</p>
+<h2 id="使用docker">使用Docker ;</h2>
+<p>1 . docker ps -a ;</p>
+<ol>
+<li>docker exec -it 容器名 &lt;shell类型&gt;</li>
+</ol>
+<p>调用 docker : docker exec -it mysql bash 即可;</p>
+<p>3.创建一个容器直接生成一份之前写好的配置文件进行配置 就好 ;</p>
+<p>内部的配置文件内部包含有 : 挂载卷 , 相关的用户配置 , 宿主机端口连接 ;</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

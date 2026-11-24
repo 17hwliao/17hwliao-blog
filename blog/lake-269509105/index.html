@@ -1,0 +1,96 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go：自定义类型与类型别名 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go：自定义类型与类型别名</h1><time datetime="2026-05-12T14:04:57.000Z">2026年5月12日</time><p>在 Go 语言中，自定义类型指的是使用 type 关键字定义的新类型，它可以是基本类型的别名，也可以是结构体、函数等组合而成的新类型。自定义类型可以帮助我们更好地抽象和封装数据，让代码更加易读、易懂、易维护</p>
+<h2 id="自定义类型">自定义类型</h2>
+<p>简单理解 一下 就是 JAVA 中有 int --&gt; Integer , boolean ---&gt; Boolean 基本 类型 到 包装类</p>
+<p>结构体就是自定义类型中的一种</p>
+<p>类型会实现自动转化为 自定义 类型</p>
+<p>除此之外我们使用自定义类型，还可以让代码组合更加规范</p>
+<p>例如，响应给客户端的想要码，我给他一个自定义类型</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+type Code int  //自定义一个 数据类型
+
+const (
+  SuccessCode    Code = 200
+  ValidCode      Code = 404  // 校验失败的错误
+  ServiceErrCode Code = 401  // 服务错误
+)
+
+func (c Code) GetMsg() string {
+  // 可能会有更加响应码返回不同消息内容的要求，我们在这个函数里面去实现即可
+  // 可能还会有国际化操作
+  return &quot;成功&quot;
+}
+
+func main() {
+  fmt.Println(SuccessCode.GetMsg())
+  var i int
+  fmt.Println(int(SuccessCode) == i) // 必须要转成原始类型才能判断
+}
+</code></pre>
+<h2 id="类型别名----gt-加-定义-typedef">类型别名 ---&gt; 加 = 定义 == typedef</h2>
+<p>使用 type 别名 = 类型 : 类型别名</p>
+<p>没有 = 类型自定义</p>
+<p>相当于创建了一个返回值类型的变量 ,再实际运行时 接收值, 遇到return 实际返回的是变量内部的值</p>
+<p>和自定义类型很像，但是有一些地方和自定义类型有很大差异</p>
+<ol>
+<li>不能绑定方法</li>
+<li>打印类型还是原始类型 , 自定义会修改类型</li>
+<li>和原始类型比较，类型别名不用转换</li>
+</ol>
+<p>类似创建内部的对象方法 :</p>
+<pre><code class="language-text">// 3. 给 Code 类型“绑定”一个方法：
+GetMsg()
+// → 让每个错误码 自己能返回自己的提示文字
+func(c Code)GetMsg()string{
+switch c {
+case SuccessCode:
+return&quot;成功&quot;
+case ValidCode:
+return&quot;参数校验失败&quot;
+case ServiceErrCoder:
+eturn&quot;服务器内部错误&quot;
+default:return&quot;未知错误&quot;}}
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+type AliasCode = int
+type MyCode int
+
+const (
+  SuccessCode      MyCode    = 0
+  SuccessAliasCode AliasCode = 0
+)
+
+// MyCodeMethod 自定义类型可以绑定自定义方法
+func (m MyCode) MyCodeMethod() {
+
+}
+
+// MyAliasCodeMethod 类型别名 不可以绑定方法
+func (m AliasCode) MyAliasCodeMethod() {
+
+}
+
+func main() {
+  // 类型别名，打印它的类型还是原始类型
+  fmt.Printf(&quot;%T %T \n&quot;, SuccessCode, SuccessAliasCode) // main.MyCode int
+  // 可以直接和原始类型比较
+  var i int
+  fmt.Println(SuccessAliasCode == i)
+  fmt.Println(int(SuccessCode) == i) // 必须转换之后才能和原始类型比较
+}
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<p>自定义数据类型 <a href="https://www.jb51.net/article/282910.htm">https://www.jb51.net/article/282910.htm</a></p>
+<p>自定义类型 <a href="https://www.cnblogs.com/whiteBear/p/15549604.html">https://www.cnblogs.com/whiteBear/p/15549604.html</a></p>
+<p>自定义类型和类型别名 <a href="https://blog.csdn.net/alexchenyang/article/details/120604452">https://blog.csdn.net/alexchenyang/article/details/120604452</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

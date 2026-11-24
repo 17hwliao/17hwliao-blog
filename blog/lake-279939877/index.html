@@ -1,0 +1,65 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin 路由封装与中间件注册 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin 路由封装与中间件注册</h1><time datetime="2026-08-03T02:05:48.000Z">2026年8月3日</time><p>为了防止 main 函数 太过臃肿 :</p>
+<p>封装全部的gin请求到router/router.go中去;</p>
+<pre><code class="language-text">router/router.go：
+package router
+import (
+    &quot;my-project/handler&quot;
+    &quot;my-project/middleware&quot;
+    &quot;my-project/token&quot;
+    &quot;github.com/gin-gonic/gin&quot;
+)
+func New(   //传入共享实例对象
+    healthHandler *handler.HealthHandler,
+    authHandler *handler.AuthHandler,
+    activityHandler *handler.ActivityHandler,
+    jwtManager *token.JWTManager,
+) *gin.Engine {
+    r := gin.New() --&gt;创建空引擎
+    r.Use(middleware.RequestLogger()  --&gt; 使用自定义的logger ; 
+    , gin.Recovery())  	--&gt;  使用panic恢复
+    
+    // 公开路由
+    r.GET(&quot;/health&quot;, healthHandler.Check)
+    
+    v1 := r.Group(&quot;/api/v1&quot;) --&gt;创建路由组 + 前缀
+    v1.POST(&quot;/auth/register&quot;, authHandler.Register)
+    v1.POST(&quot;/auth/login&quot;, authHandler.Login)
+    v1.GET(&quot;/activities&quot;, activityHandler.List)
+    
+    // 需要认证的路由
+    protected := v1.Group(&quot;&quot;) --&gt; 复用前缀
+    protected.Use(middleware.Auth(jwtManager))
+    会先走中间件检查token 然后实现放行; 
+    protected.GET(&quot;/users/me&quot;, authHandler.Me)
+    protected.POST(&quot;/activities&quot;, activityHandler.Create)
+    
+    return r
+}
+main.go：
+package main
+import (
+    &quot;my-project/handler&quot;
+    &quot;my-project/logger&quot;
+    &quot;my-project/router&quot;
+    &quot;my-project/token&quot;
+)
+func main() {
+    // 初始化日志
+    cleanup, _ := logger.Init(&quot;my-project&quot;)
+    defer cleanup()
+    
+    // 初始化依赖
+    jwtManager := token.NewJWTManager(&quot;secret&quot;)
+    healthHandler := handler.NewHealthHandler(db)
+    authHandler := handler.NewAuthHandler(db)
+    activityHandler := handler.NewActivityHandler(db)
+    
+    // 创建路由（一行搞定）
+    r := router.New(healthHandler, authHandler, activityHandler, jwtManager)
+    r.Run(&quot;:8080&quot;)
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,38 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GORM：命名约定与时间字段 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>GORM：命名约定与时间字段</h1><time datetime="2026-06-22T06:16:00.000Z">2026年6月22日</time><p>本门课程没有在一开始就讲一大堆gorm的配置</p>
+<p>那是因为尽可能实现约定大于配置</p>
+<p>如果按照gorm的约定来是编写代码，那么就可以省去很多配置项</p>
+<h2 id="使用id为主键">使用ID为主键</h2>
+<p>默认情况下，名为 <code>ID</code> 的字段会作为表的主键</p>
+<p>也可以通过标签 <code>primaryKey</code> 将其它字段设为主键</p>
+<h2 id="复数表名">复数表名</h2>
+<p>GORM 使用结构体名的 <code>蛇形命名</code> 作为表名。对于结构体 <code>User</code>，根据约定，其表名为 <code>users</code></p>
+<p>如果不想用复数表名，可以在配置中修改</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">db, err := gorm.Open(sqlite.Open(&quot;gorm.db&quot;), &amp;gorm.Config{
+  NamingStrategy: schema.NamingStrategy{
+    TablePrefix: &quot;t_&quot;,   // 表名前缀
+    SingularTable: true, // 使用单数表名
+    NoLowerCase: true, // 关闭蛇形命名
+    NameReplacer: strings.NewReplacer(&quot;CID&quot;, &quot;Cid&quot;), // use name replacer to change struct/field name before convert it to db name
+  },
+})
+</code></pre>
+<p>也可以使用TableName函数进行自定义表名</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func (User) TableName() string {
+  return &quot;profiles&quot;
+}
+</code></pre>
+<h2 id="蛇形列名">蛇形列名</h2>
+<p>使用<code>gorm:&quot;column:name&quot;</code>进行自定义列名</p>
+<h2 id="特殊的时间字段无法修改">特殊的时间字段(无法修改)</h2>
+<p>CreatedAt</p>
+<p>对于有 <code>CreatedAt</code> 字段的模型，创建记录时，如果该字段值为零值，则将该字段的值设为当前时间</p>
+<p>UpdatedAt</p>
+<p>对于有 <code>UpdatedAt</code> 字段的模型，更新记录时，将该字段的值设为当前时间。创建记录时，如果该字段值为零值，则将该字段的值设为当前时间</p>
+<p>DeletedAt</p>
+<p>软删除</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

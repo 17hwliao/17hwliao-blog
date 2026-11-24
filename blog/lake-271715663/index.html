@@ -1,0 +1,45 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin：查询参数与路径参数 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin：查询参数与路径参数</h1><time datetime="2026-05-28T13:01:58.000Z">2026年5月28日</time><p>路径查询</p>
+<h2 id="表格">表格</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><strong><span>写法</span></strong></p></td><td><p><strong><span>返回类型</span></strong></p></td><td><p><strong><span>适用场景</span></strong></p></td></tr><tr><td><p><code><span>c.Query(&quot;key&quot;)</span></code></p></td><td><p><span>string</span></p></td><td><p><span>简单文本参数</span></p></td></tr><tr><td><p><code><span>c.GetQueryInt/Bool/...</span></code></p></td><td><p><span>对应原生类型</span></p></td><td><p><span>少量数字 / 布尔参数</span></p></td></tr><tr><td><p><code><span>ShouldBindQuery + 结构体</span></code></p></td><td><p><span>结构体各字段自动类型</span></p></td><td><p><span>多参数、正式接口</span></p></td></tr></tbody></table></div>
+
+<h2 id="查询参数">查询参数</h2>
+<h2 id="gin-cquery-spring-requestparam">Gin <code>c.Query</code> ↔ Spring <code>@RequestParam</code></h2>
+<p>?key=xxx&amp;name=xxxx&amp;name=yyyy 这种就被称为查询参数</p>
+<p>查询参数不是GET请求专属的</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">name := c.Query(&quot;name&quot;)
+age := c.DefaultQuery(&quot;age&quot;, &quot;25&quot;)  //提供默认返回
+keyList := c.QueryArray(&quot;key&quot;)
+fmt.Println(name, age, keyList)
+</code></pre>
+<p>例如请求 ?name=fengfeng&amp;age=123&amp;key=123&amp;key=124，输出为：</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">fengfeng 123 [123 124]
+</code></pre>
+<h2 id="动态参数">动态参数</h2>
+<h2 id="路径参数gin-cparam-spring-pathvariable">路径参数（Gin <code>c.Param</code> ↔ Spring <code>@PathVariable</code>）</h2>
+<p>用户的个人信息页面，他的路径</p>
+<p>问号之前的部分 :</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">/users?id=123 // 查询参数的模式
+/users/123 // 动态参数模式
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">r.GET(&quot;users/:id&quot;, func(c *gin.Context) {
+  userID := c.Param(&quot;id&quot;)
+  fmt.Println(userID)
+})
+</code></pre>
+<h2 id="关于接口测试工具">关于接口测试工具</h2>
+<p>postman</p>
+<p>apifox</p>
+<p>注意：接口测试工具能走通的，前端请求不一定可以走通</p>
+<ol>
+<li>get请求带请求体</li>
+<li>ws加请求头</li>
+</ol>
+<h2 id="section"></h2>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

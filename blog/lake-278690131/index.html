@@ -1,0 +1,140 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Viper：配置读取与热更新 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Viper：配置读取与热更新</h1><time datetime="2026-07-23T01:13:16.000Z">2026年7月23日</time><p>Viper 是 Go 语言中最流行的配置管理库之一，可以把它想象成一个集中的配置管理员，负责处理应用所需的所有配置。</p>
+<p>它最核心的价值在于：<strong>将多种来源的配置（文件、环境变量、命令行参数等）统一管理，并提供一个简单、一致的读取方式</strong>。</p>
+<pre><code class="language-text">go get github.com/spf13/viper
+</code></pre>
+<h4 id="viper配置结构体-使用的映射字段-配置文件不用多说怎么映射你怎么写">viper配置结构体 , 使用的映射字段, 配置文件不用多说,怎么映射你怎么写;</h4>
+<p>JSON mapstructure:&quot;xxx&quot; : {&quot;app&quot;: {&quot;name&quot;: &quot;myapp&quot;}}</p>
+<p>YAML mapstructure:&quot;xxx&quot;</p>
+<p>app:</p>
+<p>name: myapp</p>
+<p>TOML mapstructure:&quot;xxx&quot;</p>
+<p>[app]</p>
+<p>name = &quot;myapp&quot;</p>
+<pre><code class="language-text">type Config struct {
+    App struct {
+        Name string `mapstructure:&quot;name&quot;`
+    } `mapstructure:&quot;app&quot;`
+}
+</code></pre>
+<pre><code class="language-text">viper.SetConfigFile(path)	指定配置文件路径
+viper.ReadInConfig()	读取文件内容
+viper.Unmarshal(&amp;cfg)	根据 mapstructure 标签，把配置塞进结构体
+
+func load(path string) (*Config, error) {
+	viper.SetConfigFile(path)
+
+	if err := viper.ReadInConfig(); err != nil {  --&gt; 调用了read方法会直接保存数据在viper中内存中
+		return nil, fmt.Errorf(&quot;read config %w&quot;, err)
+	}
+
+	var cfg Config
+	if err := viper.Unmarshal(&amp;cfg); err != nil {
+		return nil, fmt.Errorf(&quot;unmarshal config %w&quot;, err)
+	}
+  //上面是直接实现的主动映射 
+  // 直接获取单个值的单个例子
+name := viper.GetString(&quot;app.name&quot;)
+	return &amp;cfg, nil
+}
+</code></pre>
+<p>使用于以上的全部写法 ;</p>
+<h2 id="设置读取值">设置读取值</h2>
+<pre><code class="language-text">设置
+viper.SetDefault(key : &quot;name&quot; ,value: &quot;17hwliao&quot;)
+viper.Set(&quot;age&quot; , 11)
+获取
+viper.Get(key : &quot;name&quot;.(String)) : 可以实现断言 ;
+</code></pre>
+<p>注意 :</p>
+<p>1. 对key值的大小写是不敏感的 ;</p>
+<p>2. 会有优先级设置, 最低的 SetDefault() . 最高的 Set() , 区分 高, 同级可以覆盖 , 低无法覆盖高的 ;</p>
+<h2 id="读取配置文件">读取配置文件</h2>
+<ol>
+<li>写配置文件</li>
+</ol>
+<pre><code class="language-text">Viper.Set(&quot;name&quot; , &quot;17hwliao&quot;)
+Viper.Set(&quot;age&quot; , &quot;17&quot;)
+Viper.Set(&quot;likes&quot; , &quot;17hwliao&quot;)
+type Info struct{
+     Addr string `json:&quot;addr&quot;`
+     like []string `json:&quot;like&quot;`
+}
+var info = Info{
+    Addr : &quot;gg&quot; ,
+    Like : []string{&quot;c&quot; , &quot;t&quot;, &quot;r&quot; , &quot;l&quot;}
+}
+viper.SetDefault(&quot;info&quot; , info)
+viper.SetConfigType(&quot;json&quot;) 
+viper.WriteConfigAs(&quot;config.json&quot;)  
+// 将当前配置写入指定路径的文件，如果文件不存在会创建，如果存在会覆盖。文件扩展名决定格式。
+viper.WriteConfig(&quot;config.json&quot;)
+// 将当前配置写入之前设置的配置文件路径。如果之前没有设置配置文件路径，会报错。
+</code></pre>
+<p>三巨头 :</p>
+<p>Viper.SetConfigType(&quot;json&quot;)</p>
+<p>Viper.WriteConfigAs(&quot;config.json&quot;)</p>
+<p>Viper.SetConfigType(&quot;yaml&quot;)</p>
+<p>Viper.WriteConfigAs(&quot;config.yaml&quot;)</p>
+<p>Viper.SetConfigType(&quot;toml&quot;)</p>
+<p>Viper.WriteConfigAs(&quot;config.toml&quot;)</p>
+<ol>
+<li>读配置文件</li>
+</ol>
+<pre><code class="language-text">viper.setConfigType(&quot;json&quot;)
+viper.SetConfigFile(&quot;config.json&quot;)
+
+viper.ReadInConfig().var --&gt; err
+if err!=nil{fmt , return }
+//简单的修改
+viper.WriteConfig() //直接修改
+viper.SafeWriteConfig() --&gt; 存在的时候就不会写入
+</code></pre>
+<h2 id="监控配置文件">监控配置文件</h2>
+<pre><code class="language-text">viper.SetConfigType(&quot;yaml&quot;)
+viper.SetConfigFile(&quot;config.yaml&quot;)
+viper.WatchConfig()  // 实现监控文件 ;
+viper.OnConfigChange(func(e fsnotify.Event){
+    fmp(e.Name, e.Op)
+    这里可以直接使用viper(key : &quot;&quot;) , 然后之后修改这个key的时候会主动输出修改之后的值; 
+})
+select {}
+</code></pre>
+<p>fsnotify.Event : 文件系统事件 : Name(文件名) 和 Op(操作类型 : 写入/创建/删除等操作) ;</p>
+<p>select {} : 空的select 可以实现阻塞当前的goroutine , 防止主函数的main退出;</p>
+<p>可以单独创建一个新的 ov := viper.New() ; 创建新的 viper ;</p>
+<p>使用 ov.ReadInConfig() -&gt; 可以实现读入旧的数据信息;</p>
+<p>注意 , 单次运行下的多次修改, 旧的数值只会记录一次即为创建时候 Key 的数据信息 ;</p>
+<h2 id="从环境变量读取配置">从环境变量读取配置</h2>
+<pre><code class="language-text">viper.AutomaticEnv() 
+//读取全部的环境变量
+viper.SetEnvPrefix(&quot;&quot;)
+//读系统中的一些环境变量
+viper.Get(&quot;USERNAME&quot;)  --&gt; 系统用户名 
+viper.Get(&quot;USERDOMAIN_ROAMINGPROFILE&quot;) --&gt; 系统电脑名称
+viper.Get(&quot;ALLUSERSPROFILE&quot;)  --&gt; 用户数据目录
+//指定前缀
+viper.SetEnvPrefix(&quot;ENV&quot;)
+fmp(viper.Get(&quot;version&quot;))
+//指定前缀实际上是 &#39;key&#39; + _ 实现组成的; 
+</code></pre>
+<p><img src="../../blogs/_assets/lakebook/91041bcf48f3c250d21c7d39.png" loading="lazy" alt=""></p>
+<h2 id="命令行读取配置">命令行读取配置</h2>
+<p>使用参数运行项目</p>
+<pre><code class="language-text">- pflag.Int/String：定义参数（返回指针）
+- pflag.StringVar/IntVar：绑定到已有变量
+- pflag.Parse()：解析命令行输入
+- viper.BindPFlags：将参数绑定到Viper配置
+</code></pre>
+<h2 id="远程获取配置">远程获取配置</h2>
+<p>ep : etcd 服务</p>
+<pre><code class="language-text">viper.AddRemoteProvider(&quot;etcd3&quot; , &quot;ip&quot; ,  &quot;config/test&quot; )
+viper.SetConfigType(&quot;json&quot;)  //配置文件类型
+//获取远程配置
+viper.ReadRemoteConfig() 
+if err!=nil{ } 
+viper.Get(&quot;name&quot;)
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

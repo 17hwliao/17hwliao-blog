@@ -1,0 +1,95 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>etcd：服务发现与配置管理 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>etcd：服务发现与配置管理</h1><time datetime="2026-06-30T08:45:46.000Z">2026年6月30日</time><p>Etcd是一个高可用的分布式键值存储系统，主要用于共享配置信息和服务发现。它采用Raft一致性算法来保证数据的强一致性，并且支持对数据进行监视和更新</p>
+<h2 id="为什么要用etcd">为什么要用etcd</h2>
+<p>主要是用于微服务的配置中心，服务发现0</p>
+<p><img src="../../blogs/_assets/lakebook/bb279e779461c88ec061870a.png" loading="lazy" alt=""></p>
+<p>在对外api这个应用里面，怎么知道order服务的rpc地址呢？</p>
+<p>写在配置文件里面？</p>
+<p>如果服务的ip地址变化了怎么办？在传统的配置文件模式，修改配置文件，应用程序是需要重启才能解决的</p>
+<p>所以etcd就是来做这个事情的</p>
+<p><img src="../../blogs/_assets/lakebook/6f3302b5e97c3b4c1960c4ef.png" loading="lazy" alt=""></p>
+<p>至于为什么不用redis，大家只需要记住，etcd的数据可靠性更强</p>
+<h2 id="安装">安装</h2>
+<h3 id="windows安装">windows安装</h3>
+<p><a href="https://github.com/etcd-io/etcd/releases">https://github.com/etcd-io/etcd/releases</a></p>
+<h3 id="linux安装">linux安装</h3>
+<p>源码安装</p>
+<p><a href="https://blog.csdn.net/Mr_XiMu/article/details/127923827">https://blog.csdn.net/Mr_XiMu/article/details/127923827</a></p>
+<p>yum安装</p>
+<p>版本一般比较老</p>
+<h3 id="docker安装">docker安装</h3>
+<p>docker-compose up -d 直接在文件夹中实现运行即可 ;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">version: &#39;3.8&#39;
+
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.9
+    container_name: etcd
+    restart: unless-stopped
+    ports:
+      - &quot;2379:2379&quot;
+      - &quot;2380:2380&quot;
+    environment:
+      # 节点名称
+      - ETCD_NAME=etcd-server
+      # 数据目录
+      - ETCD_DATA_DIR=/etcd-data
+      # 客户端监听地址
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
+      # 集群通信地址
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcd-server:2380
+      - ETCD_INITIAL_CLUSTER=etcd-server=http://etcd-server:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster-1
+      # 开启认证，设置 root 密码（类似 Redis 的 --requirepass）
+      - ETCD_ROOT_PASSWORD=20031213dmy
+    volumes:
+      # 数据持久化挂载：本地 data 目录映射容器数据目录
+      - ./data:/etcd-data
+
+volumes:
+  etcd-data:
+</code></pre>
+<p>后续的全部命令安排 :</p>
+<p>C:\Users\17hwliao&gt;docker exec etcd 基于docker 中的etcd容器直接操作即可 :</p>
+<h2 id="基本命令">基本命令</h2>
+<p>Go复制代码</p>
+<pre><code class="language-text">// 设置或更新值
+etcdctl put name 张三
+C:\Users\17hwliao&gt;docker exec etcd etcdctl put rpc.order 127.0.0.1:7001
+
+// 获取值
+etcdctl get name
+C:\Users\17hwliao&gt;docker exec etcd etcdctl get rpc.order
+rpc.order
+127.0.0.1:7001
+
+// 只要value
+C:\Users\17hwliao&gt;docker exec etcd etcdctl get rpc.order --print-value-only
+127.0.0.1:7001
+etcdctl get name --print-value-only
+
+// 获取name前缀的键值对
+C:\Users\17hwliao&gt;docker exec etcd etcdctl get --prefix rpc.order
+rpc.order
+127.0.0.1:7001
+etcdctl get --prefix name
+
+// 删除键值对
+C:\Users\17hwliao&gt;docker exec etcd etcdctl del rpc.order
+1
+etcdctl del name
+
+// 监听键的变化
+etcdctl watch name
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<p>etcd windows安装 <a href="https://www.cnblogs.com/wujuntian/p/12837926.html">https://www.cnblogs.com/wujuntian/p/12837926.html</a></p>
+<p>etcdctl指令 <a href="https://www.jianshu.com/p/67cbef492812">https://www.jianshu.com/p/67cbef492812</a></p>
+<p>为什么用etcd <a href="https://www.elecfans.com/d/1890103.html">https://www.elecfans.com/d/1890103.html</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

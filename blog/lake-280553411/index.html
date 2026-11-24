@@ -1,0 +1,357 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>JWT：Token 签发与身份验证 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>JWT：Token 签发与身份验证</h1><time datetime="2026-08-07T12:38:38.000Z">2026年8月7日</time><h1 id="jwt-鉴权教学文档-go-项目实战">JWT 鉴权教学文档： Go 项目实战</h1>
+<h2 id="1-jwt-是什么">1. JWT 是什么</h2>
+<p>JWT（JSON Web Token）是一种“登录凭证”格式。</p>
+<p>用户登录成功后，后端不保存传统 Session，而是签发一个 Token 给客户端。之后客户端访问需要登录的接口时，把 Token 放进请求头；后端验证 Token 合法后，确认“当前请求是谁发出的”。</p>
+<p>JWT 的结构：</p>
+<pre><code class="language-text">Header.Payload.Signature
+</code></pre>
+<p>例如：</p>
+<pre><code class="language-text">eyJhbGciOiJIUzI1NiJ9
+.
+eyJ1c2VyX2lkIjoxNCwidXNlcm5hbWUiOiJ6anEiLCJleHAiOjE3...
+.
+xxxxxx
+</code></pre>
+<p>三段都使用 Base64URL 编码。重点是：</p>
+<ul>
+<li><code>Header</code>：签名算法，例如 <code>HS256</code>。</li>
+<li><code>Payload</code>：身份信息，例如用户 ID、用户名、过期时间。</li>
+<li><code>Signature</code>：后端使用密钥计算出的签名，用于防篡改。</li>
+</ul>
+<p>JWT 是<strong>签名</strong>，不是加密。</p>
+<p>也就是说，别人可以解码看到 Payload 中的内容，所以绝对不要把密码、身份证号、数据库密码等敏感信息放进 JWT。</p>
+<hr>
+<h2 id="2-认证和授权不是一回事">2. 认证和授权不是一回事</h2>
+<p>这是 JWT 最重要的知识点。</p>
+<pre><code class="language-text">认证 Authentication：你是谁？
+授权 Authorization：你能做什么？
+</code></pre>
+<p>在你的项目中：</p>
+<pre><code class="language-text">JWT 验证成功
+→ 证明请求来自 user_id=14 的已登录用户
+→ 这是“认证”
+
+再查询数据库并判断：
+- 是否绑定了合法手机号？
+- 是否是该活动创建者？
+- 是否在报名时间内？
+→ 这是“授权 / 业务权限”
+</code></pre>
+<p>JWT 不能替代所有权限判断。你当前项目把角色和活动所有权继续交给数据库判断，这个设计是正确的。</p>
+<hr>
+<h2 id="3-你的项目使用了哪种-jwt">3. 你的项目使用了哪种 JWT</h2>
+<p>项目使用：</p>
+<pre><code class="language-text">HS256
+</code></pre>
+<p>对应代码在 [jwt.go](C:\\Users\\17hwliao\\Desktop\\Duyu\\internal\\token\\jwt.go)。</p>
+<p>HS256 的特点：</p>
+<pre><code class="language-text">后端使用同一个 secret：
+签发 Token 时签名
+验证 Token 时验签
+</code></pre>
+<p>因此 JWT 密钥必须：</p>
+<ul>
+<li>足够随机、足够长；</li>
+<li>只存在于后端配置中；</li>
+<li>不提交到 GitHub；</li>
+<li>不返回给前端、Apifox 或普通用户。</li>
+</ul>
+<p>你的项目创建 <code>JWTManager</code> 时会检查：</p>
+<pre><code class="language-text">if secret == &quot;&quot; {
+    return nil, fmt.Errorf(&quot;jwt secret is required&quot;)
+}
+</code></pre>
+<p>这避免了空密钥启动服务。</p>
+<hr>
+<h2 id="4-当前项目-jwt-的完整流程">4. 当前项目 JWT 的完整流程</h2>
+<pre><code class="language-text">用户输入账号密码
+        ↓
+POST /api/v1/auth/login
+        ↓
+后端查询 users 表
+        ↓
+bcrypt 比较密码
+        ↓
+生成带 user_id、username、iat、exp 的 JWT
+        ↓
+将 access_token 返回给客户端
+        ↓
+客户端保存 Token
+        ↓
+调用受保护接口时带上 Authorization 请求头
+        ↓
+JWT 中间件验签、检查过期时间
+        ↓
+把 claims 放入 Gin Context
+        ↓
+Handler 取出当前 user_id
+        ↓
+Service 再检查具体业务权限
+</code></pre>
+<hr>
+<h2 id="5-登录时如何签发-token">5. 登录时如何签发 Token</h2>
+<p>登录逻辑在 [auth_service.go](C:\\Users\\17hwliao\\Desktop\\Duyu\\internal\\service\\auth_service.go)。</p>
+<p>用户调用：</p>
+<pre><code class="language-text">POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  &quot;username&quot;: &quot;zjq&quot;,
+  &quot;password&quot;: &quot;你的密码&quot;
+}
+</code></pre>
+<p>后端完成两件事：</p>
+<pre><code class="language-text">bcrypt.CompareHashAndPassword(
+    []byte(user.PasswordHash),
+    []byte(req.Password),
+)
+</code></pre>
+<p>先验证密码，再调用：</p>
+<pre><code class="language-text">s.tokens.Generate(user.ID, user.Username)
+</code></pre>
+<p>实际写入 JWT 的 Claims 是：</p>
+<pre><code class="language-text">type Claims struct {
+    UserID   uint64 `json:&quot;user_id&quot;`
+    Username string `json:&quot;username&quot;`
+    jwt.RegisteredClaims
+}
+</code></pre>
+<p>其中 <code>RegisteredClaims</code> 里当前用到：</p>
+<pre><code class="language-text">IssuedAt   // iat：签发时间
+ExpiresAt  // exp：过期时间
+</code></pre>
+<p>生成 Token 的核心逻辑：</p>
+<pre><code class="language-text">token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+signed, err := token.SignedString(m.secret)
+</code></pre>
+<p>登录成功后接口会返回类似：</p>
+<pre><code class="language-text">{
+  &quot;code&quot;: 0,
+  &quot;message&quot;: &quot;ok&quot;,
+  &quot;data&quot;: {
+    &quot;access_token&quot;: &quot;eyJ...&quot;,
+    &quot;token_type&quot;: &quot;Bearer&quot;,
+    &quot;expires_in&quot;: 86400,
+    &quot;user&quot;: {
+      &quot;id&quot;: 1,
+      &quot;username&quot;: &quot;zjq&quot;
+    }
+  }
+}
+</code></pre>
+<hr>
+<h2 id="6-客户端如何携带-jwt">6. 客户端如何携带 JWT</h2>
+<p>之后访问需要登录的接口时，必须在请求头加入：</p>
+<pre><code class="language-text">Authorization: Bearer 你的access_token
+</code></pre>
+<p>注意 <code>Bearer</code> 后面有一个空格。</p>
+<p>正确：</p>
+<pre><code class="language-text">Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+</code></pre>
+<p>错误示例：</p>
+<pre><code class="language-text">Authorization: eyJhbGciOiJIUzI1NiJ9...
+Authorization: bearer
+Authorization: Token eyJhbGciOiJIUzI1NiJ9...
+</code></pre>
+<p>在 Apifox 中，你可以建立环境变量：</p>
+<pre><code class="language-text">token = 登录接口返回的 access_token
+</code></pre>
+<p>然后在受保护接口统一填写：</p>
+<pre><code class="language-text">Authorization: Bearer {{token}}
+</code></pre>
+<hr>
+<h2 id="7-哪些接口需要-jwt">7. 哪些接口需要 JWT</h2>
+<p>路由定义在 [router.go](C:\\Users\\17hwliao\\Desktop\\Duyu\\internal\\router\\router.go)。</p>
+<p>不需要登录即可访问的公开接口：</p>
+<pre><code class="language-text">GET  /health
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+GET  /api/v1/activities
+GET  /api/v1/activities/:id
+</code></pre>
+<p>需要 JWT 的接口：</p>
+<pre><code class="language-text">GET    /api/v1/users/me
+PUT    /api/v1/users/me/phone
+GET    /api/v1/users/me/registrations
+
+POST   /api/v1/activities
+PUT    /api/v1/activities/:id
+POST   /api/v1/activities/:id/publish
+POST   /api/v1/activities/:id/cancel
+
+POST   /api/v1/activities/:id/registrations
+DELETE /api/v1/activities/:id/registrations/me
+GET    /api/v1/activities/:id/registrations
+</code></pre>
+<p>代码中的核心结构：</p>
+<pre><code class="language-text">protected := v1.Group(&quot;&quot;)
+protected.Use(middleware.Auth(jwtManager))
+</code></pre>
+<p>意思是：<code>protected</code> 路由组里的每一个接口，都必须先通过 JWT 中间件。</p>
+<hr>
+<h2 id="8-jwt-中间件具体做了什么">8. JWT 中间件具体做了什么</h2>
+<p>中间件在 [auth.go](C:\\Users\\17hwliao\\Desktop\\Duyu\\internal\\middleware\\auth.go)。</p>
+<p>它依次执行：</p>
+<h3 id="第一步读取请求头">第一步：读取请求头</h3>
+<pre><code class="language-text">header := c.GetHeader(&quot;Authorization&quot;)
+</code></pre>
+<h3 id="第二步检查是否符合-bearer-格式">第二步：检查是否符合 Bearer 格式</h3>
+<pre><code class="language-text">parts := strings.Fields(header)
+
+if len(parts) != 2 || !strings.EqualFold(parts[0], &quot;Bearer&quot;) {
+    response.Unauthorized(c, &quot;missing or invalid authorization token&quot;)
+    c.Abort()
+    return
+}
+</code></pre>
+<p>如果没有 Token，或者格式错误，直接返回：</p>
+<pre><code class="language-text">401 Unauthorized
+</code></pre>
+<p>并且：</p>
+<pre><code class="language-text">c.Abort()
+</code></pre>
+<p>表示终止请求，后面的 Handler 不会继续执行。</p>
+<h3 id="第三步解析并验证-token">第三步：解析并验证 Token</h3>
+<pre><code class="language-text">claims, err := manager.Parse(parts[1])
+</code></pre>
+<p><code>Parse</code> 会验证：</p>
+<ul>
+<li>Token 格式是否正确；</li>
+<li>签名算法是否是 HS256；</li>
+<li>是否能用服务端密钥验签；</li>
+<li>Token 是否被篡改；</li>
+<li><code>exp</code> 是否过期。</li>
+</ul>
+<p>项目中还显式限制了签名算法：</p>
+<pre><code class="language-text">if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
+    return nil, fmt.Errorf(&quot;unexpected signing method&quot;)
+}
+</code></pre>
+<p>这是一个很好的安全习惯，避免攻击者替换算法。</p>
+<h3 id="第四步把用户身份放进-gin-context">第四步：把用户身份放进 Gin Context</h3>
+<pre><code class="language-text">c.Set(claimsContextKey, claims)
+c.Next()
+</code></pre>
+<p>此时后面的 Handler 就可以知道当前用户是谁。</p>
+<hr>
+<h2 id="9-handler-如何获得当前登录用户">9. Handler 如何获得当前登录用户</h2>
+<p>Handler 不自己解 JWT，而是从 Gin Context 取中间件已经验证过的 Claims：</p>
+<pre><code class="language-text">claims, ok := middleware.CurrentUser(c)
+</code></pre>
+<p>例如创建活动时：</p>
+<pre><code class="language-text">activity, err := h.service.Create(
+    c.Request.Context(),
+    claims.UserID,
+    req,
+)
+</code></pre>
+<p>这里的 <code>claims.UserID</code> 来自 JWT，而不是前端传来的 JSON。</p>
+<p>这是关键安全点。</p>
+<p>错误做法：</p>
+<pre><code class="language-text">{
+  &quot;user_id&quot;: 999
+}
+</code></pre>
+<p>如果让前端传 <code>user_id</code>，用户可以伪造为别人的 ID。</p>
+<p>正确做法：</p>
+<pre><code class="language-text">Token 验签成功
+→ 从 Token 中获取 user_id
+→ 后端认定当前用户身份
+</code></pre>
+<hr>
+<h2 id="10-jwt-之后为什么还要查数据库">10. JWT 之后，为什么还要查数据库</h2>
+<p>以“创建活动”为例：</p>
+<pre><code class="language-text">JWT 通过
+→ 知道请求人是 user_id=14
+→ 但并不知道他是否已经绑定手机号
+→ Service 查询 users 表
+→ 判断 HasValidatedPhone()
+→ 决定允许还是返回 403
+</code></pre>
+<p>以“取消活动”为例：</p>
+<pre><code class="language-text">JWT 通过
+→ 知道当前用户 ID
+→ 查询 activity
+→ 判断 activity.OrganizerID 是否等于当前用户 ID
+→ 只有创建者可以取消
+</code></pre>
+<p>所以当前项目的权限模型是：</p>
+<pre><code class="language-text">JWT：提供可信的用户 ID
+数据库：提供最新用户状态和资源归属
+Service：执行最终授权判断
+</code></pre>
+<p>你没有把 <code>role</code> 放进 JWT，这反而有好处：用户绑定手机号后，数据库角色立即变化，不必等待旧 Token 过期后才能生效。</p>
+<hr>
+<h2 id="11-401-和-403-的区别">11. 401 和 403 的区别</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>状态码</span></p></td><td><p><span>含义</span></p></td><td><p><span>本项目示例</span></p></td></tr><tr><td><p><code><span>401 Unauthorized</span></code></p></td><td><p><span>没登录或身份凭证无效</span></p></td><td><p><span>没带 Token、Token 格式错误、签名错误、Token 过期</span></p></td></tr><tr><td><p><code><span>403 Forbidden</span></code></p></td><td><p><span>已知你是谁，但你没有权限</span></p></td><td><p><span>普通用户未绑定手机号却创建活动；非主办方查看报名名单</span></p></td></tr></tbody></table></div>
+
+<p>可以记忆为：</p>
+<pre><code class="language-text">401：你是谁？我不认可。
+403：我知道你是谁，但你不能做这件事。
+</code></pre>
+<hr>
+<h2 id="12-登出为什么没有专门接口">12. 登出为什么没有专门接口</h2>
+<p>你的 JWT 是无状态的：</p>
+<pre><code class="language-text">服务端不保存每个用户的登录会话
+</code></pre>
+<p>因此“退出登录”的基本做法是客户端删除 Token：</p>
+<ul>
+<li>Apifox：清空 <code>token</code> 环境变量或移除 <code>Authorization</code> 请求头；</li>
+<li>Web 前端：删除 Local Storage 中保存的 Token；</li>
+<li>手机 App：删除本地安全存储中的 Token。</li>
+</ul>
+<p>但这有一个限制：</p>
+<pre><code class="language-text">客户端删除 Token
+≠ 服务端能立刻使泄露的旧 Token 失效
+</code></pre>
+<p>如果未来需要“强制下线”，可以演进为：</p>
+<pre><code class="language-text">短期 Access Token
++ 长期 Refresh Token
++ Redis Token 黑名单 / token_version
+</code></pre>
+<p>例如用户修改密码、管理员封禁用户时，使旧 Token 立即失效。</p>
+<hr>
+<h2 id="13-当前项目已经做对的事情">13. 当前项目已经做对的事情</h2>
+<ul>
+<li>使用 bcrypt 保存密码哈希，不保存明文密码；</li>
+<li>JWT 中只放最小身份信息：<code>user_id</code>、<code>username</code>、签发时间、过期时间；</li>
+<li>使用 HS256 对 Token 签名；</li>
+<li>验证时限制签名算法；</li>
+<li>保护路由统一经过 JWT Middleware；</li>
+<li>Handler 从 Context 获取用户 ID，不信任客户端传来的身份字段；</li>
+<li>权限继续在 Service + 数据库中判断；</li>
+<li>未认证、过期或伪造 Token 返回 <code>401</code>；</li>
+<li>已登录但权限不足返回 <code>403</code>。</li>
+</ul>
+<hr>
+<h2 id="14-你后续可以补强的部分">14. 你后续可以补强的部分</h2>
+<p>当前 V1 足够用于作业与基础项目。后续可逐步增加：</p>
+<pre><code class="language-text">1. 配置 issuer（签发者）与 audience（受众）
+2. 增加 JWT ID（jti）
+3. Access Token + Refresh Token
+4. Redis 黑名单，实现强制退出
+5. 修改密码后使旧 Token 失效
+6. HTTPS，防止 Token 在传输中被窃取
+7. 更严格的登录限流与异常登录日志
+</code></pre>
+<p>最重要的安全原则：</p>
+<pre><code class="language-text">JWT 不是密码。
+JWT 不要放敏感信息。
+JWT 能确认用户身份，但不能代替数据库权限判断。
+JWT 密钥绝不能泄露或提交到 Git。
+</code></pre>
+<p>你可以按这个顺序在 Apifox 自己练习：</p>
+<pre><code class="language-text">注册
+→ 登录
+→ 复制 access_token
+→ 调用 GET /users/me
+→ 故意删除 Token，观察 401
+→ 用普通用户 Token 创建活动，观察 403
+→ 绑定手机号
+→ 再次创建活动，观察成功
+</code></pre>
+<p>这套流程走通，你就真正理解了当前项目里的 JWT 鉴权。</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

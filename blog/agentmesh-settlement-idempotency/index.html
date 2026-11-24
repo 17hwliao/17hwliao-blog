@@ -1,0 +1,368 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AgentMesh：Complete 结算分支与幂等控制 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>AgentMesh：Complete 结算分支与幂等控制</h1><time datetime="2026-09-29T11:44:20.000Z">2026年9月29日</time><p><a href="../../projects/agentmesh/index.html#project-articles">AgentMesh 项目展示</a> · <a href="../../blog/lake-282376218/index.html">系列目录</a> · 9 / 12</p>
+<p>从已预留的会话进入 Complete，核对 attempt 证据、最终 flush、取消或结算分支，以及 Redis 和 MySQL 的幂等边界。</p>
+<blockquote>
+<p>实现说明与运行记录基于 2026-09-29 更新的原稿。正文中的文件行号、实现状态与验证结果按该历史快照理解。</p>
+</blockquote>
+<h2 id="实现概览">实现概览</h2>
+<ul>
+<li>额度 unit 是预算单位，不直接等同于模型 token 账单。</li>
+<li>是否发生 Provider attempt 决定后续结算方向。</li>
+<li>Redis 额度操作与 MySQL 状态证据需要分别保证幂等。</li>
+</ul>
+<h2 id="实现细节">实现细节</h2>
+<p>先立三个地基概念，后面全靠它们：</p>
+<ol>
+<li><strong>单位（unit）是预算，不是 token</strong>。500、100 这些都是配额池里的整数，跟真实 token 账单无关（决策 004 明确写了）</li>
+<li><strong>Redis 管&quot;钱&quot;（可用余额），MySQL 管&quot;证据&quot;（状态机）</strong>。Redis 先动钱，MySQL 后落证据，两边都要幂等</li>
+<li><strong>版本号 = 防并发的钥匙</strong>。<code>quota_reservations.version</code> 每次状态迁移 +1</li>
+</ol>
+<p>所有 UPDATE 都带 <code>WHERE version = 期望值</code>（CAS），改不到 1 行就报 <code>CodeVersionConflict</code></p>
+<hr>
+<h2 id="第-0-步状态机长什么样">第 0 步：状态机长什么样</h2>
+<pre><code class="language-text">creating (v1) → reserved (v2) → [每开一个 attempt: version+1] → settled / cancelled
+</code></pre>
+<p>MySQL 三个终态门禁（persistence.go: 613-621）：</p>
+<ul>
+<li><code>markSettledSQL</code>：要求 <code>EXISTS attempt</code> —— 有开过 provider 才能 settled</li>
+<li><code>markCancelledSQL</code>：要求 <code>NOT EXISTS attempt</code> —— 没开过才能 cancelled</li>
+</ul>
+<p>这就是&quot;Redis 操作选 Settle 还是 Cancel&quot;的持久化兜底：</p>
+<p>Coordinator 在内存里判断，MySQL 用 SQL 再验一遍</p>
+<pre><code class="language-text">Coordinator.Begin (internal/reservation/coordinator.go:79)
+
+作用：启动一个 reservation session，负责创建 reservation 并初始化 session 状态
+实现：调用 newPreDeductor.Begin 创建 PersistentReservation
+返回 coordinatorSession 包含 reservation 和  会话状态
+
+PreDeductor.Begin (internal/reservation/pre_deduction.go:25)
+作用：执行 reservation 的创建与预扣减操作
+实现：
+1. 调用 records.Create 创建 &quot;creating&quot; 状态的 reservation 
+2. 调用 quota.Reserve 预扣 Redis 余额 
+3. 调用 records.MarkReserved 更新 reservation 状态为 &quot;reserved&quot;
+4. 返回 PersistentReservation 实例
+两者关系：Coordinator.Begin 调用 PreDeductor.Begin 作为内部实现步骤
+形成 reservation 创建到 session 初始化的完整流程
+</code></pre>
+<pre><code class="language-text">调用关系是一条直线：Gateway.handleChat → Coordinator.Begin → PreDeductor.Begin → 三步存储操作。
+两个 Begin 的分工不同：
+调用链
+server.go:276 里 
+s.reservations.Begin(ctx, tenantID, model, messages) 实现的是 StreamGate 接口，
+落到 Coordinator.Begin：
+Coordinator.Begin (coordinator.go:79)
+  ├─ 入参校验 + 生成两个 ID（reservationID、requestID，来自 NextID，默认 crypto/rand）
+  ├─ 组装 CreatePersistentReservation（ReservedUnits 取自配置，即&quot;预留 100&quot;这个数字的来源）
+  ├─ 委托 newPreDeductor(records, quota).Begin(input)   ← 关键一步
+  └─ 成功后把返回的 reservation 包进 coordinatorSession（深拷贝 messages，记录 lastFlush）
+PreDeductor.Begin（pre_deduction.go:30）负责的是跨存储的严格顺序，就三行主体：
+1. records.Create(...)        MySQL：插一行 state=&#39;creating&#39;, version=1
+2. quota.Reserve(...)         Redis Lua：读余额 → DECRBY → 写幂等结果 + reserve marker
+3. records.MarkReserved(...)  MySQL CAS：state=&#39;creating&#39; AND version 匹配 → &#39;reserved&#39;,
+version+1
+每一步必须上一步成功才继续。
+为什么拆成两个
+文件头注释写得很清楚（pre_deduction.go:5）：
+PreDeductor 只拥有 &quot;creating → Redis reserve → durable reserved&quot; 这个下单序列；
+Coordinator 拥有后续的流式 hooks（BeforeAttempt/AfterEmit）和 Complete() 结算
+PreDeductor 是无状态的、每次 Begin 内联新建的包装器，
+纯粹为了这个两步持久化序列能被单独测试。
+Coordinator 是请求范围的长生命周期对象（session 一直活到流结束）。
+
+交互里的关键语义
+返回值在失败时也有意义。Redis 预扣失败或 MarkReserved 失败时
+PreDeductor.Begin 把 MySQL 里那行 creating 记录连同错误一起返回（pre_deduction.go:37-44）
+注释写明了：这一行是留给 Reconciler 的证据
+不是给 Coordinator 用的  ——  Coordinator 收到错误就返回 nil, err，
+Gateway 按 quota_exhausted 转 429、其它转 503。
+&quot;Redis 成功 / MySQL 失败&quot;的撕裂窗口是故意留下的：MySQL 停在 creating、Redis 已经扣钱。
+恢复靠 Reconciler 调 ReserveApplied（redis.go:91）读 reserve marker 判断扣没扣：
+扣了就 Cancel 退回，没扣就只标 cancelled。这个判断入口是 PreDeductor 阶段埋下的 marker
+不是 Coordinator 埋的
+版本（version）是交互的接力棒：
+MarkReserved 成功后返回的 reserved（version=2）被 Coordinator 存进 session
+之后每次 BeforeAttempt 的 StartAttempt 都带着这个 version 做 CAS（persistence.go:241），
+保证同一笔预留上并发写只有一个赢家
+</code></pre>
+<pre><code class="language-text">一、每个名词是什么
+1. CreatePersistentReservation — 一个入参 struct（数据，不是行为）
+
+type CreatePersistentReservation struct {
+    ID            string    // reservation 主键（随机 32 位 hex）
+    TenantID      string    // 哪个租户
+    RequestID     string    // 这次网关请求的 ID（用于幂等：同请求重放不建第二行）
+    Model         string    // 请求的模型名
+    ReservedUnits uint64    // 要预扣多少单位（来自配置 ReservationUnits）
+}
+它只是&quot;创建一条 reservation 记录所需的全部字段&quot;。
+作用：把散落的参数打包成一份清晰的输入，两个 Begin 都围绕它传递数据。
+
+2. quota — 一个接口（Redis 侧的余额操作抽象）
+
+type quotaReserver interface {
+    Reserve(context.Context, string, string, uint64, uint64) (QuotaOperationResult, error)
+}
+它只有一个方法 Reserve：从租户的 Redis 余额里扣掉 N 单位。
+生产实现是 RedisQuotaStore（跑 Lua 脚本 DECRBY 余额 + 写幂等结果），测试里是 fake。
+作用：把&quot;扣钱&quot;这个动作抽象出来。Coordinator/PreDeductor 只认接口
+不认 Redis，方便单测注入假实现
+
+3. PreDeductor — 预扣减执行器（只管 3 步顺序）
+
+type PreDeductor struct {
+    records persistentCreator   // MySQL 侧：Create + MarkReserved
+    quota   quotaReserver       // Redis 侧：Reserve
+}
+
+func (d *PreDeductor) Begin(ctx, input) (PersistentReservation, error) {
+    created, _ := d.records.Create(ctx, input)        // ① MySQL 插 creating 行
+    d.quota.Reserve(ctx, ...)                         // ② Redis 扣余额
+    d.records.MarkReserved(ctx, ...)                  // ③ MySQL 改 reserved 行
+    return reserved, nil
+}
+
+作用：保证&quot;先写 MySQL 凭证、再扣 Redis、最后落 reserved 状态&quot;的固定顺序
+让任何一步失败都能靠那行 MySQL 记录恢复。它不管流式过程，只管&quot;预扣&quot;这一个动作
+
+4. Coordinator — 顶层协调者（整个请求的预扣+结算都归它）
+
+type Coordinator struct {
+    records coordinatorRecords  // MySQL 全套：Create/MarkReserved/StartAttempt/RecordProgress/FinishAttempt/MarkSettled/MarkCancelled/ClaimExpired
+    quota   coordinatorQuota    // Redis 全套：Reserve/Settle/Cancel/ReserveApplied
+    config  CoordinatorConfig   // ReservationUnits / FlushChunks / FlushInterval / NextID
+    now     func() time.Time
+}
+作用：持有上面两者的全部能力，对外只暴露两个方法：
+
+Begin() → 调 PreDeductor 完成预扣，返回一个 coordinatorSession（请求级句柄）
+那个 session 实现了 router.AttemptHook（BeforeAttempt/BeforeEmit/AfterEmit/FinishAttempt）
+并带一个终态方法 Complete() → 调 quota.Settle/Cancel + MarkSettled/MarkCancelled
+二、两个 Begin 怎么交互（调用链）
+Gateway handleChat (server.go:276)
+  └─ s.reservations.Begin(ctx, tenantID, model, messages)
+       = Coordinator.Begin (coordinator.go:79)
+           ├─ 校验入参；NextID() 生成 reservationID + requestID
+           ├─ newPreDeductor(c.records, c.quota).Begin(input)   ← PreDeductor.Begin (pre_deduction.go:30)
+           │      ├─ records.Create     → MySQL 插 &#39;creating&#39; 行（凭证先行）
+           │      ├─ quota.Reserve      → Redis Lua 扣余额（失败则返回 creating 行给 reconciler 兜底）
+           │      └─ records.MarkReserved → MySQL 改 &#39;reserved&#39;
+           └─ 返回 &amp;coordinatorSession{reservation, messages, lastFlush}
+                = router.AttemptHook + Complete() 的句柄
+关系一句话：Coordinator.Begin 是&quot;请求入口&quot;，PreDeductor.Begin 是它内部委托的&quot;预扣执行步骤&quot;。Coordinator 把 records/quota 两个依赖喂给 PreDeductor，拿到结果后包成 session 返回给 Gateway。
+
+三、职责边界（谁管什么）
+名词	层	管的事	不管的事
+CreatePersistentReservation	数据	打包建行的字段	无行为
+quota（接口）	依赖抽象	定义&quot;怎么动 Redis 余额&quot;	不关心 MySQL
+PreDeductor	执行	预扣 3 步顺序	不管流式、不管结算
+Coordinator	协调	整个请求生命周期：Begin + 流式 hook + Complete 结算	不直接碰 Redis/MySQL（通过 records/quota 接口）
+coordinatorSession	请求级状态	攒 attempts、算 settled/estimated、触发终态	无
+</code></pre>
+<h2 id="0-开局快照begin-成功之后">0. 开局快照：<code>Begin()</code> 成功之后</h2>
+<p><code>Begin()</code>（coordinator.go:79）= <code>PreDeductor.Begin</code>（pre_deduction.go:30），执行顺序是刻意的三步：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>存储变化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>① <code>records.Create</code></td>
+<td>MySQL 插入 <code>quota_reservations</code><br>行，<code>state=&#39;creating&#39;</code><br>, <code>version=1</code><br>（persistence.go:577）</td>
+</tr>
+<tr>
+<td>② <code>quota.Reserve</code></td>
+<td>Redis Lua：<code>DECRBY balance 100</code><br>（500→400），写幂等结果键 + reserve 标记（redis.go:215）</td>
+</tr>
+<tr>
+<td>③ <code>records.MarkReserved</code></td>
+<td>MySQL CAS：<code>creating → reserved</code><br>，<code>version 1→2</code><br>（persistence.go:586）</td>
+</tr>
+</tbody></table></div>
+<p>开局后固定状态：</p>
+<ul>
+<li><strong>Redis 余额：400</strong>，两个键：<code>operation:{tenant}:{res}:2:reserve</code>（结果 JSON）和 <code>reservation:{res}:reserved</code>（标记=1）</li>
+<li><strong>MySQL 行</strong>：<code>reserved / version=2 / reserved_units=100</code></li>
+<li><strong>内存 session</strong>：<code>attempts=[]</code>, <code>current=nil</code></li>
+</ul>
+<p>②③之间挂了不要紧：留下的 creating 行就是给 Reconciler 认的尸，<code>ReserveApplied</code> 能区分&quot;Redis 已扣&quot;还是&quot;根本没扣&quot;（redis.go:91）。</p>
+<h2 id="1-流式阶段证据是怎么攒进内存的">1. 流式阶段：证据是怎么攒进内存的</h2>
+<p>Router 每调一个 provider，先触发 <code>BeforeAttempt</code>（coordinator.go:127）：</p>
+<ol>
+<li>防超卖闸门：<code>estimatedConsumed() + 本次输入 rune 数 &gt; 100</code> 就 <code>quota_exhausted</code>（第 132 行）</li>
+<li><code>StartAttempt</code>：MySQL 事务里 <code>version +1</code> 并插入 <code>provider_attempts</code> 行（persistence.go:231）——<strong>这就是&quot;attempt 已启动&quot;的持久证据，后面 Complete 的分叉全靠它</strong></li>
+<li>内存记一个 <code>attemptMeter{inputRunes: ...}</code></li>
+</ol>
+<p>之后每个 chunk：</p>
+<ul>
+<li><code>AfterEmit</code>（coordinator.go:158）：<code>forwardedRunes += rune(Delta)</code>，chunk 带 <code>Usage</code> 就存进 <code>meter.providerUsage</code></li>
+<li>攒满 16 个 chunk 或跨 1s 时间窗才 <code>flush()</code> 一次写 MySQL（<code>RecordProgress</code> 用 <code>GREATEST</code> 只前进不后退，persistence.go:599)</li>
+</ul>
+<p>注意：<code>forwardedRunes</code> 是<strong>网关自己数的 rune 下界</strong>，不是 token 账单（决策 004）</p>
+<pre><code class="language-text">字段	含义	何时更新	用途
+s.attempts（[]*attemptMeter）	本请求内所有 attempt 的原始记录	BeforeAttempt 新增	Complete() 遍历判断是否有可信 usage、估算消耗下界
+s.current（*attemptMeter）	正在跑的 attempt（最后一个）	BeforeAttempt 设置、AfterEmit 累加	AfterEmit 需要它来累加 forwardedRunes、providerUsage
+attemptMeter.inputRunes	本次 prompt 的 rune 数	BeforeAttempt 设置	estimatedConsumed()（超卖闸门）
+attemptMeter.forwardedRunes	网关已成功转发的 rune 下界	每条 AfterEmit 累加、flush 写 MySQL 后不清零（仅清零 chunks）	决策 004 下界证据、RecordProgress 持久化
+attemptMeter.providerUsage	若 chunk 带 usage，最后一次非 nil 的值	AfterEmit 存入	settlement() 判断是否全部 attempt 有可信 usage
+attemptMeter.chunks	本轮未 flush 的 chunk 计数	AfterEmit 加 1、flush 清零	达到 FlushChunks 时触发落盘
+s.lastFlush	上次成功落盘的时间	flush 更新	达到 FlushInterval 时触发落盘
+关键点：
+
+attempts 长度 &gt; 0 即代表
+「曾启动过 attempt」→ Complete() 必须走 Settle 路径（即便中途错误或客户端取消）。
+只有当 全部 attempt.providerUsage 均非 nil 且 !Usage.Estimated 时
+才按真实 token 合计消耗；否则按 全额留存（consumed = reserved_units，released = 0）结算。
+forwardedRunes 永远只能作下界参考
+实际扣款与它无关（除非所有 attempt 都带了可信 usage，此时 token 才是决定因素）。
+</code></pre>
+<h2 id="2-router-返回后gateway-的三路收口">2. Router 返回后，Gateway 的三路收口</h2>
+<p>server.go:324-341：只要创建过 session，无论成功、provider 报错、客户端断开，都会调一次：</p>
+<pre><code class="language-go">reservationSession.Complete(ctx, streamErrorCode(err), isClientCancel)
+</code></pre>
+<ul>
+<li>后两个参数：错误码字符串 + 是否客户端取消。<strong>当前</strong> <code>Complete(ctx, _ string, _ bool)</code> <strong>根本没读它们</strong>（coordinator.go:181），结算金额完全由内存里的 attempts/usage 证据决定——这是要背的点，别被签名骗了。</li>
+<li><code>Complete</code> 成功 → 正常收口（<code>[DONE]</code> / JSON 错误 / SSE 内嵌错误）</li>
+<li><code>Complete</code> <strong>本身失败</strong>（Redis 或 MySQL 挂了）→ Gateway 先记 <code>quota_unavailable</code>，已开始流则走 SSE 错误路径，否则 503（server.go:326-340）。此时数据留在非终态，交给 reconciler。</li>
+</ul>
+<h2 id="3-complete-内部逐段走">3. <code>Complete()</code> 内部逐段走</h2>
+<h3 id="31-幂等闸门第-182-行">3.1 幂等闸门（第 182 行）</h3>
+<p><code>completed</code> 为真直接返回 nil。同一 session 只结算一次。</p>
+<h3 id="32-最后一次-flush第-186-190-行">3.2 最后一次 flush（第 186-190 行）</h3>
+<p>把内存里没落盘的最后几片进度写 MySQL。<strong>写失败不中止，只置</strong><code>persistenceUncertain=true</code>——后面结算一律按最保守处理。</p>
+<h3 id="33-核心分叉第-191-行">3.3 核心分叉（第 191 行）</h3>
+<p><code>len(s.attempts) == 0</code> → <strong>Cancel 路径</strong>（Redis <code>INCRBY 100</code> 全退 + <code>MarkCancelled</code>）。 哪怕 <code>&gt;</code> 0，无论 provider 最后成没成功 → <strong>Settle 路径</strong>。理由：模型只要启动过，上游就可能已消耗，不能凭&quot;没成功&quot;退款。</p>
+<h3 id="34-settlement-三种结果coordinatorgo226">3.4 <code>settlement()</code> 三种结果（coordinator.go:226）</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>条件</th>
+<th>consumed</th>
+<th>released</th>
+<th>kind</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>persistenceUncertain</code></td>
+<td>100（全预留额）</td>
+<td>0</td>
+<td>estimated</td>
+</tr>
+<tr>
+<td><strong>每个</strong> attempt 都有 <code>providerUsage</code><br>且非 <code>Estimated</code></td>
+<td><code>min(Σ(input+output), 100)</code></td>
+<td>100−consumed</td>
+<td>provider_usage</td>
+</tr>
+<tr>
+<td>任一 attempt 缺 usage（<strong>包括 fallback 掉的那次</strong>）</td>
+<td>100</td>
+<td>0</td>
+<td>estimated</td>
+</tr>
+</tbody></table></div>
+<p>容易漏的细节：primary 首块前失败、fallback 成功 → primary 也是一次 attempt，它的 usage 缺失会让整笔走 estimated。这是决策 004 的&quot;对租户保守&quot;策略。</p>
+<h3 id="35-redis-结算coordinatorgo202">3.5 Redis 结算（coordinator.go:202）</h3>
+<ul>
+<li>Settle 路径 → <code>Settle(reserved=100, consumed=X)</code>：<code>settleLua</code> 里 <code>INCRBY balance (100−X)</code>，把结果 JSON 写进 <code>operation:{tenant}:{res}:{version}:settle</code> 键（redis.go:226）</li>
+<li>Cancel 路径 → <code>Cancel(100)</code>：<code>INCRBY 100</code>，写 <code>:cancel</code> 键</li>
+</ul>
+<h3 id="36-mysql-终态-双-outboxpersistencego313">3.6 MySQL 终态 + 双 outbox（persistence.go:313）</h3>
+<p><strong>Redis 成功之后</strong>才做。<code>MarkSettled</code> 一个事务里：</p>
+<ol>
+<li>CAS：<code>state=&#39;settled&#39;</code>, <code>version+1</code>, 写 <code>settled_units/released_units/usage_observed/settlement_kind</code>，<code>WHERE version=expectedVersion AND state IN (&#39;reserved&#39;,&#39;expired_pending&#39;)</code>，且<strong>要求 attempt 行存在</strong>（persistence.go:613）</li>
+<li>同事务插 <code>usage_outbox</code>（从刚更新的行 SELECT 快照）</li>
+<li>同事务插 <code>usage_kafka_outbox</code>（<code>event_id = SHA2(reservation:version)</code> 做事件幂等键，persistence.go:629）</li>
+</ol>
+<p><code>MarkCancelled</code> 同理，但 <code>NOT EXISTS(attempt)</code> 为真才允许（persistence.go:618）。CAS 用 <code>expectedVersion</code> 防止并发 reconciler 已经动过这行——<code>RowsAffected != 1</code> 就报 <code>CodeVersionConflict</code>（persistence.go:506）。</p>
+<h2 id="4-三个数字场景代入">4. 三个数字场景代入</h2>
+<p><strong>4. 三个数字场景代入（预留 100，初始余额 500）</strong></p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>触发分支</th>
+<th>Redis 余额</th>
+<th>MySQL 终态</th>
+<th>释放额度</th>
+<th>租户最终余额</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>A</strong> 零 attempt（未启动或 BeforeAttempt 直接 quota_exhausted）</td>
+<td>Cancel → <code>INCRBY 100</code></td>
+<td>500</td>
+<td><code>cancelled</code><br>, version 3</td>
+<td>100</td>
+<td>500</td>
+</tr>
+<tr>
+<td><strong>B</strong> 全部 attempt 有可信 usage（例如 input 15 + output 20 = 35）</td>
+<td>Settle → <code>INCRBY (100‑35)=65</code></td>
+<td>465</td>
+<td><code>settled</code><br>, <code>provider_usage</code><br>, version 3</td>
+<td>65</td>
+<td>465</td>
+</tr>
+<tr>
+<td><strong>C</strong> 任意 attempt 缺 usage（当前 Ark/Ollama/mock 实际走这条）</td>
+<td>Settle（但因缺 usage 走 estimated 分支）</td>
+<td>400</td>
+<td><code>settled</code><br>, <code>estimated</code><br>, version 3</td>
+<td>0</td>
+<td>400</td>
+</tr>
+<tr>
+<td><strong>C’</strong> 与 C 相同但最后一次 flush 也失败 → <code>persistenceUncertain=true</code></td>
+<td>Settle（直接走第一行）</td>
+<td>400</td>
+<td><code>settled</code><br>, <code>estimated</code><br>, version 3</td>
+<td>0</td>
+<td>400</td>
+</tr>
+</tbody></table></div>
+<p>关键细节：即使 primary 首块前失败、fallback 成功，<strong>primary 本身也是一次 attempt</strong>（它的 <code>providerUsage</code> 为 nil），于是整笔仍落入“任意 attempt 缺 usage”分支，按保守策略全额扣除，差额由平台承担——这正是决策 004“<strong>对租户更保守</strong>”的直接体现。</p>
+<h2 id="5-幂等回放演示">5. 幂等回放演示</h2>
+<p>同一 reservation、同一 version 重放 <code>Settle</code>：<code>settleLua</code> 第一行就 <code>GET operation...:settle</code>，命中直接 <code>cjson.decode</code> 返回旧结果，<strong>不再 INCRBY</strong>（redis.go:226-227）。所以 465 不会变成 530。</p>
+<p>但注意边界：reconciler 认领过期行会 <code>version+1</code>，幂等键随之改变——<strong>Lua 幂等只保护&quot;同 version 同操作&quot;，不自动修复&quot;Redis 已退 65、MySQL 终态失败&quot;的跨存储窗口</strong>。那个窗口靠：MySQL 行卡在非终态 → 超时后 <code>ClaimExpired</code> 认领（<code>FOR UPDATE SKIP LOCKED</code> 保证并发只认一次）→ 按 <code>ReserveApplied</code> 决定补 Settle/Cancel（coordinator.go:290）。Reconciler 没有内置定时器，靠调用方显式驱动。</p>
+<h2 id="6-测试对照每组对应上面哪个分支">6. 测试对照（每组对应上面哪个分支）</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>测试（coordinator_test.go）</th>
+<th>覆盖点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TestCoordinatorPersistsAttemptProgressAndEstimatedSettlement</code></td>
+<td>C：缺 usage → estimated，全扣</td>
+</tr>
+<tr>
+<td><code>TestCoordinatorStopsOnProgressFailureAndSettlesConservatively</code></td>
+<td>C&#39;：flush 失败 → 保守</td>
+</tr>
+<tr>
+<td><code>TestCoordinatorReleasesOnlyProviderObservedUsage</code></td>
+<td>B：可信 usage 退差</td>
+</tr>
+<tr>
+<td><code>TestCoordinatorRejectsBeforeAttemptAndCancelsReservation</code></td>
+<td>A：零 attempt → Cancel 全退</td>
+</tr>
+<tr>
+<td><code>TestCoordinatorAccumulatesFallbackAttemptInputsWithinReservation</code></td>
+<td>1.2 的超卖闸门：fallback 的输入 rune 也计入 100 额度</td>
+</tr>
+<tr>
+<td><code>TestReconcilerSettlesStartedAndCancelsOnlyAppliedUnstarted</code></td>
+<td>第 5 节的过期认领</td>
+</tr>
+</tbody></table></div>
+<hr>
+<p>上一篇：<a href="../../blog/agentmesh-provider-stream-cancellation/index.html">AgentMesh：Provider 调用、Attempt Hook 与取消传播</a></p>
+<p>下一篇：<a href="../../blog/agentmesh-terminal-state-recovery/index.html">AgentMesh：终态持久化与跨存储恢复</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,194 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go：数组、切片与 Map · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go：数组、切片与 Map</h1><time datetime="2026-05-10T03:01:46.000Z">2026年5月10日</time><h2 id="这是-升序排序从小到大排序">这是 <strong>升序排序</strong>（从小到大排序）。</h2>
+<p>在 Go 的 <code>sort.Slice</code> 函数中，比较函数 <code>func(i, j int) bool</code> 的返回值含义是：</p>
+<ul>
+<li>返回 <code>true</code> 表示 <code>nums[i]</code> 应该排在 <code>nums[j]</code> 前面</li>
+<li>返回 <code>false</code> 表示 <code>nums[i]</code> 应该排在 <code>nums[j]</code> 后面</li>
+</ul>
+<h2 id="数组">数组</h2>
+<p>数组（Array）是一种非常常见的数据类型，几乎所有的计算机编程语言中都会用到它</p>
+<ol>
+<li>数组里的元素必须全部为同一类型，要嘛全部是字符串，要嘛全部是整数</li>
+<li>声明数组时，必须指定其长度或者大小</li>
+</ol>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  var array [3]int = [3]int{1, 2, 3}
+  fmt.Println(array)
+  var array1 = [3]int{1, 2, 3}
+  fmt.Println(array1)
+  var array2 = [...]int{1, 2, 3}
+  fmt.Println(array2)
+}
+</code></pre>
+<p>如果要修改某个值，只能根据索引去找然后替换</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var array1 = [3]int{1, 2, 3}
+array1[0] = 10 // 根据索引找到对应的元素位置，然后替换
+fmt.Println(array1)
+</code></pre>
+<h3 id="索引">索引</h3>
+<p>索引这个知识点，如果刚学编程，那么就得仔细听了，这个知识点到后面我就默认你已经会了</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  // 以定义一个字符串数组 a b c d 为例
+  var sList = []string{&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;}
+  // 正向索引就从0开始，从左往右
+  /*
+    a     b     c     d
+    0     1     2     3
+  */
+  // 取值就通过索引去取
+  fmt.Println(sList[0]) // 拿到a这个元素
+  // 当然，有的语言支持负向索引，go不支持
+  /*
+      a      b     c     d
+      -4    -3    -2    -1
+  */
+  // 如果在go语言里面，我想拿到倒数第二个元素，怎么办？
+  fmt.Println(sList[len(sList)-2]) // 拿到a这个元素
+}
+</code></pre>
+<h2 id="切片">切片</h2>
+<p>很明显啊，go里面的数组，长度被限制死了，所以不经常用</p>
+<p>所以go出了一个数组plus，叫做slice（切片）</p>
+<p>切片（Slice）相较于数组更灵活，因为在声明切片后其长度是可变的</p>
+<p>相当于实现动态数组 , 内部使用的是 容量 + 长度 ---&gt; 万一长度&gt; 容量 触发自动扩容;</p>
+<p>单纯创建一个 不定义大小的数组 , 内部存储的逻辑 是尾插法</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  // 定义一个字符串切片
+  var list []string 
+
+  list = append(list, &quot;枫枫&quot;)
+  list = append(list, &quot;知道&quot;)
+  fmt.Println(list)
+  fmt.Println(len(list)) // 切片长度
+  // 修改第二个元素
+  list[1] = &quot;不知道&quot;
+  fmt.Println(list)
+}
+</code></pre>
+<h3 id="make函数">make函数</h3>
+<p>除了基本数据类型，其他数据类型如果只定义不赋值，那么实际的值就是nil</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">// 定义一个字符串切片
+var list []string
+fmt.Println(list == nil) // true
+</code></pre>
+<p>那么我们可以通过make函数创建知道长度，指定容量的切片了</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">make([]type, length, capacity)
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  // 定义一个字符串切片
+  var list = make([]string, 0)
+  fmt.Println(list, len(list), cap(list))
+  fmt.Println(list == nil) // false
+
+  list1 := make([]int, 2, 2)
+  fmt.Println(list1, len(list1), cap(list1))
+}
+</code></pre>
+<h3 id="为什么叫切片">为什么叫切片</h3>
+<p>因为切片是数组切出来的</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  var list = [...]string{&quot;a&quot;, &quot;b&quot;, &quot;c&quot;}
+  slices := list[:] // 左一刀，右一刀  变成了切片
+  fmt.Println(slices)
+  fmt.Println(list[1:2]) // b
+}
+</code></pre>
+<h3 id="切片排序">切片排序</h3>
+<p>现代 go中实现的替补的升降序方法</p>
+<p>slices.Sort([]string{&quot;b&quot;,&quot;a&quot;,&quot;c&quot;})</p>
+<p>实现排序 都是返回空 , 静态的直接修改本体;</p>
+<p>最新版本 :slices.SortDescending([]float64{3.2,1.5,2.8})</p>
+<p>兼容版本: sort.Sort(sort.Reverse(sort.IntSlice(ageList)))</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var list = []int{4, 5, 3, 2, 7}
+fmt.Println(&quot;排序前:&quot;, list)
+sort.Ints(list)
+fmt.Println(&quot;升序:&quot;, list)
+sort.Sort(sort.Reverse(sort.IntSlice(list)) //内部先实现)   
+fmt.Println(&quot;降序:&quot;, list)
+</code></pre>
+<h2 id="map">map</h2>
+<p>Go语言中的map(映射、字典)是一种内置的数据结构，它是一个<code>无序</code>的key-value对的集合</p>
+<p>map的key必须是基本数据类型，value可以是任意类型</p>
+<p>注意，map使用之前一定要初始化</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  // 声明 + 定义 
+  var m1 map[string]string  这种申明方式内部没有创建空间没作用
+  // 初始化1
+  m1 = make(map[string]string) 可以直接使用键值创建对象,已经开辟空间
+  // 设置值
+  m1[&quot;name&quot;] = &quot;枫枫&quot;
+  fmt.Println(m1)
+  // 取值
+  fmt.Println(m1[&quot;name&quot;])
+  // 删除值
+  delete(map名, 键名字)
+  fmt.Println(m1)
+}
+</code></pre>
+<p>也可以声明并赋值</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">// 声明并赋值
+var m1 = map[string]string{}
+var m2 = make(map[string]string)
+</code></pre>
+<h3 id="map取值">map取值</h3>
+<p>如果只有一个参数接，那这个参数就是值，如果没有，这个值就是类型的零值</p>
+<p>如果两个参数接，那第二个参数就是布尔值，表示是否有这个元素</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  // 声明并赋值
+  var m1 = map[string]int{
+    &quot;age&quot;: 21,
+  }
+  age1 := m1[&quot;age1&quot;] // 取一个不存在的
+  fmt.Println(age1)
+  age2, ok := m1[&quot;age1&quot;]
+  fmt.Println(age2, ok)
+}
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<ol>
+<li>数组与切片 <a href="https://zhuanlan.zhihu.com/p/456844080">https://zhuanlan.zhihu.com/p/456844080</a></li>
+<li>map <a href="https://blog.csdn.net/qq_39312146/article/details/127914811">https://blog.csdn.net/qq_39312146/article/details/127914811</a></li>
+</ol>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

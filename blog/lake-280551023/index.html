@@ -1,0 +1,114 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 对话翻译：Eino 与 Ollama · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 对话翻译：Eino 与 Ollama</h1><time datetime="2026-08-07T11:49:01.000Z">2026年8月7日</time><pre><code class="language-text">package main
+
+import (
+	&quot;bufio&quot;
+	&quot;context&quot;
+	&quot;errors&quot;
+	&quot;fmt&quot;
+	&quot;io&quot;
+	&quot;log&quot;
+	&quot;os&quot;
+	&quot;strings&quot;
+
+	&quot;github.com/cloudwego/eino-ext/components/model/ollama&quot;
+	&quot;github.com/cloudwego/eino/schema&quot;
+)
+
+type Translator struct {
+	chatModel *ollama.ChatModel
+}
+
+func NewTranslator() (*Translator, error) {
+	ctx := context.Background()
+	chatModel, err := ollama.NewChatModel(ctx, &amp;ollama.ChatModelConfig{
+		BaseURL: &quot;http://127.0.0.1:11434&quot;,
+		Model:   &quot;qwen2.5:7b&quot;,
+		Options: &amp;ollama.Options{
+			Temperature: 0.3,
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf(&quot;创建失败: %w&quot;, err)
+	}
+	return &amp;Translator{chatModel: chatModel}, nil
+}
+
+// - 内部实现流式输出
+func (t *Translator) TranslateStream(ctx context.Context, messages []*schema.Message) error {
+	stream, err := t.chatModel.Stream(ctx, messages)
+	if err != nil {
+		return fmt.Errorf(&quot;流式创建失败: %w&quot;, err)
+	}
+	defer stream.Close()
+
+	for {
+		chunk, err := stream.Recv()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			return fmt.Errorf(&quot;接收失败: %w&quot;, err)
+		}
+		fmt.Print(chunk.Content)
+	}
+	fmt.Println()
+	return nil
+}
+
+func main() {
+	translator, err := NewTranslator()
+	if err != nil {
+		log.Fatalf(&quot;创建模型对象失败: %v&quot;, err)
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	messages := []*schema.Message{
+		schema.SystemMessage(&quot;你是一个专业的翻译助手。请根据用户指定的目标语言进行翻译，只返回翻译结果，不要解释。如果用户没有指定语言，自动判断：中文翻译成英文，英文翻译成中文。&quot;),
+	}
+
+	for {
+		fmt.Print(&quot;\n你（输入格式: 目标语言@原文，如 中文@hello）：&quot;)
+		input, err := reader.ReadString(&#39;\n&#39;)
+		if err != nil {
+			fmt.Println(&quot;输入结束&quot;)
+			break
+		}
+		userInput := strings.TrimSpace(input)
+
+		if userInput == &quot;exit&quot; {
+			fmt.Println(&quot;再见！&quot;)
+			break
+		}
+		if userInput == &quot;&quot; {
+			continue
+		}
+
+		targetLang, text := parseInput(userInput)
+		if targetLang != &quot;&quot; {
+			text = fmt.Sprintf(&quot;翻译为%s: %s&quot;, targetLang, text)
+		}
+
+		messages = append(messages, schema.UserMessage(text))
+
+		fmt.Print(&quot;翻译：&quot;)
+		if err := translator.TranslateStream(context.Background(), messages); err != nil {
+			log.Printf(&quot;翻译失败: %v&quot;, err)
+			messages = messages[:len(messages)-1]
+			continue
+		}
+	}
+}
+
+// - 使用@ 实现分割 对话输入,规范格式
+func parseInput(input string) (target, text string) {
+	parts := strings.SplitN(input, &quot;@&quot;, 2)
+	if len(parts) == 2 {
+		return strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+	}
+	return &quot;&quot;, input
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

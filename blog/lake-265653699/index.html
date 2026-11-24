@@ -1,0 +1,902 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Spring Boot Web 与 HTTP · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Spring Boot Web 与 HTTP</h1><time datetime="2026-04-14T01:21:39.000Z">2026年4月14日</time><h2 id="springbootweb入门">SpringBootWeb入门</h2>
+<p>那接下来呢，我们就要来讲解现在企业开发的主流技术 SpringBoot，并基于SpringBoot进行Web程序的开发 。</p>
+<h3 id="概述">概述</h3>
+<p>在没有正式的学习SpringBoot之前，我们要先来了解下什么是Spring。</p>
+<p>我们可以打开Spring的官网(<a href="https://spring%5C.io%5C)%EF%BC%8C%E5%8E%BB%E7%9C%8B%E4%B8%80%E4%B8%8BSpring%E7%9A%84%E7%AE%80%E4%BB%8B%EF%BC%9ASpring">https://spring\.io\)，去看一下Spring的简介：Spring</a> makes Java simple。</p>
+<p><img src="../../blogs/_assets/lakebook/b3c5d161c05688ad7e1ba03f.png" loading="lazy" alt=""></p>
+<p>Spring的官方提供很多开源的项目，我们可以点击上面的projects，看到spring家族旗下的项目，按照流行程度排序为：</p>
+<p><img src="../../blogs/_assets/lakebook/828d20e7804012a22e144755.png" loading="lazy" alt=""></p>
+<p>Spring发展到今天已经形成了一种开发生态圈，Spring提供了若干个子项目，每个项目用于完成特定的功能。而我们在项目开发时，一般会偏向于选择这一套spring家族的技术，来解决对应领域的问题，那我们称这一套技术为<strong>spring全家桶</strong>。</p>
+<p><img src="../../blogs/_assets/lakebook/e4412605da862039442917d9.png" loading="lazy" alt=""></p>
+<p>而Spring家族旗下这么多的技术，最基础、最核心的是 SpringFramework。其他的spring家族的技术，都是基于SpringFramework的，SpringFramework中提供很多实用功能，如：依赖注入、事务管理、web开发支持、数据访问、消息服务等等。</p>
+<p><img src="../../blogs/_assets/lakebook/cf64873092bbbc095006ff16.png" loading="lazy" alt=""></p>
+<p>而如果我们在项目中，直接基于<strong>SpringFramework</strong>进行开发，存在两个问题：</p>
+<ul>
+<li>配置繁琐</li>
+<li>入门难度大</li>
+</ul>
+<p>所以基于此呢，spring官方推荐我们从另外一个项目开始学习，那就是目前最火爆的SpringBoot。 通过springboot就可以快速的帮我们构建应用程序，所以<strong>springboot</strong>呢，最大的特点有两个 ：</p>
+<ul>
+<li>简化配置</li>
+<li>快速开发</li>
+</ul>
+<p><strong>Spring Boot 可以帮助我们非常快速的构建应用程序、简化开发、提高效率 。</strong></p>
+<p><strong>而直接基于SpringBoot进行项目构建和开发，不仅是Spring官方推荐的方式，也是现在企业开发的主流。</strong></p>
+<h3 id="入门程序">入门程序</h3>
+<h4 id="需求">需求</h4>
+<p>需求：基于SpringBoot的方式开发一个web应用，浏览器发起请求/hello后，给浏览器返回字符串 &quot;Hello xxx ~&quot;。</p>
+<p><img src="../../blogs/_assets/lakebook/8c5cad6e8b69141502ba872d.png" loading="lazy" alt=""></p>
+<h4 id="开发步骤">开发步骤</h4>
+<p>第1步：创建SpringBoot工程，并勾选Web开发相关依赖</p>
+<p>第2步：定义HelloController类，添加方法hello，并添加注解</p>
+<p><strong>1). 创建SpringBoot工程（需要联网）</strong></p>
+<p>基于Spring官方骨架，创建SpringBoot工程。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2026/png/63728767/1776130457753-e309a837-d82f-409a-a190-a14c2497ded0.png" loading="lazy" alt=""></p>
+<p>基本信息描述完毕之后，勾选web开发相关依赖。</p>
+<p><img src="../../blogs/_assets/lakebook/c0cd5c810e00b18f2ed0ee17.png" loading="lazy" alt=""></p>
+<p>SpringBoot官方提供的脚手架，里面只能够选择SpringBoot的几个最新的版本，如果要选择其他相对低一点的版本，可以在springboot项目创建完毕之后，修改项目的pom.xml文件中的版本号。</p>
+<p>点击Create之后，就会联网创建这个SpringBoot工程，创建好之后，结构如下：</p>
+<p><img src="../../blogs/_assets/lakebook/9702a9b7fcc31e15ded0ab6c.png" loading="lazy" alt=""></p>
+<p><strong>注意：在联网创建过程中，会下载相关资源(请耐心等待)</strong></p>
+<p><strong>2).</strong> <strong>定义HelloController类，添加方法hello，并添加注解</strong></p>
+<p>在<code>com.itheima</code>这个包下新建一个类：<code>HelloController</code></p>
+<p><img src="../../blogs/_assets/lakebook/7cf25218fddb132532dd3ed3.png" loading="lazy" alt=""></p>
+<p>HelloController中的内容，具体如下：</p>
+<pre><code class="language-text">package com.itheima;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController //标识当前类是一个请求处理类
+public class HelloController {
+
+    @RequestMapping(&quot;/hello&quot;) //标识请求路径
+    public String hello(String name){
+        System.out.println(&quot;HelloController ... hello: &quot; + name);
+        return &quot;Hello &quot; + name;
+    }
+
+}
+</code></pre>
+<p><strong>3). 运行测试</strong></p>
+<p>运行SpringBoot自动生成的引导类 (标识有<code>@SpringBootApplication</code>注解的类)</p>
+<p><img src="../../blogs/_assets/lakebook/bb7a83c21a7c7f15ad8b13bf.png" loading="lazy" alt=""></p>
+<p>打开浏览器，输入 <code>http://localhost:8080/hello?name=itheima</code></p>
+<p><img src="../../blogs/_assets/lakebook/ed49e5069ac0d1608a3e387f.png" loading="lazy" alt=""></p>
+<h4 id="常见问题">常见问题</h4>
+<p>创建一个springboot项目时 , 项目支持的脚手架有时会抽风访问不进去 , 直接使用</p>
+<p>start.aliyun.com</p>
+<p>大伙儿在下来联系的时候，联网基于spring的脚手架创建SpringBoot项目，偶尔可能会因为网内网络的原因，链接不上SpringBoot的脚手架网站，此时会出现如下现象：</p>
+<p><img src="../../blogs/_assets/lakebook/9aa2312df36ad09b5a639111.png" loading="lazy" alt=""></p>
+<p>此时可以使用阿里云提供的脚手架，网址为：<a href="https://start%5C.aliyun%5C.com">https://start\.aliyun\.com</a></p>
+<p><img src="../../blogs/_assets/lakebook/91e72dd2f770e90037f29e9c.png" loading="lazy" alt=""></p>
+<p>然后按照项目创建的向导，一步一步的创建项目即可。</p>
+<h3 id="入门解析">入门解析</h3>
+<p>那在上面呢，我们已经完成了SpringBootWeb的入门程序，并且测试通过。 在入门程序中，我们发现，我们只需要一个main方法就可以将web应用启动起来了，然后就可以打开浏览器访问了。</p>
+<p>那接下来我们需要明确两个问题：</p>
+<p><strong>1). 为什么一个main方法就可以将Web应用启动了？</strong></p>
+<p><img src="../../blogs/_assets/lakebook/3a912dcb70205b7eb40cdcb1.png" loading="lazy" alt=""></p>
+<p>因为我们在创建springboot项目的时候，选择了web开发的</p>
+<p><strong>起步依赖</strong></p>
+<p><code>spring-boot-starter-web</code> : 是使用来实现web开发的;</p>
+<p>。而<code>spring-boot-starter-web</code>依赖，又依赖了<code>spring-boot-starter-tomcat</code>，</p>
+<p>由于maven的依赖传递特性，那么在我们创建的springboot项目中也就已经有了tomcat的依赖，这个其实就是springboot中内嵌的tomcat。</p>
+<p><img src="../../blogs/_assets/lakebook/09340b1808d02f621419219f.png" loading="lazy" alt=""></p>
+<p>而我们运行引导类中的main方法，其实启动的就是springboot中内嵌的Tomcat服务器。[内嵌的TOMcat服务器] 而我们所开发的项目，也会自动的部署在该tomcat服务器中，并占用8080端口号 。</p>
+<p><img src="../../blogs/_assets/lakebook/0d0ebb611679a08ac2a3df81.png" loading="lazy" alt=""></p>
+<p><strong>起步依赖：</strong></p>
+<ul>
+<li><p>一种为开发者提供简化配置和集成的机制，使得构建Spring应用程序更加轻松。起步依赖本质上是一组预定义的依赖项集合，它们一起提供了在特定场景下开发Spring应用所需的所有库和配置。</p>
+</li>
+<li><p>spring-boot-starter-web：包含了web应用开发所需要的常见依赖。</p>
+</li>
+<li><p>spring-boot-starter-test：包含了单元测试所需要的常见依赖。</p>
+</li>
+<li><p>官方提供的starter：<a href="https://docs.spring.io/spring-boot/docs/3.1.3/reference/htmlsingle/">https://docs.spring.io/spring-boot/docs/3.1.3/reference/htmlsingle/#using.build-systems.starters</a></p>
+</li>
+</ul>
+<h2 id="http协议">HTTP协议</h2>
+<h3 id="http概述">HTTP概述</h3>
+<h4 id="介绍">介绍</h4>
+<p><img src="../../blogs/_assets/lakebook/4569278cc645fcb00717c44d.png" loading="lazy" alt=""></p>
+<p><strong>HTTP</strong>：Hyper Text Transfer Protocol(超文本传输协议)，规定了浏览器与服务器之间数据传输的规则。</p>
+<ul>
+<li>http是互联网上应用最为广泛的一种网络协议</li>
+<li>http协议要求：浏览器在向服务器发送请求数据时，或是服务器在向浏览器发送响应数据时，都必须按照固定的格式进行数据传输</li>
+</ul>
+<p>如果想知道http协议的数据传输格式有哪些，可以打开浏览器，点击<code>F12</code>打开开发者工具，点击<code>Network(网络)</code>来查看</p>
+<p><img src="../../blogs/_assets/lakebook/0461a3aaeb6635e067001ff3.png" loading="lazy" alt=""></p>
+<p>浏览器向服务器进行请求时，服务器按照固定的格式进行解析：</p>
+<p><img src="../../blogs/_assets/lakebook/040ef2e66bb5f549cb1884ee.png" loading="lazy" alt=""></p>
+<p>服务器向浏览器进行响应时，浏览器按照固定的格式进行解析：</p>
+<p><img src="../../blogs/_assets/lakebook/4ff2f103d3af36af3055f207.png" loading="lazy" alt=""></p>
+<p>而我们学习HTTP协议，就是来学习请求和响应数据的具体格式内容。</p>
+<h3 id="http请求协议">HTTP请求协议</h3>
+<p>get 向服务器提交数据 , 数据保存在 url 表头中 , 大小会有限制 ;</p>
+<p>post 会放置在请求体中去, 大小不会出现限制 ;</p>
+<h4 id="介绍-1">介绍</h4>
+<ul>
+<li><strong>请求**<strong>协议</strong></strong>：**浏览器将数据以请求格式发送到服务器。包括：**请求行、**<strong>请求头 、请求体</strong></li>
+<li><strong>GET方式的请求协议：</strong></li>
+</ul>
+<p><img src="../../blogs/_assets/lakebook/b9c09216db5b719419eb6eb9.png" loading="lazy" alt=""></p>
+<ul>
+<li><p><strong>请求行</strong>(以上图中红色部分) ：HTTP请求中的第一行数据。由：<code>请求方式</code>、<code>资源路径</code>、<code>协议/版本</code>组成（之间使用空格分隔）</p>
+</li>
+<li><p>请求方式：GET</p>
+</li>
+<li><p>资源路径：/brand/findAll?name=OPPO&amp;status=1</p>
+</li>
+<li><p>请求路径：/brand/findAll</p>
+</li>
+<li><p>请求参数：name=OPPO&amp;status=1</p>
+</li>
+<li><p>请求参数是以key=value形式出现</p>
+</li>
+<li><p>多个请求参数之间使用<code>&amp;</code>连接</p>
+</li>
+<li><p>请求路径和请求参数之间使用<code>?</code>连接</p>
+</li>
+<li><p>协议/版本：HTTP/1.1</p>
+</li>
+<li><p><strong>请求头</strong>(以上图中黄色部分) ：第二行开始，上图黄色部分内容就是请求头。格式为key: value形式</p>
+</li>
+<li><p>http是个无状态的协议，所以在请求头设置浏览器的一些自身信息和想要响应的形式。这样服务器在收到信息后，就可以知道是谁，想干什么了</p>
+</li>
+<li><p>常见的HTTP请求头有:</p>
+</li>
+</ul>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>请求头</span></p></td><td><p><span>含义</span></p></td></tr><tr><td><p><span>Host</span></p></td><td><p><span>表示请求的主机名</span></p></td></tr><tr><td><p><span>User-Agent</span></p></td><td><p><span>浏览器版本。 例如：Chrome浏览器的标识类似Mozilla/5.0 ...Chrome/79 ，IE浏览器的标识类似Mozilla/5.0 (Windows NT ...)like Gecko</span></p></td></tr><tr><td><p><span>Accept</span></p></td><td><p><span>表示浏览器能接收的资源类型，如text/*，image/*或者*/*表示所有；</span></p></td></tr><tr><td><p><span>Accept-Language</span></p></td><td><p><span>表示浏览器偏好的语言，服务器可以据此返回不同语言的网页；</span></p></td></tr><tr><td><p><span>Accept-Encoding</span></p></td><td><p><span>表示浏览器可以支持的压缩类型，例如gzip, deflate等。</span></p></td></tr><tr><td><p><span>Content-Type</span></p></td><td><p><span>请求主体的数据类型</span></p></td></tr><tr><td><p><span>Content-Length</span></p></td><td><p><span>数据主体的大小（单位：字节）</span></p></td></tr></tbody></table></div>
+
+<p>举例说明：服务端可以根据请求头中的内容来获取客户端的相关信息，有了这些信息服务端就可以处理不同的业务需求。</p>
+<p>比如:</p>
+<ul>
+<li><p>不同浏览器解析HTML和CSS标签的结果会有不一致，所以就会导致相同的代码在不同的浏览器会出现不同的效果</p>
+</li>
+<li><p>服务端根据客户端请求头中的数据获取到客户端的浏览器类型，就可以根据不同的浏览器设置不同的代码来达到一致的效果（这就是我们常说的浏览器兼容问题）</p>
+</li>
+<li><p>请求体 ：存储请求参数</p>
+</li>
+<li><p>GET请求的请求参数在请求行中，故不需要设置请求体</p>
+</li>
+</ul>
+<p><strong>POST方式的请求协议：</strong></p>
+<p><img src="../../blogs/_assets/lakebook/fec4558b6890999335ebef2b.png" loading="lazy" alt=""></p>
+<ul>
+<li><p><strong>请求行</strong>(以上图中红色部分)：包含请求方式、资源路径、协议/版本</p>
+</li>
+<li><p>请求方式：POST</p>
+</li>
+<li><p>资源路径：/brand</p>
+</li>
+<li><p>协议/版本：HTTP/1.1</p>
+</li>
+<li><p><strong>请求头</strong>(以上图中黄色部分)</p>
+</li>
+<li><p><strong>请求体</strong>(以上图中绿色部分) ：存储请求参数</p>
+</li>
+<li><p>请求体和请求头之间是有一个空行隔开（作用：用于标记请求头结束）</p>
+</li>
+</ul>
+<p>GET请求和POST请求的区别：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><strong><span>区别方式</span></strong></p></td><td><p><strong><span>GET请求</span></strong></p></td><td><p><strong><span>POST请求</span></strong></p></td></tr><tr><td><p><span>请求参数</span></p></td><td><p><span>请求参数在请求行中。&lt;br/&gt;例：/brand/findAll?name=OPPO&amp;status=1</span></p></td><td><p><span>请求参数在请求体中</span></p></td></tr><tr><td><p><span>请求参数长度</span></p></td><td><p><span>请求参数长度有限制(浏览器不同限制也不同)</span></p></td><td><p><span>请求参数长度没有限制</span></p></td></tr><tr><td><p><span>安全性</span></p></td><td><p><span>安全性低。原因：请求参数暴露在浏览器地址栏中。</span></p></td><td><p><span>安全性相对高</span></p></td></tr></tbody></table></div>
+
+<h4 id="获取请求数据-客户端产生-服务端获取-request回应都是get获取到已设定好的数据">获取请求数据 ( 客户端产生 , 服务端获取 ) request(回应).都是get(获取到已设定好的数据) ;</h4>
+<p>获取请求数据是从 /request 中获取到的数据;</p>
+<p>Web服务器（Tomcat）对HTTP协议的请求数据进行解析，并进行了封装(HttpServletRequest)，并在调用Controller方法的时候传递给了该方法。这样，就使得程序员不必直接对协议进行操作，让Web开发更加便捷。</p>
+<p><img src="../../blogs/_assets/lakebook/66b52e45fcd27137fc2d5974.png" loading="lazy" alt=""></p>
+<p>代码演示如下：</p>
+<pre><code class="language-text">@RestController  //实现一个请求批量处理
+public class RequestController {
+
+    /**
+     * 请求路径 http://localhost:8080/request?name=Tom&amp;age=18
+     * @param request
+     * @return
+     */
+    @RequestMapping(&quot;/request&quot;)
+    //传入的请求头的形参 : HttpServletRequest request ;
+    //传入的形参类型要注意 , HttpServletRequest ; 
+    
+    public String request(HttpServletRequest request){
+        //1.获取请求参数 name, age
+        String name = request.getParameter(&quot;name&quot;);
+        String age = request.getParameter(&quot;age&quot;);
+        System.out.println(&quot;name = &quot; + name + &quot;, age = &quot; + age);
+        
+        //2.获取请求路径
+        String uri = request.getRequestURI();
+        String url = request.getRequestURL().toString();
+        System.out.println(&quot;uri = &quot; + uri);
+        System.out.println(&quot;url = &quot; + url);
+        
+        //3.获取请求方式
+        String method = request.getMethod();
+        System.out.println(&quot;method = &quot; + method);
+        
+        //4.获取请求头
+        String header = request.getHeader(&quot;User-Agent&quot;);
+        System.out.println(&quot;header = &quot; + header);
+        return &quot;request success&quot;;
+    }
+
+}
+</code></pre>
+<p>最终输出内容如下所示：</p>
+<p><img src="../../blogs/_assets/lakebook/88c43bdc36f81b7285c13a44.png" loading="lazy" alt=""></p>
+<h4 id="设置响应数据-服务器产生-客户端获取-主要都是使用response回应set创建元素">设置响应数据 ( 服务器产生 , 客户端获取 ) 主要都是使用response(回应).set创建元素 ;</h4>
+<p>获取到的数据放置在 /response 下来获取到数据 ;</p>
+<p>Web服务器对HTTP协议的响应数据进行了封装(HttpServletResponse)，并在调用Controller方法的时候传递给了该方法。这样，就使得程序员不必直接对协议进行操作，让Web开发更加便捷。</p>
+<p><img src="../../blogs/_assets/lakebook/f63638bd7015bf07f4b832da.png" loading="lazy" alt=""></p>
+<p>代码演示：</p>
+<pre><code class="language-text">package com.itheima;
+
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+
+@RestController
+public class ResponseController {
+
+    @RequestMapping(&quot;/response&quot;)
+    设置传入的形参类型为 HttpServletResponse 注意形参的类型 ; 
+    public void response(HttpServletResponse response) throws IOException {
+        //1.设置响应状态码
+        response.setStatus(401);
+        //2.设置响应头
+        response.setHeader(&quot;name&quot;,&quot;itcast&quot;);
+        //3.设置响应体
+        response.setContentType(&quot;text/html;charset=utf-8&quot;);
+        response.setCharacterEncoding(&quot;utf-8&quot;);
+        response.getWriter().write(&quot;&lt;h1&gt;hello response&lt;/h1&gt;&quot;);
+    }
+
+    @RequestMapping(&quot;/response2&quot;)
+    public ResponseEntity&lt;String&gt; response2(HttpServletResponse response) throws IOException {
+        return ResponseEntity
+                .status(401)
+                .header(&quot;name&quot;,&quot;itcast&quot;)
+                .body(&quot;&lt;h1&gt;hello response&lt;/h1&gt;&quot;);
+    }
+
+}
+</code></pre>
+<p>浏览器访问测试：</p>
+<p><img src="../../blogs/_assets/lakebook/911212ae0a6b0608f009dd73.png" loading="lazy" alt=""></p>
+<p>响应状态码 和 响应头如果没有特殊要求的话，通常不手动设定。服务器会根据请求处理的逻辑，自动设置响应状态码和响应头。</p>
+<h3 id="http响应协议">HTTP响应协议</h3>
+<h4 id="格式介绍">格式介绍</h4>
+<ul>
+<li>响应协议：服务器将数据以响应格式返回给浏览器。包括：<strong>响应行</strong> <strong>、响应头 、响应体</strong></li>
+<li><strong>发生1 时 : SocketWeb 长连接响应 ;</strong></li>
+<li><strong>发生 3 时 : https协议使用http访问, 会出现重定向 ;</strong></li>
+</ul>
+<p><img src="../../blogs/_assets/lakebook/917c204acb36cd55adb4de23.png" loading="lazy" alt=""></p>
+<ul>
+<li><p>响应行(以上图中红色部分)：响应数据的第一行。响应行由<code>协议及版本</code>、<code>响应状态码</code>、<code>状态码描述</code>组成</p>
+</li>
+<li><p>协议/版本：HTTP/1.1</p>
+</li>
+<li><p>响应状态码：200</p>
+</li>
+<li><p>状态码描述：OK</p>
+</li>
+<li><p>响应头(以上图中黄色部分)：响应数据的第二行开始。格式为key：value形式</p>
+</li>
+<li><p>http是个无状态的协议，所以可以在请求头和响应头中设置一些信息和想要执行的动作，这样，对方在收到信息后，就可以知道你是谁，你想干什么</p>
+</li>
+<li><p>常见的HTTP响应头有:</p>
+</li>
+</ul>
+<pre><code class="language-text">Content-Type：表示该响应内容的类型，例如text/html，image/jpeg ；
+
+Content-Length：表示该响应内容的长度（字节数）；
+
+Content-Encoding：表示该响应压缩算法，例如gzip ；
+
+Cache-Control：指示客户端应如何缓存，例如max-age=300表示可以最多缓存300秒 ;
+
+Set-Cookie: 告诉浏览器为当前页面所在的域设置cookie ;
+</code></pre>
+<ul>
+<li><p>响应体(以上图中绿色部分)： 响应数据的最后一部分。存储响应的数据</p>
+</li>
+<li><p>响应体和响应头之间有一个空行隔开（作用：用于标记响应头结束）</p>
+</li>
+</ul>
+<h2 id="pringbootweb案例">pringBootWeb案例</h2>
+<h3 id="需求说明">需求说明</h3>
+<p>需求：基于SpringBoot开发web程序，完成用户列表的渲染展示</p>
+<p><img src="../../blogs/_assets/lakebook/c3c9f64f96f110067efb8263.png" loading="lazy" alt=""></p>
+<p>当在浏览器地址栏，访问前端静态页面（<a href="http://localhost:8080/usre%5C.html%EF%BC%89%E5%90%8E%EF%BC%8C%E5%9C%A8%E5%89%8D%E7%AB%AF%E9%A1%B5%E9%9D%A2%E4%B8%8A%EF%BC%8C%E4%BC%9A%E5%8F%91%E9%80%81ajax%E8%AF%B7%E6%B1%82%EF%BC%8C%E8%AF%B7%E6%B1%82%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%88http://localhost:8080/list%EF%BC%89%EF%BC%8C%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%A8%8B%E5%BA%8F%E5%8A%A0%E8%BD%BD">http://localhost:8080/usre\.html）后，在前端页面上，会发送ajax请求，请求服务端（http://localhost:8080/list），服务端程序加载</a> user.txt 文件中的数据，读取出来后最终给前端页面响应json格式的数据，前端页面再将数据渲染展示在表格中。</p>
+<h3 id="代码实现">代码实现</h3>
+<p><strong>1). 准备工作：再创建一个SpringBoot工程，<strong><strong>并勾选web依赖、lombok依赖</strong></strong>。</strong></p>
+<p><img src="../../blogs/_assets/lakebook/28a8dd3d63b4843069c54bbd.png" loading="lazy" alt=""></p>
+<p><img src="../../blogs/_assets/lakebook/64f09136f4fdc546dd73a084.png" loading="lazy" alt=""></p>
+<p><strong>2). 准备工作：引入资料中准备好的数据文件user.txt，以及static下的前端静态页面</strong></p>
+<p><img src="../../blogs/_assets/lakebook/c20b958f27cf66b5f861c2f6.png" loading="lazy" alt=""></p>
+<p>这些文件，在提供的资料中，已经提供了直接导入进来即可。</p>
+<p><strong>3). 准备工作：定义封装用户信息的实体类。</strong></p>
+<p>在 <code>com.itheima</code> 下再定义一个包 <code>pojo</code>，专门用来存放实体类。 在该包下定义一个实体类User：</p>
+<pre><code class="language-text">package com.itheima.pojo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+
+/**
+ * 封装用户信息
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
+    private Integer id;
+    private String username;
+    private String password;
+    private String name;
+    private Integer age;
+    private LocalDateTime updateTime;
+}
+</code></pre>
+<p><strong>3). 开发服务端程序，接收请求，读取文本数据并响应</strong></p>
+<p>由于在案例中，需要读取文本中的数据，并且还需要将对象转为json格式，所以这里呢，我们在项目中再引入一个非常常用的工具包hutool。 然后调用里面的工具类，就可以非常方便快捷的完成业务操作。</p>
+<ul>
+<li><code>pom.xml</code>中引入依赖</li>
+</ul>
+<pre><code class="language-text">&lt;dependency&gt;
+    &lt;groupId&gt;cn.hutool&lt;/groupId&gt;
+    &lt;artifactId&gt;hutool-all&lt;/artifactId&gt;
+    &lt;version&gt;5.8.27&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<ul>
+<li>在<code>com.itheima</code>包下新建一个子包<code>controller</code>，在其中创建一个<code>UserController</code></li>
+</ul>
+<pre><code class="language-text">import cn.hutool.core.io.IoUtil;
+import cn.hutool.json.JSONConfig;
+import cn.hutool.json.JSONUtil;
+import com.itheima.pojo.User;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+public class UserController {
+    
+    @RequestMapping(&quot;/list&quot;)
+    public String list(){
+        //1.加载并读取文件
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream(&quot;user.txt&quot;);
+        ArrayList&lt;String&gt; lines = IoUtil.readLines(in, StandardCharsets.UTF_8, new ArrayList&lt;&gt;());
+        
+        //2.解析数据，封装成对象 --&gt; 集合
+        List&lt;User&gt; userList = lines.stream().map(line -&gt; {   //这里map是方法 , 实现映射
+            String[] parts = line.split(&quot;,&quot;);
+            Integer id = Integer.parseInt(parts[0]);
+            String username = parts[1];
+            String password = parts[2];
+            String name = parts[3];
+            Integer age = Integer.parseInt(parts[4]);
+            LocalDateTime updateTime = LocalDateTime.parse(parts[5], DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;));
+
+            return new User(id, username, password, name, age, updateTime);
+        }).collect(Collectors.toList());
+        
+        //3.响应数据
+        //return JSONUtil.toJsonStr(userList, JSONConfig.create().setDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;));
+        return userList;
+    }
+    
+}
+</code></pre>
+<p><strong>4).</strong> <strong>启动服务测试</strong>**，访问：**<a href="http://localhost:8080/user%5C.html">http://localhost:8080/user\.html</a></p>
+<p><img src="../../blogs/_assets/lakebook/85a79380087f8db13869d1b0.png" loading="lazy" alt=""></p>
+<p>返回的集合之所以可以转化为Json , 是因为@RestController注解底层注解 @Controller + 注解@ResponseBody 实现 ;</p>
+<h3 id="responsebody">@ResponseBody :</h3>
+<p>将controlller返回值直接作为http中的响应体的数据直接响应 ; 若是controller是对象 / 集合 会先转化为 json 文件;</p>
+<p>前面我们学习过HTTL协议的交互方式：请求响应模式（有请求就有响应）。那么Controller程序呢，除了接收请求外，还可以进行响应。</p>
+<p>在我们前面所编写的controller方法中，都已经设置了响应数据。</p>
+<p>controller方法中的return的结果，怎么就可以响应给浏览器呢？</p>
+<p>答案：使用@ResponseBody注解</p>
+<p>**@<strong><strong>ResponseBody</strong></strong>注解：**</p>
+<ul>
+<li>类型：方法注解、类注解</li>
+<li>位置：书写在Controller方法上或类上</li>
+<li>作用：将方法返回值直接响应给浏览器，如果返回值类型是实体对象/集合，将会转换为JSON格式后在响应给浏览器</li>
+</ul>
+<p>但是在我们所书写的Controller中，只在类上添加了@RestController注解、方法添加了@RequestMapping注解，并没有使用@ResponseBody注解，怎么给浏览器响应呢？</p>
+<p>这是因为，我们在类上加了@RestController注解，而这个注解是由两个注解组合起来的，分别是：@Controller 、@ResponseBody。 那也就意味着，我们在类上已经添加了@ResponseBody注解了，而一旦在类上加了@ResponseBody注解，就相当于该类所有的方法中都已经添加了@ResponseBody注解。</p>
+<p>提示：前后端分离的项目中，一般直接在请求处理类上加@RestController注解，就无需在方法上加@ResponseBody注解了。</p>
+<h3 id="问题分析">问题分析</h3>
+<p>上述案例的功能，我们虽然已经实现，但是呢，我们会发现案例中：解析文本文件中的数据，处理数据的逻辑代码，给页面响应的代码全部都堆积在一起了，全部都写在controller方法中了。</p>
+<p><img src="../../blogs/_assets/lakebook/c42474a042b3f3ec1c5747b1.png" loading="lazy" alt=""></p>
+<p>当前程序的这个业务逻辑还是比较简单的，如果业务逻辑再稍微复杂一点，我们会看到Controller方法的代码量就很大了。</p>
+<ul>
+<li>当我们要修改操作数据部分的代码，需要改动Controller</li>
+<li>当我们要完善逻辑处理部分的代码，需要改动Controller</li>
+<li>当我们需要修改数据响应的代码，还是需要改动Controller</li>
+</ul>
+<p>这样呢，就会造成我们整个工程代码的复用性比较差，而且代码难以维护。 那如何解决这个问题呢？其实在现在的开发中，有非常成熟的解决思路，那就是分层开发。</p>
+<h2 id="分层解耦">分层解耦</h2>
+<h3 id="三层架构">三层架构</h3>
+<h4 id="介绍-2">介绍</h4>
+<p>在我们进行程序设计以及程序开发时，尽可能让每一个接口、类、方法的职责更单一些（单一职责原则）。</p>
+<p>单一职责原则：一个类或一个方法，就只做一件事情，只管一块功能。</p>
+<p>这样就可以让类、接口、方法的复杂度更低，可读性更强，扩展性更好，也更利于后期的维护。</p>
+<p>我们之前开发的程序呢，并不满足单一职责原则。下面我们来分析下之前的程序：</p>
+<p><img src="../../blogs/_assets/lakebook/1cff578537155f6800fd6b8b.png" loading="lazy" alt=""></p>
+<p>那其实我们上述案例的处理逻辑呢，从组成上看可以分为三个部分：</p>
+<ul>
+<li>数据访问：负责业务数据的维护操作，包括增、删、改、查等操作。</li>
+<li>逻辑处理：负责业务逻辑处理的代码。</li>
+<li>请求处理、响应数据：负责，接收页面的请求，给页面响应数据。</li>
+</ul>
+<p>按照上述的三个组成部分，在我们项目开发中呢，可以将代码分为三层，如图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/91a7303979e1717c10071e48.png" loading="lazy" alt=""></p>
+<ul>
+<li>Controller：控制层。接收前端发送的请求，对请求进行处理，并响应数据。</li>
+<li>Service：业务逻辑层。处理具体的业务逻辑。</li>
+<li>Dao：数据访问层(Data Access Object)，也称为持久层。负责数据访问操作，包括数据的增、删、改、查。</li>
+</ul>
+<p>基于三层架构的程序执行流程，如图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/a8ed7cd914d23d3255dca364.png" loading="lazy" alt=""></p>
+<ul>
+<li>前端发起的请求，由Controller层接收（Controller响应数据给前端）</li>
+<li>Controller层调用Service层来进行逻辑处理（Service层处理完后，把处理结果返回给Controller层）</li>
+<li>Serivce层调用Dao层（逻辑处理过程中需要用到的一些数据要从Dao层获取）</li>
+<li>Dao层操作文件中的数据（Dao拿到的数据会返回给Service层 ) ; 可以设计出不同的实现 : 区别在于数据的获取方式 ; 后期实现靠写一份统一的接口实现是靠底下配合这一统一接口 , 实现面向接口编程 ;</li>
+</ul>
+<p>思考：按照三层架构的思想，如果要对业务逻辑(Service层)进行变更，会影响到Controller层和Dao层吗？</p>
+<p>答案：不会影响。 （程序的扩展性、维护性变得更好了）</p>
+<h4 id="代码拆分">代码拆分</h4>
+<p>我们使用三层架构思想，来改造下之前的程序：</p>
+<ul>
+<li>控制层包名：<code>com.itheima.controller</code></li>
+<li>业务逻辑层包名：<code>com.itheima.service</code></li>
+<li>数据访问层包名：<code>com.itheima.dao</code></li>
+</ul>
+<p><strong>1). 控制层：接收前端发送的请求，对请求进行处理，并响应数据</strong></p>
+<p>在 <code>com.itheima.controller</code> 中创建UserController类，代码如下：</p>
+<pre><code class="language-text">package com.itheima.controller;
+
+import com.itheima.pojo.User;
+import com.itheima.service.UserService;
+import com.itheima.service.impl.UserServiceImpl;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
+@RestController
+public class UserController {
+    
+    private UserService userService = new UserServiceImpl();
+
+    @RequestMapping(&quot;/list&quot;)
+    public List&lt;User&gt; list(){
+        //1.调用Service
+        List&lt;User&gt; userList = userService.findAll();
+        //2.响应数据
+        return userList;
+    }
+
+}
+</code></pre>
+<p>**2). 业务逻辑层：**<strong>处理具体的业务逻辑</strong></p>
+<p><strong>分开获取到的字符段 , 实现批处理整合成对象 ;</strong></p>
+<p>在 <code>com.itheima.service</code>中创建UserSerivce接口，代码如下：</p>
+<pre><code class="language-text">package com.itheima.service;
+
+import com.itheima.pojo.User;
+import java.util.List;
+
+public interface UserService {
+
+    public List&lt;User&gt; findAll();
+
+}
+</code></pre>
+<p>在 <code>com.itheima.service.``impl</code> 中创建UserSerivceImpl接口，代码如下：</p>
+<pre><code class="language-text">package com.itheima.service.impl;
+
+import com.itheima.dao.UserDao;
+import com.itheima.dao.impl.UserDaoImpl;
+import com.itheima.pojo.User;
+import com.itheima.service.UserService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class UserServiceImpl implements UserService {
+
+    private UserDao userDao = new UserDaoImpl();  //从dao中实现的数据转接到service层
+
+    @Override   
+    public List&lt;User&gt; findAll() {
+        List&lt;String&gt; lines = userDao.findAll();
+        List&lt;User&gt; userList = lines.stream().map(line -&gt; {   //map : 方法,实现映射,转化元素形式 
+            String[] parts = line.split(&quot;,&quot;);
+            Integer id = Integer.parseInt(parts[0]);
+            String username = parts[1];
+            String password = parts[2];
+            String name = parts[3];
+            Integer age = Integer.parseInt(parts[4]);
+            LocalDateTime updateTime = LocalDateTime.parse(parts[5], DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;));
+            return new User(id, username, password, name, age, updateTime);
+        }).collect(Collectors.toList());
+        return userList;
+    }
+}
+</code></pre>
+<p><strong>3). 数据访问层：负责数据的访问操作，包含数据的增、删、改、查</strong></p>
+<p>在 <code>com.itheima.dao</code>中创建UserDao接口，代码如下：</p>
+<pre><code class="language-text">package com.itheima.dao;
+
+import java.util.List;
+
+public interface UserDao {
+
+    public List&lt;String&gt; findAll(); //面向接口编程 ;
+
+}
+</code></pre>
+<p>在 <code>com.itheima.dao.impl</code> 中创建UserDaoImpl接口，代码如下：本地调取文件资源</p>
+<pre><code class="language-text">package com.itheima.dao.impl;
+
+import cn.hutool.core.io.IoUtil;
+import com.itheima.dao.UserDao;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserDaoImpl implements UserDao {
+    @Override   //重写接口
+    public List&lt;String&gt; findAll() {
+    在启动编译之后 , res下的 main , resource 会到一个class文件下 
+        InputStream in = this.getClass()  //获取对象的Class对象 ; 
+        .getClassLoader()   //获取该类的类加载器 ; 
+        .getResourceAsStream(&quot;user.txt&quot;);  //类路径下使用输入流查询读取文件中的内容; 
+        ArrayList&lt;String&gt; lines = IoUtil.readLines(in, StandardCharsets.UTF_8, new ArrayList&lt;&gt;());
+        return lines;
+    }
+}
+</code></pre>
+<p>具体的请求调用流程：</p>
+<p><img src="../../blogs/_assets/lakebook/b6363e9a96b9b5de2fd89ac3.png" loading="lazy" alt=""></p>
+<p>三层架构的好处：</p>
+<ol>
+<li>复用性强</li>
+<li>便于维护</li>
+<li>利用扩展</li>
+</ol>
+<h3 id="分层解耦-1">分层解耦</h3>
+<h4 id="问题分析-1">问题分析</h4>
+<p>由于我们现在在程序中，需要什么对象，直接new一个对象 <code>new UserServiceImpl()</code> 。</p>
+<p><img src="../../blogs/_assets/lakebook/20ef44da9d7cb80eff7dea41.png" loading="lazy" alt=""></p>
+<p>如果说我们需要更换实现类，比如由于业务的变更，UserServiceImpl 不能满足现有的业务需求，我们需要切换为 UserServiceImpl2 这套实现，就需要修改Contorller的代码，需要创建 UserServiceImpl2 的实现<code>new UserServiceImpl2()</code> 。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2026/png/63728767/1776166884426-642c84ec-27c1-47ea-8502-d636c4f2cd3f.png" loading="lazy" alt=""></p>
+<p>Service中调用Dao，也是类似的问题。这种呢，我们就称之为层与层之间 <strong>耦合</strong> 了。 那什么是耦合呢 ？</p>
+<p>首先需要了解软件开发涉及到的两个概念：内聚和耦合。</p>
+<ul>
+<li>**内聚：**软件中各个功能模块内部的功能联系。</li>
+<li>**耦合：**衡量软件中各个层/模块之间的依赖、关联的程度。</li>
+</ul>
+<p><strong>软件设计原则：高内聚低耦合。</strong></p>
+<p><strong>高内聚</strong>**：**指的是一个模块中各个元素之间的联系的紧密程度，如果各个元素(语句、程序段)之间的联系程度越高，则内聚性越高，即 &quot;高内聚&quot;。</p>
+<p>**低耦合：**指的是软件中各个层、模块之间的依赖关联程序越低越好。</p>
+<p>目前层与层之间是存在耦合的，Controller耦合了Service、Service耦合了Dao。而 高内聚、低耦合的目的是使程序模块的可重用性、移植性大大增强。</p>
+<p>那最终我们的目标呢，就是做到层与层之间，尽可能的降低耦合，甚至解除耦合。</p>
+<p><img src="../../blogs/_assets/lakebook/19f8f6e2dc922a0d9c8c2250.png" loading="lazy" alt=""></p>
+<h4 id="解耦思路">解耦思路</h4>
+<p>之前我们在编写代码时，需要什么对象，就直接new一个就可以了。 这种做法呢，层与层之间代码就耦合了，当service层的实现变了之后， 我们还需要修改controller层的代码。</p>
+<p>那应该怎么解耦呢？</p>
+<p><strong>1). 首先不能在EmpController中使用new对象。代码如下：</strong></p>
+<p><img src="../../blogs/_assets/lakebook/5eafde8dc6a907b1a7121fce.png" loading="lazy" alt=""></p>
+<p>此时，就存在另一个问题了，不能new，就意味着没有业务层对象（程序运行就报错），怎么办呢?</p>
+<p>我们的解决思路是：</p>
+<ul>
+<li>提供一个容器，容器中存储一些对象(例：UserService对象)</li>
+<li>Controller程序从容器中获取UserService类型的对象</li>
+</ul>
+<p><strong>2). 将要用到的对象交给一个容器管理。</strong></p>
+<p><img src="../../blogs/_assets/lakebook/0a1a867fa4a73b070c647198.png" loading="lazy" alt=""></p>
+<p><strong>3). 应用程序中用到这个对象，就直接从容器中获取</strong></p>
+<p><img src="../../blogs/_assets/lakebook/b783a4421ed8f70633aa5c3b.png" loading="lazy" alt=""></p>
+<p>那问题来了，我们如何将对象交给容器管理呢？ 程序运行时，容器如何为程序提供依赖的对象呢？</p>
+<p>我们想要实现上述解耦操作，就涉及到Spring中的两个核心概念：</p>
+<ul>
+<li><p><strong>控制反转</strong><strong>：</strong> Inversion Of Control，简称<strong>IOC</strong>。对象的创建控制权由程序自身转移到外部（容器），这种思想称为控制反转。</p>
+</li>
+<li><p>对象的创建权由程序员主动创建转移到容器(由容器创建、管理对象)。这个容器称为：IOC容器或Spring容器。</p>
+</li>
+<li><p><strong>依赖注入</strong><strong>：</strong> Dependency Injection，简称<strong>DI</strong>。容器为应用程序提供运行时，所依赖的资源，称之为依赖注入。</p>
+</li>
+<li><p>程序运行时需要某个资源，此时容器就为其提供这个资源。</p>
+</li>
+<li><p>例：EmpController程序运行时需要EmpService对象，Spring容器就为其提供并注入EmpService对象。</p>
+</li>
+<li><p>**bean对象：**IOC容器中创建、管理的对象，称之为：bean对象。</p>
+</li>
+</ul>
+<h3 id="iocampdi入门">IOC&amp;DI入门</h3>
+<p><strong>1). 将Service及Dao层的实现类，交给IOC容器管理</strong></p>
+<p>在实现类加上 <code>@Component</code> 注解，就代表把当前类产生的对象交给IOC容器管理。</p>
+<p><strong>A. UserDaoImpl</strong></p>
+<pre><code class="language-text">@Component   //自动将类提交个 ICO 容器实现控制转化
+public class UserDaoImpl implements UserDao {
+    @Override
+    public List&lt;String&gt; findAll() {
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream(&quot;user.txt&quot;);
+        ArrayList&lt;String&gt; lines = IoUtil.readLines(in, StandardCharsets.UTF_8, new ArrayList&lt;&gt;());
+        return lines;
+    }
+}
+</code></pre>
+<p><strong>B. UserServiceImpl</strong></p>
+<pre><code class="language-text">@Component  
+public class UserServiceImpl implements UserService {
+
+    private UserDao userDao;
+
+    @Override
+    public List&lt;User&gt; findAll() {
+        List&lt;String&gt; lines = userDao.findAll();
+        List&lt;User&gt; userList = lines.stream().map(line -&gt; {
+            String[] parts = line.split(&quot;,&quot;);
+            Integer id = Integer.parseInt(parts[0]);
+            String username = parts[1];
+            String password = parts[2];
+            String name = parts[3];
+            Integer age = Integer.parseInt(parts[4]);
+            LocalDateTime updateTime = LocalDateTime.parse(parts[5], DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;));
+            return new User(id, username, password, name, age, updateTime);
+        }).collect(Collectors.toList());
+        return userList;
+    }
+}
+</code></pre>
+<p><strong>2). 为Controller 及 Service注入运行时所依赖的对象</strong></p>
+<p><strong>A. UserServiceImpl</strong></p>
+<pre><code class="language-text">@Component
+public class UserServiceImpl implements UserService {
+
+    @Autowired   //应用程序运行时,自动查询该类型下的bean对象,并赋值给该成员变量;
+    private UserDao userDao;
+    
+    @Override
+    public List&lt;User&gt; findAll() {
+        List&lt;String&gt; lines = userDao.findAll();
+        List&lt;User&gt; userList = lines.stream().map(line -&gt; {
+            String[] parts = line.split(&quot;,&quot;);
+            Integer id = Integer.parseInt(parts[0]);
+            String username = parts[1];
+            String password = parts[2];
+            String name = parts[3];
+            Integer age = Integer.parseInt(parts[4]);
+            LocalDateTime updateTime = LocalDateTime.parse(parts[5], DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;));
+            return new User(id, username, password, name, age, updateTime);
+        }).collect(Collectors.toList());
+        return userList;
+    }
+}
+</code></pre>
+<p><strong>B. UserController</strong></p>
+<pre><code class="language-text">@RestController
+public class UserController {
+    
+    @Autowired
+    private UserService userService;
+
+    @RequestMapping(&quot;/list&quot;)  //客户端访问获取数据的地址 ; 
+    public List&lt;User&gt; list(){
+        //1.调用Service
+        List&lt;User&gt; userList = userService.findAll();
+        //2.响应数据
+        return userList;
+    }
+
+}
+</code></pre>
+<p>启动服务，运行测试。 打开浏览器，地址栏直接访问：<a href="http://localhost:8080/user%5C.html">http://localhost:8080/user\.html</a> 。 依然正常访问，就说明入门程序完成了。 已经完成了层与层之间的解耦。</p>
+<p><img src="../../blogs/_assets/lakebook/790755dd0a0bce4c50aa8e41.png" loading="lazy" alt=""></p>
+<h3 id="ioc详解">IOC详解</h3>
+<p>通过IOC和DI的入门程序呢，我们已经基本了解了IOC和DI的基础操作。接下来呢，我们学习下IOC控制反转和DI依赖注入的细节。</p>
+<h5 id="4341-bean的声明">4.3.4.1 Bean的声明</h5>
+<p>前面我们提到IOC控制反转，就是将对象的控制权交给Spring的IOC容器，由IOC容器创建及管理对象。IOC容器创建的对象称为bean对象。</p>
+<p>在之前的入门案例中，要把某个对象交给IOC容器管理，需要在类上添加一个注解：<code>@Component</code></p>
+<p>而Spring框架为了更好的标识web应用程序开发当中，bean对象到底归属于哪一层，又提供了@Component的衍生注解：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>注解</span></p></td><td><p><span>说明</span></p></td><td><p><span>位置</span></p></td></tr><tr><td><p><span>@Component</span></p></td><td><p><span>声明bean的基础注解</span></p></td><td><p><span>不属于以下三类时，用此注解</span></p></td></tr><tr><td><p><span>@Controller(传统) / </span><span>@RestController (现代) </span></p></td><td><p><span>@Component的衍生注解</span></p></td><td><p><span>标注在控制层类上</span></p></td></tr><tr><td><p><span>@Service</span></p></td><td><p><span>@Component的衍生注解</span></p></td><td><p><span>标注在业务层类上</span></p></td></tr><tr><td><p><span>@Repository</span></p></td><td><p><span>@Component的衍生注解</span></p></td><td><p><span>标注在数据访问层类上（由于与mybatis整合，用的少）</span></p></td></tr></tbody></table></div>
+
+<p>那么此时，我们就可以使用 <code>@Service</code> 注解声明Service层的bean。 使用 <code>@Repository</code> 注解声明Dao层的bean , 后面使用basis持久框架 后期创建的注释会改变 。 代码实现如下：</p>
+<p>Service层:</p>
+<pre><code class="language-text">@Service
+public class UserServiceImpl implements UserService {
+
+    private UserDao userDao;
+
+    @Override
+    public List&lt;User&gt; findAll() {
+        List&lt;String&gt; lines = userDao.findAll();
+        List&lt;User&gt; userList = lines.stream().map(line -&gt; {
+            String[] parts = line.split(&quot;,&quot;);
+            Integer id = Integer.parseInt(parts[0]);
+            String username = parts[1];
+            String password = parts[2];
+            String name = parts[3];
+            Integer age = Integer.parseInt(parts[4]);
+            LocalDateTime updateTime = LocalDateTime.parse(parts[5], DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;));
+            return new User(id, username, password, name, age, updateTime);
+        }).collect(Collectors.toList());
+        return userList;
+    }
+}
+</code></pre>
+<p>Dao层:</p>
+<pre><code class="language-text">@Repository  //底层封装了component
+public class UserDaoImpl implements UserDao {
+    @Override
+    public List&lt;String&gt; findAll() {
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream(&quot;user.txt&quot;);
+        ArrayList&lt;String&gt; lines = IoUtil.readLines(in, StandardCharsets.UTF_8, new ArrayList&lt;&gt;());
+        return lines;
+    }
+}
+</code></pre>
+<p><strong>注意1</strong>：声明bean的时候，可以通过注解的value属性指定bean的名字，如果没有指定，默认为类名首字母小写。</p>
+<p><strong>注意2</strong>：使用以上四个注解都可以声明bean，但是在springboot集成web开发中，声明控制器bean只能用@Controller , 不可以直接使用 Conpoment。</p>
+<h5 id="4342-组件扫描">4.3.4.2 组件扫描</h5>
+<p>问题：使用前面学习的四个注解声明的bean，一定会生效吗？</p>
+<p>答案：不一定。（原因：bean想要生效，还需要被组件扫描）</p>
+<ul>
+<li>前面声明bean的四大注解，要想生效，还需要被组件扫描注解 <code>@ComponentScan</code> 扫描。</li>
+<li>该注解虽然没有显式配置，但是实际上已经包含在了启动类声明注解</li>
+<li>启动类的底层实现 在<code>@SpringBootApplication</code> 中，( 1.标记这是一个配置类 2. 开启自动配置 3.开启组件扫描 ) ;</li>
+<li>会有 @ComponentScan 默认扫描的范围是启动类所在包及其子包。</li>
+<li>若出现不能归属于三层架构下的任意一层 , 直接使用component来实现控制反转 ;</li>
+<li>注意一定要把启动类放置在项目的文件包 的同级别下来实现运行 ;</li>
+</ul>
+<p><img src="../../blogs/_assets/lakebook/906fc5d26503b11a50145dac.png" loading="lazy" alt=""></p>
+<p>所以，我们在项目开发中，只需要按照如上项目结构，将项目中的所有的业务类，都放在启动类所在包的子包中，就<strong>无需考虑组件扫描问题。</strong></p>
+<h3 id="di详解">DI详解</h3>
+<p>通过上述的ICO操作 , 拿到上一层创建好的数据打包后的容器 利用DI 操作对上面新创建的变量直接赋值进入下方 的流操作 ;</p>
+<p>上一小节我们讲解了控制反转IOC的细节，接下来呢，我们学习依赖注解DI的细节。</p>
+<p>依赖注入，是指IOC容器要为应用程序去提供运行时所依赖的资源，而资源指的就是对象。</p>
+<p>在入门程序案例中，我们使用了@Autowired这个注解，完成了依赖注入的操作，而这个Autowired翻译过来叫：自动装配。</p>
+<p><code>@Autowired</code>注解，默认是按照<strong>类型</strong>进行自动装配的（去IOC容器中找某个类型的对象，然后完成注入操作）</p>
+<p>入门程序举例：在EmpController运行的时候，就要到IOC容器当中去查找EmpService这个类型的对象，而我们的IOC容器中刚好有一个EmpService这个类型的对象，所以就找到了这个类型的对象完成注入操作。</p>
+<h4 id="autowired用法">@Autowired用法</h4>
+<p>会从代码的简洁性和代码的规范性的要求来实现自己的使用方法 ;</p>
+<p>@Autowired 进行依赖注入，常见的方式，有如下三种：</p>
+<p>1). 属性注入</p>
+<pre><code class="language-text">@RestController
+public class UserController {
+
+    //方式一: 属性注入 : 内部容器
+    @Autowired
+    private UserService userService;
+    
+  }
+</code></pre>
+<ul>
+<li>优点：代码简洁、方便快速开发。</li>
+<li>缺点：隐藏了类之间的依赖关系、可能会破坏类的封装性 ( 底层是利用反射来实现赋值传输数据 ) 。</li>
+</ul>
+<p>2). 构造函数注入</p>
+<pre><code class="language-text">@RestController
+public class UserController {
+
+    //方式二: 构造器注入  //自己创建一个类构造器来实现这个对象 ; 
+    private final UserService userService;   //常量,一旦注解不会发生改变;
+    //当容器中实现的有两个对象时,无法直接调用简单的Autowired来实现构造 ; 
+    @Autowired //如果当前类中只存在一个构造函数, @Autowired可以省略
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+    
+ }
+</code></pre>
+<ul>
+<li>优点：能清晰地看到类的依赖关系、提高了代码的安全性。</li>
+<li>缺点：代码繁琐、如果构造参数过多，可能会导致构造函数臃肿。</li>
+<li><strong>注意：</strong></li>
+<li><strong>如果只有一个构造函数，@Autowired注解可以省略。（通常来说，也只有一个构造函数）</strong></li>
+<li><strong>可以直接获取到需要的上一层文件的结果 , 直接运行到下一层 ;</strong></li>
+</ul>
+<p>3). setter注入</p>
+<pre><code class="language-text">/**
+ * 用户信息Controller
+ */
+@RestController
+public class UserController {
+    
+    //方式三: setter注入
+    private UserService userService;
+    
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+    
+}
+</code></pre>
+<ul>
+<li>优点：保持了类的封装性，依赖关系更清晰。</li>
+<li>缺点：需要额外编写setter方法，增加了代码量。</li>
+</ul>
+<p>在项目开发中，基于@Autowired进行依赖注入时，基本都是第一种和第二种方式。（官方推荐第二种方式，因为会更加规范）但是在企业项目开发中，很多的项目中，也会选择第一种方式因为更加简洁、高效（在规范性方面进行了妥协）。</p>
+<h4 id="注意事项">注意事项</h4>
+<p>那如果在IOC容器中，存在多个相同类型的bean对象，会出现什么情况呢？</p>
+<p>在下面的例子中，我们准备了两个UserService的实现类，并且都交给了IOC容器管理。 代码如下：</p>
+<p><img src="../../blogs/_assets/lakebook/dee00eae174e04d249c077e4.png" loading="lazy" alt=""></p>
+<p>此时，我们启动项目会发现，控制台报错了：</p>
+<p><img src="../../blogs/_assets/lakebook/b7c8f167d1928c890ee682e2.png" loading="lazy" alt=""></p>
+<p>出现错误的原因呢，是因为在Spring的容器中，UserService这个类型的bean存在两个，框架不知道具体要注入哪个bean使用，所以就报错了。</p>
+<p>如何解决上述问题呢？Spring提供了以下几种解决方案：</p>
+<ul>
+<li>@Primary</li>
+<li>@Qualifier</li>
+<li>@Resource</li>
+</ul>
+<p><strong>方案一：使用@Primary注解</strong></p>
+<p><strong>其他没有优先级 的存在不消失 但是没用, 其他可以使用下面的标签来实现 ;</strong></p>
+<p>当存在多个相同类型的Bean注入时，加上@Primary注解，来确定默认的实现。( 底层实现提高优先级 )</p>
+<pre><code class="language-text">@Primary
+@Service
+public class UserServiceImpl implements UserService {
+}吗 
+</code></pre>
+<p><strong>方案二：使用@Qualifier注解</strong></p>
+<p>指定当前要注入的bean对象。 在@Qualifier的value属性中，指定注入的bean的名称。 @Qualifier注解不能单独使用，必须配合@Autowired使用。 创建是在调用容器中的对象的时候实现的 添加后面加 ( &quot; &quot; ) 类名到达容器后首字母会变成小写;</p>
+<pre><code class="language-text">@RestController
+public class UserController {
+
+    @Qualifier(&quot;userServiceImpl&quot;)
+    @Autowired
+    private UserService userService;
+</code></pre>
+<p><strong>方案三：使用@Resource注解</strong></p>
+<p>是按照bean的名称进行注入。通过name属性指定要注入的bean的名称。( 直接放置在调用的实现前面就行 )</p>
+<pre><code class="language-text">@RestController
+public class UserController {
+        
+    @Resource(name = &quot;userServiceImpl&quot;)
+    private UserService userService;
+</code></pre>
+<p>面试题：@Autowird 与 @Resource的区别</p>
+<ul>
+<li>@Autowired 是spring框架提供的注解，而@Resource是JDK提供的注解</li>
+<li>@Autowired 默认是按照类型注入，而@Resource是按照名称注入</li>
+</ul>
+<h2 id="常见状态码">常见状态码</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><strong><span>状态码</span></strong></p></td><td><p><strong><span>英文描述</span></strong></p></td><td><p><strong><span>解释</span></strong></p></td></tr><tr><td><p><span>200</span></p></td><td><p><span>OK</span></p></td><td><p><span>客户端请求成功，即处理成功，这是我们最想看到的状态码</span></p></td></tr><tr><td><p><span>302</span></p></td><td><p><span>Found</span></p></td><td><p><span>指示所请求的资源已移动到由Location响应头给定的 URL，浏览器会自动重新访问到这个页面</span></p></td></tr><tr><td><p><span>304</span></p></td><td><p><span>Not Modified</span></p></td><td><p><span>告诉客户端，你请求的资源至上次取得后，服务端并未更改，你直接用你本地缓存吧。隐式重定向</span></p></td></tr><tr><td><p><span>400</span></p></td><td><p><span>Bad Request</span></p></td><td><p><span>客户端请求有语法错误，不能被服务器所理解</span></p></td></tr><tr><td><p><span>403</span></p></td><td><p><span>Forbidden</span></p></td><td><p><span>服务器收到请求，但是拒绝提供服务，比如：没有权限访问相关资源</span></p></td></tr><tr><td><p><span>404</span></p></td><td><p><span>Not Found</span></p></td><td><p><span>请求资源不存在，一般是URL输入有误，或者网站资源被删除了</span></p></td></tr><tr><td><p><span>405</span></p></td><td><p><span>Method Not Allowed</span></p></td><td><p><span>请求方式有误，比如应该用GET请求方式的资源，用了POST</span></p></td></tr><tr><td><p><span>428</span></p></td><td><p><span>Precondition Required</span></p></td><td><p><span>服务器要求有条件的请求，告诉客户端要想访问该资源，必须携带特定的请求头</span></p></td></tr><tr><td><p><span>429</span></p></td><td><p><span>Too Many Requests</span></p></td><td><p><span>指示用户在给定时间内发送了太多请求（“限速”），配合 Retry-After(多长时间后可以请求)响应头一起使用</span></p></td></tr><tr><td><p><span>431</span></p></td><td><p><span>Request Header Fields Too Large</span></p></td><td><p><span>请求头太大，服务器不愿意处理请求，因为它的头部字段太大。请求可以在减少请求头域的大小后重新提交。</span></p></td></tr><tr><td><p><span>500</span></p></td><td><p><span>Internal Server Error</span></p></td><td><p><span>服务器发生不可预期的错误。服务器出异常了，赶紧看日志去吧</span></p></td></tr><tr><td><p><span>503</span></p></td><td><p><span>Service Unavailable</span></p></td><td><p><span>服务器尚未准备好处理请求，服务器刚刚启动，还未初始化好</span></p></td></tr></tbody></table></div>
+
+<ul>
+<li>状态码大全：<a href="https://cloud%5C.tencent%5C.com/developer/chapter/13553">https://cloud\.tencent\.com/developer/chapter/13553</a></li>
+</ul>
+<h4 id="响应状态码">响应状态码</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><strong><span>状态码分类</span></strong></p></td><td><p><strong><span>说明</span></strong></p></td></tr><tr><td><p><span>1xx</span></p></td><td><p><span>响应中 --- 临时状态码。表示请求已经接受，告诉客户端应该继续请求或者如果已经完成则忽略</span></p></td></tr><tr><td><p><span>2xx</span></p></td><td><p><span>成功 --- 表示请求已经被成功接收，处理已完成</span></p></td></tr><tr><td><p><span>3xx</span></p></td><td><p><span>重定向 --- 重定向到其它地方，让客户端再发起一个请求以完成整个处理</span></p></td></tr><tr><td><p><span>4xx</span></p></td><td><p><span>客户端错误 --- 处理发生错误，责任在客户端，如：客户端的请求一个不存在的资源，客户端未被授权，禁止访问等</span></p></td></tr><tr><td><p><span>5xx</span></p></td><td><p><span>服务器端错误 --- 处理发生错误，责任在服务端，如：服务端抛出异常，路由出错，HTTP版本不支持等</span></p></td></tr></tbody></table></div>
+
+<p>关于响应状态码，我们先主要认识三个状态码，其余的等后期用到了再去掌握：</p>
+<ul>
+<li><code>200 ok</code> 客户端请求成功</li>
+<li><code>404 Not Found</code> 请求资源不存在</li>
+<li><code>500 Internal Server Error</code> 服务端发生不可预期的错误</li>
+</ul>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

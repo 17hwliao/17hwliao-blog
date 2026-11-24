@@ -1,0 +1,80 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go：init 与 defer 执行顺序 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go：init 与 defer 执行顺序</h1><time datetime="2026-05-11T14:22:33.000Z">2026年5月11日</time><h2 id="init函数">init函数</h2>
+<p><code>init()</code>函数是一个特殊的函数，存在以下特性：</p>
+<ol>
+<li>不能被其他函数调用，而是在main函数执行之前，自动被调用</li>
+<li>init函数不能作为参数传入</li>
+<li>不能有传入参数和返回值</li>
+</ol>
+<p>一个go文件可以有多个init函数，谁在前面谁就先执行</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func init() {
+  fmt.Println(&quot;init1&quot;)
+}
+func init() {
+  fmt.Println(&quot;init2&quot;)
+}
+func init() {
+  fmt.Println(&quot;init3&quot;)
+}
+
+func main() {
+  fmt.Println(&quot;main&quot;)
+}
+</code></pre>
+<p>执行顺序</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">init1
+init2
+init3
+main
+</code></pre>
+<p><img src="../../blogs/_assets/lakebook/fed5c8a14ba6cec388dcd2db.png" loading="lazy" alt=""></p>
+<h2 id="defer函数">defer函数</h2>
+<p>只是一个顺序调用的 函数</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>你的期望</span></p></td><td><p><span>实际行为</span></p></td></tr><tr><td><p><code><span>defer</span></code></p><p><span> </span><span>能自动关闭文件</span></p></td><td><p><span>❌</span><span> 需要你写</span><span> </span><code><span>defer f.Close()</span></code></p></td></tr><tr><td><p><code><span>defer</span></code></p><p><span> </span><span>能自动释放锁</span></p></td><td><p><span>❌</span><span> 需要你写</span><span> </span><code><span>defer mu.Unlock()</span></code></p></td></tr><tr><td><p><code><span>defer</span></code></p><p><span> </span><span>能自动删除临时文件</span></p></td><td><p><span>❌</span><span> 需要你写</span><span> </span><code><span>defer os.Remove(tmp)</span></code></p></td></tr><tr><td><p><code><span>defer</span></code></p><p><span> </span><span>能自动回收内存</span></p></td><td><p><span>❌</span><span> 那是 GC 的事</span></p></td></tr></tbody></table></div>
+
+<p><code>defer</code><strong>= 延迟执行 + 自动调用</strong></p>
+<p><strong>清理逻辑 = 你自己写的函数</strong></p>
+<p>虽然在return 之前执行 但还是 需要实现 其内部需要实现 的变量</p>
+<ol>
+<li>关键字 defer 用于注册延迟调用</li>
+<li>这些调用直到 return 前才被执。因此，可以用来做资源清理</li>
+<li>多个defer语句，按先进后出的方式执行，谁离return近谁先执行</li>
+<li>defer语句中的变量，在defer声明时就决定了</li>
+</ol>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func Func() {
+  defer fmt.Println(&quot;defer2&quot;)
+  fmt.Println(&quot;func&quot;)
+  defer fmt.Println(&quot;defer1&quot;)
+}
+
+func main() {
+  defer fmt.Println(&quot;defer4&quot;)
+  Func()
+  defer fmt.Println(&quot;defer3&quot;)
+}
+</code></pre>
+<p>执行顺序</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func
+defer1
+defer2
+defer3
+defer4
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<p>init函数 <a href="https://blog.csdn.net/bestzy6/article/details/122503275">https://blog.csdn.net/bestzy6/article/details/122503275</a></p>
+<p>defer函数 <a href="https://blog.csdn.net/m0_52896752/article/details/130191669">https://blog.csdn.net/m0_52896752/article/details/130191669</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

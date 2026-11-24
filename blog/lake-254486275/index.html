@@ -1,0 +1,48 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 实践：集合工厂与 Stream · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 实践：集合工厂与 Stream</h1><time datetime="2026-01-24T08:30:04.000Z">2026年1月24日</time><pre><code class="language-text">import java.io.* ;
+import  java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Map.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        List&lt;String&gt; fruit = new ArrayList&lt;&gt;() ;
+        List&lt;String&gt; ws1 = List.of(&quot;ysys&quot; , &quot;sjsks&quot;) ;
+        Set&lt;String&gt; ws2 = Set.of(&quot;sda&quot; , &quot;qewq&quot;) ;
+        Map&lt;Integer , String&gt; map = Map.of(1,&quot;aaas&quot; , 2 , &quot;ssdsa&quot;) ;
+        Map&lt;Integer , String&gt; map1 = ofEntries(entry(1,&quot;aaas&quot;) ) ;
+        List&lt;String&gt; list = new ArrayList&lt;&gt;(List.of(&quot;aaas&quot;, &quot;ssdsa&quot;, &quot;qewq&quot;)) ;
+        list.addFirst(&quot;qq&quot;) ;
+        list.addLast(&quot;aa&quot;) ;
+        list.removeFirst() ;
+        list.removeLast() ;
+        LinkedHashSet&lt;String&gt; set = new LinkedHashSet&lt;&gt;(List.of(&quot;aaas&quot;, &quot;ssdsa&quot;, &quot;qewq&quot;)) ;
+        List&lt;String&gt;list2 = new ArrayList&lt;&gt;(List.of(&quot;aaa&quot;, &quot;bbb&quot;, &quot;ccc&quot;)) ;
+        List&lt;String&gt; resversed = list2.reversed() ;
+        resversed.addFirst(&quot;ddd&quot;); ;
+        System.out.println(resversed);
+        System.out.println(list2);
+        list = list
+                .stream()
+                .filter(x -&gt; !x.equals(&quot;aaas&quot;))
+                .sorted(String::compareTo)
+                .map(a -&gt;a+&quot;q&quot;)
+                .limit(3)
+                .collect(Collectors.toList()) ;
+
+        System.out.println(list) ;
+        List&lt;Integer&gt; list3 = Arrays.asList(1, 2, 3) ;
+        Double colllect = list3
+                .stream()
+                .collect(Collectors.averagingInt(Integer::intValue)) ;
+        String[] s = new String[]{&quot;aaa&quot; , &quot;sdsa&quot;};
+        List&lt;String&gt; list1 = Arrays.asList(s);
+    }
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

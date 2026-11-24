@@ -1,0 +1,204 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 并发安全：锁与 sync.Map · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 并发安全：锁与 sync.Map</h1><time datetime="2026-05-13T06:39:24.000Z">2026年5月13日</time><h2 id="线程安全">线程安全</h2>
+<p>什么是线程安全？</p>
+<p>现在有两个协程，同时触发，一个协程对一个全局变量进行100完成++操作，另一个对全局变量—的操作</p>
+<p>那么，两个协程结束，最后的值应该是0才对</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;sync&quot;
+)
+
+var num int
+var wait sync.WaitGroup
+
+
+func add() {
+  for i := 0; i &lt; 1000000; i++ {
+    num++
+  }
+  wait.Done()
+}
+func reduce() {
+  for i := 0; i &lt; 1000000; i++ {
+    num--
+  }
+  wait.Done()
+}
+
+func main() {
+  wait.Add(2)
+  go add()
+  go reduce()
+  wait.Wait()
+  fmt.Println(num)
+
+}
+</code></pre>
+<p>但是你会发现，这个输出的结果完全无法预测</p>
+<p>这是为什么呢？</p>
+<p>根本原因是CPU的调度方法为抢占式执行，随机调度</p>
+<h2 id="同步锁">同步锁</h2>
+<p>那么我们能不能通过给操作加锁来解决这个问题呢</p>
+<p>答案是可以的</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;sync&quot;
+)
+
+var num int
+var wait  sync.WaitGroup
+var lock  sync.Mutex
+
+func add() {
+  // 谁先抢到了这把锁，谁就把它锁上，一旦锁上，其他的线程就只能等着 
+  lock.Lock()
+  for i := 0; i &lt; 1000000; i++ {
+    num++
+  }
+  lock.Unlock()
+  wait.Done()
+}
+func reduce() {
+  lock.Lock()
+  for i := 0; i &lt; 1000000; i++ {
+    num--
+  }
+  lock.Unlock()
+  wait.Done()
+}
+
+func main() {
+  wait.Add(2)
+  go add()
+  go reduce()
+  wait.Wait()
+  fmt.Println(num)
+
+}
+</code></pre>
+<h2 id="线程安全下的map">线程安全下的map</h2>
+<p>如果我们在一个协程函数下，读写map就会引发一个错误</p>
+<p>concurrent map read and map write</p>
+<p>希望大家见到这个错误，就能知道，这个就是map的线程安全错误</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;sync&quot;
+  &quot;time&quot;
+)
+
+var wait sync.WaitGroup
+var mp = map[string]string{}
+
+func reader() {
+  for {
+    fmt.Println(mp[&quot;time&quot;])
+  }
+  wait.Done()
+}
+func writer() {
+  for {
+    mp[&quot;time&quot;] = time.Now().Format(&quot;15:04:05&quot;)
+  }
+  wait.Done()
+}
+
+func main() {
+  wait.Add(2)
+  go reader()
+  go writer()
+  wait.Wait()
+
+}
+</code></pre>
+<p>我们不能在并发模式下读写map</p>
+<p>如果要这样做</p>
+<ol>
+<li>给读写操作加锁</li>
+<li>使用sync.Map</li>
+</ol>
+<p>加锁</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;sync&quot;
+  &quot;time&quot;
+)
+
+var wait sync.WaitGroup
+var mp = map[string]string{}
+var lock sync.Mutex
+
+func reader() {
+  for {
+    lock.Lock()
+    fmt.Println(mp[&quot;time&quot;])
+    lock.Unlock()
+  }
+  wait.Done()
+}
+func writer() {
+  for {
+    lock.Lock()
+    mp[&quot;time&quot;] = time.Now().Format(&quot;15:04:05&quot;)
+    lock.Unlock()
+  }
+  wait.Done()
+}
+
+func main() {
+  wait.Add(2)
+  go reader()
+  go writer()
+  wait.Wait()
+}
+</code></pre>
+<p>sync.Map</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;sync&quot;
+  &quot;time&quot;
+)
+
+var wait sync.WaitGroup
+var mp = sync.Map{}  --&gt; 创建协程map 
+
+func reader() {
+  for {
+
+    fmt.Println(mp.Load(&quot;time&quot;))
+  }
+  wait.Done()
+}
+func writer() {
+  for {
+    mp.Store(&quot;time&quot;, time.Now().Format(&quot;15:04:05&quot;))  --&gt; 实现赋值
+  }
+  wait.Done()
+}
+
+func main() {
+  wait.Add(2)
+  go reader()
+  go writer()
+  wait.Wait()
+
+}
+</code></pre>
+<p>其实看它源码，它的内部也是用了同步锁的</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,127 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PostgreSQL：安装与基础操作 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>PostgreSQL：安装与基础操作</h1><time datetime="2026-07-17T00:00:41.000Z">2026年7月17日</time><h2 id="简介">简介</h2>
+<p>PostgreSQL免费的对象-关系型数据库,&quot;开源界的Oracle&quot;</p>
+<h4 id="postgresql官网">postgresql官网</h4>
+<p><a href="http://db%5C-engines%5C.com/en/ranking">http://db\-engines\.com/en/ranking</a></p>
+<h2 id="使用docker安装">使用docker安装</h2>
+<pre><code class="language-text">services:
+  postgresql:
+    image: postgres:18
+    container_name: postgresql
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-xxxx}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      TZ: Asia/Shanghai
+    ports:
+      - &quot;5432:5432&quot;
+    volumes:
+      - &quot;C:/Docker/postgresql:/var/lib/postgresql&quot;
+    healthcheck:
+      test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB&quot;]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+</code></pre>
+<p>pgSQL的内部用户设置 :</p>
+<p>POSTGRES_USER : 设置PostgreSQL 的超级用户名(默认为postgres) ;</p>
+<p>POSTGRES_PASSWORD : 设置 PostgreSQL 的超级用户密码 ;</p>
+<p>POSTGRES_DB : 设置默认数据库名 (如果未设置, 默认创建与用户同名的数据库) ;</p>
+<h2 id="基础命令">基础命令</h2>
+<p>psql -U &lt;用户名&gt; -d &lt;数据库名&gt;</p>
+<p>-- 查看所有数据库</p>
+<p>\l</p>
+<p>-- 切换数据库</p>
+<p>\c 数据库名</p>
+<p>-- 查看所有表</p>
+<p>\dt</p>
+<p>-- 查看表结构</p>
+<p>\d 表名</p>
+<p>-- 退出 psql</p>
+<p>\q</p>
+<h2 id="基本使用">基本使用</h2>
+<pre><code class="language-text"># 建库
+creat database db ; 
+# 查看当前的数据库列表
+\l
+# 进入数据库
+\c
+# 删除数据库
+drop database db ; 
+# shell中直接建库
+createdb -U user mydb ; 
+</code></pre>
+<h2 id="数据表的相关操作">数据表的相关操作</h2>
+<pre><code class="language-text"># 建表
+create table test(id serial primary key , name varchar(16) not null) ; 
+# 插入数据
+insert into test(name) values(&#39;17hwliao&#39;) ; 
+# 查记录
+select * form test ; 
+# 查当前库中的全部表
+\d 
+# 看表结构
+\d test
+</code></pre>
+<pre><code class="language-text">sql:
+
+CREATE TABLE users(
+    id BIGSERIAL PRIMARY KEY ,
+    username VARCHAR(50) NOT NULL UNIQUE , --&gt; 姓名
+    password_hash VARCHAR(50) NOT NULL ,
+    nickname VARCHAR(50) NOT NULL ,  --&gt; 昵称
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+) ;
+</code></pre>
+<h2 id="schema">Schema</h2>
+<p>MySQL : Schema --&gt; 库; 下面就是表;</p>
+<p>PostgreSQL : 库 --&gt; Schema --&gt; 表 ; 支持多个用户使用同一个库;</p>
+<p>使用模式(Scheme)好处 : 命名空间 , 对象转化为逻辑组方便容易管理 , 第三方的应用对象可以独立模式,不会发生冲突;</p>
+<p>就只是一个多层区分管理的作用 :</p>
+<pre><code class="language-text"># 创建模式
+CREATE SCHEMA schema_name ; 
+# 创建库.表 --&gt; 创建命名空间 ;
+CREATE TABLE schema_name.table_name(
+      column_name data_type
+); 
+# 切换模式
+SET search_path TO schema_name ; 
+# 查看模式列表
+\dn ; 
+# 删除模式
+DROP SCHEMA schema_name CASCADE(内部数据也需要删除的时候需要带上,否则会报error) ; 
+</code></pre>
+<h2 id="备份数据库">备份数据库</h2>
+<pre><code class="language-text"># 导出数据
+pq_dump -U 17hwliao db_name &gt; xxx.sql
+# 恢复数据 需要先创建数据库
+psql -f xxx.sql -U 17hwliao db 
+</code></pre>
+<h2 id="用户操作">用户操作</h2>
+<pre><code class="language-text">#创建用户并设置密码
+create user u1 password &#39;pwd&#39; ; 
+
+#创建一个超级用户
+create user u2 superuser password &#39;pwd&#39; ; 
+
+#创建一个可以建库的用户
+create user u3 createdb password &#39;pwd&#39;  ; 
+
+#查看用户列表
+\du
+
+#赋予权限 赋予 用户对xx数据库中 public 模式的所有权限:
+grant all privileges on database db_name to username ; 
+
+#取消权限
+revoke all privileges on database db_name from username ; 
+
+#删除用户
+drop user username ; 
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

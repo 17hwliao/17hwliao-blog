@@ -1,0 +1,121 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go database/sql：连接与查询 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go database/sql：连接与查询</h1><time datetime="2026-06-07T03:55:43.000Z">2026年6月7日</time><p>安装驱动</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">go get -u github.com/go-sql-driver/mysql
+</code></pre>
+<h3 id="连接">连接</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">db, err := sql.Open(&quot;mysql&quot;, &quot;root:root@tcp(127.0.0.1:3306)/gorm_new_db&quot;)
+if err != nil {
+  log.Fatalf(&quot;数据库连接失败 %s&quot;, err)
+}
+</code></pre>
+<h4 id="关闭数据库db-的连接">关闭数据库DB 的连接</h4>
+<pre><code class="language-text">`B.DB().Close().Error` 不能工作的根本原因：
+### 1. `DB.DB()` 返回两个值
+
+```go
+// gorm 源码签名
+func (db *DB) DB() (*sql.DB, error)
+```
+
+Go 语言不允许对多返回值进行链式调用，必须先 `sqlDB, err := DB.DB()` 接收两个返回值。
+
+### 2. `Close()` 返回的就是 `error`，没有 `.Error` 属性
+```go
+// *sql.DB 源码签名
+func (db *DB) Close() error
+```
+`Close()` 返回的已经是 `error` 类型，不需要也不能再写 `.Error`。你之前的写法是想把 error 当结构体取字段，但 error 只是一个接口。
+
+### 已修复的代码
+</code></pre>
+<h3 id="执行sql">执行sql</h3>
+<p>除查询外，使用Exec函数</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;database/sql&quot;
+  &quot;fmt&quot;
+  _ &quot;github.com/go-sql-driver/mysql&quot;
+  &quot;log&quot;
+)
+
+func main() {
+  // 连接数据库
+  db, err := sql.Open(&quot;mysql&quot;, &quot;root:root@tcp(127.0.0.1:3306)/gorm_new_db&quot;)
+  if err != nil {
+    log.Fatalf(&quot;数据库连接失败 %s&quot;, err)
+  }
+  defer db.Close()
+  _, err2 := db.Exec(&quot;CREATE TABLE users1(id INT NOT NULL , name VARCHAR(20), PRIMARY KEY(ID));&quot;)
+  if err2 != nil {
+    log.Fatal(err2)
+  }
+
+  fmt.Println(&quot;successfully create table&quot;)
+
+}
+</code></pre>
+<h3 id="查询sql">查询sql</h3>
+<p>可以使用Query函数</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;database/sql&quot;
+  &quot;fmt&quot;
+  _ &quot;github.com/go-sql-driver/mysql&quot;
+  &quot;log&quot;
+)
+
+func main() {
+  // 连接数据库
+  db, err := sql.Open(&quot;mysql&quot;, &quot;root:root@tcp(127.0.0.1:3306)/gorm_new_db&quot;)
+  if err != nil {
+    log.Fatalf(&quot;数据库连接失败 %s&quot;, err)
+  }
+  defer db.Close()
+
+  res, err := db.Query(&quot;select id, name from users&quot;)
+  for res.Next() {
+    var id int
+    var name string
+    // 这里scan的字段要对上
+    err = res.Scan(&amp;id, &amp;name)
+    fmt.Println(id, name, err)
+  }
+
+}
+</code></pre>
+<p>也可以使用QueryRow函数，查一行</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;database/sql&quot;
+  &quot;fmt&quot;
+  _ &quot;github.com/go-sql-driver/mysql&quot;
+  &quot;log&quot;
+)
+
+func main() {
+  // 连接数据库
+  db, err := sql.Open(&quot;mysql&quot;, &quot;root:root@tcp(127.0.0.1:3306)/gorm_new_db&quot;)
+  if err != nil {
+    log.Fatalf(&quot;数据库连接失败 %s&quot;, err)
+  }
+  defer db.Close()
+
+  var id int
+  var name string
+  // 这里scan的字段要对上
+  err = db.QueryRow(&quot;select id, name from users&quot;).Scan(&amp;id, &amp;name)
+  fmt.Println(id, name, err)
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,995 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SQL Sentinel：SQL 输入接入与准入校验 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>SQL Sentinel：SQL 输入接入与准入校验</h1><time datetime="2026-10-09T03:24:13.000Z">2026年10月9日</time><p><a href="../../projects/sql-sentinel/index.html#project-articles">SQL Sentinel 项目展示</a> · <a href="../../blog/lake-282383607/index.html">系列目录</a> · 2 / 6</p>
+<p>从 CLI 与 Webhook 两种输入出发，追踪签名验证、SQL 提取、候选结构校验及管线调用，划清输入检查与数据库验证的边界。</p>
+<blockquote>
+<p>实现说明与运行记录基于 2026-10-09 更新的原稿。正文中的文件行号、实现状态与验证结果按该历史快照理解。</p>
+</blockquote>
+<h2 id="实现概览">实现概览</h2>
+<ul>
+<li>原始请求体先验签，再进入解析和业务处理。</li>
+<li>SQL 准入与结构化候选校验阻止不受控输入直接变成 DDL。</li>
+<li>管线编排测试与真实影子库 EXPLAIN 具有不同的证明范围。</li>
+</ul>
+<h2 id="实现细节">实现细节</h2>
+<h2 id="输入验证的阅读边界">输入验证的阅读边界</h2>
+<ol>
+<li><strong>看见</strong><code>return</code><strong>，把后面的链路划掉。</strong> Go 没有隐式 continue。</li>
+<li><strong>看见函数赋值给字段，记住&quot;还没执行&quot;。</strong> <code>RunPipeline: func(...)</code> 是造了一个值，不是调用。</li>
+<li><strong>跟踪数据用&quot;这坨字节现在在谁手里&quot;的问法。</strong> 不看结构体字段表，只看传参和返回值。</li>
+<li><strong>测试断言是最诚实的文档。</strong> 每节末尾我会指出&quot;哪一行断言证明了我刚才说的话&quot;。</li>
+<li><strong>本节的调用边界</strong>：<code>shadowgate.Gate.Run</code>（S2）、<code>AsyncEnqueue</code> 之后的 Kafka/Worker（S4）。相关实现分别在后续专题展开。</li>
+</ol>
+<hr>
+<h2 id="验证管线的两类输入">验证管线的两类输入</h2>
+<p>整条链只有两个输入，全程跟踪它们，别引入新概念。</p>
+<p><strong>输入 A —— 请求里的 PR 事件</strong>（走 HTTP body）：</p>
+<pre><code class="language-json">{
+  &quot;delivery_id&quot;: &quot;delivery-demo-001&quot;,
+  &quot;pr_number&quot;: 12,
+  &quot;diff&quot;: &quot;diff --git a/q.sql b/q.sql\n+SELECT id, amount_cents FROM orders WHERE status = &#39;paid&#39; ORDER BY amount_cents DESC LIMIT 20;\n&quot;
+}
+</code></pre>
+<p><code>diff</code> 是 <strong>unified diff 文本</strong>，不是 SQL。SQL 要从里面<strong>抠出来</strong>。</p>
+<p><strong>输入 B —— 启动时读到的 CandidateSpec 文件</strong>（走本地磁盘）：</p>
+<pre><code class="language-json">{
+  &quot;table&quot;: &quot;orders&quot;,
+  &quot;index_name&quot;: &quot;idx_cand_status_amount&quot;,
+  &quot;columns&quot;: [
+    { &quot;name&quot;: &quot;status&quot; },
+    { &quot;name&quot;: &quot;amount_cents&quot;, &quot;direction&quot;: &quot;DESC&quot; }
+  ]
+}
+</code></pre>
+<p>这两个输入的<strong>来源不同、生命周期不同、校验时机不同</strong>：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th></th>
+<th>输入 A</th>
+<th>输入 B</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>来源</td>
+<td>每个 HTTP 请求</td>
+<td>进程启动一次</td>
+</tr>
+<tr>
+<td>载体</td>
+<td>HTTP body 的 <code>diff</code><br>字段</td>
+<td>本地文件</td>
+</tr>
+<tr>
+<td>什么时候被读</td>
+<td>收到请求时</td>
+<td><code>ListenAndServe</code><br>之前</td>
+</tr>
+<tr>
+<td>谁来校验</td>
+<td>验签 → 事件 schema → 提 SQL → 准入</td>
+<td><code>DecodeStrict</code><br>+ <code>Validate</code><br>（启动时 + 每请求各一次）</td>
+</tr>
+<tr>
+<td>换掉它要重启吗</td>
+<td>不要</td>
+<td>要（除非重跑校验路径）</td>
+</tr>
+</tbody></table></div>
+<p><strong>记住一句话：SQL 来自请求的 diff，候选索引方案来自启动时读的本地文件。不是每次收到请求就调模型生成候选。</strong></p>
+<hr>
+<h2 id="第-1-节两个入口怎样汇合">第 1 节：两个入口怎样汇合</h2>
+<p>打开 main.go:183 和 main.go:191，只看这两个 <code>case</code> 分发到谁：</p>
+<ul>
+<li><code>pipeline</code> → <code>runPipeline</code>（cmd/sentinel/pipeline.go:19）</li>
+<li><code>webhook-serve</code> → <code>runWebhookServe</code>（cmd/sentinel/webhook_serve.go:20）</li>
+</ul>
+<p>两个入口最终汇合在同一个函数：<code>pipeline.Run</code>。</p>
+<h3 id="分支一cli-pipeline">分支一：CLI <code>pipeline</code></h3>
+<p>打开 cmd/sentinel/pipeline.go:31-47。四行核心：</p>
+<pre><code class="language-go">sqlRaw, err := os.ReadFile(*sqlPath)        // 输入 A 的等价物：SQL 文件
+candidateRaw, err := os.ReadFile(*candidatePath)  // 输入 B
+ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
+report, err := pipeline.Run(ctx, pipeline.Input{
+    SQL: sqlRaw, CandidateSpec: candidateRaw,
+    OutputDir: *outDir, RunExplain: pipelineExplainRunner(*chunk),
+})
+</code></pre>
+<p>注意第 40 行：CLI 给整条管线套了 30 分钟超时。Webhook 路径没有自己造超时，用的是 <code>r.Context()</code>（请求级）。这是两条入口唯一的超时策略差异。</p>
+<h3 id="分支二cli-webhook-serve">分支二：CLI <code>webhook-serve</code></h3>
+<p>打开 webhook_serve.go:43-62。三行核心：</p>
+<pre><code class="language-go">candidateRaw, err := os.ReadFile(*candidatePath)          // 读输入 B
+spec, err := candidate.DecodeStrict(bytes.NewReader(candidateRaw))  // 解析
+if err := candidate.Validate(spec); err != nil { return err }       // 校验
+</code></pre>
+<p>失败就直接 <code>return err</code>，<strong>进程不启动</strong>。这是&quot;进程级门禁&quot;：候选文件是死的，服务就不该起来。</p>
+<p>然后是全场最关键的一段（webhook_serve.go:56-61）：</p>
+<pre><code class="language-go">RunPipeline: func(ctx context.Context, sql []byte, artifacts string) (pipeline.Report, error) {
+    return pipeline.Run(ctx, pipeline.Input{
+        SQL: sql, CandidateSpec: candidateRaw, OutputDir: artifacts,
+        RunExplain: pipelineExplainRunner(*chunk),
+    })
+},
+</code></pre>
+<p><strong>保姆级拆解这段为什么能工作：</strong></p>
+<ul>
+<li>这是<strong>函数字面量</strong>（anonymous function）。<code>func(...) {...}</code> 在 Go 里是一个<strong>值</strong>，可以像整数一样赋值给字段。</li>
+<li>它被赋给结构体字段 <code>webhook.Config.RunPipeline</code>。这一行<strong>没有调用</strong> <code>pipeline.Run</code>，只是说&quot;以后你要用这个函数&quot;。</li>
+<li>字段类型是 <code>PipelineRunner func(context.Context, []byte, string) (pipeline.Report, error)</code>（webhook.go:80）。函数值必须是这个签名，编译器保证。</li>
+<li><strong>为什么它能看见</strong> <code>candidateRaw</code><strong>？</strong> Go 的闭包捕获的是<strong>变量本身（引用语义）</strong>，不是那个时刻的拷贝。<code>candidateRaw</code> 定义在 <code>runWebhookServe</code> 里；而 <code>runWebhookServe</code> 在第 73 行卡在 <code>ListenAndServe()</code> 上不返回，所以整个进程存续期内这个变量都活着。</li>
+<li><strong>为什么它必须看见</strong> <code>candidateRaw</code><strong>？</strong> 因为 <code>sql</code> 是每次请求变的（参数传进来），而候选方案在整个进程期间不变（启动时定死）。参数给变化的，闭包包不变的。</li>
+</ul>
+<p>打个比方：这是<strong>提前装好的验证按钮</strong>。按钮本体（候选方案 + chunk 大小）启动时焊死，按下时只往里面塞&quot;本次的 SQL 和输出目录&quot;。</p>
+<h3 id="依赖注入的两个层次">依赖注入的两个层次</h3>
+<p>项目里有<strong>两层</strong>同类手法，层次不同，容易混：</p>
+<pre><code class="language-text">第 1 层  webhook.Server.RunPipeline  → pipeline.Run          谁提供？runWebhookServe
+第 2 层  pipeline.Input.RunExplain   → pipelineExplainRunner → Gate.Run   谁提供？CLI
+</code></pre>
+<p>同一个 <code>pipeline.Run</code> 因此可以有两种用法：CLI 直接调、Webhook 间接调。<strong>管线本身不知道调用方是谁</strong>，它只认 <code>Input</code> 里给它的函数。这就是为什么 Webhook 和 CLI 能共用一条管线而不互相污染。</p>
+<h3 id="本节只回答三问">本节只回答三问</h3>
+<ol>
+<li><strong>SQL 从哪来？</strong> CLI 路径：<code>--sql</code> 文件。Webhook 路径：HTTP body 的 <code>diff</code> 字段，经 <code>ExtractAddedSQL</code> 提取。</li>
+<li><strong>CandidateSpec 从哪来？</strong> 两条路径都来自本地文件。CLI 每次命令读一次；Webhook 启动时读一次并闭包持有。</li>
+<li><strong>谁提供</strong> <code>RunExplain</code> <strong>的实现？</strong> pipelineExplainRunner，由 CLI 的两个入口各自调用 <code>pipelineExplainRunner(*chunk)</code> 构造。<code>pipeline.Run</code> 内部<strong>没有任何连数据库的代码</strong>。</li>
+</ol>
+<hr>
+<h2 id="第-2-节http-请求先经过哪些检查">第 2 节：HTTP 请求先经过哪些检查</h2>
+<p>打开 webhook.go:132。这个函数实现了 <code>http.Handler</code> 接口——<code>ServeHTTP(ResponseWriter, *Request)</code> 是标准库约定的两个方法，Go 的 HTTP 服务器收到请求就会调它。</p>
+<p>三个角色先认清：</p>
+<ul>
+<li><code>w http.ResponseWriter</code>：<strong>出口</strong>。往客户端写响应。</li>
+<li><code>r *http.Request</code>：<strong>入口</strong>。方法、Header、Body 都从这里取。</li>
+<li><code>s *Server</code>：<strong>启动时组装好的零件盒</strong>。<code>secret</code>、<code>outputRoot</code>、<code>runPipeline</code>、<code>sem</code> 都在里面。</li>
+</ul>
+<h3 id="门-1http-方法133-136">门 1：HTTP 方法（:133-136）</h3>
+<pre><code class="language-go">if r.Method != http.MethodPost {
+    writeRejection(w, http.StatusMethodNotAllowed, ReasonMethodNotAllowed)
+    return
+}
+</code></pre>
+<p>405。注意 <code>writeRejection</code> 只回一个 <code>{&quot;rejection_code&quot;: &quot;...&quot;}</code>（webhook.go:380）。<strong>所有失败路径都返回稳定机器可读的 code，不是给人读的报错文本。</strong> 这条约定贯穿全项目。</p>
+<h3 id="门-2拿签名但不验证137-141">门 2：拿签名，但不验证（:137-141）</h3>
+<pre><code class="language-go">provided, ok := parseSignature(r.Header.Get(SignatureHeader))
+</code></pre>
+<p><code>parseSignature</code>（webhook.go:346）只做<strong>格式检查</strong>：</p>
+<ul>
+<li>Header 必须以 <code>sha256=</code> 开头；</li>
+<li>后面的 hex 必须能解码；</li>
+<li>解码后长度必须恰好 32 字节（<code>sha256.Size</code>）。</li>
+</ul>
+<p>它<strong>不知道</strong>签名对不对。这一步只是&quot;这个值长得像个 SHA-256&quot;。返回 <code>ok=false</code> → 401 <code>signature_missing</code>。</p>
+<p>这里有个细节值得品：webhook_test.go:24 的 <code>TestMissingSignatureDoesNotReadOrProcessBody</code> 断言 <code>body.read == false</code>。也就是说，<strong>签名缺失时 body 一个字节都没读</strong>。为什么重要？因为读 body 是有成本的操作，而且读 body 之后你可能&quot;顺手&quot;解码了 JSON——那就等于在验签之前处理了不可信数据。顺序是：先看有没有签名，再看签名对不对，最后才碰 body。</p>
+<h3 id="门-3读原始-body限制大小142-150">门 3：读原始 body，限制大小（:142-150）</h3>
+<pre><code class="language-go">body, tooLarge, err := readBody(r.Body)
+</code></pre>
+<p><code>readBody</code>（webhook.go:357）的关键是一行：</p>
+<pre><code class="language-go">data, err := io.ReadAll(io.LimitReader(body, MaxBodyBytes+1))
+</code></pre>
+<p><code>MaxBodyBytes = 1 &lt;&lt; 20</code> = 1 MiB（webhook.go:30）。注意读 <code>+1</code> 个字节，然后用 <code>len &gt; MaxBodyBytes</code> 判断。这是<strong>先限流再读</strong>的标准写法——如果直接 <code>io.ReadAll(body)</code>，一个 2GB 的 body 会把内存吃满。<code>+1</code> 保证超限能被观察到，而不是被悄悄截断。超限 → 413 <code>body_too_large</code>。</p>
+<h3 id="门-4验签151-156-本节最重要">门 4：验签（:151-156）—— 本节最重要</h3>
+<pre><code class="language-go">mac := hmac.New(sha256.New, s.secret)
+_, _ = mac.Write(body)
+if !hmac.Equal(mac.Sum(nil), provided) {
+    writeRejection(w, http.StatusUnauthorized, ReasonInvalidSignature)
+    return
+}
+</code></pre>
+<p><strong>保姆级理解 HMAC-SHA256：</strong> 它需要两样东西——一把<strong>双方共享的秘密</strong>（<code>s.secret</code>）和<strong>一份原始字节</strong>（<code>body</code>）。把 body 喂进去，得到 32 字节摘要。发送方用同一把 secret 算出同样的值，放在 Header 里；服务端重算一遍比对。</p>
+<p><strong>为什么必须对原始 body 算，而不是解码 JSON 再编码？</strong> 因为发送方签的是<strong>那一份具体字节</strong>。JSON 有无数种等价写法：</p>
+<pre><code class="language-json">{&quot;delivery_id&quot;:&quot;a&quot;,&quot;pr_number&quot;:1,&quot;diff&quot;:&quot;x&quot;}
+{ &quot;diff&quot;:&quot;x&quot;, &quot;pr_number&quot;:1 , &quot;delivery_id&quot;:&quot;a&quot;}
+</code></pre>
+<p>这两份字节不同，但解码成 Go 结构体再重新 <code>json.Marshal</code>，字段顺序会被重排、空白会被规范化。你算出来的签名就不是发送方签的那个了，<strong>好请求会被误拒</strong>。所以规则是：<strong>验签前不改变任何一个字节。</strong></p>
+<p><strong>为什么用</strong><code>hmac.Equal</code><strong>而不是</strong><code>==</code><strong>？</strong><code>hmac.Equal</code> 是常数时间比较（constant-time），<code>bytes.Equal</code>/<code>==</code> 会在第一个不同的字节就短路返回。差别让攻击者能测出&quot;前 N 个字节猜对了&quot;，逐步猜出签名。这里是安全敏感的比较点，所以用标准库的常数时间版本。</p>
+<p><strong>验签成功证明了什么？</strong> 只证明：<strong>这份 body 是我持有 secret 的人发的，而且没被中途改动。</strong> 它<strong>不证明</strong>：</p>
+<ul>
+<li>SQL 是安全的（签名正确的 body 里可以是 <code>DROP TABLE</code>）；</li>
+<li>请求不是重放（同一份合法 body 可以无限次重发，secret 没变）。</li>
+</ul>
+<p>重复 delivery 靠<strong>后面</strong>的机制处理（第 3 节会看到），不是靠验签。</p>
+<h3 id="门-5并发门-sem158-164">门 5：并发门 sem（:158-164）</h3>
+<pre><code class="language-go">select {
+case s.sem &lt;- struct{}{}:
+    defer func() { &lt;-s.sem }()
+default:
+    writeRejection(w, http.StatusTooManyRequests, ReasonQueueFull)
+    return
+}
+</code></pre>
+<p>这段代码第一次看会懵，拆四步：</p>
+<ol>
+<li><code>s.sem</code> 是一个<strong>带缓冲的 channel</strong>，容量在 webhook.go:128 设为 <code>config.MaxConcurrent</code>（1–4）。</li>
+<li><code>select</code> 里两个分支：往 channel 放一个东西，或者 <code>default</code>。</li>
+<li><strong>能放进去</strong> → 说明还有空位 → 拿到名额。</li>
+<li><strong>放不进</strong>（channel 满）→ <code>default</code> 立刻执行 → 429 <code>queue_full</code>。</li>
+</ol>
+<p><code>select</code> 在 channel 满时会<strong>立刻走</strong><code>default</code><strong>，不阻塞</strong>。这就是&quot;满了立即拒绝&quot;的实现，没有排队、没有无界队列。</p>
+<p><code>defer func() { &lt;-s.sem }()</code> 是<strong>从 channel 取一个东西</strong>，归还名额。<code>defer</code> 保证无论 <code>process</code> 正常返回还是 panic 都会归还。</p>
+<p><strong>保姆级类比</strong>：<code>sem</code> 是 4 个座位。进去先坐下，出来必须离座。座位满就不许进，当场给 429。</p>
+<p><strong>关键：这个座位在同步分支里坐了多久？</strong> 从坐下到 <code>ServeHTTP</code> 返回——也就是<strong>覆盖整段管线执行</strong>（准入 + EXPLAIN + 计划对照 + 诊断）。因为 <code>process</code> → <code>s.runPipeline</code> → <code>pipeline.Run</code> 全是同步调用链，没有 goroutine、没有队列。</p>
+<p>这就是 <code>max-concurrent</code> 上限设 4 而不是 100 的原因：<strong>影子库是共享资源</strong>，同时跑 4 个 EXPLAIN 已经会互相干扰，测出来的数据就没意义了。并发门在这里不是防 DDoS，是<strong>保护测量环境</strong>。</p>
+<h3 id="门-6解码事件166-174">门 6：解码事件（:166-174）</h3>
+<pre><code class="language-go">event, err := decodeEvent(body)
+</code></pre>
+<p>现在才把 JSON 变成 Go 对象。<code>decodeEvent</code>（webhook.go:366）做了<strong>三件事</strong>：</p>
+<pre><code class="language-go">dec := json.NewDecoder(bytes.NewReader(body))
+dec.DisallowUnknownFields()   // ① 未知字段拒绝
+var event Event
+if err := dec.Decode(&amp;event); err != nil { return ... }  // ② 正常解码
+var trailing any
+if err := dec.Decode(&amp;trailing); err != io.EOF { ... }   // ③ 尾随值拒绝
+</code></pre>
+<p>第 ③ 件事最容易漏：标准库的 <code>json.Unmarshal</code> 对 <code>{&quot;a&quot;:1}{&quot;b&quot;:2}</code> 这种<strong>拼接的两个 JSON 值</strong>是宽容的（只解析第一个）。用 <code>json.Decoder</code> 连续解码两次，第二次没遇到 <code>io.EOF</code> 就说明有尾随内容 → 拒绝。</p>
+<p>同样地，<code>DisallowUnknownFields()</code> 让 <code>{&quot;delivery_id&quot;:&quot;a&quot;,&quot;unknown&quot;:1}</code> 报错。这两条一起构成&quot;<strong>严格 JSON</strong>&quot;：<strong>不多字段、不少字段、不拼接</strong>。项目里这个模式出现了三次：<code>decodeEvent</code>、<code>candidate.DecodeStrict</code>、<code>pipeline</code> 的 summary 校验。这是统一约定。</p>
+<p>然后（:171）：</p>
+<pre><code class="language-go">if !deliveryID.MatchString(event.DeliveryID) || event.PRNumber &lt; 1 {
+</code></pre>
+<p><code>deliveryID</code> 是 <code>^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$</code>（webhook.go:47）。<strong>这个正则不是白凑的</strong>——<code>DeliveryID</code> 后面要拼进文件路径（<code>outputRoot/DeliveryID/</code>）。如果允许 <code>..</code>、<code>/</code>、<code>\</code>，就能路径穿越写出 <code>out-dir</code> 之外。长度上限 64 也是同理。</p>
+<h3 id="门-7进入业务175-184">门 7：进入业务（:175-184）</h3>
+<pre><code class="language-go">report, err := s.process(r.Context(), event)
+if err != nil {
+    log.Printf(...)
+    writeRejection(w, http.StatusConflict, deliveryErrorCode(err))
+    return
+}
+writeJSON(w, http.StatusAccepted, map[string]any{
+    &quot;delivery_id&quot;: event.DeliveryID, &quot;verification_status&quot;: report.VerificationStatus,
+    &quot;job_id&quot;: report.JobID, &quot;duplicate&quot;: report.Duplicate,
+})
+</code></pre>
+<p><strong>注意这里</strong><code>r.Context()</code><strong>被传下去了。</strong> 这是 HTTP 请求的取消上下文：客户端断连、<code>ReadTimeout</code> 到、服务端关闭，<code>ctx</code> 就会变 canceled，管线里的每一步都能感知到并提前退出。上下文穿透整条链是 Go 的约定。</p>
+<p><strong>保姆级关键结论：</strong><code>:181</code><strong>这个 202 是在</strong><code>process</code><strong>成功返回后写的。</strong> 而同步分支里 <code>process</code> 内部<strong>已经等管线跑完了</strong>。所以：</p>
+<p>202 只表示&quot;我接收并处理完了这次投递，结果在本地文件里&quot;。它<strong>不</strong>表示&quot;我马上在后台跑&quot;，也<strong>不</strong>表示&quot;验证通过了&quot;。</p>
+<h3 id="顺序为什么是这样">顺序为什么是这样</h3>
+<p>把七道门排一遍，理解为什么是这个顺序：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>门</th>
+<th>成本</th>
+<th>为什么要放这里</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>方法</td>
+<td>零</td>
+<td>最便宜的拒绝先做</td>
+</tr>
+<tr>
+<td>签名格式</td>
+<td>零</td>
+<td>不需要读 body</td>
+</tr>
+<tr>
+<td>读 body + 限流</td>
+<td>低</td>
+<td>必须先有字节才能验签</td>
+</tr>
+<tr>
+<td>HMAC</td>
+<td>低</td>
+<td>必须先验证来源，再处理内容</td>
+</tr>
+<tr>
+<td>sem</td>
+<td>零</td>
+<td>必须先拿到名额，才允许耗资源的处理</td>
+</tr>
+<tr>
+<td>解码 JSON</td>
+<td>低</td>
+<td>验签之后才解析内容</td>
+</tr>
+<tr>
+<td><code>process</code></td>
+<td><strong>高</strong>（含影子库）</td>
+<td>最后才做贵的</td>
+</tr>
+</tbody></table></div>
+<p><strong>原则：越便宜、越不需要信任的操作越靠前；需要处理不可信数据的越靠后。</strong> 验签放在读 body 之后、解码之前，就是这个原则的直接体现。</p>
+<h3 id="本节证据">本节证据</h3>
+<ul>
+<li>验签失败不碰业务：webhook_test.go:48 断言 <code>calls == 0 &amp;&amp; deliveryEntries(root) == 0</code>。</li>
+<li>缺签名不读 body：webhook_test.go:40 用 <code>readTracker</code> 包装 body，断言 <code>body.read == false</code>。</li>
+<li>并发门真的挡住第二个：webhook_test.go:193 第一个 runner 用 channel 挂住不放，第二个请求断言 429 + <code>calls == 1</code> + 第二个 delivery 目录不存在。</li>
+</ul>
+<hr>
+<h2 id="第-3-节diff-怎样变成待验证-sql">第 3 节：diff 怎样变成待验证 SQL</h2>
+<p>打开 webhook.go:187 的 <code>process</code>。</p>
+<h3 id="先看它怎么初始化-report189-194">先看它怎么初始化 report（:189-194）</h3>
+<pre><code class="language-go">report := DeliveryReport{
+    DeliveryID: event.DeliveryID, PRNumber: event.PRNumber,
+    VerificationStatus: &quot;verification_unavailable&quot;, EvidenceLevel: &quot;&quot;,
+    EligibleForPerformanceClaim: false, Admissions: []sqladmit.Result{},
+    CompletedSteps: []string{}, RejectionReasons: []Reason{}, Artifacts: []pipeline.Artifact{},
+}
+</code></pre>
+<p><strong>两个细节必须记住：</strong></p>
+<ol>
+<li><strong>默认值是悲观的。</strong> <code>VerificationStatus</code> 起始就是 <code>&quot;verification_unavailable&quot;</code>，<code>EvidenceLevel</code> 是空字符串，<code>Eligible</code> 是 <code>false</code>。只有后面明确走到 <code>:243-245</code> 才会改成 <code>verification_completed</code>。<strong>没有成功就必须明确写&quot;没验证&quot;</strong>，而不是留空让人猜。</li>
+<li><strong>切片用</strong> <code>[]T{}</code> <strong>而不是</strong> <code>nil</code><strong>。</strong> 这样 JSON 序列化出 <code>&quot;admissions&quot;: []</code> 而不是 <code>null</code>，下游不用判空。全项目统一这个习惯。</li>
+</ol>
+<h3 id="第一步提取-sql188">第一步：提取 SQL（:188）</h3>
+<pre><code class="language-go">sqls := ExtractAddedSQL(event.Diff)
+</code></pre>
+<p>打开 webhook.go:282。<strong>注意返回类型是</strong><code>[]string</code><strong>，不是&quot;一条 SQL&quot;</strong>。为什么是切片？因为一个 PR 的 diff 里可能有多个 <code>.sql</code> 文件、每个文件可能有多段新增。</p>
+<p>逐行拆：</p>
+<pre><code class="language-go">var sqls []string
+var current strings.Builder
+inSQLFile := false
+flush := func() {
+    if sql := strings.TrimSpace(current.String()); sql != &quot;&quot; {
+        sqls = append(sqls, sql)
+    }
+    current.Reset()
+}
+</code></pre>
+<p><code>flush</code> 是<strong>收集器</strong>：把当前缓冲里的内容收进 <code>sqls</code>，然后清空。两个调用点：遇到下一个文件边界时、整个循环结束时（:304）。这是&quot;遍历完才收尾&quot;的标准模式——最后一份文件也要被收集。</p>
+<pre><code class="language-go">for _, line := range strings.Split(diff, &quot;\n&quot;) {
+</code></pre>
+<p><strong>按</strong><code>\n</code><strong>拆行</strong>。注意：如果 diff 用 <code>\r\n</code>（Windows），每行末尾会带个 <code>\r</code>。这里没处理，但下游 <code>sqladmit</code> 的 <code>TrimSpace</code> 和 token 扫描会把它当普通空白，所以不炸。</p>
+<pre><code class="language-go">if strings.HasPrefix(line, &quot;diff --git &quot;) {
+    flush()
+    parts := strings.Fields(line)
+    inSQLFile = len(parts) == 4 &amp;&amp; strings.HasSuffix(strings.ToLower(parts[3]), &quot;.sql&quot;)
+    continue
+}
+</code></pre>
+<p><code>diff --git a/q.sql b/q.sql</code> 按空白拆是 4 个字段：<code>diff</code>、<code>--git</code>、<code>a/q.sql</code>、<code>b/q.sql</code>。取第 4 个（<code>parts[3]</code>）判断是否 <code>.sql</code> 结尾。<strong>只处理</strong><code>.sql</code><strong>文件</strong>——这正是&quot;输入一&quot;的例子，<code>.go</code> 文件里的 SQL 不走这个入口。</p>
+<pre><code class="language-go">if inSQLFile &amp;&amp; strings.HasPrefix(line, &quot;+&quot;) &amp;&amp; !strings.HasPrefix(line, &quot;+++&quot;) {
+    current.WriteString(strings.TrimPrefix(line, &quot;+&quot;))
+    current.WriteByte(&#39;\n&#39;)
+}
+</code></pre>
+<p>三段条件缺一不可：</p>
+<ul>
+<li><code>inSQLFile</code>：当前在 <code>.sql</code> 文件区域；</li>
+<li><code>HasPrefix(line, &quot;+&quot;)</code>：这是新增行（unified diff 里 <code>+</code> 开头 = 新增）；</li>
+<li><code>!HasPrefix(line, &quot;+++&quot;)</code>：排除 <code>+++ b/q.sql</code> 这个<strong>文件头</strong>。</li>
+</ul>
+<p>第三个条件是最容易忽略的一行。unified diff 的文件头长这样：</p>
+<pre><code class="language-diff">diff --git a/q.sql b/q.sql
+--- a/q.sql
++++ b/q.sql
++SELECT id FROM orders;
+</code></pre>
+<p><code>+++</code> 也是 <code>+</code> 开头。不排除的话，<code>++b/q.sql</code> 会被拼进 SQL，准入必炸。</p>
+<h3 id="用quot输入一quot实际走一遍">用&quot;输入一&quot;实际走一遍</h3>
+<pre><code class="language-text">diff --git a/q.sql b/q.sql     → flush()（空，丢弃），parts=4，第4个 q.sql → inSQLFile=true
++SELECT id, amount_cents ...   → 非 +++，写 &quot;SELECT id, amount_cents ...&quot; + &quot;\n&quot;
+（循环结束）                     → flush() → sqls = [&quot;SELECT id, amount_cents FROM orders WHERE status = &#39;paid&#39; ORDER BY amount_cents DESC LIMIT 20;&quot;]
+</code></pre>
+<p><strong>得到 1 条。</strong> 注意保留了结尾的分号——<code>ExtractAddedSQL</code> 不做任何 SQL 清理，只拼接。分号交给 <code>sqladmit</code> 判（半角分号 ≤1 个允许）。</p>
+<h3 id="第二步对每段做准入195-197">第二步：对每段做准入（:195-197）</h3>
+<pre><code class="language-go">for _, sql := range sqls {
+    report.Admissions = append(report.Admissions, sqladmit.Admit(sql))
+}
+</code></pre>
+<p><strong>注意：准入结果全部记录，不做 short-circuit。</strong> 即使第一段就被拒，后面几段也照样跑。这样报告里能看到<strong>每一段</strong>的结论，而不是只看到第一个错误。</p>
+<h3 id="第三步三分支判断198-213">第三步：三分支判断（:198-213）</h3>
+<p><strong>顺序很重要</strong>，因为一旦有 <code>RejectionReasons</code> 就返回，后面的分支不会执行：</p>
+<pre><code class="language-text">① :198  len(sqls) == 0        → no_sql_candidates
+② :202  任何 admission 不通过  → sql_admission_rejected + 具体 code
+③ :207  有任何拒绝原因         → 落盘返回
+④ :210  len(sqls) != 1        → multiple_sql_candidates
+⑤ :214  继续
+</code></pre>
+<p><strong>① 在 ② 之前</strong>：没提取到 SQL，就不该去判准入。 <strong>② 在 ④ 之前</strong>：如果两个 SQL 都非法，只会报&quot;准入拒绝&quot;，<strong>不会</strong>额外报&quot;多个候选&quot;。这是有意的优先级——先说 SQL 本身有问题，再说数量有问题。</p>
+<p>每个分支都走 <code>s.persist(report)</code>（webhook.go:249）：建目录 → 写 <code>webhook_report.json</code> + <code>comment.md</code>。<strong>拒绝不是消失，拒绝是数据。</strong></p>
+<h3 id="第四步两个分支214">第四步：两个分支（:214）</h3>
+<pre><code class="language-go">if s.asyncEnqueue != nil {
+    // 入队 Kafka，返回 queued + JobID
+    return report, nil
+}
+</code></pre>
+<p>配了 <code>AsyncEnqueue</code> 就走这里：SQL 和候选 spec 都放进 <code>kafka.ReceiveInput</code>（:215-218），返回后 <strong>不落任何本地文件</strong>，HTTP 回 <code>queued</code>。这是 S4 的入口，<strong>本节不展开其内部实现</strong>。</p>
+<p>没配就走同步分支（:228-246）：</p>
+<pre><code class="language-go">deliveryDir, err := s.createDeliveryDir(event.DeliveryID)
+</code></pre>
+<p>打开 webhook.go:257：</p>
+<pre><code class="language-go">dir := filepath.Join(s.outputRoot, id)
+if err := os.Mkdir(dir, 0o755); err != nil {
+    if errors.Is(err, os.ErrExist) {
+        return &quot;&quot;, errDeliveryOutputExists
+    }
+    ...
+}
+</code></pre>
+<p><strong>这是幂等的全部实现：</strong><code>os.Mkdir</code><strong>撞上</strong><code>ErrExist</code><strong>就返回稳定错误。</strong> 同一个 <code>delivery_id</code> 第二次投递 → 409 <code>delivery_output_exists</code>。没有 Redis、没有数据库去重表，单机版把幂等绑在文件系统上。</p>
+<p>注意 <code>os.Mkdir</code>（不是 <code>MkdirAll</code>）——父目录必须由 <code>New()</code> 在启动时建好（webhook.go:119 用 <code>MkdirAll</code>）。这样&quot;中间路径被人塞进来&quot;和&quot;delivery 重复&quot;能被区分开。</p>
+<pre><code class="language-go">pipelineReport, runErr := s.runPipeline(ctx, []byte(sqls[0]), filepath.Join(deliveryDir, &quot;artifacts&quot;))
+</code></pre>
+<p><strong>这一行把两个入口接起来了。</strong> 左边 <code>s.runPipeline</code> 是启动时闭包存进来的函数值，右边三个参数就是当时约定的三个：请求级 ctx、提取出的第一段 SQL 的字节、输出目录。</p>
+<ul>
+<li><code>sqls[0]</code>：切片第 0 个。前面已经保证 <code>len == 1</code>，所以这里安全。</li>
+<li><code>filepath.Join(deliveryDir, &quot;artifacts&quot;)</code>：工件放在 delivery 目录<strong>下面</strong>的子目录。这个层级后面第 5 节会用到。</li>
+</ul>
+<h3 id="第五步合并结果233-246">第五步：合并结果（:233-246）</h3>
+<pre><code class="language-go">report.EvidenceLevel = pipelineReport.EvidenceLevel
+report.EligibleForPerformanceClaim = pipelineReport.EligibleForPerformanceClaim
+report.CompletedSteps = append(report.CompletedSteps, pipelineReport.CompletedSteps...)
+report.Artifacts = append(report.Artifacts, pipelineReport.Artifacts...)
+for _, reason := range pipelineReport.RejectionReasons {
+    report.RejectionReasons = append(report.RejectionReasons, Reason{Code: reason.Code})
+}
+if runErr != nil {
+    report.RejectionReasons = append(report.RejectionReasons, Reason{Code: ReasonPipelineFailed})
+}
+if runErr == nil &amp;&amp; pipelineReport.StoppedStep == &quot;&quot; {
+    report.VerificationStatus = &quot;verification_completed&quot;
+}
+</code></pre>
+<p><strong>这一段是全场最容易被误读的 14 行</strong>，逐条说：</p>
+<ol>
+<li><code>:233-236</code> 无条件拷贝。<code>runErr != nil</code> <strong>时也在拷贝。</strong> 也就是说：管线失败了，只要它产出了 report，其中的 evidence level 和 artifacts 就<strong>会</strong>出现在 webhook 报告里。</li>
+<li><code>:240-242</code> <code>runErr != nil</code> 只<strong>追加</strong>一个 <code>pipeline_unavailable</code> 拒绝码。它<strong>不改变</strong> <code>VerificationStatus</code> 的默认值 <code>&quot;verification_unavailable&quot;</code>。</li>
+<li><code>:243-245</code> 只有 <code>runErr == nil</code> <strong>且</strong> <code>StoppedStep == &quot;&quot;</code> 才置 <code>verification_completed</code>。两个条件缺一不可。</li>
+<li><code>StoppedStep</code> <strong>本身没有被拷进</strong> <code>DeliveryReport</code>——它只用来做上面的判断。这是个观测性缺口：webhook 报告里看不到&quot;停在哪个阶段&quot;，只能看到一串 rejection code。CLI 路径的 <code>pipeline_report.json</code> 才有完整信息。</li>
+</ol>
+<p><strong>结论：</strong><code>runErr != nil</code><strong>时，HTTP 仍然是 202</strong>（回到 <code>ServeHTTP</code> :181），<code>VerificationStatus</code> 是 <code>verification_unavailable</code>，拒绝原因里多一个 <code>pipeline_unavailable</code>。</p>
+<h3 id="落盘246-webhookgo268">落盘（:246 → webhook.go:268）</h3>
+<p>写两个文件：</p>
+<ul>
+<li><code>webhook_report.json</code>：结构化报告（给机器消费）；</li>
+<li><code>comment.md</code>：<code>renderComment(report)</code> 生成的 Markdown（给人看）。</li>
+</ul>
+<p><code>renderComment</code>（webhook.go:308）有个关键默认：</p>
+<pre><code class="language-go">evidenceLevel := report.EvidenceLevel
+if evidenceLevel == &quot;&quot; {
+    evidenceLevel = &quot;none&quot;
+}
+</code></pre>
+<p><strong>空 evidence level 显示为</strong><code>none</code><strong>，不显示为</strong><code>L1</code><strong>。</strong> 这就是&quot;没有证据时不伪造 L1&quot;的实现。</p>
+<p><code>comment.md</code><strong>是本地产物。这条链不调 GitHub API、不发布任何远程评论。</strong> 想上 GitHub 是另一件事。</p>
+<h3 id="本节证据-1">本节证据</h3>
+<p>webhook_test.go:86 断言得最狠，逐条读：</p>
+<ul>
+<li><code>rec.Code != http.StatusAccepted</code> → <strong>准入拒绝也回 202</strong>，不是错误码；</li>
+<li><code>calls != 0</code> → <strong>runner 一次都没被调</strong>；</li>
+<li><code>os.Stat(.../artifacts)</code> 必须 <code>IsNotExist</code> → <strong>拒绝时不创建</strong> <code>artifacts/</code> <strong>目录</strong>。</li>
+</ul>
+<p>第三条尤其重要：<code>artifacts/</code> 是 <code>pipeline.Run</code> 内部 <code>prepareOutputDir</code> 建的。拒绝发生在 <code>process</code> 里、<code>runPipeline</code> 之前，所以这个目录<strong>根本不存在</strong>。<code>comment.md</code> 里能看到拒绝码，但工件目录是空的。</p>
+<hr>
+<h2 id="第-4-节sql-与候选分别如何准入">第 4 节：SQL 与候选分别如何准入</h2>
+<h3 id="41-sql-准入admitgo16">4.1 SQL 准入：admit.go:16</h3>
+<pre><code class="language-go">func Admit(sql string) Result {
+    tokens, semis, tokenAfterSemicolon, err := scan(sql)
+</code></pre>
+<p><strong>四个返回值</strong>，先认清楚：</p>
+<ul>
+<li><code>tokens []string</code>：真正的 SQL token（关键字、标识符、运算符），全部大写。</li>
+<li><code>semis int</code>：分号数量。</li>
+<li><code>tokenAfterSemicolon bool</code>：分号之后还有 token。</li>
+<li><code>err</code>：扫描失败。</li>
+</ul>
+<p><strong>为什么扫描而不是</strong><code>strings.Contains(sql, &quot;DROP&quot;)</code><strong>？</strong> 因为字符串里的内容和真 token 长得一样：</p>
+<pre><code class="language-sql">SELECT * FROM orders WHERE note = &#39;; DROP TABLE x&#39;
+</code></pre>
+<p><code>Contains</code> 会命中 <code>DROP</code>。但这里的 <code>DROP</code> 是字符串字面量的内容，不是语句。所以必须先扫描、把字符串和注释<strong>排除掉</strong>，再在 token 层面判断。</p>
+<h4 id="看主干21-52逐条">看主干（:21-52），逐条</h4>
+<pre><code class="language-go">if len(tokens) == 0 { return reject(&quot;empty_sql&quot;) }
+</code></pre>
+<p>空 SQL、纯注释、纯字符串都归到&quot;无 token&quot;。</p>
+<pre><code class="language-go">if semis &gt; 1 || tokenAfterSemicolon { return reject(&quot;multiple_statements&quot;) }
+</code></pre>
+<p><strong>注意是</strong><code>&gt; 1</code><strong>而不是</strong><code>&gt; 0</code><strong>。</strong> 结尾单个分号是合法的（<code>;</code> 是 MySQL 的语句终止符，不是内容）。<code>SELECT 1;</code> 通过；<code>SELECT 1; SELECT 2</code> 拒绝。</p>
+<p><code>tokenAfterSemicolon</code> 是第二道保险：即使分号只有一个（<code>SELECT 1; /* 注释 */ SELECT 2</code>），只要后面还有 token 就拒绝。</p>
+<pre><code class="language-go">first := tokens[0]
+if first != &quot;SELECT&quot; &amp;&amp; first != &quot;WITH&quot; { return reject(&quot;not_readonly_select&quot;) }
+</code></pre>
+<p>只放行 <code>SELECT</code> 和 <code>WITH ... SELECT</code> 开头的。</p>
+<pre><code class="language-go">joined := &quot; &quot; + strings.Join(tokens, &quot; &quot;) + &quot; &quot;
+for _, forbidden := range []struct{code, phrase string}{...} {
+    if strings.Contains(joined, forbidden.phrase) { return reject(forbidden.code) }
+}
+</code></pre>
+<p><strong>看首尾两个空格</strong><code>+ &quot; &quot;</code>——这是故意的。<code>&quot; FOR UPDATE &quot;</code> 前后各留一格，避免 <code>SELECT FORUPDATE</code> 这种拼接误判，也避免 <code>SELECTFOR</code> 之类被误命中。</p>
+<p>拒绝表（:32-37）：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>code</th>
+<th>命中短语</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>locking_read</code></td>
+<td><code>FOR UPDATE</code><br>、<code>LOCK IN SHARE MODE</code></td>
+</tr>
+<tr>
+<td><code>write_or_ddl_statement</code></td>
+<td><code>INSERT</code><br>、<code>UPDATE</code><br>、<code>DELETE</code><br>、<code>CREATE</code><br>、<code>ALTER</code><br>、<code>DROP</code></td>
+</tr>
+<tr>
+<td><code>select_into_file</code></td>
+<td><code>INTO OUTFILE</code><br>、<code>INTO DUMPFILE</code></td>
+</tr>
+</tbody></table></div>
+<p>然后是 signals（:42-51）——<strong>注意 signals 不拒绝，只记录</strong>：</p>
+<pre><code class="language-go">return Result{Accepted: true, EvidenceLevel: &quot;L0&quot;, Signals: signals}
+</code></pre>
+<p>三种 signal：<code>select_star</code>、<code>leading_wildcard_like</code>、<code>function_on_probable_column</code>。</p>
+<h4 id="result-三个字段的语义必须分开">Result 三个字段的语义必须分开</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+<th>什么时候有</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Accepted</code></td>
+<td>是否通过准入</td>
+<td>总是</td>
+</tr>
+<tr>
+<td><code>ReasonCode</code></td>
+<td>拒绝原因</td>
+<td>仅拒绝时</td>
+</tr>
+<tr>
+<td><code>Signals</code></td>
+<td>待调查线索</td>
+<td>仅接受时</td>
+</tr>
+</tbody></table></div>
+<p><strong>有 signal ≠ 拒绝。通过准入 ≠ 性能已验证。</strong><code>Accepted: true, EvidenceLevel: &quot;L0&quot;</code><strong>的意思是&quot;静态没发现问题，但完全没测过性能&quot;。</strong></p>
+<h4 id="四个例子实际推演对照测试表">四个例子实际推演（对照测试表）</h4>
+<p>对照 admit_test.go:5，四个 case 各走一遍：</p>
+<p><strong>①</strong><code>SELECT * FROM orders WHERE note=&#39;; DROP&#39;</code><strong>→ 接受</strong></p>
+<p>扫描器进到 <code>&#39;</code> 时切到单引号状态（admit.go:169-171），后面的 <code>;</code> 和 <code>DROP</code> 都写进 <code>literal</code>（:112），到闭合 <code>&#39;</code> 时整体作为一个 token <code>&#39;; DROP&#39;</code> 加入（:108）。所以 <code>semis == 0</code>，<code>tokens</code> 里没有 <code>DROP</code>。</p>
+<p>→ <code>tokens = [SELECT * FROM ORDERS WHERE &#39;; DROP&#39;]</code>，<code>semis = 0</code>，通过。 → signals：<code>hasSelectStar</code> 命中（<code>SELECT</code> 后紧跟 <code>*</code>）→ <code>[&quot;select_star&quot;]</code>。</p>
+<p><strong>②</strong><code>SELECT 1; SELECT 2</code><strong>→ 拒绝</strong><code>multiple_statements</code></p>
+<p>遇到第一个 <code>;</code>：<code>flush()</code> 收走 <code>SELECT 1</code>，<code>semis = 1</code>（:185-187）。继续扫描，第二个 <code>SELECT 2</code> 在结尾 <code>flush</code> 时通过 <code>appendToken</code> 发现 <code>semis &gt; 0</code> → <code>tokenAfterSemicolon = true</code>（:78-80）。<code>semis == 2</code>，两个条件都中。</p>
+<p><strong>③</strong><code>SELECT * FROM orders FOR UPDATE</code><strong>→ 拒绝</strong><code>locking_read</code></p>
+<p>这里有个微妙点：<code>WITH</code> 允许，但<strong>锁定读不允许</strong>。它确实以 <code>SELECT</code> 开头，所以 ①②③ 检查都过。走到 forbidden 循环，<code>joined</code> 里含 <code>&quot; FOR UPDATE &quot;</code> → 命中。</p>
+<p><strong>④</strong><code>/* DELETE */ SELECT * FROM orders</code><strong>→ 接受</strong></p>
+<p>遇到 <code>/*</code>（:160-167）切到 <code>/</code> 状态，<code>DELETE</code> 被整段吞掉，直到 <code>*/</code> 回到正常状态。所以 <code>tokens = [SELECT * FROM ORDERS]</code>，<code>DELETE</code> 不在里面。</p>
+<p>→ 接受，signals <code>[&quot;select_star&quot;]</code>。</p>
+<p><strong>⑤（测试表第 19 行，值得知道）</strong><code>SELECT * FROM orders LOCK IN /* no-op */ SHARE MODE</code><strong>→ 拒绝</strong><code>locking_read</code></p>
+<p>注释在 <code>IN</code> 和 <code>SHARE</code> 中间，但注释内容不进 token，拼出来的 <code>joined</code> 仍然是 <code>LOCK IN SHARE MODE</code> → 命中。<strong>注释不能用来绕过 forbidden 检查。</strong></p>
+<p><strong>⑥</strong><code>SELECT 1 /*!50000 INTO OUTFILE &#39;unsafe&#39; */</code><strong>→ 拒绝</strong><code>executable_comment_not_supported</code></p>
+<p>MySQL 的 <code>/*!...*/</code> 是<strong>可执行注释</strong>——注释语法但内容是 SQL。admit.go:162 看到 <code>/*</code> 后面紧跟 <code>!</code> 就直接报错，不解析。这是<strong>保守拒绝</strong>：与其理解错，不如拒绝。</p>
+<p><strong>⑦</strong><code>SELECT &#39;it&#39;&#39;s safe&#39;</code><strong>→ 接受</strong></p>
+<p><code>&#39;&#39;</code> 是 SQL 里转义单引号的方式（两个单引号 = 一个字面单引号）。admit.go:102-104 处理这个：遇到 <code>&#39;&#39;</code> 就写入一个引号并跳过。</p>
+<h4 id="关于-scan-的补充说明只理解不用背">关于 scan 的补充说明（只理解，不用背）</h4>
+<p>状态机有 6 种状态：普通、单引号 <code>&#39;</code>、双引号 <code>&quot;</code>、反引号 <code>`</code>、行注释 <code>-</code>（也处理 <code>#</code>）、块注释 <code>/</code>。</p>
+<ul>
+<li>字符串内的分号/关键字 → 归入 literal，不产生 token；</li>
+<li>注释内的内容 → 直接丢弃；</li>
+<li><code>#</code> 被映射到 <code>-</code> 状态（:157-158），因为两者都是行注释，用同一个状态处理；</li>
+<li>循环结束时如果状态还停在字符串或注释里 → <code>unterminated_literal_or_comment</code>（:205）；</li>
+<li>UTF-8 BOM 在开头被剥掉（:71），注释写了原因：Windows 编辑器写的 SQL 文件常带 BOM，不剥的话第一个 token 会变。</li>
+</ul>
+<p><strong>这是一套轻量扫描 + 规则准入，不是完整 SQL AST 解析器。</strong> 它不检查表名是否存在、不检查列是否存在、不检查语法是否合法、不证明 SQL 一定能在 MySQL 执行、更不证明它一定便宜。</p>
+<h3 id="42-candidatespec-准入specgo22">4.2 CandidateSpec 准入：spec.go:22</h3>
+<pre><code class="language-go">type Spec struct {
+    Table     string   `json:&quot;table&quot;`
+    IndexName string   `json:&quot;index_name&quot;`
+    Columns   []Column `json:&quot;columns&quot;`
+}
+</code></pre>
+<p><strong>只有三个字段，而且没有</strong><code>ddl</code><strong>/</strong><code>sql</code><strong>字段。</strong> 注释（:20-21）写明了意图：这是 Agent 唯一能交给执行器的形态。</p>
+<h4 id="decodestrict28-43">DecodeStrict（:28-43）</h4>
+<pre><code class="language-go">dec := json.NewDecoder(r)
+dec.DisallowUnknownFields()
+</code></pre>
+<p>和 <code>decodeEvent</code> 一样的双检模式。对照 spec_test.go:46 三个 case：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>输入</th>
+<th>拒绝原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&quot;sql&quot;: &quot;DROP TABLE orders&quot;</code></td>
+<td>未知字段</td>
+</tr>
+<tr>
+<td><code>&quot;ddl&quot;: &quot;CREATE INDEX evil&quot;</code></td>
+<td>未知字段</td>
+</tr>
+<tr>
+<td><code>} {}</code></td>
+<td>尾随 JSON 值</td>
+</tr>
+</tbody></table></div>
+<p><strong>为什么这个检查这么重要？</strong> 想象 LLM 返回一个 JSON，里面有你想看的字段，也偷偷塞了个 <code>ddl</code>。如果解码器宽容，<code>ddl</code> 会被静默忽略——看起来没事，但如果哪天有人加了个字段映射，它就是<strong>任意 SQL 通道</strong>。严格解码把这条路在格式层面就堵死了。</p>
+<h4 id="validate60-87">Validate（:60-87）</h4>
+<p>五条规则，逐条说为什么：</p>
+<pre><code class="language-go">validateIdentifier(&quot;table&quot;, spec.Table)         // 正则 ^[A-Za-z_][A-Za-z0-9_]{0,63}$
+validateIdentifier(&quot;index_name&quot;, spec.IndexName)
+strings.HasPrefix(spec.IndexName, &quot;idx_cand_&quot;)  // 索引名前缀
+len(spec.Columns) in [1, 4]                     // 列数范围
+方向只能是 ASC/DESC/空                            // 白名单
+</code></pre>
+<ul>
+<li><strong>标识符正则</strong>：不允许分号、空格、反引号、括号。对照 spec_test.go:29 的 <code>orders; DROP TABLE orders</code> → 被拒。</li>
+<li><code>idx_cand_</code> <strong>前缀</strong>：候选索引必须一眼可辨。生产库里所有 <code>idx_cand_</code> 开头的索引都是&quot;待验证、可删除&quot;的，不会和真实业务索引混淆。</li>
+<li><strong>1–4 列</strong>：MySQL 单表二级索引最多 16 列，但 4 列以上的复合索引极少有正收益。限定 4 列是<strong>限制 Agent 的输出空间</strong>，不是 MySQL 的硬限制。</li>
+<li><strong>不重复列</strong>：<code>(a, a)</code> 在 MySQL 里合法但无意义。</li>
+<li><strong>方向白名单</strong>：空 = 默认 ASC（MySQL 默认）。<code>DESC; DROP</code> 这种被拒。</li>
+</ul>
+<p><strong>保姆级理解：Validate 是白名单校验，不是黑名单过滤。</strong> 它不试图识别&quot;哪些 DDL 是危险的&quot;，而是只允许&quot;我明确知道安全的形状&quot;。这是整个项目的安全哲学。</p>
+<h4 id="compilecreateindex45-58">CompileCreateIndex（:45-58）</h4>
+<pre><code class="language-go">func CompileCreateIndex(spec Spec) (string, error) {
+    if err := Validate(spec); err != nil { ... }   // 自己再校验一次
+    ...
+    return &quot;CREATE INDEX &quot; + quoteIdentifier(...) + &quot; ON &quot; + ... , nil
+}
+</code></pre>
+<p><strong>自己再调一次</strong><code>Validate</code>，不依赖调用方先校验过。函数自洽。</p>
+<p>对照测试（spec_test.go:12），输入三个列的输出是：</p>
+<pre><code class="language-sql">CREATE INDEX `idx_cand_user_status_created` ON `orders` (`user_id` ASC, `status` ASC, `created_at` DESC)
+</code></pre>
+<p><strong>反引号</strong><code>是</code><strong>quoteIdentifier` 加上去的（:96）。</strong> 但注意：标识符本身已经被正则限制，不含反引号，所以引号只是防御性的。</p>
+<h4 id="拿项目里的例子对照">拿项目里的例子对照</h4>
+<p><code>examples/candidate-explain-index.json</code> 的编译结果是：</p>
+<pre><code class="language-sql">CREATE INDEX `idx_cand_status_amount` ON `orders` (`status` ASC, `amount_cents` DESC)
+</code></pre>
+<p>配 <code>examples/candidate-explain-query.sql</code>：</p>
+<pre><code class="language-sql">SELECT id, amount_cents
+FROM orders
+WHERE status = &#39;paid&#39;
+ORDER BY amount_cents DESC
+LIMIT 20;
+</code></pre>
+<p>候选索引的设计逻辑：查询按 <code>status</code> 过滤、按 <code>amount_cents DESC</code> 排序。索引顺序 <code>(status ASC, amount_cents DESC)</code> 正好让优化器<strong>用索引同时完成过滤和排序</strong>，避免 filesort。</p>
+<p><strong>但结构校验不证明</strong><code>orders</code><strong>表存在、不证明</strong><code>status</code><strong>/</strong><code>amount_cents</code><strong>列存在。</strong> 数据库层的检查在 <code>shadowgate</code> 里，是 S2。本节不展开。</p>
+<hr>
+<h2 id="第-5-节管线调用与报告">第 5 节：管线调用与报告</h2>
+<p>打开 pipeline.go:67-74。先认两个类型：</p>
+<pre><code class="language-go">type ExplainRunner func(context.Context, string, []byte) (shadowgate.Report, []byte, error)
+
+type Input struct {
+    SQL           []byte
+    CandidateSpec []byte
+    OutputDir     string
+    RunExplain    ExplainRunner
+}
+</code></pre>
+<p><strong>前三个是数据，第四个是函数。</strong> 和第 1 节的 <code>RunPipeline</code> 完全同一种手法，只是层次更深：</p>
+<pre><code class="language-text">webhook.Server.RunPipeline  —— Webhook 注入整条管线
+pipeline.Input.RunExplain   —— 管线注入数据库那一阶段
+</code></pre>
+<p><code>pipeline</code><strong>包里没有一行连数据库的代码。</strong> 你可以 grep 确认：<code>internal/pipeline/pipeline.go</code> 的 import 里没有 <code>database/sql</code>，只有 <code>shadowgate</code>（为了用它的 <code>Report</code> 类型做返回值签名）。</p>
+<h3 id="第-1-步输入检查-准备输出目录77-88">第 1 步：输入检查 + 准备输出目录（:77-88）</h3>
+<pre><code class="language-go">if len(input.SQL) == 0 { ... }
+if len(input.CandidateSpec) == 0 { ... }
+if input.RunExplain == nil { ... }
+if err := prepareOutputDir(input.OutputDir); err != nil { return Report{}, err }
+</code></pre>
+<p>注意<strong>前三个错误返回的是空</strong><code>Report{}</code>——还没开始写任何文件。</p>
+<p><code>prepareOutputDir</code>（pipeline.go:232）的逻辑：</p>
+<ul>
+<li>目录不存在 → <code>MkdirAll</code> 建好；</li>
+<li>存在但不是目录 → 报错；</li>
+<li>存在且<strong>非空</strong> → 报错 <code>output directory must be empty</code>。</li>
+</ul>
+<p><strong>&quot;必须空&quot;这条为什么重要？</strong> 防脏数据。如果上次跑失败留下半份工件，这次再往同目录写，报告会混着两次的东西，SHA-256 对不上但没人知道。宁可拒绝。</p>
+<p>注意这一步和 Webhook 的 <code>createDeliveryDir</code> 是<strong>两个不同的目录</strong>：</p>
+<pre><code class="language-text">webhook-deliveries/delivery-demo-001/          ← createDeliveryDir 建
+webhook-deliveries/delivery-demo-001/artifacts/ ← prepareOutputDir 建
+</code></pre>
+<p>前者保证 delivery 幂等，后者保证工件目录干净。</p>
+<h3 id="第-2-步初始化-report90-97">第 2 步：初始化 Report（:90-97）</h3>
+<pre><code class="language-go">report := Report{
+    EvidenceLevel:               &quot;L1&quot;,
+    EligibleForPerformanceClaim: false,
+    CompletedSteps: []string{},
+    ...
+}
+</code></pre>
+<p><strong>注意：</strong><code>EvidenceLevel</code><strong>从一开始就写死</strong><code>&quot;L1&quot;</code><strong>。</strong> 这不是说它已经验证到 L1——而是说<strong>管线的产物上限就是 L1</strong>。管线不做性能测量，所以它永远不可能达到 L2。这个&quot;上限声明&quot;写在初始化里，而不是在 finish 时算，保证任何一条路径都不会出现更高的等级。</p>
+<p><code>EligibleForPerformanceClaim: false</code> 同样从一开始就是 <code>false</code>，<strong>整条管线没有任何一处把它改成 true</strong>。这不是巧合，是设计：证据等级的提升只发生在 <code>admit-series</code>（S 之外的功能）。</p>
+<h3 id="第-3-步阶段一-准入并落证据99-108">第 3 步：阶段一 —— 准入并落证据（:99-108）</h3>
+<pre><code class="language-go">started := time.Now()
+admission := sqladmit.Admit(string(input.SQL))
+admission.InputSHA256 = digest(input.SQL)
+if _, err := writeStage(input.OutputDir, AdmissionFile, admission, StepSQLAdmit, &amp;report); err != nil {
+    return report, err
+}
+recordDuration(&amp;report, StepSQLAdmit, started)
+if !admission.Accepted {
+    return stop(input.OutputDir, report, StepSQLAdmit, admission.ReasonCode, nil)
+}
+</code></pre>
+<p><strong>&quot;为什么两次 Admit？&quot;</strong> 因为 <code>pipeline.Run</code> 是个<strong>可独立调用的边界</strong>。CLI 直接调它，不经 Webhook。如果管线假设调用方已经准入过，CLI 路径就没有保护。所以每个边界自己守一遍。</p>
+<p><strong>注意顺序：先写盘（:102），再判断（:106）。</strong> 这意味着：</p>
+<p>即使准入拒绝，<code>sql_admission.json</code> 也已经写出来了。</p>
+<p>这是&quot;拒绝也是数据&quot;的具体实现。拒绝原因、输入 SHA-256 都留在文件里，事后可审计。</p>
+<h3 id="第-4-步阶段二-调用数据库验证110-122">第 4 步：阶段二 —— 调用数据库验证（:110-122）</h3>
+<pre><code class="language-go">started = time.Now()
+candidateReport, baselineRaw, err := input.RunExplain(ctx, string(input.SQL), input.CandidateSpec)
+if err != nil {
+    recordDuration(&amp;report, StepCandidateExplain, started)
+    return stop(input.OutputDir, report, StepCandidateExplain, &quot;candidate_explain_rejected&quot;, err)
+}
+</code></pre>
+<p><strong>两个返回值，后面各给一个消费者：</strong></p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>内容</th>
+<th>后面交给谁</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>candidateReport</code></td>
+<td>结构化候选报告（含 <code>ExplainJSON</code><br>、MySQL 版本、快照、候选索引元数据）</td>
+<td>阶段三当元数据来源 + 写盘</td>
+</tr>
+<tr>
+<td><code>baselineRaw</code></td>
+<td>基线侧的 EXPLAIN JSON <strong>原始字节</strong></td>
+<td>阶段三当对比输入</td>
+</tr>
+</tbody></table></div>
+<p><code>baselineRaw</code> 是 <code>[]byte</code> 而不是结构体——因为它是从数据库 <code>Scan</code> 出来的原始 JSON 字符串，管线<strong>不解析它</strong>，原样传给 <code>plancompare</code>。这是&quot;信任下一层解析&quot;的分层。</p>
+<p>注意失败路径也调 <code>recordDuration</code>（:113）——<strong>失败的阶段也要记录耗时</strong>，而且 <code>stop</code> 之前调，保证耗时进了 report。</p>
+<h4 id="打开实际实现pipelineexplainrunner">打开实际实现：pipelineExplainRunner</h4>
+<pre><code class="language-go">func pipelineExplainRunner(chunk int) pipeline.ExplainRunner {
+    return func(ctx context.Context, sql string, rawSpec []byte) (shadowgate.Report, []byte, error) {
+        spec, err := candidate.DecodeStrict(bytes.NewReader(rawSpec))   // ① 再次严格解码
+        prepared, err := shadowgate.Prepare(sql, spec)                   // ② 准备
+        dbs, closeAll, err := openBoth(ctx)                             // ③ 连两个库
+        defer closeAll()
+        candidateReport, err := (shadowgate.Gate{...}).Run(ctx, prepared)  // ④ ★ 停在这里
+        var baselineExplain string
+        if err := dbs[&quot;baseline&quot;].QueryRowContext(ctx,
+            &quot;EXPLAIN FORMAT=JSON &quot;+prepared.SQL).Scan(&amp;baselineExplain); err != nil { ... }
+        return candidateReport, []byte(baselineExplain), nil
+    }
+}
+</code></pre>
+<p><strong>这里能看清三件事：</strong></p>
+<ol>
+<li><code>DecodeStrict</code> <strong>每个请求再跑一次</strong>（:64）。启动时那次是进程级门禁，这里是请求级门禁。为什么跑两次？因为启动后文件<strong>可能被改</strong>。运行期重新读、重新校验，才能保证运行的是校验过的候选。</li>
+<li><code>baseline</code> <strong>只跑</strong> <code>EXPLAIN FORMAT=JSON</code>（:82），永不接收 DDL。<code>Gate.Run</code> 才是执行候选 DDL 的地方，只在 candidate 侧。</li>
+<li><code>ctx</code> <strong>从 HTTP 请求一路传到这里</strong>，<code>QueryRowContext</code> 会响应取消。</li>
+</ol>
+<p><strong>④</strong><code>Gate.Run</code><strong>是 S2。本节不展开其内部实现。</strong></p>
+<p><strong>再补一个细节：候选 JSON 在整条链上有三种形态。</strong></p>
+<pre><code class="language-text">启动时文件读到的 []byte (candidateRaw)
+  → DecodeStrict 解成的 candidate.Spec 结构体
+  → shadowgate.Prepare 返回的 prepared
+  → CompileCreateIndex 生成的 DDL 字符串
+  → candidateReport.Candidate.DDL（又变回字符串，落盘）
+</code></pre>
+<p>同一份信息反复在&quot;字节 ↔ 结构体 ↔ DDL 文本&quot;之间转换。每一层都重新校验，这是有意的冗余。</p>
+<h3 id="第-5-步阶段三-计划对照124-145">第 5 步：阶段三 —— 计划对照（:124-145）</h3>
+<pre><code class="language-go">comparison, err := plancompare.BuildReport(plancompare.Metadata{
+    GeneratedAt:  candidateReport.GeneratedAt,
+    MySQLVersion: candidateReport.MySQLVersion,
+    Snapshot:     ...,
+    SQL:          ...,
+    CandidateIndex: ...,
+}, baselineRaw, candidateReport.ExplainJSON)
+</code></pre>
+<p><strong>看元数据的来源：全部从</strong><code>candidateReport</code><strong>里取。</strong> 管线不自己算 MySQL 版本、不自己算快照——它信任阶段二的产物。</p>
+<p>两个输入计划 + 一份元数据 → 一份对照报告。</p>
+<p>写完盘后立刻补两个哈希（:139-140）：</p>
+<pre><code class="language-go">comparison.InputCandidateExplainSHA256 = digest(candidateBytes)
+comparison.InputBaselineExplainSHA256 = digest(baselineRaw)
+</code></pre>
+<p><strong>注意顺序</strong>：<code>:141</code> 先 <code>writeStage</code> 写盘，<code>:139-140</code> 在写盘<strong>之后</strong>赋哈希，然后 <code>:141</code> 再写一次？不，看仔细：<code>:139-140</code> 在 <code>writeStage</code><strong>之前</strong>（第 139 行 &lt; 第 141 行）。顺序是：构造 comparison → 补输入哈希 → 写盘。</p>
+<p>（我刚才读代码时特意核对了行号，<code>:134</code> BuildReport 返回，<code>:135-138</code> 判错，<code>:139-140</code> 补哈希，<code>:141</code> writeStage。写盘的是已经带上输入哈希的版本。）</p>
+<p><strong>这两个哈希是溯源的关键</strong>：<code>explain_comparison_report.json</code> 记录了&quot;我基于哪一份 candidate EXPLAIN 和哪一份 baseline EXPLAIN 得出对照结论&quot;。事后即使原始报告被删，也能通过哈希证明对照结论的来源。</p>
+<h3 id="第-6-步阶段四-诊断147-157">第 6 步：阶段四 —— 诊断（:147-157）</h3>
+<pre><code class="language-go">diagnosisReport, err := diagnosis.Analyze(comparisonBytes)
+</code></pre>
+<p><strong>看参数：</strong><code>comparisonBytes</code><strong>，是阶段三</strong><code>writeStage</code><strong>返回的字节。</strong> 不是内存里的 <code>comparison</code> 对象。</p>
+<p>这个细节很重要：诊断消费的是<strong>已经写盘、已经被哈希的那一份</strong>。所以诊断报告的 <code>Source.SHA256</code> 能对得上磁盘上的文件。测试断言了这点（pipeline_test.go:126：<code>diagnosisReport.Source.SHA256 != digest(comparisonRaw)</code>）。</p>
+<p><strong>如果传内存对象，哈希可能对不上磁盘文件</strong>（比如中间被改了）。用磁盘字节保证&quot;我诊断的就是你看到的那一份&quot;。</p>
+<h3 id="第-7-步汇总157-pipelinego179">第 7 步：汇总（:157 → pipeline.go:179）</h3>
+<pre><code class="language-go">func finish(outputDir string, report Report) (Report, error) {
+    report.Artifacts = append(report.Artifacts, Artifact{
+        Step: &quot;pipeline_summary&quot;, File: SummaryFile,
+        DigestScope: &quot;pipeline_report_with_own_sha256_blank&quot;,
+    })
+    self := len(report.Artifacts) - 1
+    report.Artifacts[self].SHA256 = digest(canonicalSummary(report))
+</code></pre>
+<p><strong>这是全场最精巧的一段，值得单独讲。</strong></p>
+<p><code>pipeline_report.json</code> 里记录了它自己的 SHA-256。但一个文件的哈希包含它自己的哈希字段，就会陷入自引用悖论：算哈希的时候用哪个值？</p>
+<p>解法是 <code>canonicalSummary</code>（pipeline.go:195）：</p>
+<pre><code class="language-go">copy := report
+copy.Artifacts = append([]Artifact(nil), report.Artifacts...)   // 浅拷贝切片
+for i := range copy.Artifacts {
+    if copy.Artifacts[i].Step == &quot;pipeline_summary&quot; {
+        copy.Artifacts[i].SHA256 = &quot;&quot;      // 把自己的 SHA 字段置空
+    }
+}
+data, _ := json.MarshalIndent(copy, &quot;&quot;, &quot;  &quot;)
+return append(data, &#39;\n&#39;)
+</code></pre>
+<p><strong>把 summary 自己的 SHA 字段清空后再算哈希。</strong><code>DigestScope</code> 字段名 <code>pipeline_report_with_own_sha256_blank</code> 就是<strong>公开说明这个约定</strong>——消费者看到这个 scope，就知道校验时也要先把那个字段置空再算。</p>
+<p><strong>这是诚实的自引用哈希，不是伪造的。</strong> 如果不写 scope 字段，消费者可能误以为这是对整个文件的哈希，算出来对不上就会以为报告被篡改。</p>
+<p>测试 pipeline_test.go:132 的 <code>assertCanonicalSummaryDigest</code> 验证的就是这个约定。</p>
+<h3 id="第-8-步stop-的语义166-177">第 8 步：stop() 的语义（:166-177）</h3>
+<pre><code class="language-go">func stop(outputDir string, report Report, step, code string, cause error) (Report, error) {
+    report.StoppedStep = step
+    report.RejectionReasons = append(report.RejectionReasons, Reason{Code: code})
+    finished, err := finish(outputDir, report)
+    if err != nil { return finished, err }
+    if cause != nil { return finished, fmt.Errorf(&quot;%s: %w&quot;, step, cause) }
+    return finished, fmt.Errorf(&quot;%s rejected: %s&quot;, step, code)
+}
+</code></pre>
+<p><code>stop</code><strong>永远返回非 nil error。</strong> 不管什么原因停止，调用方收到的 <code>err</code> 都不为空。同时返回<strong>已完成部分的 report</strong>。</p>
+<p>所以调用方的正确写法是（Webhook 就是这么写的）：</p>
+<pre><code class="language-go">report, err := runPipeline(...)
+if err != nil { ... 但 report 仍然有效，要合并 ... }
+</code></pre>
+<p><strong>只看</strong><code>err</code><strong>会以为什么都没做；只看</strong><code>report</code><strong>会以为成功了。两个都要看。</strong></p>
+<h3 id="四个变量全程跟下来">四个变量，全程跟下来</h3>
+<p>按第 5 节开头的要求，只跟四个：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>谁产生</th>
+<th>谁消费</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>input.SQL</code></td>
+<td>Webhook 的 <code>sqls[0]</code></td>
+<td><code>Admit</code><br>、<code>RunExplain</code></td>
+</tr>
+<tr>
+<td><code>input.CandidateSpec</code></td>
+<td>启动时闭包持有的 <code>candidateRaw</code></td>
+<td><code>RunExplain</code><br>（内部再 DecodeStrict）</td>
+</tr>
+<tr>
+<td><code>candidateReport</code><br>/ <code>baselineRaw</code></td>
+<td><code>RunExplain</code><br>返回</td>
+<td>前者→对照的元数据 + 写盘；后者→对照的另一侧输入</td>
+</tr>
+<tr>
+<td>最终 <code>report</code></td>
+<td><code>Run</code><br>里累积</td>
+<td>Webhook 的 <code>process</code><br>合并 → <code>DeliveryReport</code><br>→ HTTP + 文件</td>
+</tr>
+</tbody></table></div>
+<p><strong>注意第 3 行</strong>：阶段二的两个返回值走向不同消费者。<code>candidateReport</code> 是结构化的、可拆解的；<code>baselineRaw</code> 是原样的字节。</p>
+<h3 id="三个必须知道的报告语义">三个必须知道的报告语义</h3>
+<ol>
+<li><code>CompletedSteps</code> 记录成功完成的阶段，按顺序。4 步全跑 = <code>[&quot;sql_admit&quot;,&quot;candidate_explain&quot;,&quot;plan_compare&quot;,&quot;diagnosis&quot;]</code>。</li>
+<li><code>StoppedStep</code> 只在 <code>stop()</code> 被调用时有值。</li>
+<li><code>Artifacts</code> 每个元素带 <code>Step</code>、<code>File</code>、<code>SHA256</code>。<code>pipeline_summary</code> 是最后追加的，带 <code>DigestScope</code>。</li>
+</ol>
+<p><code>StepDurations</code><strong>是阶段编排耗时，不是 SQL 查询基准。</strong> 字段注释（:46-47）明确写了 &quot;not a benchmark result&quot;。测试断言 <code>WallClockMS &lt; 0</code> 是无效值，不断言任何性能阈值。</p>
+<p><strong>这条管线不做</strong><code>bench</code><strong>性能测量。</strong> 它输出的是<strong>计划和诊断证据</strong>，上限 L1。要声称性能收益，得走 <code>admit-series</code>。</p>
+<h3 id="本节证据-2">本节证据</h3>
+<p>pipeline_test.go:16 逐条断言：</p>
+<ul>
+<li><code>runnerCalled == false</code> → 准入拒绝时<strong>不调用</strong> <code>RunExplain</code>；</li>
+<li><code>report.StoppedStep != StepSQLAdmit</code> → 停在准入阶段；</li>
+<li><code>len(report.CompletedSteps) != 1</code> → 但准入阶段算<strong>已完成</strong>（因为已经写盘）；</li>
+<li><code>len(report.Artifacts) != 2</code> → 准入工件 + 汇总工件；</li>
+<li><code>report.Artifacts[0].SHA256 != digest(admissionRaw)</code> → 汇总里的哈希和磁盘文件一致；</li>
+<li>最后循环检查 <code>CandidateFile</code>/<code>ComparisonFile</code>/<code>DiagnosisFile</code> <strong>必须不存在</strong>。</li>
+</ul>
+<p>pipeline_test.go:72 断言成功路径：<code>CompletedSteps == 4</code>、<code>Artifacts == 5</code>（4 阶段 + 1 汇总）、<code>StepDurations == 4</code>，且两个 provenance 哈希非空。</p>
+<hr>
+<h2 id="第-6-节测试与完成标准">第 6 节：测试与完成标准</h2>
+<h3 id="实际跑了一遍2026-10-07">实际跑了一遍（2026-10-07）</h3>
+<pre><code class="language-text">ok  sqlsentinel/internal/webhook     0.327s
+ok  sqlsentinel/internal/sqladmit    0.295s
+ok  sqlsentinel/internal/candidate   0.361s
+ok  sqlsentinel/internal/pipeline    0.347s
+</code></pre>
+<p>7 个顶层测试全 PASS（<code>TestRejectedAndMultipleSQLNeverReachPipeline</code> 含 2 个子测试）。<strong>本次未启动数据库或 Kafka。</strong></p>
+<h3 id="测试的边界要说清楚">测试的边界要说清楚</h3>
+<ul>
+<li>Webhook 测试注入的是<strong>模拟 runner</strong>（<code>newTestServer</code> 传闭包），不碰 MySQL。它证明的是&quot;入口/编排/报告行为&quot;。</li>
+<li>Pipeline 测试同样注入模拟 <code>RunExplain</code>。</li>
+<li><code>TestAsyncEnqueueUsesDurableDeliveryIdempotency</code> 用的是 <code>kafka.NewMemoryStore()</code>，不是真 Kafka。</li>
+</ul>
+<p><strong>所以：测试证明&quot;编排正确&quot;，不证明&quot;影子库验证正确&quot;。</strong> 真跑一次 EXPLAIN 需要起两个 MySQL 容器。原稿记录中未执行该项验证。</p>
+<hr>
+<h2 id="输入验证调用链与-candidatespec-注入点">输入验证调用链与 CandidateSpec 注入点</h2>
+<pre><code class="language-text">┌─ 启动（一次性）─────────────────────────────────────────────────────────┐
+│  runWebhookServe                                                       │
+│    ├─ os.ReadFile(*candidatePath)        → candidateRaw  []byte        │
+│    ├─ candidate.DecodeStrict(candidateRaw)                            │
+│    ├─ candidate.Validate(spec)              失败 → 进程不启动           │
+│    ├─ pipelineExplainRunner(*chunk)        → 函数值（闭包）             │
+│    └─ webhook.New(Config{ RunPipeline: func(ctx, sql, artifacts) {    │
+│              return pipeline.Run(ctx, Input{                          │
+│                SQL: sql,                     ← 每次请求变               │
+│                CandidateSpec: candidateRaw, ← ★ 闭包捕获，进程级不变    │
+│                OutputDir: artifacts,         ← 每次请求变               │
+│                RunExplain: &lt;上面的函数值&gt;,                              │
+│              })                                                        │
+│           }})                                                          │
+│    └─ http.Server.ListenAndServe()              ← 阻塞，持有 candidateRaw │
+└────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼  （收到 POST）
+ServeHTTP
+  ① 方法检查                → 405
+  ② parseSignature          → 401 signature_missing
+  ③ readBody（≤1MiB）       → 400 / 413
+  ④ HMAC-SHA256 + hmac.Equal→ 401 invalid_signature
+  ⑤ sem 并发门（容量 1–4）  → 429 queue_full
+  ⑥ decodeEvent（严格 JSON）→ 400 invalid_event
+  ⑦ deliveryID 正则 + PR 号 → 400 invalid_delivery
+  ⑧ process(r.Context(), event)
+        ├─ ExtractAddedSQL(diff)  → []string
+        ├─ for each: sqladmit.Admit  → report.Admissions
+        ├─ 0 条 / 被拒 / 多条  → persist() ──┐
+        ├─ asyncEnqueue != nil → 入队（S4，今天不跟）
+        └─ 同步分支：
+           ├─ createDeliveryDir(id)   已存在 → 409 delivery_output_exists
+           ├─ s.runPipeline(ctx, sqls[0], &lt;dir&gt;/artifacts)
+           │     └─ pipeline.Run
+           │          ├─ prepareOutputDir   非空 → 报错
+           │          ├─ sqladmit.Admit      → 写 sql_admission.json
+           │          │     拒绝 → stop → 写 pipeline_report.json → 返回 err
+           │          ├─ input.RunExplain(ctx, sql, candidateRaw)
+           │          │     ├─ candidate.DecodeStrict   ← 请求级再校验一次
+           │          │     ├─ shadowgate.Prepare
+           │          │     ├─ openBoth                 ← 双库句柄
+           │          │     ├─ Gate.Run(ctx, prepared)  ← ★★★ S2 停在这里
+           │          │     └─ baseline: EXPLAIN FORMAT=JSON（永不 DDL）
+           │          │     返回 (candidateReport, baselineRaw)
+           │          ├─ 写 candidate_explain_report.json
+           │          ├─ plancompare.BuildReport(meta, baselineRaw, cand.ExplainJSON)
+           │          │     写 explain_comparison_report.json
+           │          ├─ diagnosis.Analyze(&lt;磁盘上的 comparisonBytes&gt;)
+           │          │     写 diagnostic_hypotheses.json
+           │          └─ finish → 写 pipeline_report.json（含规范化自摘要）
+           ├─ 合并：EvidenceLevel / Eligible / CompletedSteps /
+           │        Artifacts / RejectionReasons
+           ├─ runErr != nil → 追加 pipeline_unavailable
+           └─ runErr==nil &amp;&amp; StoppedStep==&quot;&quot; → verification_completed
+        ├─ writeDelivery: webhook_report.json + comment.md
+        └─ 返回 report
+  ⑨ writeJSON 202 {delivery_id, verification_status, job_id, duplicate}
+</code></pre>
+<p><strong>CandidateSpec 的注入点只有一个</strong>：<code>Config.RunPipeline</code> 的闭包。它从启动时的 <code>candidateRaw</code> 闭包捕获，在每个请求调用 <code>pipeline.Run</code> 时作为 <code>Input.CandidateSpec</code> 传入。SQL 走参数，候选走闭包——<strong>变化的走参数，不变的走闭包</strong>。</p>
+<hr>
+<h2 id="现象机制与代码依据">现象、机制与代码依据</h2>
+<h3 id="笔记-1签名错误不进入处理">笔记 1：签名错误不进入处理</h3>
+<ul>
+<li><strong>现象</strong>：请求带 <code>sha256=&lt;64 个 0&gt;</code>，收到 401 <code>invalid_signature</code>。<code>out-dir</code> 下没有任何文件，runner 一次都没被调用。</li>
+<li><strong>机制</strong>：<code>ServeHTTP</code> 的五个拒绝分支全部<strong>在</strong> <code>process</code> <strong>之前</strong>。签名的计算顺序是&quot;读 body → HMAC → 比对&quot;，比对失败直接 <code>return</code>。body 从未被 <code>json.Decode</code>，<code>delivery_id</code> 从未被用于建目录。</li>
+<li><strong>代码</strong>：webhook.go:151-156。</li>
+<li><strong>测试</strong>：webhook_test.go:48 断言 <code>calls == 0 &amp;&amp; deliveryEntries(root) == 0</code>；webhook_test.go:24 用 <code>readTracker</code> 断言缺签名时 body <strong>一个字都没读</strong>。</li>
+</ul>
+<h3 id="笔记-2锁定-sql-不调用-explain">笔记 2：锁定 SQL 不调用 Explain</h3>
+<ul>
+<li><strong>现象</strong>：diff 里是 <code>SELECT * FROM orders FOR UPDATE</code>，收到 <strong>202</strong>（不是错误码），<code>comment.md</code> 里写 <code>verification_unavailable</code> + <code>locking_read</code>，<code>artifacts/</code> 目录<strong>不存在</strong>。</li>
+<li><strong>机制</strong>：<code>FOR UPDATE</code> 不影响 <code>ExtractAddedSQL</code>（它只按 <code>+</code> 行拼接）。<code>sqladmit.Admit</code> 扫描出 token 后，在 forbidden 循环里命中 <code>&quot; FOR UPDATE &quot;</code> → <code>Accepted: false, ReasonCode: &quot;locking_read&quot;</code>。<code>process</code> 在 <code>:207</code> 看到拒绝原因就 <code>persist()</code> 返回，<strong>根本不调</strong> <code>s.runPipeline</code>，所以 <code>artifacts/</code>（由 <code>pipeline.Run</code> 内部的 <code>prepareOutputDir</code> 创建）从未被创建。</li>
+<li><strong>代码</strong>：webhook.go:202-209；准入判定在 admit.go:38。</li>
+<li><strong>测试</strong>：webhook_test.go:86 的 <code>locking</code> 子测试，断言 <code>rec.Code == 202 &amp;&amp; calls == 0</code> <strong>且</strong> <code>os.Stat(.../artifacts)</code> 是 <code>IsNotExist</code>。</li>
+</ul>
+<h3 id="笔记-3正常输入按顺序生成工件">笔记 3：正常输入按顺序生成工件</h3>
+<ul>
+<li><strong>现象</strong>：diff 里是 <code>SELECT * FROM orders</code>，收到 202。<code>artifacts/</code> 下有 5 个文件，<code>webhook_report.json</code> 里 <code>CompletedSteps</code> 有 4 个，<code>comment.md</code> 里能看到每个工件的 SHA-256。</li>
+<li><strong>机制</strong>：准入通过 → 调 <code>RunExplain</code> 拿 <code>(candidateReport, baselineRaw)</code> → 用 <code>candidateReport</code> 的元数据 + 两侧 EXPLAIN 建对照 → 用<strong>磁盘上的对照字节</strong>做诊断 → <code>finish</code> 写汇总。每阶段 <code>writeStage</code> 先写盘再记账，所以&quot;写盘的哈希&quot;和&quot;报告里记的哈希&quot;天然一致。</li>
+<li><strong>代码</strong>：pipeline.go:99-157，注意 <code>:148</code> 传的是 <code>comparisonBytes</code> 不是内存对象。</li>
+<li><strong>测试</strong>：pipeline_test.go:72 断言 <code>CompletedSteps == 4 &amp;&amp; Artifacts == 5 &amp;&amp; StepDurations == 4</code>，且诊断报告的 <code>Source.SHA256</code> 等于磁盘上对照文件的实际哈希。</li>
+</ul>
+<hr>
+<h2 id="输入验证链路小结">输入验证链路小结</h2>
+<p>三个问题的答案，每个 30 秒。</p>
+<p><strong>Q1：为什么验签不能替代 SQL 准入？</strong></p>
+<p>验签证明的是&quot;这份请求是真的、没被改动&quot;，不是&quot;这份请求的内容是安全的&quot;。签名是由 secret + 原始字节算出来的——一个持有 secret 的合法发送方完全可以签一份 <code>SELECT * FROM orders FOR UPDATE</code>，签名照样匹配。验签是<strong>传输层真实性</strong>，准入是<strong>内容层安全性</strong>，两者解决不同问题。项目里 <code>TestRejectedAndMultipleSQLNeverReachPipeline</code> 就是拿<strong>签名正确</strong>的请求跑 <code>FOR UPDATE</code>，结果仍然被拒。另外验签也不防重放——同一份合法 body 可以无限重发，重复投递靠的是 <code>createDeliveryDir</code> 的目录存在性检查返回 409。</p>
+<p><strong>Q2：为什么不用任意原始 DDL 表达候选？</strong></p>
+<p>因为候选索引最终会变成一条真执行的 <code>CREATE INDEX</code>。如果让调用方（尤其是 LLM）直接写 DDL 字符串，那这个字段就是一个任意 SQL 通道——若允许直接写 <code>CREATE INDEX</code>，后续就能写 <code>DROP TABLE</code> 加注释混过去。所以 <code>Spec</code> 只保留 <code>table</code>/<code>index_name</code>/<code>columns</code> 三个结构化字段，<code>DecodeStrict</code> 用 <code>DisallowUnknownFields</code> 加尾随值检查把 <code>ddl</code>、<code>sql</code> 这类字段在格式层面就拒掉，<code>Validate</code> 用标识符正则、<code>idx_cand_</code> 前缀、1–4 列、方向白名单限制形状，最后由 <code>CompileCreateIndex</code><strong>确定性</strong>地拼出 DDL。外部只表达&quot;想试什么索引&quot;，程序决定&quot;怎么生成 DDL&quot;。<code>TestValidateRejectsUnsafeSpecs</code> 里 <code>orders; DROP TABLE orders</code> 和 <code>LOWER(user_id)</code> 都是这么被挡住的。</p>
+<p><strong>Q3：为什么管线成功不直接等于性能优化成功？</strong></p>
+<p>因为管线做的四件事是<strong>准入 → EXPLAIN → 计划对照 → 诊断</strong>，全是<strong>计划级证据</strong>。<code>EXPLAIN FORMAT=JSON</code> 说的是优化器<strong>打算</strong>怎么走，不是它<strong>实际</strong>跑多快。计划对照报告里能看出 baseline 全表扫描 + filesort、candidate 走索引 + 无 filesort，这只证明&quot;计划变了&quot;。要证明&quot;更快&quot;，必须在受控数据上真实执行多次、测中位数和 MAD 噪声比、且噪声低于阈值、跨多次独立标定都合格——那是 <code>bench</code> + <code>admit-series</code> 的活。所以管线的 <code>EvidenceLevel</code> 从初始化起就写死 <code>L1</code>、<code>EligibleForPerformanceClaim</code> 从初始化起就写死 <code>false</code>，整条管线<strong>没有任何一处</strong>能把它改成 <code>true</code>。<code>StepDurations</code> 也明确注明是编排耗时不是基准。这是这个项目最核心的诚实性约束：<strong>计划的改善不等于性能的改善，证据等级不能靠编排成功来升级。</strong></p>
+<hr>
+<p><strong>S1 完成。</strong> 下一任务 S2 从 pipelineExplainRunner 第 77 行的 <code>Gate.Run(ctx, prepared)</code> 入口开始，讲双库校验、候选索引创建和 EXPLAIN 的真实执行过程。</p>
+<hr>
+<p>上一篇：<a href="../../blog/lake-282383607/index.html">SQL Sentinel：SQL 优化验证架构与证据链</a></p>
+<p>下一篇：<a href="../../blog/sql-sentinel-index-plan-validation/index.html">SQL Sentinel：候选索引验证与执行计划对比</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

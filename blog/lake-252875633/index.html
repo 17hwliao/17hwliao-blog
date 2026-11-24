@@ -1,0 +1,99 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java List 与迭代器：集合操作和 ArrayList 扩容 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java List 与迭代器：集合操作和 ArrayList 扩容</h1><time datetime="2026-01-12T23:54:11.000Z">2026年1月13日</time><ul>
+<li>集合根接口 :</li>
+</ul>
+<p>其他具体实现放十六天的不同集合中去了</p>
+<ol>
+<li>boolean containsAll( Collection&lt;?&gt; c ) ; //判断所给是否为子集</li>
+</ol>
+<p>实际使用 : List1.containsAll(List2)</p>
+<ol>
+<li>default boolean removeIf( Predicate&lt;? super T&gt; filter ) //按条件删除元素</li>
+</ol>
+<p>boolean changed = numbers.removeIf(n -&gt; n % 2 == 0); //删除队内偶数</p>
+<ol>
+<li><p>clear( Collection&lt;?&gt; c ) //清除当前集合中的全部元素</p>
+</li>
+<li><p>boolean equals( Object c ) //比较是否元素相等</p>
+</li>
+</ol>
+<p>int hashcode() //不同集合中求hashcode的方法也不同</p>
+<ol>
+<li><p>boolean` addAll(int pos , collection&lt;? extends T&gt;c ) 在指定位置插入指定集合的全部元素 : 底层迭代器实现</p>
+</li>
+<li><p>boolean containsAll( Collection&lt;?&gt;c )在尾部添加该列表的全部元素</p>
+</li>
+<li><p>default void replaceAll( UNaryOperator&lt;T&gt; operator ) //对所有元素执行所给操作</p>
+</li>
+<li><p>default void sort( Comparator &lt;? super T&gt;c ) //基础排序</p>
+</li>
+<li><p>get( int pos ) //得到pos位置的数 , set(int pos) //设置pos位置的元素</p>
+</li>
+<li><p>独特的搜索函数 : int indexof( Object o) 查询该元素在当前列表第一次出现下标 int lastIndexOf( Object o ) 查询该元素在当前列表中的最后一次出现</p>
+</li>
+<li><p>List&lt;T&gt;subList( int fromIndex , int toIndex )返回当前集合在指定范围内的子集</p>
+</li>
+<li><p>内部实现的ArrayList内部实现的add等方法 , 内部都会调用grow扩容方法 ; 底层 : private Object[] grow( int mincapacity )</p>
+</li>
+</ol>
+<p>列表内部空间大小 不为0时 , 按照当前长度 , 最小( 传入 )和推荐( 当前大小的0.5倍 )长度三参数实现扩容操作 为0时, 初始化大小为max(mincapacity , 10 ) 内部参数固定为10</p>
+<p>扩容的辅助方法 : newlength( int oldLength , int minGrowth , int prefGrowth ) 比较minGrowth和 prefGrowth得出新的长度 max(,,,) + old</p>
+<p>超出 : return hugeLength(int oldLenfth m int minGrowth) 三种判断</p>
+<p>&lt;0 超出int最大值 || &lt;= 最大长度范围 ,len = 最大长度 || 位于最大长度和int 范围之间的直接返回/抛出异常</p>
+<p>|| 不加参数 , 重载调用的是容量+1 , 操作</p>
+<ul>
+<li>List列表 ( 线性表 )</li>
+</ul>
+<p>在定义集合类时直接 List&lt;类型&gt; 名 = new 需要实现的数据结构类型&lt;&gt;() ;</p>
+<p>接口定义 , 可以使用全部方法 , 方便之后转化类型</p>
+<p>创建顺序表 : ArrayList&lt;&gt;() ; LinkedList&lt;&gt;() ;</p>
+<p>实现创建列表 + 初始化为已知数组 : List&lt;类型&gt; 名= Array.asList() ; 直接传多个元素 , 引用类型都是 OK 的</p>
+<ul>
+<li>Java迭代器</li>
+</ul>
+<p>内部指针指向的是原数组中的元素的顺序不会变 ;</p>
+<p>for(var it : list){}</p>
+<p>在编译后转化为 Iterator var2 = list.i terator() ;</p>
+<p>while( var2.hasNext() ){ String s = (String)var2.next() } ;</p>
+<p>集合类都支持 foreach 语句 :</p>
+<p>Iterator 内部定义的方法 : boolean hasNext() ;先判断才向后迭代</p>
+<p>T next() ; 遍历当前的元素 ;</p>
+<p>迭代器名.remove 移除上一个被遍历元素 ;</p>
+<p>注意迭代器是一次性用品;</p>
+<p>局部变量是不可放置在lambda方法中的 , 这里也不可以放置</p>
+<p>转化为静态变量可实现 ++ ;</p>
+<p>list.forEach(lambda语句) : 内部实现依然是迭代器 -&gt; for(T t : this) -&gt; iterator 迭代器while循环实现 常见一般为输出语句 -&gt; 可以转化为方法引用 ; ( 局部变量不可以输入 )</p>
+<ul>
+<li>最底层( 低过Object )的接口Iterable :</li>
+</ul>
+<p>内部装载的是 Iterator 迭代器的创建方法 :</p>
+<p>通过借Iterable提供迭代器生成方法, 只要实现类, 就可以调用foreach语法 :</p>
+<pre><code class="language-text">static class Test implements Iterable&lt;String&gt;{
+    @Override
+    public Iterator&lt;String&gt; iterator() {
+        return new Iterator&lt;String&gt;(){   //生成匿名的Iterator对象
+            @Override
+            public boolean hasNext() {
+                return true ;
+            }
+            @Override
+            public String next(){
+                return &quot;gay&quot; ;
+            }
+        } ;
+    }
+}
+</code></pre>
+<p><strong>ListIterator</strong> 看作是 <strong>Iterator</strong> 版增强版 : 列表专用的</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td></td><td><p><span>属性</span></p></td><td><p><span>Iterator</span></p></td><td><p><span>ListIterator</span></p></td></tr><tr><td></td><td><p><strong><span>遍历方向</span></strong></p></td><td><p><span>只能向前（单向）</span></p></td><td><p><span>双向（向前和向后）</span></p></td></tr><tr><td></td><td><p><strong><span>获取索引</span></strong></p></td><td><p><span>❌</span><span> 不支持</span></p></td><td><p><span>✅</span><span> </span><code><span>nextIndex()</span></code></p><p><span>、</span><code><span>previousIndex()</span></code></p></td></tr><tr><td></td><td><p><strong><span>修改元素</span></strong></p></td><td><p><span>❌</span><span> 不支持</span></p></td><td><p><span>✅</span><span> </span><code><span>set(E e)</span></code></p><p><span> </span><span>替换当前元素</span></p></td></tr><tr><td></td><td><p><strong><span>添加元素</span></strong></p></td><td><p><span>❌</span><span> 不支持</span></p></td><td><p><span>✅</span><span> </span><code><span>add(E e)</span></code></p><p><span> </span><span>添加元素</span></p></td></tr><tr><td><p><span> </span></p></td><td><p><strong><span>前一个元素</span></strong></p></td><td><p><span>❌</span><span> 不支持</span></p></td><td><p><span>✅</span><span> </span><code><span>previous()</span></code></p><p><span>、</span><code><span>hasPrevious()</span></code></p></td></tr><tr><td></td><td><p><strong><span>适用范围</span></strong></p></td><td><p><span>所有Collection</span></p></td><td><p><span>仅List及其子类</span></p></td></tr></tbody></table></div>
+
+<p>LisrtIterator&lt;String&gt; listIterator = list.listIterator() ;</p>
+<p>相当于创建了一个list的迭代器 :</p>
+<p>可以实现动态加法 ; listIterator.add(&quot; &quot;) ,每执行一次操作执行一次add操作 ;</p>
+<p>实现向前迭代 :( 使用的是ListIterator 创建迭代器)</p>
+<p>iterator.hasPrevious() [ while条件 ]</p>
+<p>String next = iterator.previous() ; 向前迭代取值 ;</p>
+<p>`</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,123 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin：JSON 响应与结果封装 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin：JSON 响应与结果封装</h1><time datetime="2026-05-24T03:19:47.000Z">2026年5月24日</time><p>现在大部分的前后端交互都是以json为主，所以gin中最常用的就是json响应</p>
+<p>它的用法非常简单</p>
+<ul>
+<li><strong>外层</strong> <code>http.StatusOK</code>：<strong>HTTP 响应状态码</strong>（给浏览器 / 接口调用方看）</li>
+<li><strong>内层</strong> <code>&quot;code&quot;: http.StatusOK</code>：<strong>业务自定义返回码</strong>（接口 JSON 数据里的字段，前后端约定使用）</li>
+<li>gin.H{ } == map[string]any 的投射 ;</li>
+<li>上面一条补充一下</li>
+<li>gin.H是map[string]interface{}的简写，方便快速构建JSON响应。等价于：</li>
+</ul>
+<pre><code class="language-text">map[string]interface{}{
+    &quot;code&quot;:    0,
+    &quot;message&quot;: &quot;ok&quot;,
+    &quot;data&quot;:    map[string]interface{}{&quot;service&quot;: &quot;liuxi&quot;},
+}
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">c.JSON(200, gin.H{
+  &quot;code&quot;: 0,
+  &quot;msg&quot;: &quot;ok&quot;,
+})
+</code></pre>
+<p>但是我们都会对其进行一番封装，例如标准响应格式 code，data，msg</p>
+<p>前端可以判断code的值来确定操作是否成功</p>
+<p>不过code的定义就是每家公司都有不同的定义了</p>
+<p>我比较习惯于 code=0 为操作成功的状态码，非0值就是具体的错误码，这样可以方便定位错误</p>
+<p>例如 code=1001 是权限错误，code=1002 是资源不存在等</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+	&quot;awesomeProject5/data/res&quot;
+	&quot;github.com/gin-gonic/gin&quot;
+)
+
+func main() {
+	h := gin.Default()
+
+	h.GET(&quot;/login&quot;, func(c *gin.Context) {
+		//c.JSON(http.StatusOK, gin.H{
+		//	&quot;code&quot;:    http.StatusOK,
+		//	&quot;message&quot;: &quot;success&quot;,
+		//	&quot;data&quot;:    map[string]any{&quot;message&quot;: &quot;ws is a gay&quot;},
+		//})
+		res.OKwithMsg(c, &quot;success&quot;)
+
+	})
+	h.GET(&quot;/user&quot;, func(c *gin.Context) {
+		res.OKwithData(c, map[string]any{
+			&quot;name&quot;:   &quot;17hwliao&quot;,
+			&quot;age&quot;:    10,
+			&quot;gender&quot;: &quot;male&quot;,
+		}, &quot;success&quot;)
+	})
+
+	h.POST(&quot;/user&quot;, func(c *gin.Context) {
+		res.FailedWithMsg(c, &quot;ws is a gay&quot;)
+	})
+
+	h.Run(&quot;:9090&quot;)
+}
+</code></pre>
+<pre><code class="language-text">package res
+
+import (
+    &quot;net/http&quot;
+    &quot;github.com/gin-gonic/gin&quot;
+)
+
+type Response struct {
+    Code    int    `json:&quot;code&quot;`
+    Message string `json:&quot;message&quot;`
+    Data    any    `json:&quot;data&quot;`
+}
+
+var CodeMap = map[int]string{
+    1001: &quot;no access&quot;,
+    1002: &quot;access&quot;,
+}
+
+func response(c *gin.Context, code int, data any, message string) {
+    c.JSON(200, Response{
+       Code:    code,
+       Data:    data,
+       Message: message,
+    })
+}
+
+func OKwithData(c *gin.Context, data any, msg string) {
+    OK(c, data, msg)
+}
+
+func OKwithMsg(c *gin.Context, msg string) {
+    OK(c, gin.H{}, msg)
+}
+
+func OK(c *gin.Context, data any, msg string) {
+    response(c, http.StatusOK, data, msg)
+}
+
+func Failed(c *gin.Context, code int, data any, msg string) {
+    response(c, code, data, msg)
+}
+
+func FailedWithMsg(c *gin.Context, msg string) {
+    Failed(c, http.StatusInternalServerError, gin.H{}, msg)
+}
+
+func FailedWithCode(c *gin.Context, code int) {
+    Failed(c, code, gin.H{}, CodeMap[code])
+}
+</code></pre>
+<p>封装之后，使用就很简单了</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">res.OkWithMsg(c, &quot;登陆成功&quot;)
+res.OkWithData(c, map[string]any{
+      &quot;name&quot;: &quot;枫枫&quot;,
+    })
+res.FailWithMsg(c, &quot;参数错误&quot;)
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

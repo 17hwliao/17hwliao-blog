@@ -1,0 +1,15 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Logrus：日志级别与结构化字段 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Logrus：日志级别与结构化字段</h1><time datetime="2026-07-17T06:36:17.000Z">2026年7月17日</time><p>一个日志篇的一种过渡吧算 :</p>
+<p>先简单入门一下日志 : logrus, 本质上就是替换掉过多使用的 fmp ;</p>
+<pre><code class="language-text">import &quot;github.com/sirupsen/logrus&quot;
+</code></pre>
+<pre><code class="language-text">logrus.Debug(&quot;开发调试信息&quot;)
+logrus.Info(&quot;普通运行信息&quot;)
+logrus.Warn(&quot;警告，但程序可继续&quot;)
+logrus.WithError(err) 不会输出错误日志,只会准备一条附带错误的日志
+logrus.Error(&quot;发生错误&quot;)
+WithField(...) ：把业务信息附加到日志
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

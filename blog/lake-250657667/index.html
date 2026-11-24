@@ -1,0 +1,82 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 异常实践：抛出、捕获与清理 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 异常实践：抛出、捕获与清理</h1><time datetime="2025-12-27T08:19:03.000Z">2025年12月27日</time><pre><code class="language-text">package Today;
+
+public class Exercise extends Exception{
+    public Exercise(String message){
+        super(message);
+
+    }
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+public class Exercise1 extends RuntimeException {
+    public Exercise1(String message) {
+        super(message);
+    }
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+import java.io.FileNotFoundException;
+
+public class Main {
+    public static void main(String[]args) throws CloneNotSupportedException , Exception , FileNotFoundException , InterruptedException {
+        Test n = new Test() ;
+        n.clone() ;
+
+        int[] array = new int[11] ;
+
+        //main(args) ;
+        try{
+            Object obj = null;
+            obj.toString();
+        } catch(Exception ws){
+            ws.printStackTrace() ;
+            System.out.println(&quot;ws是gay &quot; +&quot;ws发生异常&quot;+ ws.getMessage() );
+        }
+        System.out.println(&quot;ws是gay&quot;);
+
+        try{
+            tree() ;
+        } catch(Exercise1 ws){
+            System.out.println(&quot;ws是gay , 这里还是没词了&quot; + ws.getMessage());
+        }finally{
+            System.out.println(&quot;ws111是gay&quot;);
+        }
+
+    }
+    private static int div(int a , int b ) throws Exercise {
+        if(b == 0){
+            throw new Exercise(&quot;发现除0&quot; + &quot;     &quot;+&quot;ws是gay&quot;) ;
+        }
+        return a / b ;
+    }
+    /*
+    private static int div1(int a , int b ) throws FileNotFoundException , InterruptedException {
+        if(b == 0 ){
+            throw new FileNotFoundException() ;
+        }
+        if(b == - 1 ){
+            throw new InterruptedException() ;
+        }
+        return a / b ;
+    }
+     */
+    private static void tree() {
+        throw new Exercise1(&quot;我是ws , 我是gay , 单纯想抛出异常&quot;) ;
+    }
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+public class Test implements Cloneable{
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

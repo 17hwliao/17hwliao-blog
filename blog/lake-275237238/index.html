@@ -1,0 +1,81 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Protobuf：protoc 编译参数 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Protobuf：protoc 编译参数</h1><time datetime="2026-06-25T13:25:54.000Z">2026年6月25日</time><h1 id="最全-protoc-编译命令逐字段详解gogrpc-专用">最全 protoc 编译命令逐字段详解（Go+gRPC 专用）</h1>
+<p>命令原样：</p>
+<p>bash</p>
+<p>运行</p>
+<pre><code class="language-text">protoc -I . --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative stream.proto
+</code></pre>
+<hr>
+<h2 id="1-整体结构">1. 整体结构</h2>
+<p>plaintext</p>
+<pre><code class="language-text">protoc [通用参数] [插件输出参数] 你的文件.proto
+</code></pre>
+<hr>
+<h1 id="2-逐个参数详解">2. 逐个参数详解</h1>
+<h2 id="1protoc">1）<code>protoc</code></h2>
+<p>协议缓冲区<strong>主编译程序</strong>，核心命令，必须最先写。</p>
+<h2 id="2-i">2）<code>-I .</code></h2>
+<p><strong>全称：--include_path</strong> 简写：<code>-I</code> 作用：<strong>指定 proto 文件搜索根目录</strong></p>
+<ul>
+<li><code>.</code> = 当前执行命令的<strong>所在文件夹</strong></li>
+<li>当 proto 里写 <code>import &quot;xxx.proto&quot;</code>，就会从 <code>-I</code> 指定目录开始找</li>
+<li>可写多个：<code>-I ./dir1 -I ./dir2</code></li>
+<li>报错 <code>file not found</code> 90% 是 <code>-I</code> 路径不对</li>
+</ul>
+<h2 id="3--goout">3）<code>--go_out=.</code></h2>
+<ul>
+<li><code>--go_out</code>：调用 <strong>Go 语言代码生成插件</strong></li>
+<li><code>=.</code>：<strong>生成的 .pb.go 文件输出到当前目录</strong></li>
+<li>等价：<code>--go_out=输出目录</code></li>
+</ul>
+<h2 id="4--gooptpathssourcerelative">4）<code>--go_opt=paths=source_relative</code></h2>
+<p><code>--go_opt</code>：给 <strong>go 插件</strong>传配置选项<code>paths=source_relative</code><strong>核心作用：生成代码路径跟随 proto 源码路径</strong> 举例： 你文件在 <code>a/b/c.proto</code> 不加这个：生成到<strong>同级包路径</strong> 加了这个：<strong>在哪写 proto，代码就生成在哪</strong> 日常开发<strong>必加</strong>，解决包路径混乱。</p>
+<h2 id="5--go-grpcout">5）<code>--go-grpc_out=.</code></h2>
+<p>调用 <strong>gRPC 专用代码生成插件</strong> 生成带服务注册、客户端调用、grpc 接口方法的代码<code>=.</code> 同样输出到当前目录</p>
+<h2 id="6--go-grpcoptpathssourcerelative">6）<code>--go-grpc_opt=paths=source_relative</code></h2>
+<p>给 <strong>grpc 插件</strong>也开启「源码相对路径」 和上面 go_opt 配套成对使用，缺一容易路径错乱。</p>
+<h2 id="7最后-streamproto">7）最后 <code>stream.proto</code></h2>
+<p><strong>你要编译的 proto 源文件</strong></p>
+<ul>
+<li>单个文件：直接写文件名</li>
+<li>多个文件：空格隔开 <code>a.proto b.proto</code></li>
+<li>批量编译整个文件夹：<code>*.proto</code></li>
+</ul>
+<hr>
+<h1 id="3-最简记忆固定模板以后直接抄">3. 最简记忆固定模板（以后直接抄）</h1>
+<h2 id="单文件编译最常用">单文件编译（最常用）</h2>
+<p>bash</p>
+<p>运行</p>
+<pre><code class="language-text">protoc -I . --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative 你的文件.proto
+</code></pre>
+<h2 id="同目录全部-proto-一键编译">同目录全部 proto 一键编译</h2>
+<p>bash</p>
+<p>运行</p>
+<pre><code class="language-text">protoc -I . --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative *.proto
+</code></pre>
+<h2 id="子目录编译比如-serviceproto-文件夹">子目录编译（比如 service_proto 文件夹）</h2>
+<p>bash</p>
+<p>运行</p>
+<pre><code class="language-text">protoc -I . --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative service_proto/*.proto
+</code></pre>
+<hr>
+<h1 id="4-高频报错对应参数解决">4. 高频报错对应参数解决</h1>
+<ol>
+<li><strong>import 找不到文件</strong> → 改 <code>-I</code> 指向项目根目录</li>
+<li><strong>生成 go 文件跑到别处</strong> → 缺少 <code>paths=source_relative</code></li>
+<li><strong>只有结构体，没有 grpc 服务方法</strong> → 少写 <code>--go-grpc_out</code></li>
+<li><strong>包导入路径错乱</strong> → 两个 <code>paths=source_relative</code> 必须成对</li>
+</ol>
+<hr>
+<h1 id="5-精简缩写版日常最快">5. 精简缩写版（日常最快）</h1>
+<p>bash</p>
+<p>运行</p>
+<pre><code class="language-text">protoc -I. --go_out=. --go-grpc_out=. --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative *.proto
+</code></pre>
+<p>去掉空格不影响功能。</p>
+<hr>
+<h1 id="6-总结一句话背诵">6. 总结一句话背诵</h1>
+<p><code>protoc</code> 编译程序<code>-I</code> 找依赖目录<code>--go_out</code> 生成 go 结构体<code>--go-grpc_out</code> 生成 grpc 服务代码<code>paths=source_relative</code> 路径跟着源码走 最后写上你要编译的 proto 文件</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

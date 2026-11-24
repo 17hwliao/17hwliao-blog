@@ -1,0 +1,73 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Eino 入门：组件与环境搭建 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Eino 入门：组件与环境搭建</h1><time datetime="2026-08-03T12:25:39.000Z">2026年8月3日</time><h3 id="核心特性">核心特性</h3>
+<ul>
+<li>组件化设计：提供 ChatModel、Embedding、Retriever、Tool 等丰富的原子组件</li>
+<li>灵活编排：支持 Chain（链式）和 Graph（图式）两种编排方式</li>
+<li>生态集成：支持 OpenAI、ARK、Ollama、Qwen 等多种大模型</li>
+<li>高性能：基于 Go 语言，天然支持高并发场景</li>
+<li>易扩展：清晰的接口设计，方便自定义组件</li>
+</ul>
+<p>Eino 架构 :</p>
+<pre><code class="language-text">AI Application Layer
+(React Agent, RAG, Multi-Agent)
+
+Orchestration Layer
+(Chain, Graph, Workflow)
+
+Component Layer
+(ChatModel, Tool, Retriever, etc.)
+
+Integration Layer
+(OpenAI, ARK, Milvus, Redis, etc.)
+</code></pre>
+<h3 id="环境搭建">环境搭建</h3>
+<h4 id="前制要求">前制要求</h4>
+<p>Go , Git , API key</p>
+<h4 id="安装-eino">安装 Eino</h4>
+<pre><code class="language-text">- 创建项目目录
+mkdir eino-tutorial
+cd eino-tutorial
+- 初始化 Go 模板
+go mod init eino-tutorial
+-安装 Eino 核心库
+go get github.com/cloudwego/eino
+- 安装 Eino 扩展组件库
+go get github.com/cloudwego/eino-ext
+</code></pre>
+<h4 id="hello-eino">Hello Eino</h4>
+<pre><code class="language-text">func main() {
+	ctx := context.Background()
+	apiKey := &quot;sk-mimi&quot;
+  //创建对话模型对象 Apikey , Model , BaseURL 
+	ChatModel, err := deepseek.NewChatModel(ctx, &amp;deepseek.ChatModelConfig{
+		APIKey:  apiKey,
+		Model:   &quot;deepseek-chat&quot;,
+		BaseURL: &quot;https://api.deepseek.com&quot;,
+	})
+	if err != nil {
+		log.Fatalf(&quot;创建Model失败 : %v&quot;, err)
+	}
+  //使用schema.Message 拼凑 System 和 User的 message ; 
+	messages := []*schema.Message{
+		schema.SystemMessage(&quot;简短回复中文回答的小Ai助手&quot;),
+		schema.UserMessage(&quot;你好,简介一下Eino框架&quot;),
+	}
+	//使用 Generate产出回答; 
+  response, err := ChatModel.Generate(ctx, messages)
+	if err != nil {
+		log.Fatalf(&quot;消息未成功转发 : %v&quot;, err)
+	}
+
+	fmt.Printf(&quot;AI响应 : %s&quot;, response.Content)
+//最后只用 response.ResponseMeta 中的信息查看本次请求实现后携带的模型终端的信息
+	if response.ResponseMeta != nil &amp;&amp; response.ResponseMeta.Usage != nil {
+		fmt.Printf(&quot;\nToken 使用统计 : \n&quot;)
+		fmt.Printf(&quot;输入token : %d\n&quot;, response.ResponseMeta.Usage.PromptTokens)
+		fmt.Printf(&quot;输出token : %d\n&quot;, response.ResponseMeta.Usage.CompletionTokensDetails)
+		fmt.Printf(&quot;总计token : %d\n&quot;, response.ResponseMeta.Usage.TotalTokens)
+	}
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

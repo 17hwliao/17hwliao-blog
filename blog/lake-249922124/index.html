@@ -1,0 +1,117 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 多态：接口实现与方法重写 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 多态：接口实现与方法重写</h1><time datetime="2025-12-22T14:15:09.000Z">2025年12月22日</time><pre><code class="language-text">package io_17hwlioa;
+
+public class Exercise {
+    public static void main(String[] args) {
+
+        Student student = new Student(&quot;shiqi&quot; ) ;
+
+        test( student ) ;
+        student.teach() ;
+
+        Person p1 = new Person() ;
+        p1.study();
+        student.study(); ;
+        p1.teach() ;
+        p1.hello() ;
+        student.hello() ;
+
+    }
+
+    private static void test(Person s){
+        if(s instanceof Student stu){
+            stu.study();
+        } else if( s instanceof Person se){
+            se.teach() ;
+        } else{
+            System.out.println(&quot;111&quot;);
+        }
+    }
+
+
+
+
+
+
+
+
+
+}
+</code></pre>
+<pre><code class="language-text">package io_17hwlioa;
+
+
+public class Student extends Person implements Study ,Hello{
+    String name ;
+    int age  ;
+
+    public Student(String name, int age) {
+        super(name, age);
+        System.out.println(super.getname());
+    }
+    public Student(String name ){
+        super(name );
+        this.name = name ;
+        System.out.println(super.getname() + name);
+    }
+    public void study(){
+        System.out.println(&quot;我爱java&quot;);
+    }
+
+    @Override
+    public void teach(){
+        System.out.println(&quot;我要教同学java&quot;);
+    }
+
+    public void hello(){
+        System.out.println(&quot;hello&quot;);
+    }
+
+}
+</code></pre>
+<pre><code class="language-text">package io_17hwlioa;
+
+public interface Study {
+    void study() ;
+}
+</code></pre>
+<pre><code class="language-text">package io_17hwlioa;
+
+public interface Hello {
+    void hello() ;
+}
+</code></pre>
+<pre><code class="language-text">package io_17hwlioa;
+
+
+public class Student extends Person implements Study ,Hello{
+    String name ;
+    int age  ;
+
+    public Student(String name, int age) {
+        super(name, age);
+        System.out.println(super.getname());
+    }
+    public Student(String name ){
+        super(name );
+        this.name = name ;
+        System.out.println(super.getname() + name);
+    }
+    public void study(){
+        System.out.println(&quot;我爱java&quot;);
+    }
+
+    @Override
+    public void teach(){
+        System.out.println(&quot;我要教同学java&quot;);
+    }
+
+    public void hello(){
+        System.out.println(&quot;hello&quot;);
+    }
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

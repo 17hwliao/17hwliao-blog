@@ -1,0 +1,506 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>gRPC 流式通信与文件传输 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>gRPC 流式通信与文件传输</h1><time datetime="2026-06-25T12:42:10.000Z">2026年6月25日</time><p><img src="../../blogs/_assets/lakebook/3580f21d62e384b2c868dc67.png" loading="lazy" alt=""></p>
+<h2 id="普通rpc">普通rpc</h2>
+<p>一问一答式</p>
+<p>Protocol Buffers复制代码</p>
+<pre><code class="language-text">syntax = &quot;proto3&quot;;
+option go_package = &quot;/proto&quot;;
+
+service Simple {
+  rpc Fun(Request)returns(Response){}
+}
+message Request {
+  string name = 1;
+}
+message Response {
+  string Text = 1;
+}
+</code></pre>
+<p>服务端，客户端，代码同上期</p>
+<h2 id="服务端流式">服务端流式</h2>
+<h3 id="服务端">服务端</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;log&quot;
+  &quot;net&quot;
+)
+
+type ServiceStream struct{}
+
+func (ServiceStream) Fun(request *proto.Request, stream proto.ServiceStream_FunServer) error {
+  fmt.Println(request)
+  for i := 0; i &lt; 10; i++ {
+    stream.Send(&amp;proto.Response{
+      Text: fmt.Sprintf(&quot;第%d轮数据&quot;, i),
+    })
+  }
+  return nil
+}
+
+func main() {
+  listen, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)
+  if err != nil {
+    log.Fatal(err)
+  }
+  server := grpc.NewServer()
+  proto.RegisterServiceStreamServer(server, &amp;ServiceStream{})
+
+  server.Serve(listen)
+}
+</code></pre>
+<h3 id="客户端">客户端</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;context&quot;
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;google.golang.org/grpc/credentials/insecure&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;log&quot;
+)
+
+func main() {
+  addr := &quot;:8080&quot;
+  // 使用 grpc.Dial 创建一个到指定地址的 gRPC 连接。
+  // 此处使用不安全的证书来实现 SSL/TLS 连接
+  conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+  if err != nil {
+    log.Fatalf(fmt.Sprintf(&quot;grpc connect addr [%s] 连接失败 %s&quot;, addr, err))
+  }
+  defer conn.Close()
+  // 初始化客户端
+  client := proto.NewServiceStreamClient(conn)
+
+  stream, err := client.Fun(context.Background(), &amp;proto.Request{
+    Name: &quot;张三&quot;,
+  })
+  for i := 0; i &lt; 10; i++ {
+    response, err := stream.Recv()
+    fmt.Println(response, err)
+  }
+
+}
+</code></pre>
+<h3 id="客户端不知道服务端什么时候结束">客户端不知道服务端什么时候结束</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">stream, err := client.Fun(context.Background(), &amp;proto.Request{
+  Name: &quot;张三&quot;,
+})
+for {
+  response, err := stream.Recv()
+  if err == io.EOF {
+    break
+  }
+  fmt.Println(response)
+}
+</code></pre>
+<h3 id="下载文件">下载文件</h3>
+<p>proto文件</p>
+<p>Protocol Buffers复制代码</p>
+<pre><code class="language-text">syntax = &quot;proto3&quot;;
+option go_package = &quot;/proto&quot;;
+
+
+message Request {
+  string name = 1;
+}
+
+message FileResponse{
+  string file_name = 1;
+  bytes content = 2;
+}
+service ServiceStream{
+  rpc DownLoadFile(Request)returns(stream FileResponse){}
+}
+
+
+// protoc -I . --go_out=plugins=grpc:./stream_proto .\stream_proto\stream.proto
+</code></pre>
+<p>服务端</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;io&quot;
+  &quot;log&quot;
+  &quot;net&quot;
+  &quot;os&quot;
+)
+
+type ServiceStream struct{}
+
+
+func (ServiceStream) DownLoadFile(request *proto.Request, stream proto.ServiceStream_DownLoadFileServer) error {
+  fmt.Println(request)
+  file, err := os.Open(&quot;static/1.gvb_web项目搭建.mp4&quot;)
+  if err != nil {
+    return err
+  }
+  defer file.Close()
+
+  for {
+    buf := make([]byte, 2048)
+    _, err = file.Read(buf)
+    if err == io.EOF {
+      break
+    }
+    if err != nil {
+      break
+    }
+    stream.Send(&amp;proto.FileResponse{
+      Content: buf,
+    })
+  }
+  return nil
+}
+
+func main() {
+  listen, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)
+  if err != nil {
+    log.Fatal(err)
+  }
+  server := grpc.NewServer()
+  proto.RegisterServiceStreamServer(server, &amp;ServiceStream{})
+
+  server.Serve(listen)
+}
+</code></pre>
+<p>客户端</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;bufio&quot;
+  &quot;context&quot;
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;google.golang.org/grpc/credentials/insecure&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;io&quot;
+  &quot;log&quot;
+  &quot;os&quot;
+)
+
+func main() {
+  addr := &quot;:8080&quot;
+  // 使用 grpc.Dial 创建一个到指定地址的 gRPC 连接。
+  // 此处使用不安全的证书来实现 SSL/TLS 连接
+  conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+  if err != nil {
+    log.Fatalf(fmt.Sprintf(&quot;grpc connect addr [%s] 连接失败 %s&quot;, addr, err))
+  }
+  defer conn.Close()
+  // 初始化客户端
+  client := proto.NewServiceStreamClient(conn)
+  
+  stream, err := client.DownLoadFile(context.Background(), &amp;proto.Request{
+    Name: &quot;张三&quot;,
+  })
+
+  file, err := os.OpenFile(&quot;static/1.gvb_web项目搭建1.mp4&quot;, os.O_CREATE|os.O_WRONLY, 0600)
+  if err != nil {
+    log.Fatalln(err)
+  }
+  defer file.Close()
+
+  writer := bufio.NewWriter(file)
+  var index int
+  for {
+    index++
+    response, err := stream.Recv()
+    if err == io.EOF {
+      break
+    }
+    fmt.Printf(&quot;第%d 次， 写入 %d 数据\n&quot;, index, len(response.Content))
+    writer.Write(response.Content)
+  }
+  writer.Flush()
+}
+</code></pre>
+<h2 id="客户端流式">客户端流式</h2>
+<p>proto</p>
+<p>Protocol Buffers复制代码</p>
+<pre><code class="language-text">syntax = &quot;proto3&quot;;
+option go_package = &quot;/proto&quot;;
+message Response {
+  string Text = 1;
+}
+message FileRequest{
+  string file_name = 1;
+  bytes content = 2;
+}
+service ClientStream{
+  rpc UploadFile(stream FileRequest)returns(Response){}
+}
+</code></pre>
+<h3 id="服务端-1">服务端</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;log&quot;
+  &quot;net&quot;
+)
+
+type ClientStream struct{}
+
+func (ClientStream) UploadFile(stream proto.ClientStream_UploadFileServer) error {
+  for i := 0; i &lt; 10; i++ {
+    response, err := stream.Recv()
+    fmt.Println(response, err)
+  }
+  stream.SendAndClose(&amp;proto.Response{Text: &quot;完毕了&quot;})
+  return nil
+}
+
+func main() {
+  listen, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)
+  if err != nil {
+    log.Fatal(err)
+  }
+  server := grpc.NewServer()
+  proto.RegisterClientStreamServer(server, &amp;ClientStream{})
+
+  server.Serve(listen)
+}
+</code></pre>
+<h3 id="客户端-1">客户端</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;context&quot;
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;google.golang.org/grpc/credentials/insecure&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;log&quot;
+)
+
+func main() {
+  addr := &quot;:8080&quot;
+  conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+  if err != nil {
+    log.Fatalf(fmt.Sprintf(&quot;grpc connect addr [%s] 连接失败 %s&quot;, addr, err))
+  }
+  defer conn.Close()
+  // 初始化客户端
+  client := proto.NewClientStreamClient(conn)
+  stream, err := client.UploadFile(context.Background())
+  for i := 0; i &lt; 10; i++ {
+    stream.Send(&amp;proto.FileRequest{FileName: fmt.Sprintf(&quot;第%d次&quot;, i)})
+  }
+  response, err := stream.CloseAndRecv()
+  fmt.Println(response, err)
+}
+</code></pre>
+<h3 id="上传文件">上传文件</h3>
+<p>服务端</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;bufio&quot;
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;io&quot;
+  &quot;log&quot;
+  &quot;net&quot;
+  &quot;os&quot;
+)
+
+type ClientStream struct{}
+
+func (ClientStream) UploadFile(stream proto.ClientStream_UploadFileServer) error {
+
+  file, err := os.OpenFile(&quot;static/x.png&quot;, os.O_CREATE|os.O_WRONLY, 0600)
+  if err != nil {
+    log.Fatalln(err)
+  }
+  defer file.Close()
+
+  writer := bufio.NewWriter(file)
+  var index int
+  for {
+    index++
+    response, err := stream.Recv()
+    if err == io.EOF {
+      break
+    }
+    writer.Write(response.Content)
+    fmt.Printf(&quot;第%d次&quot;, index)
+  }
+  writer.Flush()
+  stream.SendAndClose(&amp;proto.Response{Text: &quot;完毕了&quot;})
+  return nil
+}
+
+func main() {
+  listen, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)
+  if err != nil {
+    log.Fatal(err)
+  }
+  server := grpc.NewServer()
+  proto.RegisterClientStreamServer(server, &amp;ClientStream{})
+
+  server.Serve(listen)
+}
+</code></pre>
+<p>客户端</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;context&quot;
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;google.golang.org/grpc/credentials/insecure&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;io&quot;
+  &quot;log&quot;
+  &quot;os&quot;
+)
+
+func main() {
+  addr := &quot;:8080&quot;
+  // 使用 grpc.Dial 创建一个到指定地址的 gRPC 连接。
+  // 此处使用不安全的证书来实现 SSL/TLS 连接
+  conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+  if err != nil {
+    log.Fatalf(fmt.Sprintf(&quot;grpc connect addr [%s] 连接失败 %s&quot;, addr, err))
+  }
+  defer conn.Close()
+  // 初始化客户端
+  client := proto.NewClientStreamClient(conn)
+  stream, err := client.UploadFile(context.Background())
+
+  file, err := os.Open(&quot;static/21.png&quot;)
+  if err != nil {
+    log.Fatalln(err)
+  }
+  defer file.Close()
+
+  for {
+    buf := make([]byte, 2048)
+    _, err = file.Read(buf)
+    if err == io.EOF {
+      break
+    }
+    if err != nil {
+      break
+    }
+    stream.Send(&amp;proto.FileRequest{
+      FileName: &quot;x.png&quot;,
+      Content:  buf,
+    })
+  }
+  response, err := stream.CloseAndRecv()
+  fmt.Println(response, err)
+}
+</code></pre>
+<h2 id="双向流">双向流</h2>
+<p>proto</p>
+<p>Protocol Buffers复制代码</p>
+<pre><code class="language-text">syntax = &quot;proto3&quot;;
+option go_package = &quot;/proto&quot;;
+
+message Request {
+  string name = 1;
+}
+message Response {
+  string Text = 1;
+}
+
+service BothStream{
+  rpc Chat(stream Request)returns(stream Response){}
+}
+</code></pre>
+<h3 id="服务端-2">服务端</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;log&quot;
+  &quot;net&quot;
+)
+
+type BothStream struct{}
+
+func (BothStream) Chat(stream proto.BothStream_ChatServer) error {
+  for i := 0; i &lt; 10; i++ {
+    request, _ := stream.Recv()
+    fmt.Println(request)
+    stream.Send(&amp;proto.Response{
+      Text: &quot;你好&quot;,
+    })
+  }
+  return nil
+}
+
+func main() {
+  listen, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)
+  if err != nil {
+    log.Fatal(err)
+  }
+  server := grpc.NewServer()
+  proto.RegisterBothStreamServer(server, &amp;BothStream{})
+
+  server.Serve(listen)
+}
+</code></pre>
+<h3 id="客户端-2">客户端</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;context&quot;
+  &quot;fmt&quot;
+  &quot;google.golang.org/grpc&quot;
+  &quot;google.golang.org/grpc/credentials/insecure&quot;
+  &quot;grpc_study/stream_proto/proto&quot;
+  &quot;log&quot;
+)
+
+func main() {
+  addr := &quot;:8080&quot;
+  // 使用 grpc.Dial 创建一个到指定地址的 gRPC 连接。
+  // 此处使用不安全的证书来实现 SSL/TLS 连接
+  conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+  if err != nil {
+    log.Fatalf(fmt.Sprintf(&quot;grpc connect addr [%s] 连接失败 %s&quot;, addr, err))
+  }
+  defer conn.Close()
+  // 初始化客户端
+  client := proto.NewBothStreamClient(conn)
+  stream, err := client.Chat(context.Background())
+
+  for i := 0; i &lt; 10; i++ {
+    stream.Send(&amp;proto.Request{
+      Name: fmt.Sprintf(&quot;第%d次&quot;, i),
+    })
+    response, err := stream.Recv()
+    fmt.Println(response, err)
+  }
+}
+</code></pre>
+<p>Protocol Buffers复制代码</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,288 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GORM：JSON 与自定义类型 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>GORM：JSON 与自定义类型</h1><time datetime="2026-06-22T00:42:58.000Z">2026年6月22日</time><p>很多情况下，我们有存json的需求</p>
+<p>那么就需要使用到gorm中的自定义数据类型了</p>
+<p>自定义的数据类型必须实现 Scanner 和 Valuer 接口</p>
+<p>简单说就是，在入库的时候转换一下，变成普通字符串进行存储，查询的时候，映射为结构体</p>
+<h2 id="json自定义数据类型">JSON自定义数据类型</h2>
+<p>json数据用的比较多</p>
+<pre><code class="language-text">依赖接口：sql.Scanner
+go
+运行
+type Scanner interface {
+    Scan(src interface{}) error
+}
+只要实现这个唯一方法，该结构体就可以直接映射数据库 JSONB 字段，gorm/sqlx 自动调用 Scan 完成自动解析。
+</code></pre>
+<p>实现 <code>sql.Scanner</code> <strong>接口</strong> 作用：<strong>数据库查询读到 JSONB 字段时，自动把数据库二进制 JSON 数据，解析赋值到</strong> <code>Info</code> <strong>结构体</strong></p>
+<pre><code class="language-text">json.Unmarshal() 核心反序列化
+go
+运行
+err := json.Unmarshal(bytes, &amp;result)
+● 包：encoding/json
+● 作用：把 JSON 字节数组 []byte 反序列化为 Go 结构体
+● 参数： 
+  a. 第一个参数：JSON 原始字节
+  b. 第二个参数：结构体指针，接收解析后数据
+● 对应：json.Marshal 是结构体转 JSON 字节，这里是反向解析
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">type Info struct {
+  Like []string `json:&quot;like&quot;`
+  Addr string   `json:&quot;addr&quot;`
+  Age  int      `json:&quot;age&quot;`
+}
+
+// Scan 实现 sql.Scanner 接口，Scan 将 value 扫描至 Jsonb
+func (j *Info) Scan(value interface{}) error {
+  bytes, ok := value.([]byte)    //断言(json.Marshal返回值为byte)
+  if !ok {
+    return errors.New(fmt.Sprint(&quot;Failed to unmarshal JSONB value:&quot;, value))
+  }
+
+  result := Info{}
+  err := json.Unmarshal(bytes, &amp;result)
+  *j = result
+  return err
+}
+
+// Value 实现 driver.Valuer 接口，Value 返回 json value   
+下面的方法如果修改为指针方法会直接报运行时红错
+func (j Info) Value() (driver.Value, error) {
+  return json.Marshal(j)
+}
+</code></pre>
+<p>注意：这里千万不要自作聪明，去改指针方法或者接受者方法，Scan是指针方法，Value是接受者方法</p>
+<p>插入数据</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type User struct {
+  ID   int64
+  Name string `gorm:&quot;size:32&quot;`
+  Info Info   `gorm:&quot;type:longtext&quot; json:&quot;info&quot;`
+}
+DB.Create(&amp;User{
+  Name: &quot;枫枫&quot;,
+  Info: Info{
+    Age:  21,
+    Addr: &quot;湖南长沙&quot;,
+    Like: []string{&quot;唱&quot;, &quot;跳&quot;, &quot;rap&quot;},
+  },
+})
+</code></pre>
+<p>查询数据</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var user User
+DB.Take(&amp;user, 1)
+fmt.Println(user.Name, user.Info.Like)
+</code></pre>
+<h2 id="序列化">序列化</h2>
+<p>如果只是存储json数据，完全可以使用gorm的序列化，自带json</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type User struct {
+  ID   int64
+  Name string `gorm:&quot;size:32&quot;`
+  Info Info   `gorm:&quot;type:longtext;serializer:json&quot; json:&quot;info&quot;`
+}
+</code></pre>
+<p>当然也可以自定义序列化器，参考如下：</p>
+<p><a href="https://gorm.io/zh_CN/docs/serializer.html">https://gorm.io/zh_CN/docs/serializer.html</a></p>
+<p>拓展 :</p>
+<pre><code class="language-text">业务常用场景汇总
+表格
+序列化类型	存储形式	使用场景
+时间格式化	日期字符串	报表、前台展示时间
+逗号分割数组	varchar	多选标签、爱好、权限 ID
+枚举文案	tinyint	状态、性别、类型
+加密字段	text	隐私信息、账号密钥
+时间戳	bigint	高并发排序、时间筛选
+经纬度	字符串	地址定位、同城筛选
+进制转换	十六进制串	流水号、唯一编码
+</code></pre>
+<pre><code class="language-text">GORM 自定义序列化器（Serializer）完整实现
+GORM 序列化基于 gorm.io/datatypes + 实现 serializer.Serializer 接口，自定义类型序列化分两步：定义类型 + 实现序列化接口
+一、核心接口
+go
+运行
+// serializer 必须实现的接口
+type Serializer interface {
+    Scan(dst interface{}) error    // 从数据库读取反序列化
+    Value() (driver.Value, error)  // 存入数据库序列化
+}
+二、实战：自定义序列化类型示例
+1. 定义自定义结构体类型
+go
+运行
+package main
+
+import (
+    &quot;database/sql/driver&quot;
+    &quot;encoding/json&quot;
+    &quot;errors&quot;
+    &quot;gorm.io/gorm/schema&quot;
+)
+
+// 自定义用户拓展信息类型
+type UserExtInfo struct {
+    Nickname string `json:&quot;nickname&quot;`
+    Age      int    `json:&quot;age&quot;`
+    Sex      string `json:&quot;sex&quot;`
+}
+2. 实现序列化 Value () 方法（存库）
+go
+运行
+// 序列化为 json 字符串存入数据库
+func (u UserExtInfo) Value() (driver.Value, error) {
+    return json.Marshal(u)
+}
+3. 实现反序列化 Scan () 方法（读库）
+go
+运行
+// 从数据库 json 字符串解析为结构体
+func (u *UserExtInfo) Scan(val interface{}) error {
+    data, ok := val.([]byte)
+    if !ok {
+        return errors.New(&quot;类型断言失败，非字节数组&quot;)
+    }
+    return json.Unmarshal(data, u)
+}
+三、注册为 GORM 全局序列化器
+go
+运行
+func init() {
+    // 注册自定义类型为 GORM 序列化器
+    schema.RegisterSerializer(UserExtInfo{}, &amp;UserExtInfo{})
+}
+四、在模型中直接使用
+go
+运行
+type User struct {
+    gorm.Model
+    Name     string
+    UserInfo UserExtInfo // 直接使用自定义序列化类型
+}
+五、使用效果
+创建保存：自动序列化为 JSON 字符串存数据库
+go
+运行
+db.Create(&amp;User{
+    Name: &quot;张三&quot;,
+    UserInfo: UserExtInfo{
+        Nickname: &quot;小帅&quot;,
+        Age: 20,
+        Sex: &quot;男&quot;,
+    },
+})
+查询读取：自动反序列化为结构体
+go
+运行
+var u User
+db.First(&amp;u, 1)
+// u.UserInfo 直接读取结构体字段
+六、进阶：自定义时间 / 加密 / 特殊格式序列化
+示例：自定义加密字符串序列化
+go
+运行
+type SecretStr string
+
+func (s SecretStr) Value() (driver.Value, error) {
+    // 自定义加密逻辑
+    return &quot;加密:&quot;+string(s), nil
+}
+
+func (s *SecretStr) Scan(val interface{}) error {
+    str, _ := val.(string)
+    // 自定义解密逻辑
+    *s = SecretStr(str[3:])
+    return nil
+}
+
+func init(){
+    schema.RegisterSerializer(SecretStr(&quot;&quot;), new(SecretStr))
+}
+七、关键注意点
+Scan 必须是指针接收者，否则无法赋值
+schema.RegisterSerializer 全局只注册一次，放 init()
+数据库字段类型建议设为 text / varchar / json
+支持嵌套结构体、切片、Map 自定义序列化
+</code></pre>
+<h2 id="日志">日志</h2>
+<pre><code class="language-text">package Models
+
+type Level int8
+
+//使用这种方法定义等级 可以有效防止魔法值  
+const{
+	InfoLevel Level = 1
+	WaringLevel Level = 2
+	ErrorLevel Level = 3
+}
+
+type LogModel struct {
+	ID uint `json:&quot;id&quot;`
+	Title string `gorm:&quot;size:32&quot;`
+	Level Level `json:&quot;level&quot;`
+}
+
+/enter.go
+func Loglist() {
+	Global.DB.Create(&amp;Models.LogModel{
+		Title: &quot;用户登陆&quot;,
+		Level: Models.InfoLevel,
+	})
+
+	var log Models.LogModel
+	Global.DB.Take(&amp;log)
+	byteData, _ := json.Marshal(log)
+	fmt.Println(string(byteData))
+}
+</code></pre>
+<h2 id="枚举类型">枚举类型</h2>
+<p>有些情况下，在数据库里面需要存储一些标识状态的内容</p>
+<p>比如描述日志的等级，通常有固定的那么几个值，例如info、warning、error</p>
+<p>如果直接存储字符串，很明显是浪费空间</p>
+<p>所以可以使用自定义类型</p>
+<p>下面的方法中的status 可以直接替换为 Level 使用到log日志的枚举方法中 ;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type Status int8
+
+const (
+  Running Status = 1
+  Warning Status = 2
+)
+
+func (s Status) MarshalJSON() (data []byte, err error) {
+  var str string
+  switch s {
+  case Running:
+    str = &quot;运行中&quot;
+  case Warning:
+    str = &quot;警告&quot;
+  }
+  return json.Marshal(str)
+}
+
+type User struct {
+  ID     int64
+  Name   string `gorm:&quot;size:32&quot;`
+  Status Status `json:&quot;status&quot;`
+}
+</code></pre>
+<p>因为返回前端的时候，肯定会走json序列化，所以返回给前端的时候就是对应的中文</p>
+<p>不过也可以再优化一下，只返回中文又太少了，还需要把它本身的数字也给返回出来，怎么做呢</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func (s Status) MarshalJSON() (data []byte, err error) {
+  var str string
+  switch s {
+  case Running:
+    str = &quot;运行中&quot; 
+  case Warning:
+    str = &quot;警告&quot;
+  }
+  return json.Marshal(map[string]any{
+    &quot;status&quot;:      int8(s),  //实现返回对应状态的数字
+    &quot;statusTitle&quot;: str,
+  })
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

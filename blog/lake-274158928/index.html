@@ -1,0 +1,451 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GORM：表关联与预加载 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>GORM：表关联与预加载</h1><time datetime="2026-06-16T14:15:29.000Z">2026年6月16日</time><p>xuexi在学习mysql多表关系的时候</p>
+<p>我们都知道有一对一关系，一对多关系，多对多关系</p>
+<p>我们不按照gorm的BelongsTo和Has Many去理解</p>
+<p>而是从实际场景去理解</p>
+<h2 id="一对一关系">一对一关系</h2>
+<p>只要：</p>
+<ul>
+<li>子表有 <code>UserID</code>（主表名 + ID）</li>
+<li>主表有 <code>Detail UserDetail</code></li>
+</ul>
+<p>垂直分表 :</p>
+<p>用户与用户详情是很明显的一对一关系</p>
+<p>那么需要怎么表示这种一对一关系呢</p>
+<p>在mysql里面，需要在另一种表里面增加一个字段</p>
+<p>例如 user表和user_detail表</p>
+<p>那么就需要在user_detail表中增加一个user_id字段</p>
+<p>或者在user表中新增user_detail_id字段</p>
+<p>这个字段我们把它称之为外键字段</p>
+<p>在一对一关系里面，外键字段随便在哪一张表里面都行</p>
+<p>在gorm里面如何表示？</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;gorm.io/driver/mysql&quot;
+  &quot;gorm.io/gorm&quot; 
+)
+
+var DB *gorm.DB
+
+type UserModel struct {
+  ID   int64
+  Name string `gorm:&quot;size:32&quot;`
+  Age  int
+}
+
+type UserDetailModel struct {
+  ID        int64
+  UserID    int64
+  UserModel UserModel `gorm:&quot;foreignKey:UserID&quot;`   //会生成实体外键  
+  Email     string    `gorm:&quot;size:64&quot;`
+}
+
+func init() {
+  db, err := gorm.Open(mysql.Open(&quot;root:root@tcp(127.0.0.1:3306)/gorm_new_db?charset=utf8mb4&amp;parseTime=True&amp;loc=Local&quot;), &amp;gorm.Config{})
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  DB = db
+}
+
+func migrate() {
+  err := DB.AutoMigrate(&amp;UserModel{}, &amp;UserDetailModel{})
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(&quot;表结构生成成功&quot;)
+}
+
+func main() {
+  migrate()
+}
+</code></pre>
+<p>这种方式会生成实体外键，如果是个人使用的话，有外键会好一点，它可以做一些数据约束</p>
+<p>如果不需要生成实体外键，则可以进行如下配置</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">db, err := gorm.Open(mysql.Open(dsn), &amp;gorm.Config{
+  DisableForeignKeyConstraintWhenMigrating: true,  // 不生成实体外键
+})
+</code></pre>
+<p>那么针对这个表结构</p>
+<p>//普通结构体直接互相使用需要使用指针来替换 ;</p>
+<p>UserModel 中的UserDetailModel 属于反向引用</p>
+<p>UserDetailModel 中的UserModel 属于正向引用</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type UserModel struct {
+  ID   int64
+  Name string `gorm:&quot;size:32&quot;`
+  Age  int
+  UserDetailModel *UserDetailModel `gorm:&quot;foreignKey:UserID&quot;`
+}
+
+type UserDetailModel struct {
+  ID        int64
+  UserID    int64
+  UserModel UserModel `gorm:&quot;foreignKey:UserID&quot;`
+  Email     string    `gorm:&quot;size:64&quot;`
+}
+</code></pre>
+<p>那么增删改查怎么操作呢？</p>
+<h3 id="插入数据">插入数据</h3>
+<p>先插入user，再插入user_detail</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">DB.Create(&amp;UserModel{
+  Name: &quot;枫枫&quot;,
+  UserDetailModel: &amp;UserDetailModel{
+    Email: &quot;xxx@qq.com&quot;,
+  },
+})
+</code></pre>
+<p>给已有的user插入user_detail</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">err :=  DB.Create(&amp;UserDetailModel
+{
+  //UserModel: &amp;models.UserModel{ID:14} , 
+  UserID: 2,   //配置连接
+  Email:  &quot;zzz@qq.com&quot;, 
+}).Error
+</code></pre>
+<p>知道user，插入user_detail</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var user UserModel
+DB.Take(&amp;user, 2)
+
+DB.Create(&amp;UserDetailModel{
+  UserModel: user,
+  Email:     &quot;zzz@qq.com&quot;,
+})
+</code></pre>
+<h3 id="查询数据">查询数据</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">// 根据用户查用户详情
+var user UserModel
+DB.Preload(&quot;UserDetailModel&quot;).Take(&amp;user, 2)
+fmt.Println(user.Name, user.UserDetailModel.Email)
+
+// 根据用户详情查用户
+var userDetail UserDetailModel
+DB.Preload(&quot;UserModel&quot;).Take(&amp;userDetail, &quot;user_id = ?&quot;, 2)
+fmt.Println(userDetail.Email, userDetail.UserModel.Name)
+</code></pre>
+<p>重点是Preload预加载 , 先创建对象 , 对象内部的参数实现预加载后(注意这里如果是指针 , 不可以从空指针中查询数据, 会出现panic报错, 查询后使用Take得到数据, )</p>
+<p>Preload (&quot;关联名&quot;) 功能</p>
+<p><strong>预加载关联数据 = 一次性把「主表数据 + 关联外键表数据」一起查出来</strong> 解决 <strong>N+1 查询问题</strong></p>
+<h3 id="删除数据">删除数据</h3>
+<p>针对多表关系下的删除</p>
+<p>情况就有所不同了</p>
+<p>一般会涉及到关联删除</p>
+<p>例如用户和用户详情，如果用户被删除了，那么用户详情就没必要留着了，需要级联删除</p>
+<p>这里注意软删除 :</p>
+<p>当结构体中使用了DeleteAt time.Time 使用 Delete() 就不会出现数据被真实删除的情况 ;</p>
+<p>这时候使用Unscoped() : 可以实现取消过滤, 查出全部的数据 ;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var user UserModel
+  DB.Take(&amp;user, 2) 
+  DB.Select(&quot;UserDetailModel&quot;).Delete(&amp;user)
+</code></pre>
+<p>但是还有些是不需要级联删除的，需要把对应的外键给设置为Null</p>
+<p>一句话：<strong>因为 GORM 的 Select (&quot;关联名&quot;).Delete (&amp; 主记录) 是「应用层级联删除」</strong>—— 它会<strong>自动按外键条件，把你选中的那些关联表记录一起删掉</strong>，不是只删外键引用，而是<strong>连带删关联行</strong>。</p>
+<p><strong>专门用来操作 结构体里的关联关系</strong>，只<strong>改关联绑定关系，不删除主表 / 子表整条数据</strong></p>
+<p>一句话总结</p>
+<p><code>Association(&quot;关联字段名&quot;)</code> = <strong>管理两表之间的绑定关系</strong> 只改<strong>外键字段</strong>，<strong>不删任何一行数据</strong></p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var user UserModel
+DB.Take(&amp;user, 1)
+DB.Delete(&amp;user)
+DB.Model(&amp;user).Association(&quot;UserDetailModel&quot;).Clear()
+</code></pre>
+<p>这两种情况都是很常见的关联删除，可以有更简单的方式实现</p>
+<p>除了使用gorm自带的关联联删功能 , 可以直接使用set null 实现删除字段 ;</p>
+<p>先删清关联直接可以实现互换</p>
+<p>这个本质上其实还是使用的 数据库层面上的关联的逻辑 ;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type UserModel struct {
+  ID              int64
+  Name            string `gorm:&quot;size:32&quot;`
+  Age             int
+  UserDetailModel *UserDetailModel `gorm:&quot;foreignKey:UserID;constraint:OnDelete:CASCADE&quot;`  // CASCADE   或者  SET NULL
+}
+</code></pre>
+<p>前提得生成实体外键才行，而且修改关系之后要重新删掉实体外键再生成</p>
+<h2 id="一对多关系舔狗与女神版">一对多关系（舔狗与女神版）</h2>
+<p>生活中的一对多就更多了</p>
+<p>用户与文章</p>
+<p>舔狗与女神</p>
+<p>班级与学生</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type Girl struct {
+  ID      int64
+  Name    string `gorm:&quot;size:32&quot;`
+  BoyList []Boy  `gorm:&quot;foreignKey:GirlID&quot;` 
+}
+
+type Boy struct {
+  ID     int64
+  GirlID int64 
+  Name   string `gorm:&quot;size:32&quot;`
+  Girl   Girl   `gorm:&quot;foreignKey:GirlID&quot;`
+}
+</code></pre>
+<p>那么对应Girl来说，Body就是她拥有的，叫Has Many</p>
+<p>对应Boy来说，Girl就是他的归属，叫Belongs To</p>
+<p>那么一对多的增删改查又该怎么做呢？</p>
+<h3 id="插入数据-1">插入数据</h3>
+<p>创建一个女神，连带几个舔狗</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">DB.Create(&amp;Girl{
+  Name: &quot;娜娜&quot;,
+  BoyList: []Boy{
+    {Name: &quot;张三&quot;},
+    {Name: &quot;王五&quot;},
+  },
+})
+</code></pre>
+<p>创建一个女神, 选中一个舔狗 ;</p>
+<pre><code class="language-text">err := DB.Create(&amp;models.GirlModel{
+    Name : &quot;newgirl&quot; , 
+    BoyList : []models.BoyModel{
+       {ID : 2} ,  
+    } , 
+}).Error
+</code></pre>
+<p>创建boy，然后自带女神</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">DB.Create(&amp;Boy{
+    Name: &quot;枫枫&quot;,
+    Girl: Girl{
+      Name: &quot;露露&quot;,
+    },
+  })
+</code></pre>
+<p>创建Boy，然后关联已有女神</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var girl Girl
+DB.Take(&amp;girl, &quot;name = ?&quot;, &quot;露露&quot;)
+
+DB.Create(&amp;Boy{
+  Name: &quot;李四&quot;,
+  Girl: girl,
+})
+</code></pre>
+<h3 id="关联查询">关联查询</h3>
+<p>查女神，连带把他的舔狗也查出来</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var girl Girl
+  DB.Preload(&quot;BoyList&quot;).Take(&amp;girl, &quot;name = ?&quot;, &quot;露露&quot;)
+  fmt.Println(girl)
+</code></pre>
+<p>带条件的Preload</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">girl = Girl{}
+  DB.Preload(&quot;BoyList&quot;, &quot;name = ?&quot;, &quot;枫枫&quot;).Take(&amp;girl, &quot;name = ?&quot;, &quot;露露&quot;)
+  fmt.Println(girl)
+</code></pre>
+<p>查女神的舔狗列表</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">girl = Girl{}
+  DB.Take(&amp;girl, &quot;name = ?&quot;, &quot;露露&quot;)
+  var bodyList []Boy
+  DB.Model(girl).Association(&quot;BoyList&quot;).Find(&amp;bodyList)
+  fmt.Println(bodyList)
+</code></pre>
+<p>查女神的舔狗总数</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">count := DB.Model(girl).Association(&quot;BoyList&quot;).Count()
+  fmt.Println(count)
+</code></pre>
+<h3 id="关联操作">关联操作</h3>
+<p>1，2号不舔了，换成了3号</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var b3 = Boy{
+  ID: 3,
+}
+girl := Girl{}
+DB.Take(&amp;girl, &quot;name = ?&quot;, &quot;露露&quot;)
+
+DB.Model(&amp;girl).Association(&quot;BoyList&quot;).Replace([]Boy{b3})
+</code></pre>
+<p>都不舔了</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">girl := Girl{}
+  DB.Take(&amp;girl, &quot;name = ?&quot;, &quot;露露&quot;)
+  DB.Model(&amp;girl).Association(&quot;BoyList&quot;).Clear()
+</code></pre>
+<p>1，3号又开始舔了</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">girl := Girl{}
+  DB.Take(&amp;girl, &quot;name = ?&quot;, &quot;露露&quot;)
+  DB.Model(&amp;girl).Association(&quot;BoyList&quot;).Append([]Boy{{ID: 1}, {ID: 3}})
+</code></pre>
+<p>只有3号退出了</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">girl := Girl{}
+  DB.Take(&amp;girl, &quot;name = ?&quot;, &quot;露露&quot;)
+  DB.Model(&amp;girl).Association(&quot;BoyList&quot;).Delete([]Boy{{ID: 3}})
+</code></pre>
+<h2 id="多对多关系">多对多关系</h2>
+<p>生活中多对多关系就更多了</p>
+<p>文章和标签</p>
+<p>书和作者</p>
+<p>舔狗和女神</p>
+<p>多对多关系就必须借助第三张表来进行关联</p>
+<p>例如文章和 标签</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td></td><td></td><td></td></tr><tr><td><p><span>id</span></p></td><td><p><span>article_id</span></p></td><td><p><span>tag_id</span></p></td></tr><tr><td><p><span>1</span></p></td><td><p><span>1</span></p></td><td><p><span>1</span></p></td></tr><tr><td><p><span>2</span></p></td><td><p><span>1</span></p></td><td><p><span>2</span></p></td></tr><tr><td><p><span>3</span></p></td><td><p><span>2</span></p></td><td><p><span>1</span></p></td></tr></tbody></table></div>
+
+<p>很容易看出来，文章1有两个标签，分别是1和2，文章2有一个标签是1</p>
+<p>所以在gorm中，如何实现呢？</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type Article struct {
+  ID      int64
+  Title   string `gorm:&quot;size:32&quot;`
+  TagList []Tag  `gorm:&quot;many2many:article_tags;&quot;`
+}
+
+type Tag struct {
+  ID          int64
+  Title       int64     `gorm:&quot;size:32&quot;`
+  ArticleList []Article `gorm:&quot;many2many:article_tags;&quot;`
+}
+</code></pre>
+<h3 id="插入数据-2">插入数据</h3>
+<p>创建文章，并创建标签</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">article := Article{Title: &quot;文章1&quot;, TagList: []Tag{
+    {Title: &quot;go&quot;},
+    {Title: &quot;python&quot;},
+  }}
+  DB.Create(&amp;article)
+</code></pre>
+<p>创建文章，选择已有标签</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">tagIDList := []int64{1, 2}
+  var tagList []Tag
+  DB.Find(&amp;tagList, &quot;id in ?&quot;, tagIDList)
+
+  DB.Create(&amp;Article{
+    Title:   &quot;文章2&quot;,
+    TagList: tagList,
+  })
+</code></pre>
+<h3 id="关联查询-1">关联查询</h3>
+<p>查文章列表，并把标签带出来</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var articleList []Article
+  DB.Preload(&quot;TagList&quot;).Find(&amp;articleList)
+  fmt.Println(articleList)
+</code></pre>
+<h3 id="关联操作-1">关联操作</h3>
+<p>更新一篇文章的标签列表</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">var article Article
+  DB.Take(&amp;article, &quot;title = ?&quot;, &quot;文章1&quot;)
+
+  DB.Model(&amp;article).Association(&quot;TagList&quot;).Replace([]Tag{
+    {ID: 1},
+    {Title: &quot;后端&quot;},
+  })
+</code></pre>
+<h3 id="自定义第三张表">自定义第三张表</h3>
+<p>以用户收藏文章为例</p>
+<p>就是用户与文章的多对多关系</p>
+<p>如果用默认的第三张表，用户想知道什么时候收藏的某一篇文章，就没办法了</p>
+<p>表结构</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type UserModel struct {
+  ID              int64
+  Name            string
+  CollArticleList []Article1Model `gorm:&quot;many2many:user2_article_models;joinForeignKey:UserID;JoinReferences:ArticleID&quot;`
+}
+type ArticleModel struct {
+  ID    int64
+  Title string `gorm:&quot;size:32&quot;`
+  /如果后期需要实现反向查询的功能的时候需要加下方的字段 
+  /CollArticle1List []User1Model `gorm:&quot;many2many:user2_article_models;joinForeignKey:ArticleID;JoinReferences:UserID&quot;`
+}
+type User2ArticleModel struct {
+//创建主键 + 外键 ; 
+  UserID       int64        `gorm:&quot;primaryKey&quot;`
+  UserModel    UserModel    `gorm:&quot;foreignKey:UserID&quot;`
+  ArticleID    int64        `gorm:&quot;primaryKey&quot;`
+  ArticleModel ArticleModel `gorm:&quot;foreignKey:ArticleID&quot;`
+  CreatedAt    time.Time    `json:&quot;createdAt&quot;`
+}
+
+② joinForeignKey:ArticleID
+含义：中间表里，保存「当前模型」ID 的字段叫什么。
+你现在写在 User 结构体里
+当前模型 = User
+joinForeignKey:ArticleID → ❗❌ 名字写反了，容易搞混！
+正确理解方式（最稳记忆）：
+joinForeignKey = 中间表里 → 「本表」的外键字段名
+本表是 User → 中间表里存 UserID 的字段 → 默认叫 user_id
+你写 ArticleID 会让中间表用 article_id 存 User 的 ID，逻辑别扭但语法允许
+
+③ joinReferences:UserID
+含义：中间表里，保存「对方模型」ID 的字段叫什么。
+对方模型是 ArticleModel
+joinReferences:UserID → 中间表里存 Article ID 的字段叫 user_id
+同样：名字写反了，只是能跑而已
+</code></pre>
+<p>重点是many2many:生成表的名称要和第三张表的名称要对上</p>
+<p>然后joinForeignKey对应的是本表的ID，例如用户表的joinForeignKey就是UserID</p>
+<p>JoinReferences对应的是对方表的ID，用户表的JoinReferences就是ArticleID</p>
+<p>然后就是要添加SetupJoinTable，不然是不会走第三张表的创建钩子</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">// 必须要加这个才会走第三张表的创建钩子
+  DB.SetupJoinTable(&amp;UserModel{}, &quot;CollArticleList&quot;, &amp;User2ArticleModel{})
+</code></pre>
+<p>然后创建，删除就和之前是一样的了</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">DB.Create(&amp;UserModel{
+  Name: &quot;张三&quot;,
+  CollArticleList: []ArticleModel{
+    {Title: &quot;文章1&quot;},
+    {Title: &quot;文章2&quot;},
+  },
+})
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">var user UserModel
+DB.Take(&amp;user)
+DB.Select(&quot;CollArticleList&quot;).Delete(&amp;user)
+</code></pre>
+<p>查询</p>
+<p>查询不能直接用Preload了，因为Preload出来的是对方表，是没有收藏时间的</p>
+<p>所以常规操作是直接查第三张表</p>
+<p>先要实现预加载前面的一二张表, 最后查询的信息从第三章表中获取 ;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type UserCollArticleResponse struct {
+    Name         string
+    UserID       int64
+    ArticleTitle string
+    ArticleID    int64
+    Date         time.Time
+  }
+
+var userID = 4
+var userArticleList []models.User2ArticleModel
+var collList []UserCollArticleResponse
+global.DB.Preload(&quot;UserModel&quot;).Preload(&quot;ArticleModel&quot;).Find(&amp;userArticleList, &quot;user_id = ?&quot;, userID)
+for _, model := range userArticleList {
+  collList = append(collList, UserCollArticleResponse{
+    Name:         model.UserModel.Name,
+    UserID:       model.UserID,
+    ArticleTitle: model.ArticleModel.Title,
+    ArticleID:    model.ArticleID,
+    Date:         model.CreatedAt,
+  })
+}
+fmt.Println(collList) 
+</code></pre>
+<h4 id="清除关联关系">清除关联关系</h4>
+<p>注意下面的这些命令是不会删除 初始信息的那两张表的 :</p>
+<p>global.DB.Model(&amp;user).Association(&quot;CollArticlelist &quot;).Clear() ;</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

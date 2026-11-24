@@ -1,0 +1,70 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 异常处理：自定义异常、try-catch 与断言 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 异常处理：自定义异常、try-catch 与断言</h1><time datetime="2025-12-27T06:19:07.000Z">2025年12月27日</time><ul>
+<li>异常</li>
+</ul>
+<p>在Java中异常已经被封装为类 :</p>
+<p>第一种异常 : 运行时异常 :</p>
+<ol>
+<li>算数中出现 / 0;</li>
+<li>对 null 执行 toString() 操作</li>
+<li>没在类中实现接口但调用方法的</li>
+</ol>
+<p>第二种异常 : 编译时异常 ( 必须进行手动处理 )</p>
+<p>第三种异常 : 错误 , 致命的问题 :</p>
+<p>创建为 Integer . MAX_VALUE大小的数组</p>
+<p>在main中调用main 会不断调用 , 会爆栈</p>
+<ul>
+<li>自定义异常</li>
+</ul>
+<p>编译时异常 : extends Exception 所有异常都要继承自Exception类</p>
+<p>运行时异常 : extends RuntimeException ( 直接创建异常类时会自动变为Runtime类 )</p>
+<ul>
+<li>抛出异常</li>
+</ul>
+<pre><code class="language-text">private static int div(int a , int b ){
+    if(b == 0){
+        throw new Exercise1(&quot;发现除0&quot;) ;
+    }
+    return a / b ;
+}
+</code></pre>
+<p>栈追踪 问题 : at Today.Main.div(Main.java: 异常所在行数)</p>
+<p>实现抛出编译型异常 : 在实现函数 标清楚 throws TestExecption , 实现方法的类必须标明throws 编译时异常</p>
+<p>父类中被标记会抛出某异常 : 但子类中不会出现该异常时可以去除throw操作</p>
+<ul>
+<li>try - catch 语句 :</li>
+</ul>
+<p>实现捕获异常 , 错误 :</p>
+<pre><code class="language-text">try{
+    Object obj = null ;
+    obj.toString();
+} catch(NullPointerException ws){
+    System.out.println(&quot;发生异常&quot; );
+}
+</code></pre>
+<p>catch中表明出现的异常并且表明出 代表异常的变量</p>
+<p>ws.printStackTrace() ; 通过变量调用追踪函数实现栈异常路径 : 虽然会抛出异常但不会中止运行</p>
+<p>ws.getmessage() 实现输出异常的原因 ;</p>
+<p>catch 和 try 中出现的异常必须一致 , 否则还会出现程序被掐断</p>
+<p>catch( Exception ws ) 可以直接写这个( 所有异常全部继承自Exception )</p>
+<p>注意在捕获异常时 :</p>
+<ol>
+<li>一个try 下可以追加很多catch( 类型 变量 ) ; 实现识别不同的异常 并抛出对应异常中的内容</li>
+<li>可以在一个catch( 异常类型1 | 异常类型2 变量 ) 实现输出对应的异常</li>
+</ol>
+<p>message类的异常设置String提示 ,可以通过使用getmessage实现输出String</p>
+<p>运行时异常可以不明确标注 , 但编译时异常在定义方法时就要实现抛出可能出现的异常类型</p>
+<p>也可以在方法后不抛出异常：可以在方法中就实现try-catch 处理掉异常</p>
+<p>主方法 , 异常再继续上抛的话 , JVM默认处理 : 中止程序运行 + 打印出栈追踪信息</p>
+<p>不论是否发生异常 , 最后都要加上收尾操作 : finally{} 不论 是否有异常, 是否被捕获 , 程序是否被中止, 都会执行finally语句</p>
+<ul>
+<li>断言表达式</li>
+</ul>
+<p>默认状态下不会自动开启断言操作 , 要实现断言操作 必须手动在虚拟机设置中去手动开启 :</p>
+<p>在文件的运行与设置中 对当前的主文件 进行配置</p>
+<p>在配置中选择实行虚拟机选项 : Alt + V ;</p>
+<p>再VM配置中写入 -enableassertions ;</p>
+<p>assert关键字 : + 判断语句 出现false 就会报出异常</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

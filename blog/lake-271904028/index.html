@@ -1,0 +1,61 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin：请求参数绑定 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin：请求参数绑定</h1><time datetime="2026-05-30T05:15:40.000Z">2026年5月30日</time><p>使用binding可以很好的完成参数的绑定</p>
+<p>先创建结构体 , 然后实例化, 使用 ShouldBind方法实现判断参数绑定是否完善 ;</p>
+<p>参数都 拼接到了 url 中去了可以直接使用 ;</p>
+<h3 id="查询参数">查询参数</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">type User struct {
+  Name string `form:&quot;name&quot;`
+  Age  int    `form:&quot;age&quot;`
+}
+var user User
+err := c.ShouldBindQuery(&amp;user)
+fmt.Println(user, err)
+</code></pre>
+<h3 id="路径参数">路径参数</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">type User struct {
+  Name string `uri:&quot;name&quot;`
+  ID   int    `uri:&quot;id&quot;`
+}  
+var user User
+err := c.ShouldBindUri(&amp;user)
+fmt.Println(user, err)
+</code></pre>
+<p>参数 全部都存放到了 Request Body 参数中去了</p>
+<h3 id="表单参数">表单参数</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">type User struct {
+  Name string `form:&quot;name&quot;`
+  Age  int    `form:&quot;age&quot;`
+}
+var user User
+err := c.ShouldBind(&amp;user)
+fmt.Println(user, err)
+</code></pre>
+<p>注意：不能解析 x-www-form-urlencoded的格式</p>
+<h3 id="json参数">json参数</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">type User struct {
+  Name string `json:&quot;name&quot;`
+  Age  int    `json:&quot;age&quot;`
+}
+var user User
+err := c.ShouldBindJSON(&amp;user)
+fmt.Println(user, err)
+</code></pre>
+<h3 id="header参数">header参数</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">type User struct {
+  Name        string `header:&quot;Name&quot;`
+  Age         int    `header:&quot;Age&quot;`
+  UserAgent   string `header:&quot;User-Agent\&quot;`
+  ContentType string `header:&quot;Content-Type&quot;`
+}
+var user User
+err := c.ShouldBindHeader(&amp;user)
+fmt.Println(user, err)
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

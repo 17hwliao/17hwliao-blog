@@ -1,0 +1,197 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java Map 与排序：哈希映射、Comparable 和 Comparator · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java Map 与排序：哈希映射、Comparable 和 Comparator</h1><time datetime="2026-01-19T08:42:22.000Z">2026年1月19日</time><ul>
+<li>Map映射</li>
+</ul>
+<p>元素之间是两两对应的，是以键值对的形式存在。</p>
+<p>Map接口 :</p>
+<p><em>//Map并不是Collection体系下的接口，而是单独的一个体系，因为操作特殊</em></p>
+<p><em>//这里需要填写两个泛型参数，其中K就是键的类型，V就是值的类型，比如上面的学生信息，ID一般是int，那么键就是Integer类型的，而值就是学生信息，所以说值是学生对象类型的</em></p>
+<p>public interface Map&lt;K,V&gt; {</p>
+<p><em>//-------- 查询相关操作 --------</em></p>
+<p><em>//获取当前存储的键值对数量</em></p>
+<p>int size();</p>
+<p><em>//是否为空</em></p>
+<p>boolean isEmpty();</p>
+<p><em>//查看Map中是否包含指定的键</em></p>
+<p>boolean containsKey(Object key);</p>
+<p><em>//查看Map中是否包含指定的值</em></p>
+<p>boolean containsValue(Object value);</p>
+<p><em>//通过给定的键，返回其映射的值</em></p>
+<p>V get(Object key);</p>
+<p><em>//-------- 修改相关操作 --------</em></p>
+<p><em>//向Map中添加新的映射关系，也就是新的键值对</em></p>
+<p>V put(K key, V value);</p>
+<p><em>/根据给定的键，移除其映射关系，也就是移除对应的键值对</em></p>
+<p>V remove(Object key); 注意这里有返回值 ; 可以获取键对应的值</p>
+<p><em>//-------- 批量操作 --------//</em></p>
+<p><em>将另一个Map中的所有键值对添加到当前Map中</em></p>
+<p>void putAll(Map&lt;? extends K, ? extends V&gt; m);</p>
+<p><em>//清空整个Map</em></p>
+<p>void clear();</p>
+<p><em>//-------- 其他视图操作 --------</em></p>
+<p><em>//返回Map中存放的所有键，以Set形式返回</em></p>
+<p>Set&lt;K&gt; keySet(); ----只包含key</p>
+<p><em>//返回Map中存放的所有值</em></p>
+<p>Collection&lt;V&gt; values(); ---只包含vaule</p>
+<p><em>//返回所有的键值对，这里用的是内部类Entry在表示</em></p>
+<p>Set&lt;Map.Entry&lt;K, V&gt;&gt; entrySet(); ---下面是其定义</p>
+<p><em>//这个是内部接口Entry，表示一个键值对</em></p>
+<p>interfaceEntry&lt;K,V&gt; {</p>
+<p><em>//获取键值对的键</em></p>
+<p>K getKey();</p>
+<p><em>//获取键值对的值</em></p>
+<p>V getValue();</p>
+<p><em>//修改键值对的值</em></p>
+<p>V setValue(V value);</p>
+<p><em>//判断两个键值对是否相等</em></p>
+<p>boolean equals(Object o);</p>
+<p><em>//返回当前键值对的哈希值</em></p>
+<p>int hashCode(); ... } ... }</p>
+<p>//Map中无法添加相同的键，同样的键只能存在一个，即使值不同。如果出现键相同的情况，那么会覆盖掉之前的：</p>
+<p>//安全插入 , 若有值不会覆盖, ;</p>
+<p>map.putIfAbsent(2,&quot;xiao&quot;) ;</p>
+<p>//我们在获取一个不存在的映射时，默认会返回null作为结果</p>
+<p>//我们也可以为这种情况添加一个预备方案，当Map中不存在时，可以返回一个备选的返回值</p>
+<p>map.getOrDefault(3, &quot;备胎&quot;)</p>
+<p>//同样的，因为HashMap底层采用哈希表实现，所以不维护顺序，我们在获取所有键和所有值时，可能会是乱序的：基础的123还是可以的 , 符号就不行了</p>
+<p>//如果需要维护顺序，我们同样可以使用LinkedHashMap，它的内部对插入顺序进行了维护</p>
+<p>操作和HashMap&lt;&gt;() 内部方法相同 ; 只是维护了插入顺序 ;</p>
+<p>遍历map , 不能直接用for , 没接口 ,但内部接口 Entry 实现了itearable接口 可以直接for ;</p>
+<p>map.entrySet().for ; 实现迭代 ;</p>
+<p>简单实现替换 : V</p>
+<p>注意看这里不是BiConsumer接口( 这个不会返回值 ) 详见函数式接口</p>
+<p>1修改现有值2如果 key 不存在，创建新值</p>
+<p>V compute(K key, BiFunction&lt;? super K,? super V,? extends V&gt; remappingFunction) 需要返回一个V值 ;</p>
+<p>map.compute(1,(key , value) -&gt; value + &quot;A&quot; ) ;</p>
+<p>map.merge(1,&quot;qaa&quot; , (o1 ,o2) -&gt; o1 + o2 ); 内部是返回值的函数接口 ; = Integer:: sum ;</p>
+<ul>
+<li>底层采用的是哈希表</li>
+</ul>
+<p>哈希表可能会出现哈希冲突，这样保存的元素数量就会存在限制，而我们可以通过链地址法解决这种问题，最后哈希表就长这样了</p>
+<p><img src="../../blogs/_assets/lakebook/f7e0d3a927a8b8ee6d0745ba.webp" loading="lazy" alt=""></p>
+<p>实际上这个表就是一个存放头结点的数组+若干结点，而HashMap也是差不多的实现，我们来看看这里面是怎么定义的：</p>
+<p>public class HashMap&lt;K,V&gt; extends AbstractMap&lt;K,V&gt;<br> implements Map&lt;K,V&gt;, Cloneable, Serializable {</p>
+<pre><code class="language-text">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; {   //内部使用结点，实际上就是存放的映射关系
+    final int hash;
+    final K key;   //跟我们之前不一样，我们之前一个结点只有键，而这里的结点既存放键也存放值，当然计算哈希还是使用键
+    V value;
+    Node&lt;K,V&gt; next;
+}
+  
+
+  transient Node&lt;K,V&gt;[] table;   //这个就是哈希表本体了，可以看到跟我们之前的写法是一样的，也是结点数组，只不过HashMap中没有设计头结点（相当于没有头结点的链表）
+
+  final float loadFactor;   //负载因子，这个东西决定了HashMap的扩容效果
+
+  public HashMap() {
+    this.loadFactor = DEFAULT_LOAD_FACTOR; //当我们创建对象时，会使用默认的负载因子，值为0.75
+}
+</code></pre>
+<p>}</p>
+<ul>
+<li>比较相关接口( 和自动排序, 和sort排序密切相关 )</li>
+</ul>
+<p>compareTo 实际上是因为这个类实现了<code>Comparable</code>接口获得的方法，我们常见的一些JDK提供的类型，如String、基本类型包装类、Date、LocalDate等，其实都实现了此接口，从而自带对于其类型对象之间的比较操作：</p>
+<p>String s1 = &quot;AAA&quot;, s2 = &quot;BBB&quot;;</p>
+<p>System.out.println(s1.compareTo(s2)); //按字典顺序比较两个字符串,比较基于字符串中每个字符的 Unicode 值。</p>
+<p>需要实现排序功能需要自己手动implements Comparable&lt;元素&gt; 接口 ;</p>
+<p>可以重写下方法;</p>
+<p>public int compareTo(Student o) {</p>
+<p>return age - o.age; <em>//直接比较年龄</em></p>
+<p>}</p>
+<p><strong>@Override</strong></p>
+<p>public String toString() { return&quot;Student{&quot; + &quot;age=&quot; + age + &#39;}&#39;; }</p>
+<pre><code class="language-text">// 1. 传统匿名内部类写法
+list.sort(new Comparator&lt;String&gt;() {
+    @Override
+    public int compare(String s1, String s2) {
+        return s1.compareTo(s2);
+    }
+});
+
+// 2. Lambda 表达式写法（等价于上面）
+list.sort((s1, s2) -&gt; s1.compareTo(s2));  也可以自己实现一个规则 : s1 - s2 ; 
+</code></pre>
+<p>TreeSet 内部还有Comparator接口 : 调用时也可以在构造时写入比较器( 规则 ) [ 内部自动实现的排序 ]<br> 创建一个比较器 ; Comparator&lt;Student&gt; comparator = ( 比较规则 ) ;</p>
+<p>TreeSet&lt;元素&gt; set = new TreeSet&lt;&gt;( comparator.reversed() ) ; 反转排序 ;</p>
+<p>添加次级比较规则 : 函数式接口 -&gt; comparator.thencomparing(o1 , o2 ) -&gt; o1.元素.compareTo( o2.元素 ) ; 由于内部红黑数比较comparator比较结果是相等 , 那么自动判读为两元素相等, 不会实现覆盖原来Tree中的内容 ;</p>
+<p><em>//上面的进阶版，可以自定义类中属性(作为key)的获取规则，并对此属性进行比较</em></p>
+<p>default &lt;U&gt; Comparator&lt;T&gt; thenComparing(</p>
+<p>Function&lt;? super T, ? extends U&gt; keyExtractor, //先写清楚获取元素的方法 , 之后lambda中的元素自动为方法元素 ;</p>
+<p>Comparator&lt;? super U&gt; keyComparator) {</p>
+<p>return thenComparing(comparing(keyExtractor, keyComparator));</p>
+<p>}</p>
+<p><em>//针对于特定内置类型的提取并比较，同上，后续同理</em></p>
+<p>default Comparator&lt;T&gt; thenComparingInt(ToIntFunction&lt;? super T&gt; keyExtractor)</p>
+<p>{ return thenComparing(comparingInt(keyExtractor)); }</p>
+<p>TreeSet中实现的String比较方法实现Comparator.reverseOrder() ; 内部封装好了 , 可以直接使用 ;</p>
+<p><em>//------以下是所有的静态方法，可以直接生成一个新的Comparator对象</em></p>
+<p><em>//生成一个指定类型（需要实现Comparable）的反向比较器</em></p>
+<p>public static &lt;T extends Comparable&lt;? super T&gt;&gt; Comparator&lt;T&gt; reverseOrder()</p>
+<p>{ return Collections.reverseOrder(); }</p>
+<p><em>//生成一个指定类型（需要实现Comparable）的正向比较器</em></p>
+<p><strong>@SuppressWarnings(&quot;unchecked&quot;)</strong></p>
+<p>publicstatic &lt;T extends Comparable&lt;? super T&gt;&gt; Comparator&lt;T&gt; naturalOrder()</p>
+<p>{ return (Comparator&lt;T&gt;) Comparators.NaturalOrderComparator.INSTANCE; }</p>
+<p><em>//生成一个指定类型的正向比较器，且针对于null值，会优先排到前面</em></p>
+<p>public static &lt;T&gt; Comparator&lt;T&gt; nullsFirst(Comparator&lt;? super T&gt; comparator) { return newComparators.NullComparator&lt;&gt;(true, comparator); }</p>
+<p><em>//生成一个指定类型的正向比较器，且针对于null值，会直接排到后面</em></p>
+<p>publicstatic &lt;T&gt; Comparator&lt;T&gt; nullsLast(Comparator&lt;? super T&gt; comparator) {</p>
+<p>return new Comparators.NullComparator&lt;&gt;(false, comparator); }</p>
+<p>实际使用时 Comparator.null---(Comparator.naturalOrder()) ;</p>
+<p><em>//传入一个指定类型用于比较的Key的获取方式，然后再传入Key的比较操作实现 , 泛型方法 ;</em></p>
+<p><em>Comparator</em></p>
+<p>public static &lt;T, U&gt; Comparator&lt;T&gt; comparing(</p>
+<p>Function&lt;? super T, ? extends U&gt; keyExtractor,</p>
+<p>Comparator&lt;? super U&gt; keyComparator)</p>
+<p>{ Objects.requireNonNull(keyExtractor);</p>
+<p>Objects.requireNonNull(keyComparator);</p>
+<p>return (Comparator&lt;T&gt; &amp; Serializable)</p>
+<p>(c1, c2) -&gt; keyComparator.compare(keyExtractor.apply(c1),</p>
+<p>keyExtractor.apply(c2)); }</p>
+<p><em>//传入一个指定类型用于比较的Key（需要实现Comparable）的获取方式，然后自动进行比较</em></p>
+<p>public static &lt;T, U extendsComparable&lt;? super U&gt;&gt; Comparator&lt;T&gt; comparing(</p>
+<p>Function&lt;? super T, ? extends U&gt; keyExtractor) {</p>
+<p>Objects.requireNonNull(keyExtractor);</p>
+<p>return (Comparator&lt;T&gt; &amp; Serializable)</p>
+<p>(c1, c2) -&gt; keyExtractor.apply(c1).compareTo(keyExtractor.apply(c2)); }</p>
+<p><em>//针对于内置类型的</em></p>
+<p>public static &lt;T&gt; Comparator&lt;T&gt; comparingInt(ToIntFunction&lt;? super T&gt; keyExtractor)</p>
+<p>{ Objects.requireNonNull(keyExtractor);</p>
+<p>return (Comparator&lt;T&gt; &amp; Serializable)</p>
+<p>(c1, c2) -&gt; Integer.compare(keyExtractor.applyAsInt(c1), keyExtractor.applyAsInt(c2)); } ... }</p>
+<pre><code class="language-text">// 构造时传入比较器
+    public SortableList(Comparator&lt;T&gt; comparator) {
+        this.list = new ArrayList&lt;&gt;();
+        this.comparator = comparator;
+    }
+</code></pre>
+<p>想实现逆向.就在后面comparing后面加一个.reversed()即可 ;</p>
+<p>因为是泛型类 &lt;需要后期标清楚类型&gt; ;</p>
+<p>Collections工具类 ;</p>
+<p>集合中的&quot;Arrays&quot; :</p>
+<p>List&lt;Integer&gt; list = newArrayList&lt;&gt;(Array.aslist( ));</p>
+<p>//快速获取到最大最小值 ;</p>
+<p>Collections.max(list);</p>
+<p>Collections.min(list);</p>
+<p>同样的，我们可以对一个集合进行二分搜索（注意，集合的具体类型，必须是实现Comparable接口的类 必须实现排序)：</p>
+<p>Collections.binarySearch(list, 8)</p>
+<p>也可以对集合的元素进行快速填充，注意这个填充是对集合中已有的元素进行覆盖：</p>
+<p>Collections.fill(list, 6); //集合中本身没有元素，那么<code>fill</code>操作不会生效。</p>
+<p>可能需要生成一个空的集合类返回，那么我们可以使用<code>emptyXXX</code>来快速生成一个只读的空集合：</p>
+<p>List&lt;Integer&gt; list = Collections.emptyList(); <em>//Collections.singletonList() , 可以用于创建List , 会生成一个只有一个元素的List</em> list.add(10); <em>//不支持，会直接抛出异常 , 以上标记数组都不会再次发生变化 ;</em></p>
+<p>List&lt;Integer&gt; newList = Collections.unmodifiableList(list); //相当final 无法实现修改 ;</p>
+<p>寻找子集和的位置 :</p>
+<p>Collections.indexOfSubList(list, Arrays.asList(4, 5))</p>
+<p>类型擦除机制，实际上最后只要是Object的实现类都可以保存到集合类中，那么就会出现这种情况：</p>
+<p><em>//使用原始类型接收一个Integer类型的ArrayList</em></p>
+<p>List list=newArrayList&lt;&gt;(Arrays.asList(1,2,3,4,5)); Lisr此处不标签类型 ;</p>
+<p>list.add(&quot;aaa&quot;); <em>//我们惊奇地发现，这玩意居然能存字符串进去</em></p>
+<p><em>额外的洗牌功能 : Collections.shuffle(list) ;</em></p>
+<p>在实际运行时，并不会真的进行类型检查，要解决这种问题很简单，就是在运行时进行类型检查</p>
+<p>Collections.checkedList(list, Integer.class); <em>//这里的.class关键字我们会在后面反射中介绍</em></p>
+<p><code>checkedXXX</code>可以将给定集合类进行包装，在运行时同样会进行类型检查，如果通过上面的漏洞插入一个本不应该是当前类型集合支持的类型，那么会直接抛出类型转换异常：</p>
+<p><em>表示Integer这个类型</em> list.add(&quot;aaa&quot;); 只要是Object类型就可以实现填入</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

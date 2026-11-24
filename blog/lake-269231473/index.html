@@ -1,0 +1,209 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go：if、switch 与条件分支 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go：if、switch 与条件分支</h1><time datetime="2026-05-11T02:05:21.000Z">2026年5月11日</time><h2 id="if语句">if语句</h2>
+<p>以年龄为例，输入的年龄在某一个区间，就输出对应的提示信息</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">&lt;=0     未出生
+1-18    未成年
+18-35   青年
+&gt;=35    中年
+</code></pre>
+<p>很明显，这是一个多选一的情况</p>
+<p>我们有很多中方式来实现</p>
+<p>中断式 , 卫语句</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;请输入你的年龄：&quot;)
+  var age int
+  fmt.Scan(&amp;age)
+
+  if age &lt;= 0 {
+    fmt.Println(&quot;未出生&quot;)
+    return
+  }
+  if age &lt;= 18 {
+    fmt.Println(&quot;未成年&quot;)
+    return
+  }
+  if age &lt;= 35 {
+    fmt.Println(&quot;青年&quot;)
+    return
+  }
+  fmt.Println(&quot;中年&quot;)
+
+}
+</code></pre>
+<p>它也有个好听的名字，叫卫语句</p>
+<p>嵌套式</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;请输入你的年龄：&quot;)
+  var age int
+  fmt.Scan(&amp;age)
+
+  if age &lt;= 18 {
+    if age &lt;= 0 {
+      fmt.Println(&quot;未出生&quot;)
+    } else {
+      fmt.Println(&quot;未成年&quot;)
+    }
+  } else {
+    if age &lt;= 35 {
+      fmt.Println(&quot;青年&quot;)
+    } else {
+      fmt.Println(&quot;中年&quot;)
+    }
+  }
+}
+</code></pre>
+<p>多条件式</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;请输入你的年龄：&quot;)
+  var age int
+  fmt.Scan(&amp;age)
+
+  if age &lt;= 0 {
+    fmt.Println(&quot;未出生&quot;)
+  }
+  if age &gt; 0 &amp;&amp; age &lt;= 18 {
+    fmt.Println(&quot;未成年&quot;)
+  }
+  if age &gt; 18 &amp;&amp; age &lt;= 35 {
+    fmt.Println(&quot;青年&quot;)
+  }
+  if age &gt; 35 {
+    fmt.Println(&quot;中年&quot;)
+  }
+}
+</code></pre>
+<h2 id="switch语句">switch语句</h2>
+<p>使用 switch 语句中 , 内部的 每一种 case 中需要 实现的东西都会自动打上 break ;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;请输入你的年龄：&quot;)
+  var age int
+  fmt.Scan(&amp;age)
+
+  switch {
+  case age &lt;= 0:
+    fmt.Println(&quot;未出生&quot;)
+  case age &lt;= 18:
+    fmt.Println(&quot;未成年&quot;)
+  case age &lt;= 35:
+    fmt.Println(&quot;青年&quot;)
+  default:
+    fmt.Println(&quot;中年&quot;)
+  }
+}
+</code></pre>
+<p>除了这样的写法，还有枚举所有的可能值</p>
+<p>例如</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">1   星期一
+2   星期二
+3   星期三
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;请输入星期数字：&quot;)
+  var week int
+  fmt.Scan(&amp;week)
+
+  switch week {
+  case 1:
+    fmt.Println(&quot;周一&quot;)
+  case 2:
+    fmt.Println(&quot;周二&quot;)
+  case 3:
+    fmt.Println(&quot;周三&quot;)
+  case 4:
+    fmt.Println(&quot;周四&quot;)
+  case 5:
+    fmt.Println(&quot;周五&quot;)
+  case 6, 7:
+    fmt.Println(&quot;周末&quot;)
+  default:
+    fmt.Println(&quot;错误&quot;)
+  }
+}
+</code></pre>
+<p>可以理解为case的值就是switch的枚举结果</p>
+<p>一般来说，go的switch的多选一，满足其中一个结果之后，就结束switch了</p>
+<p>例如</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;请输入你的年龄：&quot;)
+  var age int
+  fmt.Scan(&amp;age)
+
+  switch {
+  case age &lt;= 0:
+    fmt.Println(&quot;未出生&quot;)
+  case age &lt;= 18:
+    fmt.Println(&quot;未成年&quot;)
+  case age &lt;= 35:
+    fmt.Println(&quot;青年&quot;)
+  default:
+    fmt.Println(&quot;中年&quot;)
+  }
+}
+</code></pre>
+<p>我输入一个12，我希望它能输出满足的所有条件，例如我希望它输出，未成年，青年</p>
+<p>专业的一点 : fallthough 会让 switch 继续向下传递;</p>
+<p>go 中的 switch 中的每一个 case 都会自动补全 break ;</p>
+<p>case 可以一个适配多个 判断条件</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+func main() {
+  fmt.Println(&quot;请输入你的年龄：&quot;)
+  var age int
+  fmt.Scan(&amp;age)
+
+  switch {
+  case age &lt;= 0:
+    fmt.Println(&quot;未出生&quot;)
+    fallthrough
+  case age &lt;= 18:
+    fmt.Println(&quot;未成年&quot;)
+    fallthrough
+  case age &lt;= 35:
+    fmt.Println(&quot;青年&quot;)
+  default:
+    fmt.Println(&quot;中年&quot;)
+  }
+} 
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<p>卫语句 <a href="https://blog.csdn.net/wangpaiblog/article/details/114909737">https://blog.csdn.net/wangpaiblog/article/details/114909737</a></p>
+<p>switch <a href="https://blog.csdn.net/qq_43470538/article/details/130436381">https://blog.csdn.net/qq_43470538/article/details/130436381</a></p>
+<p>switch <a href="https://www.php.cn/faq/540744.html">https://www.php.cn/faq/540744.html</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

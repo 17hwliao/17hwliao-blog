@@ -1,0 +1,78 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 对象方法与值传递 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 对象方法与值传递</h1><time datetime="2025-12-20T11:38:05.000Z">2025年12月20日</time><pre><code class="language-java">public class Person {
+
+String name ;
+
+int age ;
+
+String gender ;
+
+int cun1 ;
+
+int cun2 ;
+
+void say_hello(){
+
+System.out.println(&quot; &quot; + name + &quot; &quot;+ age + &quot; &quot;+ gender);
+
+}
+
+int sum(int a , int b){
+
+int c = a + b ;
+
+return c ;
+
+}
+
+void test(int a) {
+
+for (int i = 0; i &lt; 10; i++) {
+
+if (i == a) {
+
+break;
+
+} else {
+
+System.out.println(&quot;hello&quot;);
+
+}
+
+}
+
+System.out.println(&quot;hhhhhhh&quot;);
+
+}
+
+void swap(int a, int b){
+
+int temp = a;
+
+a = b;
+
+b = temp;
+
+}
+
+void swap(Person person){
+
+person.name = &quot;nitian&quot; ;
+
+}
+
+void swap1(Person person){
+
+int temp = person.cun1 ;
+
+person.cun1 = person.cun2 ;
+
+person.cun2 = temp ;
+
+}
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

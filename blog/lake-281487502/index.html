@@ -1,0 +1,308 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ReAct Agent：推理与工具调用 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>ReAct Agent：推理与工具调用</h1><time datetime="2026-08-15T12:18:14.000Z">2026年8月15日</time><h2 id="简介">简介</h2>
+<p>React Agent 是一种能够推理（Reasoning）和行动（Acting）循环的智能代理。它能够：</p>
+<pre><code class="language-text">1. 🟢 理解用户的意图  
+2. 🔍 规划需要使用哪些工具  
+3. ⚙️ 执行工具调用  
+4. 📊 分析工具返回的结果  
+5. 💡 生成最终答复
+</code></pre>
+<h3 id="react-循环流程">React 循环流程</h3>
+<pre><code class="language-text">用户输入  
+↓  
+[思考] AI 分析任务  
+↓  
+[决策] 需要调用工具吗？  
+    |— 是 → [行动] 调用工具 → [观察] 获取结果 → 返回[思考]  
+    |— 否 → [回答] 生成最终答复 → 结束
+</code></pre>
+<h3 id="react-对比-chatmodel">React 对比 ChatModel</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>特性</span></p></td><td><p><span>普通 ChatModel</span></p></td><td><p><span>React  Agent </span></p></td></tr><tr><td><p><span>能力范围</span></p></td><td><p><span>仅限训练数据</span></p></td><td><p><span>可以调用外部工具</span></p></td></tr><tr><td><p><span>实时数据</span></p></td><td><p><span>不可以</span></p></td><td><p><span>可以</span></p></td></tr><tr><td><p><span>复杂任务</span></p></td><td><p><span>受限</span></p></td><td><p><span>可分布执行</span></p></td></tr><tr><td><p><span>工具使用</span></p></td><td><p><span>不可以</span></p></td><td><p><span>支持自主选择和调用</span></p></td></tr></tbody></table></div>
+
+<h4 id="基础的示例-简单的-react-agent">基础的示例 : 简单的 React Agent</h4>
+<pre><code class="language-text">1. - 创建 ctx + chatModel ; 
+2. 创建工具
+// 获取当前时间的工具
+timeTool := utils.NewTool(
+&amp;schema.ToolInfo{
+    Name:    &quot;get_current_time&quot;,
+    Desc:    &quot;获取当前时间&quot;,
+    ParamsOneOf: schema.NewParamsOneOfByParams(map[string]*schema.ParameterInfo{}),
+},
+func(ctx context.Context, params map[string]any) (string, error) {
+    now := time.Now().Format(&quot;2006-01-02 15:04:05&quot;)
+    fmt.Printf(&quot;[工具执行] get_current_time -&gt; %s\\n&quot;, now)
+    return now, nil
+}, 
+// 简单计算器工具
+calculator := utils.NewTool(
+    &amp;schema.ToolInfo{
+        Name: &quot;calculator&quot;,
+        Desc: &quot;执行简单的数学计算（加减乘除）&quot;,
+        ParamsOneOf: schema.NewParamsOneOfByParams(map[string]*schema.ParameterInfo{
+            &quot;expression&quot;: {
+                Type:    &quot;string&quot;,
+                Desc:    &quot;数学表达式，例如：10 + 5&quot;,
+                Required: true,
+            },
+        }),
+    },
+    func(ctx context.Context, params map[string]any) (string, error) {
+        expr := params[&quot;expression&quot;].(string)
+        // 简化：这里只演示，实际应该用真正的表达式解析
+        result := &quot;15&quot; // 假设结果
+        fmt.Printf(&quot;[工具执行] calculator(%s) -&gt; %s\n&quot;, expr, result)
+        return result, nil
+    },
+)
+// 3. 创建 React Agent
+agent, err := react.NewAgent(ctx, &amp;react.AgentConfig{
+    ToolCallingModel: chatModel,
+    ToolsConfig: compose.ToolsNodeConfig{
+    Tools: []tool.BaseTool{timeTool, calculator},
+    },
+}) 
+if err != nil {
+    log.Fatal(&quot;创建 Agent 失败: %v&quot;, err)
+}
+// 4. 使用 Agent
+messages := []*schema.Message{
+    schema.UserMessage(&quot;现在几点了？&quot;),
+}
+
+fmt.Println(&quot;=== 用户：现在几点了？ ===\n&quot;)
+
+response, err := agent.Generate(ctx, messages)
+if err != nil {
+    log.Fatal(&quot;生成失败: %v&quot;, err)
+}
+
+fmt.Printf(&quot;\n=== Agent 回答 ===\n%s\n&quot;, response.Content)
+</code></pre>
+<h3 id="流式输出">流式输出</h3>
+<pre><code class="language-text">1. -ctx + chatModel
+2. searchTool := utils.NewTool(
+    &amp;schema.ToolInfo{
+        Name: &quot;search&quot;,
+        Desc: &quot;搜索信息&quot;,
+        ParamsOneOf: schema.NewParamsOneOfByParams(map[string]*schema.ParameterInfo{
+          &quot;query&quot;: {
+            Type:    &quot;string&quot;,
+            Desc:   &quot;搜索关键词&quot;,
+            Required: true,
+          },
+        },
+    }),
+func(ctx context.Context, params map[string]any)(string, error) {
+    query := params[&quot;query&quot;].(string)
+    // 模拟搜索结果
+    result := fmt.Sprintf(&quot;找到关于 &#39;%s&#39; 的信息: Go 是 Google 开发的编程语言，以并发和简洁著称。&quot;, query)
+    fmt.Printf(&quot;\n[工具执行] search(%s)\n&quot;, query)
+    return result, nil
+    },
+)
+agent, err := react.NewAgent(ctx, &amp;react.AgentConfig{
+    ToolCallingModel: chatModel,
+    ToolsConfig: compose.ToolsNodeConfig{
+    Tools: []tool.BaseTool{searchTool},
+    },
+})
+
+if err != nil {
+    log.Fatal(&quot;创建 Agent 失败: %v&quot;, err)
+}
+
+// 流式调用
+messages := []*schema.Message{
+    schema.UserMessage(&quot;请告诉我 Go 语言的特点&quot;),
+}
+
+fmt.Println(&quot;=== 用户: 请告诉我 Go 语言的特点 ===\n&quot;)
+fmt.Println(&quot;Agent: &quot;)
+
+stream, err := agent.Stream(ctx, messages)
+if err != nil {
+    log.Fatal(&quot;流式生成失败: %v&quot;, err)
+}
+defer stream.Close()
+
+// 逐块接收并打印
+ for {
+    chunk, err := stream.Recv()
+    if err != nil {
+        if errors.Is(err, io.EOF) {
+            break
+        }
+        log.Fatal(&quot;接收失败: %v&quot;, err)
+    }
+    // 打印内容（打字机效果）
+    fmt.Print(chunk.Content)
+    fmt.Println(&quot;\n\n=== 完成 ===&quot;)
+}
+</code></pre>
+<h4 id="项目实战-餐厅点餐系统">项目实战 : 餐厅点餐系统</h4>
+<pre><code class="language-text">// 餐厅数据结构
+type Restaurant struct {
+    ID       string   `json:&quot;id&quot;`
+    Name     string   `json:&quot;name&quot;`
+    Location string   `json:&quot;location&quot;`
+    Cuisine  string   `json:&quot;cuisine&quot;`
+    Rating   float64  `json:&quot;rating&quot;`
+    Tags     []string `json:&quot;tags&quot;`
+}
+type Dish struct {
+    Name   string  `json:&quot;name&quot;`
+    Price  float64 `json:&quot;price&quot;`
+    Desc   string  `json:&quot;desc&quot;`
+    Spicy  bool    `json:&quot;spicy&quot;`
+}
+
+var restaurantDB = []Restaurant {
+  {
+    ID:      &quot;r1&quot;,
+    Name:    &quot;川香阁&quot;,
+    Location: &quot;北京&quot;,
+    Cuisine:  &quot;川菜&quot;,
+    Rating:   4.8,
+    Tags:     []string{&quot;辣&quot;, &quot;正宗&quot;, &quot;环境好&quot;},
+  },
+  {
+    ID:      &quot;r2&quot;,
+    Name:    &quot;粤味轩&quot;,
+    Location: &quot;北京&quot;,
+    Cuisine:  &quot;粤菜&quot;,
+    Rating:   4.6,
+    Tags:     []string{&quot;清淡&quot;, &quot;海鲜&quot;, &quot;精致&quot;},
+  },
+}
+
+var dishDB = map[string][]Dish{
+  &quot;r1&quot;: {
+    {Name: &quot;水煮鱼&quot;, Price: 88, Desc: &quot;鲜嫩鱼肉，麻辣鲜香&quot;, Spicy: true},
+    {Name: &quot;宫保鸡丁&quot;, Price: 48, Desc: &quot;经典川菜，香辣可口&quot;, Spicy: true},
+    {Name: &quot;蒜泥白肉&quot;, Price: 38, Desc: &quot;肥而不腻，蒜香浓郁&quot;, Spicy: false},
+  },
+
+&quot;r2&quot;: {
+    {Name: &quot;清蒸鲈鱼&quot;, Price: 128, Desc: &quot;鱼肉鲜嫩，原汁原味&quot;, Spicy: false},
+    {Name: &quot;白切鸡&quot;, Price: 68, Desc: &quot;皮爽肉滑，鸡味浓郁&quot;, Spicy: false},
+    {Name: &quot;广式烧鹅&quot;, Price: 98, Desc: &quot;皮脆肉嫩，香味四溢&quot;, Spicy: false},
+  },
+}
+func main(){
+  -1. ctx + chatModel 创建 ; 
+  -2. 调用工具
+   //1.餐厅查询
+   restaurantTool := utils.NewTool(
+    &amp;schema.ToolInfo{
+        Name: &quot;query_restaurants&quot;,
+        Desc: &quot;根据条件查询餐厅信息（位置、菜系、是否辣）&quot;,
+        ParamsOneOf: schema.NewParamsOneOfByParams(map[string]*schema.ParameterInfo{
+            &quot;location&quot;: {
+                Type:     &quot;string&quot;,
+                Desc:     &quot;城市位置，例如：北京、上海&quot;,
+                Required: false,
+            },
+            &quot;cuisine&quot;: {
+                Type:     &quot;string&quot;,
+                Desc:     &quot;菜系类型，例如：川菜、粤菜&quot;,
+                Required: false,
+            },
+            &quot;spicy&quot;: {
+                Type:     &quot;boolean&quot;,
+                Desc:     &quot;是否要辣的&quot;,
+                Required: false,
+            },
+        }),
+    },
+  func(ctx context.Context, params map[string]any) (string, error) {
+    fmt.Printf(&quot;\n[工具执行] query_restaurants\n&quot;)
+
+    var results []Restaurant
+    location, _ := params[&quot;location&quot;].(string)
+    cuisine, _ := params[&quot;cuisine&quot;].(string)
+    spicy, _ := params[&quot;spicy&quot;].(bool)
+
+    for _, r := range restaurantDB {
+        match := true
+        if location != &quot;&quot; &amp;&amp; r.Location != location {
+            match = false
+        }
+        if cuisine != &quot;&quot; &amp;&amp; r.Cuisine != cuisine {
+            match = false
+        }
+        if spicy {
+            hasSpicy := false
+            for _, tag := range r.Tags {
+                if tag == &quot;辣&quot; {
+                    hasSpicy = true
+                        break
+            }
+        }
+        if !hasSpicy {
+            match = false
+        }
+    }
+    if match {
+        results = append(results, r)
+        }
+    }
+    resultJSON, _ := json.Marshal(results)
+    return string(resultJSON), nil
+  },
+)
+  //2.查询菜品
+  dishTool := utils.NewTool(
+    &amp;schema.ToolInfo{
+        Name: &quot;query_dishes&quot;,
+        Desc: &quot;查询指定餐厅的菜品信息（需要餐厅ID）&quot;,
+        ParamsOneOf: schema.NewParamsOneOfByParams(map[string]*schema.ParameterInfo{
+            &quot;restaurant_id&quot;: {
+                Type:     &quot;string&quot;,
+                Desc:     &quot;餐厅ID&quot;,
+                Required: true,
+            },
+        }),
+    },
+   func(ctx context.Context,params map[string]any)(string,error) {
+        restaurantID := params[&quot;restaurant_id&quot;].(string)
+        fmt.Printf(&quot;\n[工具执行] query_dishes(restaurant_id=%s)\n&quot;, restaurantID)
+
+        dishes, exists := dishDB[restaurantID]
+        if !exists {
+            return `{&quot;error&quot;: &quot;餐厅不存在&quot;}`, nil
+        }
+
+        resultJSON, _ := json.Marshal(dishes)
+        return string(resultJSON), nil
+     } , 
+  )
+
+  // 创建 React Agent
+  agent, err := react.NewAgent(ctx, &amp;react.AgentConfig{
+    ToolCallingModel: chatModel,
+    ToolsConfig: compose.ToolsNodeConfig{
+        Tools: []tool.BaseTool{restaurantTool, dishTool},
+    },
+})
+if err != nil {
+    log.Fatalf(&quot;创建 Agent 失败: %v&quot;, err)
+}
+
+  // 使用 Agent
+  messages := []*schema.Message{
+    schema.UserMessage(&quot;我在北京，想吃辣一点的，给我推荐几家餐厅和特色菜&quot;),
+}
+  fmt.Println(&quot;=== 用户：我在北京，想吃辣一点的，给我推荐几家餐厅和特色菜 ===&quot;)
+
+  response, err := agent.Generate(ctx, messages)
+  if err != nil {
+      log.Fatalf(&quot;生成失败: %v&quot;, err)
+  }
+  fmt.Printf(&quot;\n=== Agent 回答 ===\n%s\n&quot;, response.Content)
+}
+</code></pre>
+<h2 id="section"></h2>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

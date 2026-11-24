@@ -1,0 +1,926 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Vue 工程化：Vite 与组件开发 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Vue 工程化：Vite 与组件开发</h1><time datetime="2026-05-02T06:32:35.000Z">2026年5月2日</time><h2 id="vue工程化">Vue工程化</h2>
+<p>前面我们在介绍Vue的时候，我们讲到Vue是一款用于构建用户界面的渐进式JavaScript框架 。（官方：<a href="https://cn%5C.vuejs%5C.org/%EF%BC%89">https://cn\.vuejs\.org/）</a></p>
+<p><img src="../../blogs/_assets/lakebook/f6f176b44ecfabc940fd5fe9.png" loading="lazy" alt=""></p>
+<p>那在前面的课程中，我们已经学习了Vue的基本语法、表达式、指令，并基于Vue的核心包，完成了Vue的案例。 那今天呢，我们要来讲解的基于Vue进行整站开发。</p>
+<h3 id="介绍">介绍</h3>
+<p>在前面的课程中，我们学习了HTML、CSS、JS、Axios(ajax只是一种异步请求的方法,可以用JS直接手写,但是使用axios可以更加优雅 )、Vue等技术，并基于完成了一些前端开发的案例 。我们目前的前端开发中，当我们需要使用一些资源时，例如：<code>vue.js</code>，和 <code>axios.js</code> 文件，都是直接再工程中导入的，如下图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/1cdd7002f591d05367d4a20c.png" loading="lazy" alt=""></p>
+<p>但是上述开发模式存在如下问题：</p>
+<ul>
+<li><strong>不规范</strong>：每次开发都是从零开始，比较麻烦</li>
+<li><strong>难复用</strong>：多个页面中的组件共用性不好</li>
+<li><strong>难维护</strong>：js、图片等资源没有规范化的存储目录，没有统一的标准，不方便维护</li>
+</ul>
+<p>所以现在企业开发中更加讲究前端工程化方式的开发，主要包括如下4个特点:</p>
+<p><img src="../../blogs/_assets/lakebook/2a5b8039b5a0ab6e174290e5.png" loading="lazy" alt=""></p>
+<ul>
+<li>模块化：将js和css等，做成一个个可复用模块</li>
+<li>组件化：我们将UI组件，css样式，js行为封装成一个个的组件，便于管理</li>
+<li>规范化：我们提供一套标准的规范的目录接口和编码规范，所有开发人员遵循这套规范</li>
+<li>自动化：项目的构建，测试，部署全部都是自动完成</li>
+</ul>
+<p>所以对于<strong>前端工程化，说白了，就是在企业级的前端项目开发中，把前端开发所需要的工具、技术、流程、经验进行规范化和标准化</strong>。从而统一开发规范、提升开发效率，降低开发难度、提高复用等等。接下来我们就需要学习vue的官方提供的脚手架帮我们完成前端的工程化。</p>
+<h3 id="环境准备">环境准备</h3>
+<h4 id="介绍-1">介绍</h4>
+<ul>
+<li><p>介绍：create-vue是Vue官方提供的最新的脚手架工具，用于快速生成一个工程化的Vue项目。</p>
+</li>
+<li><p>create-vue提供了如下功能：</p>
+</li>
+<li><p>统一的目录结构</p>
+</li>
+<li><p>本地调试</p>
+</li>
+<li><p>热部署</p>
+</li>
+<li><p>单元测试</p>
+</li>
+<li><p>集成打包上线</p>
+</li>
+<li><p>而要想使用create-vue来创建vue项目，则必须安装依赖环境：NodeJS</p>
+</li>
+</ul>
+<p><img src="../../blogs/_assets/lakebook/fc373c0fa370a136c1cb61c5.png" loading="lazy" alt=""></p>
+<h4 id="nodejs安装">NodeJS安装</h4>
+<p>安装包，在课程资料中已经提供了。如下：</p>
+<p><img src="../../blogs/_assets/lakebook/8bcabb2711c10d413efa7139.png" loading="lazy" alt=""></p>
+<p><strong>1). 双击msi文件，勾选我接受</strong></p>
+<p><img src="../../blogs/_assets/lakebook/622c0c8affd4f0a514e993b4.png" loading="lazy" alt=""></p>
+<p>**2). 选择安装 到一个，**<strong>没有中文，没有空格</strong> <strong>的目录下（新建一个文件夹NodeJS）</strong></p>
+<p><img src="../../blogs/_assets/lakebook/16d19955e78fe5e65ff1eddb.png" loading="lazy" alt=""></p>
+<p><strong>3). 点击 Next，下一步下一步的安装即可。</strong></p>
+<p><img src="../../blogs/_assets/lakebook/77d2e8cf63debddac7aa6e5a.png" loading="lazy" alt=""></p>
+<p><strong>4). 验证NodeJS的环境变量</strong></p>
+<p>NodeJS 安装完毕后，会自动配置好环境变量，我们验证一下是否安装成功，通过： <code>node -v</code></p>
+<p><img src="../../blogs/_assets/lakebook/ac60a7766e09de8080b53b77.png" loading="lazy" alt=""></p>
+<p><strong>5). 配置npm的全局安装路径</strong></p>
+<p><img src="../../blogs/_assets/lakebook/92dc0dc63ea4a6065b769192.png" loading="lazy" alt=""></p>
+<p>使用 <strong>管理员身份</strong>运行命令行，在命令行中，执行如下指令：</p>
+<pre><code class="language-text">npm config set prefix &quot;D:\develop\NodeJS&quot;
+</code></pre>
+<p><strong>注意：D:\develop\NodeJS 这个目录是NodeJS的安装目录 !!!!!</strong></p>
+<p><strong>注意：D:\develop\NodeJS 这个目录是NodeJS的安装目录 !!!!!</strong></p>
+<p><strong>注意：D:\develop\NodeJS 这个目录是NodeJS的安装目录 !!!!!</strong></p>
+<p><strong>6). 切换为淘宝镜像，加速下载：</strong></p>
+<pre><code class="language-text">npm config set registry https://registry.npmmirror.com
+</code></pre>
+<h4 id="npm介绍">npm介绍</h4>
+<ul>
+<li>**npm：**Node Package Manager，是NodeJS的软件包管理器。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2026/png/63728767/1777703604054-cdf63005-49a8-4c44-a3d2-01e35ca35d74.png" loading="lazy" alt=""></p>
+<p>在开发前端项目的过程中，我们需要相关的依赖，就可以直接通过 <code>npm install xxx</code> 命令，直接从远程仓库中将依赖直接下载到本地了。</p>
+<h3 id="vue项目创建">Vue项目创建</h3>
+<h4 id="项目创建">项目创建</h4>
+<p>创建一个工程化的Vue项目，执行命令：<code>npm create vue``@3.3.4</code></p>
+<p><img src="../../blogs/_assets/lakebook/222180edb16f66ddc4ca1120.png" loading="lazy" alt=""></p>
+<p><strong>详细步骤说明：</strong></p>
+<ul>
+<li><code>Project name：</code>------------------》项目名称，默认值：vue-project，可输入想要的项目名称。</li>
+<li><code>Add TypeScript?</code> ----------------》是否加入TypeScript组件？默认值：No。</li>
+<li><code>Add JSX Support?</code> --------------》是否加入JSX支持？默认值：No。</li>
+<li><code>Add Vue Router...</code>--------------》是否为单页应用程序开发添加Vue Router路由管理组件？默认值：No。</li>
+<li><code>Add Pinia ...</code>----------------------》是否添加Pinia组件来进行状态管理？默认值：No。</li>
+<li><code>Add Vitest ...</code>---------------------》是否添加Vitest来进行单元测试？默认值：No。</li>
+<li><code>Add an End-to-End ...</code>-----------》是否添加端到端测试？默认值No。</li>
+<li><code>Add ESLint for code quality?</code> ---》是否添加ESLint来进行代码质量检查？默认值：No。</li>
+</ul>
+<p>**提示：**执行上述指令，将会安装并执行 create-vue，它是 Vue 官方的项目脚手架工具</p>
+<p>项目创建完成以后，进入<code>vue-project01</code> 项目目录，执行命令安装当前项目的依赖：<code>npm install</code></p>
+<p><img src="../../blogs/_assets/lakebook/275eb4c0f1d196f9d01d50c4.png" loading="lazy" alt=""></p>
+<p>创建项目以及安装依赖的过程，都是需要联网的。【如果网络不太好，可能会造成依赖下载不完整报错，继续再次执行 命令安装。】</p>
+<h4 id="项目结构">项目结构</h4>
+<p>我们可以使用VsCode直接打开这个Vue项目。</p>
+<p><img src="../../blogs/_assets/lakebook/146738ef132a149b046a51ef.png" loading="lazy" alt=""></p>
+<p>这是我们创建的第一个项目结构，接下来呢，我们来介绍一下这个项目的结构。如图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/c842b8ca359aeb00ecc1073c.png" loading="lazy" alt=""></p>
+<p>在上述的目录中，我们以后操作的最多的目录，就是src目录，因为我们需要在这个目录下来编写前端代码。</p>
+<h4 id="启动项目">启动项目</h4>
+<ul>
+<li><strong>方式一：命令行</strong></li>
+</ul>
+<p>启动项目，我们可以在命令行中执行命令：<code>npm run dev</code>，就可以启动Vue项目了。</p>
+<p><img src="../../blogs/_assets/lakebook/62c71b8b9bcb2ea937bc077b.png" loading="lazy" alt=""></p>
+<ul>
+<li><strong>方式二：Vscode图形化界面</strong></li>
+</ul>
+<p>点击NPM脚本中的dev后的运行按钮，就可以启动项目。</p>
+<p>(如果 NPM 脚本未出现右击 展示显示就行)</p>
+<p><img src="../../blogs/_assets/lakebook/7cf42046193c0ab40731cbfc.png" loading="lazy" alt=""></p>
+<p>启动起来之后，我们就可以访问前端Vue项目了，访问路径：<a href="http://localhost:5173">http://localhost:5173</a></p>
+<p><img src="../../blogs/_assets/lakebook/3c7938494834fd32afcfa244.png" loading="lazy" alt=""></p>
+<h3 id="vue项目开发流程">Vue项目开发流程</h3>
+<p>如下图：</p>
+<p><img src="../../blogs/_assets/lakebook/c02a2c3e66b69300329f8b6d.png" loading="lazy" alt=""></p>
+<p>其中<code>*.vue</code>是Vue项目中的组件文件，在Vue项目中也称为单文件组件（<a href="https://cn.vuejs.org/guide/scaling-up/sfc.html">SFC</a>，Single-File Components）。Vue 的单文件组件会将一个组件的逻辑 (JS)，模板 (HTML) 和样式 (CSS) 封装在同一个文件里（<code>*.vue</code>）</p>
+<p><img src="../../blogs/_assets/lakebook/6a9432b582c1bf4f14b544e1.png" loading="lazy" alt=""></p>
+<h3 id="api风格">API风格</h3>
+<ul>
+<li>Vue的组件有两种不同的风格：<strong>组合式API</strong> 和 <strong>选项式API</strong></li>
+<li><strong>组合式API</strong>**：**是Vue3提供的一种基于函数的组件编写方式，通过使用函数来组织和复用组件的逻辑。它提供了一种更灵活、更可组合的方式来编写组件。代码形式如下：</li>
+</ul>
+<pre><code class="language-text">&lt;script setup&gt;  //添加标识 , 对vue实现预处理 , 实现使用组合式API ; 
+import { ref, onMounted } from &#39;vue&#39;; 引入函数
+const count = ref(0); //声明响应式变量
+
+function increment(){ //声明函数
+   count.value++;
+}
+
+onMounted(() =&gt; { //声明钩子函数
+  console.log(&#39;Vue Mounted....&#39;); 
+})
+&lt;/script&gt;
+
+&lt;template&gt;
+   &lt;input type=&quot;button&quot; @click=&quot;increment&quot;&gt; Api Demo1 Count : {{ count }}
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+   
+&lt;/style&gt;
+</code></pre>
+<ul>
+<li><code>setup</code>：是一个标识，告诉Vue需要进行一些处理，让我们可以更简洁的使用组合式API。</li>
+<li><code>ref()</code>：接收一个内部值，返回一个响应式的ref对象，此对象只有一个指向内部值的属性 value。</li>
+<li><code>onMounted()</code>：在组合式API中的钩子方法，注册一个回调函数，在组件挂载完成后执行。</li>
+<li><strong>选项式API</strong></li>
+</ul>
+<p>**选项式API：**可以用包含多个选项的对象来描述组件的逻辑，如：<code>data</code>，<code>methods</code>，<code>mounted</code>等。选项定义的属性都会暴露在函数内部的<code>this</code>上，它会指向当前的组件实例。</p>
+<pre><code class="language-text">&lt;script&gt;
+export default{
+   data() {
+      return {
+         count: 0
+      }
+   },
+   methods: {
+      increment: function(){
+         this.count++
+      }
+   },
+   mounted() {
+      console.log(&#39;vue mounted.....&#39;);
+   }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;input type=&quot;button&quot; @click=&quot;increment&quot;&gt;Api Demo1 Count :  {{ count }}
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p>在Vue中的组合式API使用时，是没有this对象的，this对象是undefined。</p>
+<h3 id="案例">案例</h3>
+<p>在Vue项目中，基于组合式API完成用户列表数据渲染。 要求：在页面加载完毕之后，发送异步请求，加载数据，渲染表格。</p>
+<p>最终实现效果：</p>
+<p><img src="../../blogs/_assets/lakebook/5ca45a21026544546cc3f9eb.png" loading="lazy" alt=""></p>
+<p><strong>代码实现如下：</strong></p>
+<p>在 src 下定义 views 目录，在 views 目录中定义文件 <code>UserList.vue</code>， 然后，我们就可以将之前实现的Vue案例中的代码，基于Vue工程化的形式来实现一遍。 (之前实现的这个页面，在资料中已经提供了：<code>1.工程化-案例-素材.html</code>)</p>
+<p>1). 把原来定义的CSS样式代码，拷贝到 <code>&lt;style&gt;&lt;/style&gt;</code> 标签中。</p>
+<p>2). 把页面的<code>&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;</code> 中的页面展示的html标签代码，拷贝到 <code>&lt;template&gt;&lt;/template&gt;</code> 标签中。</p>
+<p>3). 将页面的JS代码，按照组合式API的形式，在 <code>&lt;script&gt;&lt;/script&gt;</code> 中定义出来。</p>
+<p>4). 而由于在这个案例中，需要用到<code>axios</code>来发送异步请求，所以还需要安装 <code>axios</code>。</p>
+<p><img src="../../blogs/_assets/lakebook/db4cdf57a01916ba2ec7829b.png" loading="lazy" alt=""></p>
+<p><strong>具体代码如下：</strong></p>
+<p><code>views/UserList.vue</code> 代码如下：</p>
+<pre><code class="language-text">&lt;script setup&gt;
+//引入ref
+import { ref, onMounted } from &#39;vue&#39;
+//实现引入axios需要提前使用 npm install axios 工具类,之后才能实现类引用; 
+import axios from &#39;axios&#39; 
+
+//声明数据变量 userList, name, gender, job
+const userList = ref([])
+const name = ref(&#39;&#39;)
+const gender = ref(&#39;&#39;)
+const job = ref(&#39;&#39;)
+
+//声明函数,基于axios查询数据
+const search = async() =&gt; {
+  //发送请求.添加配套的关键词:await , async 可以实现异步请求变成同步请求 
+  const result = await axios.get(`https://web-server.itheima.net/emps/list?name=${name.value}&amp;gender=${gender.value}&amp;job=${job.value}`).then(res =&gt; {
+    //将查询到的数据赋值给userList   传回的值为JSON格式的,先使用.data得到属性,然后使用.data获取数值
+    userList.value = result.data.data
+  })
+}
+
+//定义钩子函数 onMounted --&gt; 箭头函数
+onMounted(() =&gt; {
+  //调用search函数
+  search()
+})
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div id=&quot;center&quot;&gt;
+    姓名: &lt;input type=&quot;text&quot; name=&quot;name&quot; v-model=&quot;name&quot;&gt;
+
+    性别:
+    &lt;select name=&quot;gender&quot; v-model=&quot;gender&quot;&gt;
+      &lt;option value=&quot;1&quot;&gt;男&lt;/option&gt;
+      &lt;option value=&quot;2&quot;&gt;女&lt;/option&gt;
+    &lt;/select&gt;
+
+    职位:
+    &lt;select name=&quot;job&quot; v-model=&quot;job&quot;&gt;
+      &lt;option value=&quot;1&quot;&gt;班主任&lt;/option&gt;
+      &lt;option value=&quot;2&quot;&gt;讲师&lt;/option&gt;
+      &lt;option value=&quot;3&quot;&gt;其他&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;input class=&quot;btn&quot; type=&quot;button&quot; value=&quot;查询&quot; @click=&quot;search&quot;&gt;
+  &lt;/div&gt;
+  
+  &lt;table&gt;
+    &lt;tr&gt;
+      &lt;th&gt;序号&lt;/th&gt;
+      &lt;th&gt;姓名&lt;/th&gt;
+      &lt;th&gt;头像&lt;/th&gt;
+      &lt;th&gt;性别&lt;/th&gt;
+      &lt;th&gt;职位&lt;/th&gt;
+      &lt;th&gt;入职时间&lt;/th&gt;
+      &lt;th&gt;更新时间&lt;/th&gt;
+    &lt;/tr&gt;
+
+    &lt;!-- v-for 用于列表循环渲染元素 --&gt;
+    &lt;tr v-for=&quot;(user, index) in userList&quot; :key=&quot;user.id&quot;&gt;
+      &lt;td&gt;{{index + 1}}&lt;/td&gt;
+      &lt;td&gt;{{user.name}}&lt;/td&gt;
+      &lt;td&gt; &lt;img :src=&quot;user.image&quot;&gt; &lt;/td&gt;
+      &lt;td&gt;
+        &lt;span v-if=&quot;user.gender == 1&quot;&gt;男&lt;/span&gt;
+        &lt;span v-else-if=&quot;user.gender == 2&quot;&gt;女&lt;/span&gt;
+        &lt;span v-else&gt;其他&lt;/span&gt;
+      &lt;/td&gt;
+      &lt;td&gt;
+        &lt;span v-show=&quot;user.job == 1&quot;&gt;班主任&lt;/span&gt;
+        &lt;span v-show=&quot;user.job == 2&quot;&gt;讲师&lt;/span&gt;
+        &lt;span v-show=&quot;user.job != 1 &amp;&amp; user.job != 2&quot;&gt;其他&lt;/span&gt;
+      &lt;/td&gt;
+      &lt;td&gt;{{user.entrydate}}&lt;/td&gt;
+      &lt;td&gt;{{user.updatetime}}&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+  table,th,td {
+    border: 1px solid #000;
+    border-collapse: collapse;
+    line-height: 50px;
+    text-align: center;
+  }
+
+  #center,table {
+    width: 60%;
+    margin: auto;
+  }
+
+  #center {
+    margin-bottom: 20px;
+  }
+
+  img {
+    width: 50px;
+  }
+
+  input,select {
+    width: 17%;
+    padding: 10px;
+    margin-right: 30px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .btn {
+    background-color: #ccc;
+  }
+&lt;/style&gt;
+</code></pre>
+<p>然后在 <code>App.vue</code> 中，将 <code>UserList.vue</code> 引入进来。</p>
+<pre><code class="language-text">&lt;script setup&gt;
+import UserList from &#39;./views/user/UserList.vue&#39;
+&lt;/script&gt;
+
+&lt;template&gt;
+   &lt;UserList&gt;&lt;/UserList&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p>最终展示形式如下：</p>
+<p><img src="../../blogs/_assets/lakebook/179d5ac81fdf788b255ce821.png" loading="lazy" alt=""></p>
+<p>组合式 API 中没有实现this . 使用变量名.value 实现更新数据的内容 ;</p>
+<h2 id="elementplus">ElementPlus</h2>
+<h3 id="介绍-2">介绍</h3>
+<p>Element：是饿了么公司前端开发团队提供的一套基于 Vue3 的网站组件库，用于快速构建网页。</p>
+<p>Element 提供了很多组件（组成网页的部件）供我们使用。例如 超链接、按钮、图片、表格等等。</p>
+<p>官方网站：<a href="https://element%5C-plus%5C.org/zh%5C-CN/%5C#/zh%5C-CN">https://element\-plus\.org/zh\-CN/\#/zh\-CN</a></p>
+<p>如下图所示就是我们开发的页面和ElementUI提供的效果对比：可以发现ElementUI提供的各式各样好看的按钮。</p>
+<p><img src="../../blogs/_assets/lakebook/e0279a3decdf05e0f59b6547.png" loading="lazy" alt=""></p>
+<p>ElementPlus的学习方式和我们之前的学习方式不太一样，对于ElementPlus，我们作为一个后台开发者，只需要<strong>学会如何从 ElementPlus 的官网拷贝组件到我们自己的页面中，并且做一些修改即可</strong>。 我们主要学习的是ElementPlus中提供的常用组件，至于其他组件同学们可以通过我们这几个组件的学习掌握到ElementPlus的学习技巧，然后课后自行学习。</p>
+<h3 id="快速入门">快速入门</h3>
+<p><strong>准备工作：</strong></p>
+<p>1). 将资料中提供的基础工程（<code>资料/04. ElementPlus基础工程/vue-project02.zip</code>），解压到工作目录中，使用VSCode将其打开。</p>
+<p><img src="../../blogs/_assets/lakebook/416d37aa1a4adcaa1c94a2c0.png" loading="lazy" alt=""></p>
+<p>2). 参照官方文档，安装ElementPlus的组件库（在当前工程的目录下），执行如下命令：【这一步可以不做，已经安装好了】</p>
+<pre><code class="language-text">npm install element-plus@2.4.4 --save
+</code></pre>
+<p><img src="https://cdn.nlark.com/yuque/0/2026/png/63728767/1777723752765-38a39f98-4f32-4407-8c29-30ca401a48fb.png" loading="lazy" alt=""></p>
+<p>3). 在<code>main.js</code> 中引入ElementPlus组件库 （参照官方文档），最终 <code>main.js</code> 中代码如下：</p>
+<pre><code class="language-text">import { createApp } from &#39;vue&#39;
+import App from &#39;./App.vue&#39;
+
+import ElementPlus from &#39;element-plus&#39;
+import &#39;element-plus/dist/index.css&#39;
+
+const app = createApp(App)
+app.use(ElementPlus)
+
+app.mount(&#39;#app&#39;)
+</code></pre>
+<p><strong>制作组件：</strong></p>
+<p>1）. 访问ElementPlus的官方文档，查看对应的组件源代码。</p>
+<p><img src="../../blogs/_assets/lakebook/c7bfa038b6e9f5592cc410cd.png" loading="lazy" alt=""></p>
+<p>2). 在 src下创建 <code>views</code> 目录，在 <code>views</code> 目录下，创建<code>Element.vue</code>组件文件，复制组件代码，调整成自己想要的 。</p>
+<pre><code class="language-text">&lt;script setup&gt;
+
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;el-row class=&quot;mb-4&quot;&gt;
+    &lt;el-button&gt;Default&lt;/el-button&gt;
+    &lt;el-button type=&quot;primary&quot;&gt;Primary&lt;/el-button&gt;
+    &lt;el-button type=&quot;success&quot;&gt;Success&lt;/el-button&gt;
+    &lt;el-button type=&quot;info&quot;&gt;Info&lt;/el-button&gt;
+    &lt;el-button type=&quot;warning&quot;&gt;Warning&lt;/el-button&gt;
+    &lt;el-button type=&quot;danger&quot;&gt;Danger&lt;/el-button&gt;
+  &lt;/el-row&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p>3). 在根组件 <code>app.vue</code> 中引入<code>Element.vue</code></p>
+<pre><code class="language-text">&lt;script setup&gt;
+import Element from &#39;./views/Element.vue&#39;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;Element&gt;&lt;/Element&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p>4). 启动项目，访问 <a href="http://localhost:5173/">http://localhost:5173</a></p>
+<p><img src="../../blogs/_assets/lakebook/7d816c6b03e24add55d79b26.png" loading="lazy" alt=""></p>
+<h3 id="常见组件">常见组件</h3>
+<h4 id="表格组件">表格组件</h4>
+<p>用于展示多条结构类似的数据， 可对数据进行排序、筛选、对比或其他自定义操作。</p>
+<p><img src="../../blogs/_assets/lakebook/c902678f49e6cb48dfe22db6.png" loading="lazy" alt=""></p>
+<p>接下来我们通过代码来演示。</p>
+<p>首先我们需要来到 ElementPlus 的组件库中，找到表格组件，如下图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/169f3bb555c6922e87479510.png" loading="lazy" alt=""></p>
+<p>然后在 <code>Element.vue</code> 组件中继续制作表格。组件中，需要注意的是，我们组件包括了3个部分，如果官方有除了<code>&lt;template&gt;</code>部分之外的<code>&lt;style&gt;</code>和<code>&lt;script&gt;</code>都需要复制。具体操作如下图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/02a32fcea646dbca3022e919.png" loading="lazy" alt=""></p>
+<p>整体代码如下所示(绿色背景部分代码为本次增加的代码)：</p>
+<pre><code class="language-text">&lt;script setup&gt;
+const tableData = [
+  {date: &#39;2016-05-03&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-02&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-04&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-01&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;}
+]
+&lt;/script&gt;
+
+&lt;template&gt;
+
+  &lt;!-- Button按钮 --&gt;
+  &lt;el-row class=&quot;mb-4&quot;&gt;
+    &lt;el-button&gt;Default&lt;/el-button&gt;
+    &lt;el-button type=&quot;primary&quot;&gt;Primary&lt;/el-button&gt;
+    &lt;el-button type=&quot;success&quot;&gt;Success&lt;/el-button&gt;
+    &lt;el-button type=&quot;info&quot;&gt;Info&lt;/el-button&gt;
+    &lt;el-button type=&quot;warning&quot;&gt;Warning&lt;/el-button&gt;
+    &lt;el-button type=&quot;danger&quot;&gt;Danger&lt;/el-button&gt;
+  &lt;/el-row&gt;
+
+  &lt;br&gt;
+
+  &lt;!-- Table表格 --&gt;
+  &lt;el-table :data=&quot;tableData&quot; border style=&quot;width: 100%&quot;&gt;
+    &lt;el-table-column prop=&quot;date&quot; label=&quot;Date&quot; width=&quot;180&quot; /&gt;
+    &lt;el-table-column prop=&quot;name&quot; label=&quot;Name&quot; width=&quot;180&quot; /&gt;
+    &lt;el-table-column prop=&quot;address&quot; label=&quot;Address&quot; /&gt;
+  &lt;/el-table&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p>此时回到浏览器，我们页面呈现如下效果：</p>
+<p><img src="../../blogs/_assets/lakebook/59eb8a65752bd7e78ae94915.png" loading="lazy" alt=""></p>
+<p>Table表格组件，属性说明：</p>
+<ul>
+<li><code>data</code>: 主要定义table组件的数据模型</li>
+<li><code>prop</code>: 定义列的数据应该绑定data中定义的具体的数据模型</li>
+<li><code>label</code>: 定义列的标题</li>
+<li><code>width</code>: 定义列的宽度</li>
+</ul>
+<h4 id="分页条组件">分页条组件</h4>
+<p>Pagination: 分页组件，主要提供分页工具条相关功能。其展示效果图下图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/8b4b060c1c702cd23ad55aa8.png" loading="lazy" alt=""></p>
+<p>默认情况下，ElementPlus的组件是英文的，如果希望使用中文语言，可以在 <code>main.js</code> 中做如下配置：</p>
+<pre><code class="language-text">import zhCn from &#39;element-plus/dist/locale/zh-cn.mjs&#39;
+app.use(ElementPlus, {locale: zhCn})
+</code></pre>
+<p>接下来我们通过代码来演示功能。</p>
+<p>首先在官网找到分页组件，我们选择带背景色分页组件，如下图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/b6d2c38c588fe4499c6f621a.png" loading="lazy" alt=""></p>
+<p>然后复制代码到我们的 <code>Element.vue</code> 组件文件的template中，在 <code>&lt;template&gt; &lt;/template&gt;</code> 拷贝如下代码：</p>
+<pre><code class="language-text">&lt;el-pagination
+    v-model:current-page=&quot;currentPage4&quot;
+    v-model:page-size=&quot;pageSize4&quot;
+    :page-sizes=&quot;[100, 200, 300, 400]&quot;
+    layout=&quot;total, sizes, prev, pager, next, jumper&quot;
+    :total=&quot;400&quot;
+    @size-change=&quot;handleSizeChange&quot;
+    @current-change=&quot;handleCurrentChange&quot;
+  /&gt;
+</code></pre>
+<p>在 <code>&lt;script&gt; &lt;/script&gt;</code> 中拷贝如下代码：</p>
+<pre><code class="language-text">import { ref } from &#39;vue&#39;
+
+const currentPage4 = ref(4)
+const pageSize4 = ref(100)
+
+const handleSizeChange = (val) =&gt; {
+  console.log(`${val} items per page`)
+}
+const handleCurrentChange = (val) =&gt; {
+  console.log(`current page: ${val}`)
+}
+</code></pre>
+<p>目前，整个 <code>Element.vue</code> 的文件内容如下(绿色背景部分代码为本次增加的代码)：</p>
+<pre><code class="language-text">&lt;script setup&gt;
+import { ref } from &#39;vue&#39;
+
+const tableData = [
+  {date: &#39;2016-05-03&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-02&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-04&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-01&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;}
+]
+
+const currentPage4 = ref(4)
+const pageSize4 = ref(100)
+
+const handleSizeChange = (val) =&gt; {
+  console.log(`${val} items per page`)
+}
+const handleCurrentChange = (val) =&gt; {
+  console.log(`current page: ${val}`)
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+
+  &lt;!-- Button按钮 --&gt;
+  &lt;el-row class=&quot;mb-4&quot;&gt;
+    &lt;el-button&gt;Default&lt;/el-button&gt;
+    &lt;el-button type=&quot;primary&quot;&gt;Primary&lt;/el-button&gt;
+    &lt;el-button type=&quot;success&quot;&gt;Success&lt;/el-button&gt;
+    &lt;el-button type=&quot;info&quot;&gt;Info&lt;/el-button&gt;
+    &lt;el-button type=&quot;warning&quot;&gt;Warning&lt;/el-button&gt;
+    &lt;el-button type=&quot;danger&quot;&gt;Danger&lt;/el-button&gt;
+  &lt;/el-row&gt;
+
+  &lt;br&gt;
+
+  &lt;!-- Table表格 --&gt;
+  &lt;el-table :data=&quot;tableData&quot; border style=&quot;width: 100%&quot;&gt;
+    &lt;el-table-column prop=&quot;date&quot; label=&quot;Date&quot; width=&quot;180&quot; /&gt;
+    &lt;el-table-column prop=&quot;name&quot; label=&quot;Name&quot; width=&quot;180&quot; /&gt;
+    &lt;el-table-column prop=&quot;address&quot; label=&quot;Address&quot; /&gt;
+  &lt;/el-table&gt;
+  
+  &lt;br&gt;
+
+  &lt;el-pagination
+    v-model:current-page=&quot;currentPage4&quot;
+    v-model:page-size=&quot;pageSize4&quot;
+    :page-sizes=&quot;[100, 200, 300, 400]&quot;
+    layout=&quot;total, sizes, prev, pager, next, jumper&quot;
+    :total=&quot;400&quot;
+    @size-change=&quot;handleSizeChange&quot;
+    @current-change=&quot;handleCurrentChange&quot;
+  /&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p>打开浏览器，查看页面效果如下：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2026/png/63728767/1777726134195-3b040dd9-e786-4ee3-a6cb-2dc1514c8973.png" loading="lazy" alt=""></p>
+<p>Pagination 分页组件的属性如下：</p>
+<p>对于分页组件我们需要关注的是如下几个重要属性（可以通过查阅官网组件中最下面的组件属性详细说明得到）：</p>
+<ul>
+<li><code>background</code>: 添加北京颜色，也就是上图蓝色背景色效果。</li>
+<li><code>layout</code>: 分页工具条的布局，其具体值包含<code>sizes</code>, <code>prev</code>, <code>pager</code>, <code>next</code>, <code>jumper</code>, <code>total</code> 这些值</li>
+<li><code>total</code>: 数据的总数量</li>
+</ul>
+<p><img src="../../blogs/_assets/lakebook/bb15305d470dd2b92638ea76.png" loading="lazy" alt=""></p>
+<p>对于分页组件，除了上述几个属性，还有2个非常重要的事件我们需要去学习：</p>
+<ul>
+<li><code>size-change</code> ： pageSize 改变时会触发</li>
+<li><code>current-change</code> ：currentPage 改变时会触发</li>
+</ul>
+<h4 id="对话框组件">对话框组件</h4>
+<p>在保留当前页面状态的情况下，告知用户并承载相关操作。</p>
+<p><img src="../../blogs/_assets/lakebook/b2c60600cef2e39f6b33ee33.png" loading="lazy" alt=""></p>
+<p>首先我们需要在ElementPlus官方找到Dialog组件，如下图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/33c2e4d492d135d165336cd0.png" loading="lazy" alt=""></p>
+<p>然后复制如下代码到我们的组件文件 <code>Element.vue</code> 的 <code>&lt;template&gt;&lt;/template&gt;</code> 模块中：</p>
+<pre><code class="language-text">&lt;el-button @click=&quot;dialogTableVisible = true&quot;&gt;
+    打开对话框
+  &lt;/el-button&gt;
+
+  &lt;el-dialog v-model=&quot;dialogTableVisible&quot; title=&quot;Shipping address&quot;&gt;
+    &lt;el-table :data=&quot;tableData&quot;&gt;
+      &lt;el-table-column property=&quot;date&quot; label=&quot;Date&quot; width=&quot;150&quot; /&gt;
+      &lt;el-table-column property=&quot;name&quot; label=&quot;Name&quot; width=&quot;200&quot; /&gt;
+      &lt;el-table-column property=&quot;address&quot; label=&quot;Address&quot; /&gt;
+    &lt;/el-table&gt;
+  &lt;/el-dialog&gt;
+</code></pre>
+<p>然后复制如下代码到我们的组件文件 <code>Element.vue</code> 的 <code>&lt;script&gt;&lt;/script&gt;</code> 模块中：</p>
+<pre><code class="language-text">const dialogTableVisible = ref(false)
+</code></pre>
+<p>最终，完成的 <code>Element.vue</code> 的代码如下：</p>
+<pre><code class="language-text">&lt;script setup&gt;
+import { ref } from &#39;vue&#39;
+
+const tableData = [
+  {date: &#39;2016-05-03&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-02&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-04&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-01&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;}
+]
+
+const currentPage4 = ref(4)
+const pageSize4 = ref(100)
+
+const handleSizeChange = (val) =&gt; {
+  console.log(`${val} items per page`)
+}
+const handleCurrentChange = (val) =&gt; {
+  console.log(`current page: ${val}`)
+}
+
+// Dialog对话框
+const dialogTableVisible = ref(false)
+&lt;/script&gt;
+
+&lt;template&gt;
+
+  &lt;!-- Button按钮 --&gt;
+  &lt;el-row class=&quot;mb-4&quot;&gt;
+    &lt;el-button&gt;Default&lt;/el-button&gt;
+    &lt;el-button type=&quot;primary&quot;&gt;Primary&lt;/el-button&gt;
+    &lt;el-button type=&quot;success&quot;&gt;Success&lt;/el-button&gt;
+    &lt;el-button type=&quot;info&quot;&gt;Info&lt;/el-button&gt;
+    &lt;el-button type=&quot;warning&quot;&gt;Warning&lt;/el-button&gt;
+    &lt;el-button type=&quot;danger&quot;&gt;Danger&lt;/el-button&gt;
+  &lt;/el-row&gt;
+
+  &lt;br&gt;
+
+  &lt;!-- Table表格 --&gt;
+  &lt;el-table :data=&quot;tableData&quot; border style=&quot;width: 100%&quot;&gt;
+    &lt;el-table-column prop=&quot;date&quot; label=&quot;Date&quot; width=&quot;180&quot; /&gt;
+    &lt;el-table-column prop=&quot;name&quot; label=&quot;Name&quot; width=&quot;180&quot; /&gt;
+    &lt;el-table-column prop=&quot;address&quot; label=&quot;Address&quot; /&gt;
+  &lt;/el-table&gt;
+
+  &lt;br&gt;
+
+  &lt;el-pagination
+    v-model:current-page=&quot;currentPage4&quot;
+    v-model:page-size=&quot;pageSize4&quot;
+    :page-sizes=&quot;[100, 200, 300, 400]&quot;
+    layout=&quot;total, sizes, prev, pager, next, jumper&quot;
+    :total=&quot;400&quot;
+    @size-change=&quot;handleSizeChange&quot;
+    @current-change=&quot;handleCurrentChange&quot;
+  /&gt;
+
+  &lt;br&gt;
+
+  &lt;el-button @click=&quot;dialogTableVisible = true&quot;&gt;
+    打开对话框
+  &lt;/el-button&gt;
+
+  &lt;el-dialog v-model=&quot;dialogTableVisible&quot; title=&quot;Shipping address&quot;&gt;
+    &lt;el-table :data=&quot;tableData&quot;&gt;
+      &lt;el-table-column property=&quot;date&quot; label=&quot;Date&quot; width=&quot;150&quot; /&gt;
+      &lt;el-table-column property=&quot;name&quot; label=&quot;Name&quot; width=&quot;200&quot; /&gt;
+      &lt;el-table-column property=&quot;address&quot; label=&quot;Address&quot; /&gt;
+    &lt;/el-table&gt;
+  &lt;/el-dialog&gt;
+
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p>打开浏览器，最终的页面效果如下：</p>
+<p><img src="../../blogs/_assets/lakebook/cbb88f4c598c29e77b26d896.png" loading="lazy" alt=""></p>
+<p>Dialog对话框组件使用的关键点，就是控制其显示与隐藏。 通过 v-model 给定的boolean值，来控制Dialog的显示与隐藏。</p>
+<h4 id="表单组件">表单组件</h4>
+<p>Form 表单：由输入框、选择器、单选框、多选框等控件组成，用以收集、校验、提交数据。</p>
+<p>表单在我们前端的开发中使用的还是比较多的，接下来我们学习这个组件，与之前的流程一样，我们首先需要在ElementPlus的官方找到对应的组件示例：如下图所示：</p>
+<p><img src="../../blogs/_assets/lakebook/492acd03ab1c06d0bb38bfd9.png" loading="lazy" alt=""></p>
+<p>然后复制如下代码到我们的组件文件 <code>Element.vue</code> 的 <code>&lt;template&gt;&lt;/template&gt;</code> 模块中：</p>
+<pre><code class="language-text">&lt;!-- Form 表单 --&gt;
+  &lt;el-form :inline=&quot;true&quot; :model=&quot;formInline&quot; class=&quot;demo-form-inline&quot;&gt;
+    &lt;el-form-item label=&quot;Approved by&quot;&gt;
+      &lt;el-input v-model=&quot;formInline.user&quot; placeholder=&quot;Approved by&quot; clearable /&gt;
+    &lt;/el-form-item&gt;
+
+    &lt;el-form-item label=&quot;Activity zone&quot;&gt;
+      &lt;el-select v-model=&quot;formInline.region&quot; placeholder=&quot;Activity zone&quot; clearable&gt;
+        &lt;el-option label=&quot;Zone one&quot; value=&quot;shanghai&quot; /&gt;
+        &lt;el-option label=&quot;Zone two&quot; value=&quot;beijing&quot; /&gt;
+      &lt;/el-select&gt;
+    &lt;/el-form-item&gt;
+
+    &lt;el-form-item label=&quot;Activity time&quot;&gt;
+      &lt;el-date-picker v-model=&quot;formInline.date&quot; type=&quot;date&quot; placeholder=&quot;Pick a date&quot; clearable/&gt;
+    &lt;/el-form-item&gt;
+    
+    &lt;el-form-item&gt;
+      &lt;el-button type=&quot;primary&quot; @click=&quot;onSubmit&quot;&gt;Query&lt;/el-button&gt;
+    &lt;/el-form-item&gt;
+  &lt;/el-form&gt;
+</code></pre>
+<p>然后复制如下代码到我们的组件文件 <code>Element.vue</code> 的 <code>&lt;script&gt;&lt;/script&gt;</code> 模块中：</p>
+<pre><code class="language-text">// Form表单
+const formInline = ref({
+  user: &#39;&#39;,
+  region: &#39;&#39;,
+  date: &#39;&#39;,
+})
+
+const onSubmit = () =&gt; {
+  console.log(&#39;submit!&#39;)
+}
+</code></pre>
+<p>最终，完成的 <code>Element.vue</code> 的代码如下：</p>
+<pre><code class="language-text">&lt;script setup&gt;
+import { ref } from &#39;vue&#39;
+
+const tableData = [
+  {date: &#39;2016-05-03&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-02&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-04&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;},
+  {date: &#39;2016-05-01&#39;, name: &#39;Tom&#39;, address: &#39;No. 189, Grove St, Los Angeles&#39;}
+]
+
+const currentPage4 = ref(4)
+const pageSize4 = ref(100)
+
+const handleSizeChange = (val) =&gt; {
+  console.log(`${val} items per page`)
+}
+const handleCurrentChange = (val) =&gt; {
+  console.log(`current page: ${val}`)
+}
+
+// Dialog对话框
+const dialogTableVisible = ref(false)
+
+// Form表单
+const formInline = ref({
+  user: &#39;&#39;,
+  region: &#39;&#39;,
+  date: &#39;&#39;,
+})
+
+const onSubmit = () =&gt; {
+  console.log(&#39;submit!&#39;)
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+
+  &lt;!-- Button按钮 --&gt;
+  &lt;el-row class=&quot;mb-4&quot;&gt;
+    &lt;el-button&gt;Default&lt;/el-button&gt;
+    &lt;el-button type=&quot;primary&quot;&gt;Primary&lt;/el-button&gt;
+    &lt;el-button type=&quot;success&quot;&gt;Success&lt;/el-button&gt;
+    &lt;el-button type=&quot;info&quot;&gt;Info&lt;/el-button&gt;
+    &lt;el-button type=&quot;warning&quot;&gt;Warning&lt;/el-button&gt;
+    &lt;el-button type=&quot;danger&quot;&gt;Danger&lt;/el-button&gt;
+  &lt;/el-row&gt;
+
+  &lt;br&gt;
+
+  &lt;!-- Table表格 --&gt;
+  &lt;el-table :data=&quot;tableData&quot; border style=&quot;width: 100%&quot;&gt;
+    &lt;el-table-column prop=&quot;date&quot; label=&quot;Date&quot; width=&quot;180&quot; /&gt;
+    &lt;el-table-column prop=&quot;name&quot; label=&quot;Name&quot; width=&quot;180&quot; /&gt;
+    &lt;el-table-column prop=&quot;address&quot; label=&quot;Address&quot; /&gt;
+  &lt;/el-table&gt;
+
+  &lt;br&gt;
+
+  &lt;el-pagination
+    v-model:current-page=&quot;currentPage4&quot;
+    v-model:page-size=&quot;pageSize4&quot;
+    :page-sizes=&quot;[100, 200, 300, 400]&quot;
+    layout=&quot;total, sizes, prev, pager, next, jumper&quot;
+    :total=&quot;400&quot;
+    @size-change=&quot;handleSizeChange&quot;
+    @current-change=&quot;handleCurrentChange&quot;
+  /&gt;
+
+  &lt;br&gt;
+
+  &lt;el-button @click=&quot;dialogTableVisible = true&quot;&gt;
+    打开对话框
+  &lt;/el-button&gt;
+
+  &lt;el-dialog v-model=&quot;dialogTableVisible&quot; title=&quot;Shipping address&quot;&gt;
+    &lt;el-table :data=&quot;tableData&quot;&gt;
+      &lt;el-table-column property=&quot;date&quot; label=&quot;Date&quot; width=&quot;150&quot; /&gt;
+      &lt;el-table-column property=&quot;name&quot; label=&quot;Name&quot; width=&quot;200&quot; /&gt;
+      &lt;el-table-column property=&quot;address&quot; label=&quot;Address&quot; /&gt;
+    &lt;/el-table&gt;
+  &lt;/el-dialog&gt;
+
+  &lt;br&gt;&lt;br&gt;
+
+  &lt;!-- Form 表单 --&gt;
+  &lt;el-form :inline=&quot;true&quot; :model=&quot;formInline&quot; class=&quot;demo-form-inline&quot;&gt;
+    &lt;el-form-item label=&quot;Approved by&quot;&gt;
+      &lt;el-input v-model=&quot;formInline.user&quot; placeholder=&quot;Approved by&quot; clearable /&gt;
+    &lt;/el-form-item&gt;
+
+    &lt;el-form-item label=&quot;Activity zone&quot;&gt;
+      &lt;el-select v-model=&quot;formInline.region&quot; placeholder=&quot;Activity zone&quot; clearable&gt;
+        &lt;el-option label=&quot;Zone one&quot; value=&quot;shanghai&quot; /&gt;
+        &lt;el-option label=&quot;Zone two&quot; value=&quot;beijing&quot; /&gt;
+      &lt;/el-select&gt;
+    &lt;/el-form-item&gt;
+
+    &lt;el-form-item label=&quot;Activity time&quot;&gt;
+      &lt;el-date-picker v-model=&quot;formInline.date&quot; type=&quot;date&quot; placeholder=&quot;Pick a date&quot; clearable/&gt;
+    &lt;/el-form-item&gt;
+    
+    &lt;el-form-item&gt;
+      &lt;el-button type=&quot;primary&quot; @click=&quot;onSubmit&quot;&gt;Query&lt;/el-button&gt;
+    &lt;/el-form-item&gt;
+  &lt;/el-form&gt;
+
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p>打开浏览器，查看页面效果：</p>
+<p><img src="../../blogs/_assets/lakebook/d2e205b617e52e90cf6791b7.png" loading="lazy" alt=""></p>
+<h3 id="实现界面交互">实现界面交互</h3>
+<h6 id="创建好自己的元素后">创建好自己的元素后</h6>
+<p>需求：基于ElementPlus组件库制作如下页面，并异步获取数据，完成页面展示。</p>
+<p><img src="../../blogs/_assets/lakebook/f3b5b924be05a438b348b0b4.png" loading="lazy" alt=""></p>
+<p><strong>1). 准备工作</strong></p>
+<p>由于在案例中，我们需要在vue项目中使用Axios，需要安装axios，需要在当前项目的目录下执行如下命令：</p>
+<pre><code class="language-text">npm install axios
+</code></pre>
+<p><img src="../../blogs/_assets/lakebook/dbde931e928897e7feb17154.png" loading="lazy" alt=""></p>
+<p><strong>2). 编码实现</strong></p>
+<p>在<code>views</code>目录下，再定义一个文件 <code>EmpList.vue</code>，具体代码实现如下：</p>
+<p>&lt;/template&gt;这个双标签中内容,会实现渲染,在表格展示图片时使用</p>
+<p>也可以用于实现 JS 交互 , 实现多选一 : v-if,v-else-if, v-else : &quot;其他&quot;</p>
+<pre><code class="language-text">&lt;script setup&gt;
+import { ref, onMounted } from &#39;vue&#39;
+import axios from &#39;axios&#39;
+
+const searchEmp = ref({
+  name: &#39;&#39;,
+  gender: &#39;&#39;,
+  job: &#39;&#39;,
+})
+
+onMounted(() =&gt; {
+  search();
+})
+
+const search = async () =&gt; {
+  const url = `https://web-server.itheima.net/emps/list?name=${searchEmp.value.name}&amp;gender=${searchEmp.value.gender}&amp;job=${searchEmp.value.job}`
+  const result = await axios.get(url)
+  tableData.value = result.data.data
+}
+
+const clear = () =&gt; {
+  searchEmp.value = { name: &#39;&#39;, gender: &#39;&#39;, job: &#39;&#39; }
+  search();
+}
+
+let tableData = ref([])
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div id=&quot;center&quot;&gt;
+    &lt;el-form :inline=&quot;true&quot; :model=&quot;searchEmp&quot; class=&quot;demo-form-inline&quot;&gt;
+      &lt;el-form-item label=&quot;姓名&quot;&gt;
+        &lt;el-input v-model=&quot;searchEmp.name&quot; placeholder=&quot;请输入姓名&quot; clearable /&gt;
+      &lt;/el-form-item&gt;
+      &lt;el-form-item label=&quot;性别&quot;&gt;
+        &lt;el-select v-model=&quot;searchEmp.gender&quot; placeholder=&quot;请选择&quot; clearable&gt;
+          &lt;el-option label=&quot;男&quot; value=&quot;1&quot; /&gt;
+          &lt;el-option label=&quot;女&quot; value=&quot;2&quot; /&gt;
+        &lt;/el-select&gt;
+      &lt;/el-form-item&gt;
+      &lt;el-form-item label=&quot;职位&quot;&gt;
+        &lt;el-select v-model=&quot;searchEmp.job&quot; placeholder=&quot;请选择&quot; clearable&gt;
+          &lt;el-option label=&quot;班主任&quot; value=&quot;1&quot; /&gt;
+          &lt;el-option label=&quot;讲师&quot; value=&quot;2&quot; /&gt;
+          &lt;el-option label=&quot;咨询师&quot; value=&quot;3&quot; /&gt;
+        &lt;/el-select&gt;
+      &lt;/el-form-item&gt;
+      &lt;el-form-item&gt;
+        &lt;el-button type=&quot;primary&quot; @click=&quot;search&quot;&gt;查询&lt;/el-button&gt;
+        &lt;el-button type=&quot;primary&quot; @click=&quot;clear&quot;&gt;清空&lt;/el-button&gt;
+      &lt;/el-form-item&gt;
+    &lt;/el-form&gt;
+    &lt;br&gt;
+
+    &lt;!-- 表格 --&gt;
+    &lt;el-table :data=&quot;tableData&quot; border style=&quot;width: 100%; &quot;&gt;
+      &lt;el-table-column prop=&quot;id&quot; label=&quot;ID&quot; width=&quot;80&quot; align=&quot;center&quot; /&gt;
+      &lt;el-table-column prop=&quot;name&quot; label=&quot;姓名&quot; width=&quot;100&quot; align=&quot;center&quot; /&gt;
+      &lt;el-table-column label=&quot;头像&quot; width=&quot;120&quot; align=&quot;center&quot;&gt;
+        &lt;template #default=&quot;scope&quot;&gt;
+          &lt;img :src=&quot;scope.row.image&quot; width=&quot;50&quot;&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+      &lt;el-table-column prop=&quot;gender&quot; label=&quot;性别&quot; width=&quot;120&quot; align=&quot;center&quot;&gt;
+        &lt;template #default=&quot;scope&quot;&gt;
+          {{ scope.row.gender == 1 ? &#39;男&#39; : &#39;女&#39; }}
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+      &lt;el-table-column label=&quot;职位&quot; width=&quot;180&quot; align=&quot;center&quot;&gt;
+        &lt;template #default=&quot;scope&quot;&gt;
+          &lt;span v-if=&quot;scope.row.job == 1&quot;&gt;班主任&lt;/span&gt;
+          &lt;span v-else-if=&quot;scope.row.job == 2&quot;&gt;讲师&lt;/span&gt;
+          &lt;span v-else-if=&quot;scope.row.job == 3&quot;&gt;咨询师&lt;/span&gt;
+          &lt;span v-else&gt;其他&lt;/span&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+      &lt;el-table-column prop=&quot;entrydate&quot; label=&quot;入职日期&quot; width=&quot;180&quot; align=&quot;center&quot; /&gt;
+      &lt;el-table-column prop=&quot;updatetime&quot; label=&quot;更新时间&quot; align=&quot;center&quot; /&gt;
+    &lt;/el-table&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+#center {
+  width: 70%;
+  margin: auto;
+  margin-top: 100px;
+}
+&lt;/style&gt;
+</code></pre>
+<p>在 <code>App.vue</code> 中引入 <code>EmpList.vue</code> 文件</p>
+<pre><code class="language-text">&lt;script setup&gt;
+  import EmpList from &#39;./views/EmpList.vue&#39;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;EmpList&gt;&lt;/EmpList&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+
+&lt;/style&gt;
+</code></pre>
+<p><strong>3). 打开浏览器，查看页面效果</strong></p>
+<p><img src="../../blogs/_assets/lakebook/357ff8d0197f258b96b3b263.png" loading="lazy" alt=""></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

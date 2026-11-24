@@ -1,0 +1,138 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 实践：泛型类与类型界限 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 实践：泛型类与类型界限</h1><time datetime="2026-01-04T08:50:41.000Z">2026年1月4日</time><pre><code class="language-java">package Today;
+
+public class New_Class&lt;T&gt;{
+
+String name ;
+
+int date ;
+
+T ws ;
+
+New_Class(String name , int date, T ws){
+
+this.name = name ;
+
+this.date = date;
+
+this.ws = ws;
+
+System.out.println(name + date + ws);
+
+}
+
+}
+
+package Today;
+
+import java.lang.reflect.Array;
+
+import java.util.Arrays;
+
+import java.util.Comparator;
+
+public class Today{
+
+public static void main(String[] args) {
+
+New_Class&lt;String&gt; ws1 = new New_Class&lt;&gt;(&quot;ws0&quot; , 1 , &quot;是gay&quot;) ;
+
+Integer s = test(21) ;
+
+Integer[] arr = {1 , 2 ,4 ,5 ,4 , 3 ,12 } ;
+
+Arrays.sort(arr , new Comparator&lt;Integer&gt;(){
+
+public int compare(Integer o1 , Integer o2){
+
+return o2 - o1 ;
+
+}
+
+}) ;
+
+Integer[] brr = Arrays.copyOf(arr , 3) ;
+
+System.out.println(Arrays.toString(arr)) ;
+
+Today.&lt;String&gt;name() ;
+
+String str = name() ;
+
+Integer ws2 = test(12) ;
+
+Tree tree = new Tree() ;
+
+System.out.println(tree.study(&quot;,ws真的是gay&quot;));
+
+Tec&lt;Integer&gt; tec = new Tec&lt;&gt;(12);
+
+}
+
+private static &lt;T extends Number&gt; T test(T t ){
+
+return t ;
+
+}
+
+private static &lt;T&gt; T name(){
+
+return null ;
+
+}
+
+interface Study&lt;T&gt;{
+
+T study(T t ) ;
+
+}
+
+static class Tree implements Study&lt;String&gt;{
+
+public String study(String str){
+
+return &quot;ws是gay&quot;+str ;
+
+}
+
+}
+
+static class Tec&lt;T&gt;{
+
+T name ;
+
+public Tec(T name){
+
+this.name = name ;
+
+}
+
+}
+
+}
+
+package Today;
+
+public class Ws000&lt;T extends Number&gt; {
+
+String name ;
+
+int date ;
+
+T ws ;
+
+public Ws000(String name, int date , T ws) {
+
+this.name = name;
+
+this.date = date;
+
+this.ws = ws ;
+
+}
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

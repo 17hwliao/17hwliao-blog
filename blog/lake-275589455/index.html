@@ -1,0 +1,41 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>go-zero 环境：goctl 与 protoc · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>go-zero 环境：goctl 与 protoc</h1><time datetime="2026-06-29T00:56:18.000Z">2026年6月29日</time><p>安装goctl</p>
+<p>Vue复制代码</p>
+<pre><code class="language-text">go install github.com/zeromicro/go-zero/tools/goctl@latest
+</code></pre>
+<p>安装protoc全家桶</p>
+<p>Vue复制代码</p>
+<pre><code class="language-text">goctl env check --install --verbose --force
+</code></pre>
+<p>Vue复制代码</p>
+<p>项目中用来实现创建go_zero</p>
+<pre><code class="language-text">go get -u github.com/zeromicro/go-zero@latest
+</code></pre>
+<p>goland安装goctl插件</p>
+<p>快速创建一个api服务</p>
+<p>Vue复制代码</p>
+<pre><code class="language-text">goctl api new api
+</code></pre>
+<p>然后修改一下user/api/internal/logic/apilogic.go文件</p>
+<p>Vue复制代码</p>
+<pre><code class="language-text">func (l *ApiLogic) Api(req *types.Request) (resp *types.Response, err error) {
+  // todo: add your logic here and delete this line
+
+  return &amp;types.Response{Message: &quot;枫枫&quot;}, nil
+}
+</code></pre>
+<p>快速创建一个rpc服务</p>
+<p>Vue复制代码</p>
+<pre><code class="language-text">goctl rpc new rpc
+</code></pre>
+<p>然后在user的api目录运行</p>
+<p>Vue复制代码</p>
+<pre><code class="language-text">go run api.go
+</code></pre>
+<p>访问 127.0.0.1:8888/from/me 能看到数据就说明环境安装好了</p>
+<h2 id="参考文档">参考文档</h2>
+<p>环境搭建 <a href="https://blog.csdn.net/xwh3165037789/article/details/131577365">https://blog.csdn.net/xwh3165037789/article/details/131577365</a></p>
+<p>官方文档 <a href="https://go-zero.dev/docs/tasks/installation/goctl">https://go-zero.dev/docs/tasks/installation/goctl</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

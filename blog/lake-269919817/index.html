@@ -1,0 +1,44 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 构建与交叉编译 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 构建与交叉编译</h1><time datetime="2026-05-15T06:47:10.000Z">2026年5月15日</time><p>go项目的部署特别简单，编写完成之后，只需要执行go build即可打包为可执行文件</p>
+<p>注意，这个操作是不同平台不一样的</p>
+<p>windows下打包就是exe文件，linux下打包就是二进制文件</p>
+<h2 id="打包命令">打包命令</h2>
+<p>Go复制代码</p>
+<pre><code class="language-text">go build
+</code></pre>
+<p>打当前目录下的main包，注意，只能有一个main函数的包</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">go build xxx.go
+</code></pre>
+<p>打当前目录下，xxx.go的包，这个包必须得是一个main包，不然没有效果</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">go build -o main.exe xxx.go
+</code></pre>
+<p>强制对输出的文件进行重命名</p>
+<p>使用 .\ 文件名. exe 实现运行 .exe文件 ;</p>
+<p>-o参数必须得在文件的前面</p>
+<h2 id="交叉编译">交叉编译</h2>
+<p>什么是交叉编译呢，就是在windows上，我开发的go程序，我也能打包为linux上的可执行程序</p>
+<p>例如在windows平台，打linux的包</p>
+<p>注意，执行set这个命令，一定得要是在cmd的命令行下，powershell是无效的</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">set CGO_ENABLED=0  
+set GOOS=linux  
+set GOARCH=amd64  
+go build -o main main.go
+</code></pre>
+<p>CGO_ENABLED : CGO 表示 golang 中的工具，CGO_ENABLED=0 表示 CGO 禁用，交叉编译中不能使用 CGO<br>GOOS : 环境变量用于指定目标操作系统，mac 对应 darwin，linux 对应 linux，windows 对应 windows ，还有其它的 freebsd、android 等</p>
+<p><code>GOARCH</code>：环境变量用于指定处理器的类型，386 也称 <code>x86</code> 对应 32位操作系统、<code>amd64</code> 也称 x64 对应 64 位操作系统，<code>arm</code> 这种架构一般用于嵌入式开发。比如 <code>Android</code> ， <code>iOS</code> ， <code>Win mobile</code> 等</p>
+<p>为了方便呢，可以在项目的根目录下写一个bat文件</p>
+<p>这样就能快速构建了</p>
+<p>然后放到linux服务器下，设置文件权限就可以直接运行了</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">chmod +x main
+./main
+</code></pre>
+<p>再次注意啊，以后打包web项目的时候，配置文件和静态文件等这些非go程序，是要一起复制到目标服务器里面的</p>
+<h2 id="参考文档">参考文档</h2>
+<p>go build命令 <a href="https://blog.csdn.net/wohu1104/article/details/106295007">https://blog.csdn.net/wohu1104/article/details/106295007</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

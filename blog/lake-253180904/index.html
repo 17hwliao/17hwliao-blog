@@ -1,0 +1,72 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 集合：栈、队列、Deque 与 Set · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 集合：栈、队列、Deque 与 Set</h1><time datetime="2026-01-15T01:16:42.000Z">2026年1月15日</time><ul>
+<li>栈和队列</li>
+</ul>
+<p>接口之间的继承关系 : Deque&lt;T&gt;( 双端队列 ) -&gt; Queue&lt;T&gt;( 队列 ) -&gt; Collection&lt;T&gt; -&gt; Iterable&lt;T&gt; ( 实现迭代器的创建方法的接口 ) { 子类 -&gt; 父类 }</p>
+<ol>
+<li>LinkedList实现的接口 :</li>
+</ol>
+<p>List&lt;T&gt;</p>
+<p>Deque&lt;T&gt;</p>
+<p>Cloneable</p>
+<p>java.io.Serializable ;</p>
+<ol>
+<li>ArrayList实现的接口 :</li>
+</ol>
+<p>List&lt;T&gt;</p>
+<p>RandomAccess</p>
+<p>Cloneable</p>
+<p>java.io.Serializable ;</p>
+<p>数组 和 栈的具体实现 : LinkedList创建</p>
+<p>接口中实现的队列操作 :</p>
+<p>boolean add( T t ) 尾插( LIst也是尾插 ) , 插入失败会抛出异常 ;</p>
+<p>boolean offer 添加 , 但插入失败不会抛出异常</p>
+<p>T remove() 实现移除 队首元素 : 队列为空 , 抛出异常 ;</p>
+<p>T poll() : 移除队首元素 , 队列为空 , return null ;</p>
+<p>T elements() ; 获取队首元素 ; 队列为空时抛出异常 ;</p>
+<p>T peek() 获取队首元素 , 队列为空 , return null ;</p>
+<ul>
+<li>双端队列Deque :</li>
+</ul>
+<p>队首插 : addFrist(T t ) ;</p>
+<p>队尾插 : addLast(T t ) ;</p>
+<p>offer替换add实现即可 ;</p>
+<p>队首移除 : T removeFrist() ;</p>
+<p>队尾移除 : T removeLast() ;</p>
+<p>poll 替换 remove即可 ;</p>
+<p>get + Frist / Last 实现在双端队列的前后获取数值 ;</p>
+<p>peek替换get即可 ;</p>
+<p>新增方法 : Boolean类型 :</p>
+<p>removeFristOccurrence(T t )实现删除第一个出现的指定元素 ;</p>
+<p>removeLastOccurrence( T t )实现删除最后一次出现的指定元素 ;</p>
+<p>可以实现 栈 的push() , pop() 操作 ;</p>
+<p>生成反向迭代器单向迭代 , 后 -&gt; 前遍历 : Iterator&lt;T&gt; descendingIterator( ); 基本没有区别 , while实现迭代的条件也不会发生改变 ;</p>
+<p>优先级队列 :</p>
+<p>Queue&lt;Integer&gt;queue = new PriorityQueue&lt;&gt;((i1 , i2 )-&gt; i2 - i1) ; 自定义实现出队的先后顺序 ;</p>
+<p>queue.offer() ;</p>
+<p>queue.offer() ;</p>
+<ul>
+<li>Set集合</li>
+</ul>
+<p>Set集合基本就是直接从Collection继承来的方法 ( List , queue , deque ), 但对方法有更加特殊的定义 ; 不会维护顺序</p>
+<p>内部方法全为继承</p>
+<p>自动实现去重 ; Set&lt;String&gt; set = new HashSet&lt;&gt;() ;</p>
+<p>HashSet&lt;&gt;() 方法是使用哈希表进行实现 : 不支持随机访问 , 按数据的哈希值进行存储实现 ;</p>
+<p>发生哈希冲突 , 使用链表形式 拼接;</p>
+<p>在实现add , remove都是直接将元素本身传入进行操作 ;</p>
+<p>输出: 直接输出set即可 ;</p>
+<p>实现在Set中实现维持顺序 : 会自动维护</p>
+<p>使用 LinkedHashSet ;</p>
+<p>底层不再是哈希map, 而是 Linked 哈希 Map</p>
+<p>可以借用链表实现记忆传值的顺序 ;</p>
+<p>但本质还是哈希 , 就是不可以实现下标访问 ;</p>
+<ul>
+<li>TreeSet: 在元素插入时进行排序 ;</li>
+</ul>
+<p>可以自己定义排序顺序 , 本身的排序是按照数字的大小来排序 ;</p>
+<p>Set&lt;Integer&gt; set = new TreeSet&lt;&gt;((i1 ,i2 ) -&gt; i2 -i1) ;</p>
+<p>set.add( 数字 ) ;</p>
+<p>可以实现按序</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

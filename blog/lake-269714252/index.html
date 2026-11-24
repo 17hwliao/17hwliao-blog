@@ -1,0 +1,303 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 反射：类型、值与结构体 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 反射：类型、值与结构体</h1><time datetime="2026-05-14T02:28:51.000Z">2026年5月14日</time><p>后面会接触到的结构体反射操作获取全部的内部字段值 :</p>
+<p>field reflect.StructField 携带了结构体字段的全部反射元信息。关键成员和方法有：</p>
+<p>成员 含义 在本例中的值</p>
+<p>field.Name Go 字段原名 &quot;UserName&quot;</p>
+<p>field.Type 字段类型 string</p>
+<p>field.Tag 原始标签字符串 `validate:&quot;...&quot; label:&quot;...&quot;`</p>
+<p>field.Tag.Get(&quot;label&quot;) 取指定标签值 &quot;用户名&quot;</p>
+<h2 id="类型判断">类型判断</h2>
+<p>判断一个变量是否是结构体，切片，map</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;reflect&quot;
+)
+
+func refType(obj any) {
+  typeObj := reflect.TypeOf(obj)
+  fmt.Println(typeObj, typeObj.Kind())
+  // 去判断具体的类型
+  switch typeObj.Kind() {
+  case reflect.Slice:
+    fmt.Println(&quot;切片&quot;)
+  case reflect.Map:
+    fmt.Println(&quot;map&quot;)
+  case reflect.Struct:
+    fmt.Println(&quot;结构体&quot;)
+  case reflect.String:
+    fmt.Println(&quot;字符串&quot;)
+  }
+}
+
+func main() {
+  refType(struct {
+    Name string
+  }{Name: &quot;枫枫&quot;})
+  name := &quot;枫枫&quot;
+  refType(name)
+  refType([]string{&quot;枫枫&quot;})
+}
+</code></pre>
+<h2 id="通过反射获取值">通过反射获取值</h2>
+<p>Go复制代码</p>
+<pre><code class="language-text">func refValue(obj any) {
+  value := reflect.ValueOf(obj)
+  fmt.Println(value, value.Type())
+  switch value.Kind() {
+  case reflect.Int:
+    fmt.Println(value.Int())
+  case reflect.Struct:
+    fmt.Println(value.Interface())
+  case reflect.String:
+    fmt.Println(value.String())
+
+  }
+}
+</code></pre>
+<h2 id="通过反射修改值">通过反射修改值</h2>
+<p><strong>使用 Elem() 先实现解引用 , 一般变量中实现存储的对象都是引用类型, 需要先 实现解引用 .Elem() 然后才可以实现对对象的实际 引用 ;</strong></p>
+<p>注意，如果需要通过反射修改值，必须要传指针，在反射中使用Elem取指针对应的值</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func refSetValue(obj any) {
+  value := reflect.ValueOf(obj)
+  elem := value.Elem()
+  // 专门取指针反射的值
+  switch elem.Kind() {
+  case reflect.String:
+    elem.SetString(&quot;枫枫知道&quot;)
+  }
+}
+
+func main() {
+  name := &quot;枫枫&quot;
+  refSetValue(&amp;name)
+  fmt.Println(name)
+}
+</code></pre>
+<h2 id="结构体反射">结构体反射</h2>
+<h1 id="最核心最本质的一句话">最核心、最本质的一句话</h1>
+<h2 id="reflectvalue-管值"><strong>reflect.Value = 管【值】</strong></h2>
+<h2 id="reflecttype-管类型-结构"><strong>reflect.Type = 管【类型 / 结构】</strong></h2>
+<ul>
+<li><strong>reflect.Type = 表格的印刷模板</strong>只告诉你：有几列、叫什么名、带什么标签。→ <strong>t.Field (i) 拿表格结构</strong></li>
+<li><strong>reflect.Value = 表格里填写的内容</strong>只告诉你：里面填了什么字。→ <strong>v.Field (i) 拿表格里的值</strong></li>
+<li><strong>t.Field(0).Name</strong> → Name（字段名）</li>
+<li><strong>t.Field(0).Tag</strong> → <code>json:&quot;user_name&quot;</code>（标签）</li>
+<li><strong>v.Field(0)</strong> → ws（值）</li>
+</ul>
+<p><strong>reflect.Value 诞生的目的只有一个：存数据、读数据、改数据</strong></p>
+<p>读取json标签对应的值，如果没有就用属性的名称</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;reflect&quot;
+)
+
+type Student struct {
+  Name string
+  Age  int `json:&quot;age&quot;`
+}
+
+func main() {
+  s := Student{
+    Name: &quot;枫枫知道&quot;,
+    Age:  24,
+  }
+  t := reflect.TypeOf(s)
+  v := reflect.ValueOf(s)
+从结构体字段的标签里，把 json:&quot;xxx&quot; 后面的 xxx 取出来！
+  for i := 0; i &lt; t.NumField(); i++ {
+    field := t.Field(i)
+    jsonField := field.Tag.Get(&quot;json&quot;)
+    if jsonField == &quot;&quot; {
+      // 说明json的tag是空的
+      jsonField = field.Name
+    }
+    fmt.Printf(&quot;Name: %s, type: %s, json: %s, value: %v\n&quot;, field.Name, field.Type, jsonField, v.Field(i))
+  }
+}
+</code></pre>
+<p>当然了，我们写的这个都很简单了，没有处理-和omitempty的情况</p>
+<h3 id="修改结构体中某些值">修改结构体中某些值</h3>
+<p>例如，结构体tag中有big的标签，就将值大写</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;reflect&quot;
+  &quot;strings&quot;
+)
+
+type Student struct {
+  Name1 string `big:&quot;-&quot;`
+  Name2 string
+}
+
+func main() {
+  s := Student{
+    Name1: &quot;fengfeng&quot;,
+    Name2: &quot;zhangsan&quot;,
+  }
+  t := reflect.TypeOf(s)
+  v := reflect.ValueOf(&amp;s).Elem()
+
+  for i := 0; i &lt; t.NumField(); i++ {
+    field := t.Field(i)
+    bigField := field.Tag.Get(&quot;big&quot;)
+    // 判断类型是不是字符串
+    if field.Type.Kind() != reflect.String {
+      continue
+    }
+    if bigField == &quot;&quot; {
+      continue
+    }
+    // 修改值
+    valueFiled := v.Field(i)
+    valueFiled.SetString(strings.ToTitle(valueFiled.String()))
+  }
+  fmt.Println(s)
+}
+</code></pre>
+<h3 id="调用结构体方法">调用结构体方法</h3>
+<p>如果结构体有call这个名字的方法，就执行它</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;reflect&quot;
+)
+
+type Student struct {
+  Name string
+  Age  int
+}
+
+func (Student) See(name string) {
+  fmt.Println(&quot;see name:&quot;, name)
+}
+
+func main() {
+  s := Student{
+    Name: &quot;fengfeng&quot;,
+    Age:  21,
+  }
+  t := reflect.TypeOf(s)
+  v := reflect.ValueOf(s)
+
+  for i := 0; i &lt; t.NumMethod(); i++ {
+    methodType := t.Method(i)
+    fmt.Println(methodType.Name, methodType.Type)
+    if methodType.Name != &quot;See&quot; {
+      continue
+    }
+    methodValue := v.Method(i)
+    methodValue.Call([]reflect.Value{
+      reflect.ValueOf(&quot;枫枫&quot;), // 注意这里的类型
+    })
+  }
+}
+</code></pre>
+<h2 id="orm的一个小案例">orm的一个小案例</h2>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;errors&quot;
+  &quot;fmt&quot;
+  &quot;reflect&quot;
+  &quot;strings&quot;
+)
+
+type Student struct {
+  Name string `feng-orm:&quot;name&quot;`
+  Age  int    `feng-orm:&quot;age&quot;`
+}
+
+type UserInfo struct {
+  Id   int    `feng-orm:&quot;id&quot;`
+  Name string `feng-orm:&quot;name&quot;`
+  Age  int    `feng-orm:&quot;age&quot;`
+}
+
+func Find(obj any, query ...any) (sql string, err error) {
+  // Find(Student, &quot;name = ?&quot;, &quot;fengfeng&quot;)
+  // 希望能够生成 select name, age from  where  name = &#39;fengfeng&#39;
+  t := reflect.TypeOf(obj)
+  //v := reflect.ValueOf(obj)
+  // 首先得是结构体对吧
+  if t.Kind() != reflect.Struct {
+    err = errors.New(&quot;非结构体&quot;)
+    return
+  }
+  // 拿全部字段
+
+  // 拼接条件
+  // 第二个参数，中的问号，就决定后面还能接多少参数
+  var where string
+  if len(query) &gt; 0 {
+    // 有第二个参数，校验第二个参数中的？个数，是不是和后面的个数一样
+    q := query[0] // 理论上还要校验第二个参数的类型
+    if strings.Count(q.(string), &quot;?&quot;)+1 != len(query) {
+      err = errors.New(&quot;参数个数不对&quot;)
+      return
+    }
+    // 拼接where语句
+    // 将？号带入后面的参数
+    for _, a := range query[1:] {
+      // 替换q
+      // 这里要判断a的类型
+      at := reflect.TypeOf(a)
+      switch at.Kind() {
+      case reflect.Int:
+        q = strings.Replace(q.(string), &quot;?&quot;, fmt.Sprintf(&quot;%d&quot;, a.(int)), 1)
+      case reflect.String:
+        q = strings.Replace(q.(string), &quot;?&quot;, fmt.Sprintf(&quot;&#39;%s&#39;&quot;, a.(string)), 1)
+      }
+    }
+    where += &quot;where &quot; + q.(string)
+  }
+  // 如果没有第二个参数，就是查全部
+
+  // 拼接select
+  // 拿所有字段，取feng-orm对应的值
+  var columns []string
+  for i := 0; i &lt; t.NumField(); i++ {
+    field := t.Field(i)
+    f := field.Tag.Get(&quot;feng-orm&quot;)
+    // 不考虑是空的情况
+    columns = append(columns, f)
+  }
+
+  // 结构体的小写名字+s做表名
+  name := strings.ToLower(t.Name()) + &quot;s&quot;
+
+  // 拼接最后的sql
+  sql = fmt.Sprintf(&quot;select %s from %s %s&quot;, strings.Join(columns, &quot;,&quot;), name, where)
+  return
+}
+
+func main() {
+  sql, err := Find(Student{}, &quot;name = ? and age = ?&quot;, &quot;枫枫&quot;, 23)
+  fmt.Println(sql, err) // select name,age from students where name = &#39;枫枫&#39; and age = 23
+  sql, err = Find(UserInfo{}, &quot;id = ?&quot;, 1)
+  fmt.Println(sql, err) // select id,name,age from userinfos where id = 1
+}
+</code></pre>
+<h2 id="对反射的一些建议">对反射的一些建议</h2>
+<p>如果是写一下框架，偏底层工具类的操作</p>
+<p>不用反射确实不太好写，但是如果是在业务上，大量使用反射就不太合适了</p>
+<p>因为反射的性能没有正常代码高，会慢个一到两个数量级</p>
+<p>使用反射可读性也不太好，并且也不能在编译期间发生错误</p>
+<h2 id="参考文档">参考文档</h2>
+<p>go反射 <a href="https://blog.csdn.net/a1053765496/article/details/129904985">https://blog.csdn.net/a1053765496/article/details/129904985</a></p>
+<p>反射 <a href="https://www.liwenzhou.com/posts/Go/reflect/">https://www.liwenzhou.com/posts/Go/reflect/</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

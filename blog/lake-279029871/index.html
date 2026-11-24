@@ -1,0 +1,35 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PostgreSQL：自增主键与约束 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>PostgreSQL：自增主键与约束</h1><time datetime="2026-07-26T05:54:25.000Z">2026年7月26日</time><p>id bigint primary key auto_increment : mysql中实现的 id 键值自增 ;</p>
+<p>在 postgreSQL中 : 实现id创建自增 :</p>
+<p>int auto_increment == serial ;</p>
+<p>bigint auto_increment == bigserial ;</p>
+<p>TIMESTAMPTZ 比 TIMESTAMP 更推荐用，存储时会转成 UTC，查询时按客户端时区显示，避免时区问题</p>
+<p>最后使用 CHECK (判断式) 可以直接 限制范围 : 非负数, 非0 ;</p>
+<p>REFERENCES users(id) : 外键 设置 references (users);</p>
+<p>- TIMESTAMP — 存什么取什么，不管时区，像个字符串</p>
+<p>- TIMESTAMPTZ — 存入时自动转 UTC，取出时按你客户端时区显示</p>
+<pre><code class="language-text">CREATE TABLE activities (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    created_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    capacity INTEGER NOT NULL CHECK (capacity &gt; 0),
+    registered_count INTEGER NOT NULL DEFAULT 0 CHECK (registered_count &gt;= 0),
+    status VARCHAR(16) NOT NULL DEFAULT &#39;draft&#39; CHECK (status IN (&#39;draft&#39;, &#39;published&#39;, &#39;cancelled&#39;)),
+    start_time TIMESTAMPTZ NOT NULL,
+    end_time TIMESTAMPTZ NOT NULL,
+    registration_start_time TIMESTAMPTZ NOT NULL,
+    registration_end_time TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT activities_end_after_start CHECK (end_time &gt; start_time),
+    CONSTRAINT activities_registration_end_after_start CHECK (registration_end_time &gt; registration_start_time),
+    CONSTRAINT activities_registered_not_over_capacity CHECK (registered_count &lt;= capacity)
+);
+</code></pre>
+<p>使用 Constraint 约束, 实现保证数据的合法性 ;</p>
+<p>最后创建的三条约束 ;</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

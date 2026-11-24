@@ -1,0 +1,57 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 泛型类：类型参数、通配符与继承 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 泛型类：类型参数、通配符与继承</h1><time datetime="2026-01-03T11:50:57.000Z">2026年1月3日</time><ul>
+<li>泛型类 ( 类型参数 )</li>
+</ul>
+<p>Object : 1. 需要强制类型转化 ; 2 . 需要具体场景传参</p>
+<pre><code class="language-text">public class New_class&lt;T  ( S , M ) &gt; {
+    String name ;
+    int date ;
+    T value ;
+    New_class(String name , int date , T vlaue){
+        this.name = name;
+        this.date = date;
+        this.value = vlaue;
+    } ;
+}
+在Main中代码
+创建泛型类 New_class&lt;String&gt; ws0 = new New_class&lt;&gt;(&quot;ws&quot;, 1, &quot;是gay&quot;); &lt;&gt; 可以实现自己推导 ,对象不可省 , 类可省 
+String name = ws0.value ;  ( 无需类型转化 )
+</code></pre>
+<p>实现编写代码时就可以明确类型</p>
+<p>但在类的内部方法中 T型参数仍然会被当作 Object 类型去处理 , 形参无法实现实例化</p>
+<p>New_class&lt;?&gt; ws2 = ws1 ;</p>
+<p>使用 ? 通配符 : 可以支持任意类型的泛型 , 类型不确定仍会被当作Object类</p>
+<p>仍然需要强制类型转化</p>
+<p>Test&lt;?&gt; test = new Test&lt;类型&gt;() ; 实行转化为不同中的泛型类</p>
+<p>创建方法是也可以创建未知类型的</p>
+<p>基本类型不可以写入泛型类中 , 但数组可以 ( 引用类型 ) New_class&lt;int[ ]&gt;</p>
+<p>T : 甚至可以写为另外的一个类</p>
+<ul>
+<li>支持泛型修改 , 泛型在多态下的表现 : 多态 : 实行 方法重写 , 继承 , 向上转型</li>
+</ul>
+<pre><code class="language-text">abstract class New&lt;T&gt; {  //抽象类
+    T name ;
+}
+
+interface New1&lt;T&gt; {     //接口
+    T study(T name) ;
+}
+
+record Date&lt;T&gt;(T data){} ;   //记录类
+</code></pre>
+<pre><code class="language-text">static class Test implements New1&lt;String&gt;{
+    @Override
+    public String study(String n) {
+        return &quot;&quot;;
+    }
+</code></pre>
+<pre><code class="language-text">static class Test1&lt;T&gt; implements New1&lt;T&gt;{
+    @Override
+    public T study(T name) {
+        return null;
+    }
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

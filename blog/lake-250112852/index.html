@@ -1,0 +1,139 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 类型设计：枚举与密封类 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 类型设计：枚举与密封类</h1><time datetime="2025-12-23T13:56:18.000Z">2025年12月23日</time><pre><code class="language-text">package io_17hwlioa;
+
+public class Exercise {
+
+    public static void main(String[] args) throws CloneNotSupportedException {
+        Student s = new Student() ;
+        s.setName(system.SLEEP);
+        System.out.println(s.getName().getName());
+
+        Dingdan m = new Dingdan(1 , &quot;chabaidao&quot; , &quot;xinan&quot;) ;
+        Dingdan m1 = new Dingdan(2 , &quot;chabaidao&quot; , &quot;xinan&quot;) ;
+        System.out.println(m);
+    }
+}
+</code></pre>
+<pre><code class="language-text">package io_17hwlioa;
+
+import java.util.Objects;
+
+public sealed class Person implements Study permits Student  {
+    private String name;
+    private int age;
+    public Person() {
+
+    }
+
+    public Person(String name, int age) {
+        this.name = name ;
+        this.age = age ;
+    }
+
+    public Person(String name){
+        this.name = name;
+        System.out.println(getname());
+    }
+    public void unit(String name , int age){
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getname(){
+        return name  ;
+    }
+
+    public void teach(){
+        System.out.println(&quot;我爱教Java&quot;);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Person person)) return false;
+        return age == person.age &amp;&amp; Objects.equals(name, person.name);
+    }
+    public  void hello() {
+        System.out.println(&quot;qunide&quot;);
+    };
+
+}
+</code></pre>
+<pre><code class="language-text">package io_17hwlioa;
+
+
+public final class Student extends Person implements Study {
+    String name ;
+    int age  ;
+    private system hehe ;
+    public Object object  ;
+
+    public Student(String name, int age) {
+        super(name, age);
+        object  = new Object();
+        System.out.println(super.getname());
+    }
+
+    public system  getName(){
+        return hehe ;
+    }
+
+    public void setName(system hehe){
+        this.hehe = hehe;
+    }
+
+
+
+    public Student(String name ){
+        super(name );
+        this.name = name ;
+        System.out.println(super.getname() + name);
+    }
+
+    public Student(){} ;
+    @Override
+    public void teach(){
+        System.out.println(&quot;我要教同学java&quot;);
+    }
+
+    public void hello(){
+        System.out.println(&quot;hello&quot;);
+    }
+
+}
+</code></pre>
+<pre><code class="language-text">package io_17hwlioa;
+
+public enum system {
+    SLEEP(&quot;dingyi&quot;), RUNNING(&quot;sau&quot;) , STUDY (&quot;hui&quot;) ;
+
+    String name ;
+
+    system(String name){
+        this.name = name;
+    }
+
+    public String getName(){
+        return name ;
+    }
+}
+</code></pre>
+<pre><code class="language-text">package io_17hwlioa;
+
+public interface Study {
+    default void  study(){
+        System.out.println(&quot;默认实现&quot;);
+    }
+
+    private void inner(){
+        System.out.println(&quot;内部操作&quot;);
+    }
+}
+</code></pre>
+<pre><code class="language-text">package io_17hwlioa;
+
+public record Dingdan(int id , String product , String adress) {
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

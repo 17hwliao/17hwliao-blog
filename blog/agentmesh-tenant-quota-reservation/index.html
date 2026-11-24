@@ -1,0 +1,1029 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AgentMesh：租户路由与配额预扣边界 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>AgentMesh：租户路由与配额预扣边界</h1><time datetime="2026-09-25T08:56:06.000Z">2026年9月25日</time><p><a href="../../projects/agentmesh/index.html#project-articles">AgentMesh 项目展示</a> · <a href="../../blog/lake-282376218/index.html">系列目录</a> · 7 / 12</p>
+<p>详细追踪 Gateway 的请求前半链，厘清认证、限流、模型路由、quota.Allow 与 reservations.Begin 的实际职责。</p>
+<blockquote>
+<p>实现说明与运行记录基于 2026-09-25 更新的原稿。正文中的文件行号、实现状态与验证结果按该历史快照理解。</p>
+</blockquote>
+<h2 id="实现概览">实现概览</h2>
+<ul>
+<li>请求身份与模型范围在服务端确定。</li>
+<li>quota.Allow 的检查与 Redis 实际预扣需要区分。</li>
+<li>SSE 协议与 trace 查询提供响应和诊断边界。</li>
+</ul>
+<h2 id="实现细节">实现细节</h2>
+<h4 id="补充概念"><strong>补充概念</strong></h4>
+<p>Gateway 是 AgentMesh 的 Http 对外边界层 :</p>
+<p><strong>Gateway 是 AgentMesh 唯一的公网门面，它不是代理，而是&quot;门卫 + 记账 + 路由 + 流式转发&quot;的组合体</strong></p>
+<p>暴露 OpenAI 兼容的 v1/chat/completions (SSE 流式) 以及 embeddings , 健康检查, trace 查询端点</p>
+<p>实际上它是无状态薄壳 : Server 组合 router , 租户解析器 , 限流/配额门禁, 请求链路为 鉴权 -&gt; 限流 -&gt; 租户路由 -&gt; 配额预扣 -&gt; Provider流式 -&gt; 结算</p>
+<p>作用：统一收口所有 LLM 流量，在访问上游 Provider 前完成鉴权、限流、配额、观测埋点（X-AgentMesh-Trace-ID），并支持多 Provider fallback（首块前可切换、首块后只能报 stream_interrupted）</p>
+<h2 id="当前的请求链路">当前的请求链路</h2>
+<p><code>mux : 请求的路由分发器 ; </code></p>
+<p><img src="../../images/projects/articles/a53502662e2d5fba.png" loading="lazy" alt="项目实现示意图"></p>
+<p><img src="../../images/projects/articles/be7eb77d5c4ffeb5.png" loading="lazy" alt="项目实现示意图"></p>
+<h2 id="请求链路开始">请求链路开始</h2>
+<h3 id="api-启动时">API 启动时</h3>
+<p><strong><code>cmd/api/main.go:155</code> 注册了外层路由：</strong></p>
+<pre><code class="language-text">protected := server.AuthenticatedHandler(func(next http.Handler) http.Handler {
+    return auth.Authenticate(store, next)
+})
+root := http.NewServeMux()
+root.HandleFunc(&quot;/healthz&quot;, ...)
+root.HandleFunc(&quot;/readyz&quot;, ...)
+root.Handle(&quot;/admin/&quot;, adminHandler)
+root.Handle(&quot;/&quot;, protected)
+</code></pre>
+<p><strong>因此，聊天请求的第一跳是：</strong></p>
+<pre><code class="language-text">POST /v1/chat/completions
+→ 没匹配 /healthz、/readyz、/admin/
+→ 命中 root 的 &quot;/&quot; 路由
+→ 交给 protected
+</code></pre>
+<p><strong>这里的</strong><code>/</code><strong>是兜底入口。</strong><code>protected</code><strong>是 Gateway 建出来、带认证规则的 Handler。</strong></p>
+<h2 id="gateway-把认证包在限流外面">Gateway 把认证包在限流外面</h2>
+<p>在 <code>internal/gateway/server.go:127</code>，<code>AuthenticatedHandler</code> 注册聊天路由：</p>
+<pre><code class="language-text">mux.Handle(
+    chatPath,
+    authenticate(
+        s.withRateLimit(http.HandlerFunc(s.handleChat)),
+    ),
+)
+</code></pre>
+<p>读成“请求执行顺序”就是：</p>
+<pre><code class="language-text">auth.Authenticate
+→ s.withRateLimit
+→ s.handleChat
+</code></pre>
+<p>代码构造时是从里往外包；HTTP 请求到来时则从外往里执行。</p>
+<pre><code class="language-text">authenticate → withRateLimit → handleChat
+</code></pre>
+<p>原因：<code>authenticate(X)</code> 返回的新 handler 内部会去调 X。所以最外层包的那个先执行，最内层最后执行。</p>
+<h2 id="认证验证-api-key把-tenant-放进请求-context">认证：验证 API Key，把 tenant 放进请求 Context</h2>
+<p>实际传入的 <code>authenticate</code> 函数定义在 [main.go (line 156)]</p>
+<p>(C:/Users/17hwliao/Desktop/Go-Agent-Projects/01-AgentMesh/cmd/api/main.go:156)</p>
+<p>它调用 [auth.Authenticate (line 51)]</p>
+<p>(C:/Users/17hwliao/Desktop/Go-Agent-Projects/01-AgentMesh/internal/auth/auth.go:51)</p>
+<p>认证中间件做的事情是：</p>
+<pre><code class="language-text">读 Authorization
+→ 检查 Bearer 格式
+→ 按 key 前缀和完整 key 的 SHA-256 摘要查询存储
+→ 认证失败：401 并结束
+→ 认证成功：把 tenant ID 写入 request.Context()  // context.WithValue(r.Context(), contextKey{}, t.ID)租户写入 ctx
+→ 调用下一个 Handler
+</code></pre>
+<p>写入 Context 的代码是：</p>
+<pre><code class="language-text">next.ServeHTTP(
+    w,
+    r.WithContext(context.WithValue(r.Context(), contextKey{}, t.ID)),
+)
+</code></pre>
+<p>所以后续的 tenant 身份来自通过认证的 API Key，不是来自请求 JSON 中客户端自报的字段。</p>
+<h2 id="限流读取认证后的-tenant再决定是否进入聊天处理">限流：读取认证后的 tenant，再决定是否进入聊天处理</h2>
+<p>接下来执行 [withRateLimit (line 143)]</p>
+<p>(C:/Users/17hwliao/Desktop/Go-Agent-Projects/01-AgentMesh/internal/gateway/server.go:143)</p>
+<p>它从刚才的请求 Context 中取 tenant：</p>
+<pre><code class="language-text">tenantID, ok := auth.TenantID(request.Context())
+</code></pre>
+<p>再调用已注入的限流器：</p>
+<pre><code class="language-text">decision := s.rateLimit.Admit(request.Context(), tenantID)
+</code></pre>
+<p>放行就调用 <code>next</code>，也就是 <code>handleChat</code>；拒绝则返回 <code>429</code> 和 <code>Retry-After</code>，请求到此结束。</p>
+<p>在当前 <code>compose.yml</code> 中，限流器配置为 Redis 存储，见 <code>compose.yml:103</code>。不过从 Handler 的角度，它只调用 <code>Gate.Admit</code>，不直接操作 Redis。</p>
+<h2 id="handlechat先校验请求再查-tenantmodel-路由"><code>handleChat</code>：先校验请求，再查 tenant/model 路由</h2>
+<p>请求通过认证与限流后，进入 <code>internal/gateway/server.go:219</code>。</p>
+<p>第一步检查 HTTP 方法(POST) 并 解码 请求：</p>
+<pre><code class="language-text">if request.Method != http.MethodPost {
+    // 405
+}
+
+input, err := decodeChatRequest(request)
+if err != nil {
+    // 400
+}
+</code></pre>
+<p><code>decodeChatRequest</code> 会限制 body 大小、拒绝未知字段和多余 JSON，并要求 <code>model</code>、<code>messages</code> 有效且 <code>stream</code> 为 <code>true</code>，见 <code>internal/gateway/server.go:394</code>。</p>
+<p>请求格式有效后，代码从 Context 再次读取 tenant，并创建 trace：</p>
+<pre><code class="language-text">tenantID, ok = auth.TenantID(request.Context())
+session = s.recorder.Start(tenantID, input.Model)
+</code></pre>
+<p>随后调用 <code>tenantResolver</code>，按 tenant 和 model 取出 streamer：</p>
+<pre><code class="language-text">streamer, allowed =
+    s.tenantResolver.StreamerWithObserver(
+        request.Context(), tenantID, input.Model, session,
+    )
+</code></pre>
+<p>不支持带 observer 的实现时，才退回普通 <code>Streamer</code> 接口。tenant 无权使用该 model，就记录 trace 并返回 <code>403</code>。</p>
+<h2 id="关键纠正quotaallow-当前不是实际的-redis-扣额操作">关键纠正：<code>quota.Allow()</code> 当前不是实际的 Redis 扣额操作</h2>
+<p>quotaGate 当前仅仅只是一个接口 ,  默认实现是 allowQuotaGate{}  ; Allow 永远返回 true ;</p>
+<p>后期 : 可以在这个地方天界一个真实的 额度查询插件</p>
+<p>路由通过后，<code>handleChat</code> 还会调用：</p>
+<pre><code class="language-text">if !s.quota.Allow(request.Context(), tenantID, input.Model) {
+    // 429
+}
+</code></pre>
+<p>但 <code>Server</code> 构造函数默认把 <code>quota</code> 设置成 <code>allowQuotaGate{}</code></p>
+<p>这个实现的 <code>Allow()</code> 永远返回 <code>true</code>，见 [server.go (line 53)]</p>
+<p>(C:/Users/17hwliao/Desktop/Go-Agent-Projects/01-AgentMesh/internal/gateway/server.go:53)。</p>
+<p>同时，<code>cmd/api/main.go:146</code> 调用构造函数时传入的是：</p>
+<pre><code class="language-text">gateway.NewWithTenantRoutingAndRecorderAndReservations(
+    resolver,
+    recorder,
+    reservationGate,   //第三个参数是 reservations, 不是quota ; 
+)
+</code></pre>
+<p>第三个参数是 <code>reservations</code>，不是可选的 <code>quota</code> 参数。因此，在当前这条生产式组装路径里，<code>quota.Allow()</code> 使用默认的“始终放行”实现。</p>
+<p>也就是说，不要把这里讲成“Gateway 已经在 <code>quota.Allow()</code> 里完成 Redis 额度检查”。它只是一个默认放行的门禁接口。</p>
+<h2 id="真正的额度预扣发生在-reservationsbegin">真正的额度预扣发生在 <code>reservations.Begin()</code></h2>
+<p>继续往下，<code>handleChat</code> 调用：</p>
+<pre><code class="language-text">reservationSession, err =
+    s.reservations.Begin(
+        request.Context(),
+        tenantID,
+        input.Model,
+        input.Messages,
+)
+</code></pre>
+<p>是否启用 Reservation，由启动配置决定。</p>
+<p>在 Compose 配置中，<code>AGENTMESH_QUOTA_MODE=reservation</code>，</p>
+<p>并提供 MySQL(DSN)、Redis 与单次预留额度，renant ID , 见 [compose.yml (line 98)]</p>
+<p>(C:/Users/17hwliao/Desktop/Go-Agent-Projects/01-AgentMesh/compose.yml:98)。</p>
+<p><code>OpenConfiguredCoordinator</code>(会做一些启动级别期校验) :</p>
+<p>会依据该配置建立 MySQL Repository、Redis Quota Store 和 Coordinator，见 [config.go (line 28)]</p>
+<p>(C:/Users/17hwliao/Desktop/Go-Agent-Projects/01-AgentMesh/internal/reservation/config.go:28)。</p>
+<p>当 <code>Begin()</code> 实际被调用时，代码顺序是：</p>
+<pre><code class="language-text">Coordinator.Begin
+→ 生成 reservationID 和 requestID
+→ PreDeductor.Begin    PreDeductor 预扣减器
+→ MySQL Create：持久化 creating 状态
+→ Redis Reserve：原子预扣预留额度
+→ MySQL MarkReserved：状态改成 reserved
+→ 返回 StreamSession
+
+Coordinator.Begin
+  ├─ 生成 reservationID + requestID
+  ├─ MySQL Create 状态=creating        ← 持久化&quot;我打算要这个额度&quot;
+  ├─ Redis Lua 原子预扣 reservationUnits  ← 真正的额度从 Redis 走
+  └─ MySQL MarkReserved 状态=reserved  ← 记账落定
+→ 返回 StreamSession（后续用来结算）
+</code></pre>
+<p>这段顺序由 [coordinator.go (line 79)]</p>
+<p>(C:/Users/17hwliao/Desktop/Go-Agent-Projects/01-AgentMesh/internal/reservation/coordinator.go:79) 和 <code>internal/reservation/pre_deduction.go:28</code> 实现。</p>
+<p>这时发生的是<strong>预留额度</strong>，还不是最终结算。返回的 <code>StreamSession</code> 会在后续 Provider 调用时记录 attempt 和进度，流结束后才由 <code>Complete()</code> 结算或取消。<br><code>关键区分：quota.Allow vs reservations.Begin</code></p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>项</th>
+<th><code>quota.Allow</code></th>
+<th><code>reservations.Begin</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>当前默认</td>
+<td>永远 true</td>
+<td>真正预扣</td>
+</tr>
+<tr>
+<td>依赖存储</td>
+<td>无</td>
+<td>Redis + MySQL</td>
+</tr>
+<tr>
+<td>幂等性</td>
+<td>无</td>
+<td>StreamSession 支持重试</td>
+</tr>
+<tr>
+<td>语义</td>
+<td>门卫（占位）</td>
+<td>财务记账</td>
+</tr>
+<tr>
+<td>失败码</td>
+<td>429 quota_exhausted</td>
+<td>429 quota_exhausted / 503 quota_unavailable</td>
+</tr>
+</tbody></table></div>
+<p><strong>Step 7 — SSE 懒启动 + Provider 调用（294–324 行）</strong></p>
+<pre><code class="language-go">started := false
+start := func() {
+    if started { return }
+    started = true
+    w.Header().Set(&quot;Content-Type&quot;, &quot;text/event-stream&quot;)
+    w.Header().Set(&quot;Cache-Control&quot;, &quot;no-cache&quot;)
+    w.Header().Set(&quot;Connection&quot;, &quot;keep-alive&quot;)
+}
+emit := func(chunk provider.Chunk) error {
+    start()           // 首个 chunk 时才真正写 header
+    return writeSSE(w, map[string]any{
+        &quot;choices&quot;: []map[string]any{{&quot;delta&quot;: map[string]string{&quot;content&quot;: chunk.Delta}}},
+        &quot;usage&quot;:   chunk.Usage,
+    })
+}
+
+chat := provider.ChatRequest{Model: input.Model, Messages: input.Messages}
+
+if reservationSession != nil {
+    hooked, ok := streamer.(router.HookedStreamer)
+    if !ok {
+        _ = reservationSession.Complete(ctx, quotaUnavailable, false)
+        writeJSONError(w, 503, quotaUnavailable)
+        return
+    }
+    err = hooked.StreamWithAttemptHook(ctx, chat, emit, reservationSession)
+} else {
+    err = streamer.Stream(ctx, chat, emit)
+}
+</code></pre>
+<p><strong>&quot;懒启动&quot;是这里最妙的地方</strong>：</p>
+<ul>
+<li><code>start()</code> 只有在 <code>emit</code> <strong>第一次</strong>被调用时才执行</li>
+<li>所以在<strong>首个 chunk 之前</strong>，HTTP header 从未发出，Gateway 还<strong>有资格</strong>返回 JSON 错误</li>
+<li>一旦 <code>start()</code> 执行过（<code>Content-Type: text/event-stream</code> 已发出去），HTTP 语义上<strong>不可回头</strong>——只能走 SSE 错误路径</li>
+<li>Router 内部也用这个&quot;是否 emit 过&quot;来判断能否切下一个 Provider：</li>
+</ul>
+<p>带 reservation 时用 <code>StreamWithAttemptHook</code>：Router 会把每次 Provider attempt 记录到</p>
+<p><code>StreamSession</code>，作为结算证据——&quot;我实际请求了哪个 provider、结果如何&quot;</p>
+<p><strong>Step 8 — 三路收口（327–362 行）</strong></p>
+<pre><code class="language-go">// 结算 reservation
+if reservationSession != nil {
+    if completeErr := reservationSession.Complete(ctx, streamErrorCode(err), isCancelled); completeErr != nil {
+        completeTrace(session, quotaUnavailable, false)
+        if started {
+            _ = writeSSE(w, map[string]any{&quot;error&quot;: map[string]string{&quot;code&quot;: quotaUnavailable}})
+            _ = writeDone(w)
+            return
+        }
+        writeJSONError(w, 503, quotaUnavailable)
+        return
+    }
+}
+
+if err == nil {
+    completeTrace(session, &quot;success&quot;, false)
+    if !started { start() }
+    _ = writeDone(w)
+    return
+}
+if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+    completeTrace(session, &quot;cancelled&quot;, true)
+    return
+}
+if started {
+    completeTrace(session, streamErrorCode(err), false)
+    _ = writeSSE(w, map[string]any{&quot;error&quot;: map[string]string{&quot;code&quot;: streamErrorCode(err)}})
+    _ = writeDone(w)
+    return
+}
+completeTrace(session, streamErrorCode(err), false)
+writeJSONError(w, 503, streamErrorCode(err))
+</code></pre>
+<p>四条出口线：</p>
+<ol>
+<li><strong>结算失败</strong>（MySQL/Redis 挂）：看是否已经出流——出过就走 SSE，没出过就 JSON 503</li>
+<li><strong>成功</strong>：trace=success + <code>[DONE]</code> 收尾</li>
+<li><strong>客户端取消 / 超时</strong>：只记 trace=cancelled，<strong>不算 Provider 错</strong>，也不写 DONE</li>
+<li><strong>其他错误</strong>：分 started 与否分别走 SSE 或 JSON</li>
+</ol>
+<p>错误码映射 <code>streamErrorCode(err)</code>（421 行）：</p>
+<ul>
+<li><code>reservation.Code == quota_exhausted</code> → <code>quota_exhausted</code></li>
+<li><code>errors.Is(err, router.ErrStreamInterrupted)</code> → <code>stream_interrupted</code></li>
+<li>其他 → <code>provider_unavailable</code></li>
+</ul>
+<hr>
+<h2 id="3-sse-协议细节servergo438460">3. SSE 协议细节（server.go:438–460）</h2>
+<pre><code class="language-go">// 每次事件
+data: &lt;json&gt;\n\n
+
+// 收尾
+data: [DONE]\n\n
+</code></pre>
+<ul>
+<li>每次写完必须 <code>Flusher.Flush()</code>，否则客户端看不到实时数据（TCP 会攒包）。</li>
+<li>OpenAI 兼容格式：<code>choices[0].delta.content</code> + <code>usage</code>。</li>
+</ul>
+<hr>
+<h2 id="4-handletrace-反查埋点367-行">4. <code>handleTrace</code> — 反查埋点（367 行）</h2>
+<pre><code class="language-go">tenantID, ok := auth.TenantID(ctx)
+if !ok || s.recorder == nil { 404 trace_not_found; return }
+trace, ok := s.recorder.Get(tenantID, request.PathValue(&quot;trace_id&quot;))
+if !ok { 404 trace_not_found; return }
+</code></pre>
+<p><strong>关键安全设计</strong>：不区分&quot;trace 不存在&quot;、&quot;trace 属于别的租户&quot;、&quot;trace 还没完成&quot;，一律 404 <code>trace_not_found</code>。避免通过响应差异推断其他租户的 trace ID 是否存在。</p>
+<h2 id="handlechat-的完整调用链">handleChat 的完整调用链</h2>
+<pre><code class="language-text">root ServeMux
+  → &quot;/&quot; 命中 protected
+  → Gateway 匹配 /v1/chat/completions
+  → auth.Authenticate
+      → 校验 Bearer API Key
+      → tenant ID 写入 request.Context()
+  → withRateLimit
+      → 按 tenant 调 Gate.Admit
+      → 超限返回 429；否则继续
+  → handleChat
+      → 检查 POST、解码和校验 body
+      → recorder.Start，设置 trace header
+      → tenantResolver 按 tenant + model 取 streamer
+      → model 不允许返回 403
+      → quota.Allow 默认实现放行
+      → 检查 streamer
+      → reservations.Begin
+          → MySQL 创建 creating
+          → Redis 预扣
+          → MySQL 改为 reserved
+          → 返回 StreamSession
+</code></pre>
+<p>最该记住的修正是：</p>
+<p><code>quota.Allow()</code> 在当前 API 组装中是默认放行门禁；真实 Reservation 预扣从 <code>reservations.Begin()</code> 开始。<code>Begin()</code> 先在 MySQL 建立 <code>creating</code> 记录，再通过 Redis 原子预扣，最后把 MySQL 状态推进到 <code>reserved</code>。</p>
+<h2 id="追踪-reservationbegin-的预扣流程">追踪 Reservation.Begin 的预扣流程</h2>
+<p><img src="../../images/projects/articles/e668da5d2557dac6.png" loading="lazy" alt="项目实现示意图"></p>
+<h2 id="全景调用链先建立直觉">全景调用链（先建立直觉）</h2>
+<pre><code class="language-text">Gateway.handleChat（server.go:219）
+    ↓  Begin(ctx, tenantID, model, messages)
+Coordinator.Begin（coordinator.go:79）
+    ↓  ① 校验参数、生成 reservationID + requestID
+    ↓  ② 组装 CreatePersistentReservation（带 ReservationUnits）
+PreDeductor.Begin（pre_deduction.go:28）
+    ↓
+    ┌─────────────────────────────────────────────┐
+    │  ① SQLRepository.Create                     │ → MySQL: INSERT state=&#39;creating&#39;
+    │  ② RedisQuotaStore.Reserve                  │ → Redis: Lua 原子预扣余额
+    │  ③ SQLRepository.MarkReserved               │ → MySQL: UPDATE state=&#39;reserved&#39;
+    └─────────────────────────────────────────────┘
+    ↓
+返回 coordinatorSession（内含 PersistentReservation）
+</code></pre>
+<h2 id="第一步gateway-为什么调用-begin">第一步：Gateway 为什么调用 Begin</h2>
+<p>回到 internal/gateway/server.go:276-289：</p>
+<pre><code class="language-go">var reservationSession reservation.StreamSession
+if s.reservations != nil {
+    reservationSession, err = s.reservations.Begin(
+        request.Context(),   // 参数 1：请求取消边界
+        tenantID,            // 参数 2：认证得到的租户 ID
+        input.Model,         // 参数 3：本次要用的模型
+        input.Messages,      // 参数 4：聊天输入（用于估算 runes）
+    )
+    if err != nil {
+        if reservation.Code(err) == quotaExhausted {
+            writeJSONError(w, 429, quotaExhausted)   // 余额不够
+            return
+        }
+        writeJSONError(w, 503, quotaUnavailable)     // 依赖挂了
+        return
+    }
+}
+</code></pre>
+<p>四个输入各自的语义：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>来源</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ctx</code></td>
+<td><code>request.Context()</code></td>
+<td>客户端断连会立即取消整个 Begin</td>
+</tr>
+<tr>
+<td><code>tenantID</code></td>
+<td>认证中间件写入的 ctx</td>
+<td>决定扣哪个租户的余额</td>
+</tr>
+<tr>
+<td><code>model</code></td>
+<td>请求 body 里客户端自报</td>
+<td>只是记录，实际路由靠 tenant+model 从 Resolver 拿 streamer</td>
+</tr>
+<tr>
+<td><code>messages</code></td>
+<td>请求 body</td>
+<td>后续 <code>BeforeAttempt</code><br>里用来算输入 runes，作为超扣保险</td>
+</tr>
+</tbody></table></div>
+<p><strong>关键</strong>：<code>Begin()</code> 必须<strong>成功</strong>才进下一步。失败只有两种可能：</p>
+<ul>
+<li>余额不够 → 429 <code>quota_exhausted</code></li>
+<li>Redis/MySQL 挂了 → 503 <code>quota_unavailable</code></li>
+</ul>
+<p><strong>没有第三种失败</strong>——参数错、版本冲突、状态非法都不会返回给客户端，而是被包成上面两种之一。</p>
+<h2 id="第二步coordinatorbegin-做参数校验-生成-id">第二步：<code>Coordinator.Begin()</code> 做参数校验 + 生成 ID</h2>
+<p>阅读 <code>internal/reservation/coordinator.go:79-97</code>：</p>
+<pre><code class="language-go">func (c *Coordinator) Begin(ctx context.Context, tenantID, model string, messages []provider.Message) (StreamSession, error) {
+    if tenantID == &quot;&quot; || model == &quot;&quot; || len(messages) == 0 {
+        return nil, domainError(CodeStateInvalid)
+    }
+
+    reservationID, requestID := c.config.NextID(), c.config.NextID()
+    if reservationID == &quot;&quot; || requestID == &quot;&quot; || reservationID == requestID {
+        return nil, domainError(CodeStateInvalid)
+    }
+
+    created, err := newPreDeductor(c.records, c.quota).Begin(ctx, CreatePersistentReservation{
+        ID: reservationID,
+        TenantID: tenantID,
+        RequestID: requestID,
+        Model: model,
+        ReservedUnits: c.config.ReservationUnits,
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    return &amp;coordinatorSession{
+        coordinator: c, reservation: created,
+        tenantID: tenantID, model: model,
+        messages: append([]provider.Message(nil), messages...),
+        lastFlush: c.now(),
+    }, nil
+}
+</code></pre>
+<p>逐段拆解：</p>
+<h3 id="①-参数非空校验">① 参数非空校验</h3>
+<p>三个都不能为空。这是<strong>上游 bug 保护</strong>——就算 Gateway 逻辑出 bug 传了空串，也不会把&quot;空租户空模型&quot;写进 MySQL 造成后续数据污染。</p>
+<h3 id="②-生成两个-idcoordinatorgo263">② 生成两个 ID（coordinator.go:263）</h3>
+<pre><code class="language-go">func randomReservationID() string {
+    value := make([]byte, 16)
+    if _, err := rand.Read(value); err != nil {
+        return &quot;&quot;
+    }
+    return hex.EncodeToString(value)   // 32 字符 hex 字符串
+}
+</code></pre>
+<ul>
+<li>用 <code>crypto/rand</code>（<strong>不是</strong> <code>math/rand</code>）—— 密码学安全随机。</li>
+<li>16 字节 → 32 字符 hex。碰撞概率 ≈ 2⁻¹²⁸。</li>
+<li>校验 <code>reservationID == requestID</code> 直接返回错误。这是防御性写法：就算随机源坏了生成两个一样的值，也不会污染数据。</li>
+</ul>
+<p><strong>为什么两个 ID？</strong></p>
+<ul>
+<li><code>reservationID</code> 标识<strong>额度预留这件事</strong>。</li>
+<li><code>requestID</code> 标识<strong>一次聊天请求</strong>。</li>
+</ul>
+<p>理论上同一个 requestID 可能触发多次预留（重试），也可能多次请求共享一个预留（后续高级功能）。分开留了扩展空间。</p>
+<h3 id="③-reservedunits-来自配置">③ <code>ReservedUnits</code> 来自配置</h3>
+<p><code>CoordinatorConfig.ReservationUnits</code> 是<strong>启动时</strong>注入的常量，从环境变量 <code>AGENTMESH_RESERVATION_UNITS</code> 读取（reservation/config.go:19）。</p>
+<p>含义：<strong>每次聊天开始前，无论实际用多少 token，先扣这么多额度</strong>。请求结束后再根据 Provider 的 usage 结算：实际用了多少就&quot;消耗掉&quot;，剩下的&quot;释放回余额&quot;。</p>
+<p>这就是&quot;预留 + 结算&quot;模式的精髓：<strong>先扣上限，事后调整</strong>。好处是并发请求不会超扣。</p>
+<h3 id="④-返回-coordinatorsession">④ 返回 <code>coordinatorSession</code></h3>
+<p>成功就包一个 <code>coordinatorSession</code>（coordinator.go:99-117）：</p>
+<pre><code class="language-go">type coordinatorSession struct {
+    coordinator *Coordinator
+    reservation PersistentReservation   // 里面带 version、state、reservedUnits
+    tenantID    string
+    model       string
+    messages    []provider.Message      // 深拷贝，防止上游改
+    lastFlush   time.Time
+    attempts    []*attemptMeter
+    current     *attemptMeter
+    completed   bool
+}
+</code></pre>
+<p><strong>这是本次任务的重点收束</strong>：本节到此为止，<code>Begin()</code> 返回的 <code>coordinatorSession</code> 交给 Router 使用。</p>
+<p><code>coordinatorSession</code> 实现了两个接口：</p>
+<ul>
+<li><code>router.AttemptHook</code>（<code>BeforeAttempt</code> / <code>BeforeEmit</code> / <code>AfterEmit</code> / <code>FinishAttempt</code>）—— Router 每次 Provider 调用前调用</li>
+<li><code>StreamSession</code>（<code>Complete</code>）—— Gateway 在流结束后调用</li>
+</ul>
+<p>这两个都用不到本节内容，属于Provider 调用与结算专题 的范畴。这里只强调：<code>reservation.Version</code><strong>是后续所有状态迁移的&quot;期望版本&quot;，用于 CAS 乐观锁</strong>。</p>
+<h2 id="第三步predeductorbegin-三步曲核心">第三步：<code>PreDeductor.Begin()</code> —— 三步曲核心</h2>
+<p>阅读 internal/reservation/pre_deduction.go:28-41：</p>
+<pre><code class="language-go">func (d *PreDeductor) Begin(ctx context.Context, input CreatePersistentReservation) (PersistentReservation, error) {
+    created, err := d.records.Create(ctx, input)               // ① MySQL creating
+    if err != nil {
+        return PersistentReservation{}, err
+    }
+    if _, err := d.quota.Reserve(ctx, created.TenantID,        // ② Redis 预扣
+        created.ID, created.Version, created.ReservedUnits); err != nil {
+        return created, err                                     // ⚠️ 返回已创建的 created，不假装没发生
+    }
+    reserved, err := d.records.MarkReserved(ctx, created.TenantID, created.ID, created.Version)  // ③ MySQL reserved
+    if err != nil {
+        return created, err                                     // ⚠️ 同样返回已创建的 created
+    }
+    return reserved, nil
+}
+</code></pre>
+<p>代码极简，但每一行都有讲究。<strong>注意错误处理</strong>：</p>
+<ul>
+<li>Redis 失败 → 返回 <code>created</code>（MySQL 里已经有 <code>creating</code> 记录了）。</li>
+<li>MarkReserved 失败 → 也返回 <code>created</code>。</li>
+<li>但<strong>上层</strong> <code>Coordinator.Begin()</code> <strong>只看</strong> <code>err</code>，把 <code>created</code> 丢弃（coordinator.go:91 <code>return nil, err</code>）。</li>
+</ul>
+<p><strong>为什么返回</strong><code>created</code><strong>而不是</strong><code>PersistentReservation{}</code><strong>？</strong> 文件头部注释写得很清楚：</p>
+<p>Begin never calls MarkReserved after an unsuccessful Redis pre-deduction. A Redis-success/MySQL-failure split deliberately returns the durable creating row; T003&#39;s reconciler owns its eventual repair.</p>
+<p>意思是：<strong>返回的</strong><code>created</code><strong>是给未来 Reconciler 或错误处理逻辑看的证据</strong>。虽然当前 Coordinator 用了它，但语义是&quot;这行记录还在 MySQL 里，你需要靠它恢复&quot;。</p>
+<h4 id="补充-persistentreservation--gt-go-语言中特殊的一种处理格式-结构体">补充 : PersistentReservation -&gt; go 语言中特殊的一种处理格式 : 结构体 :</h4>
+<pre><code class="language-text">一个字段为空,数字为 0 的 Reservation 结构体 ;
+</code></pre>
+<h3 id="为什么顺序必须是-mysql-redis-mysql">为什么顺序必须是 MySQL → Redis → MySQL？</h3>
+<p>反着想就明白了：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>中间态</th>
+<th>风险</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Redis → MySQL</td>
+<td>Redis 扣了，MySQL 没写</td>
+<td>客户端重试会再次扣，MySQL 永远对不上账</td>
+</tr>
+<tr>
+<td>MySQL → MySQL（跳过 Redis）</td>
+<td>没扣钱就宣布预留</td>
+<td>严重超卖</td>
+</tr>
+<tr>
+<td><strong>MySQL(creating) → Redis → MySQL(reserved)</strong></td>
+<td>中间态 = MySQL creating，Redis 已扣或未扣</td>
+<td><strong>可通过</strong> <code>ReserveApplied()</code><br><strong>区分，安全</strong></td>
+</tr>
+</tbody></table></div>
+<p><strong>唯一的中间态</strong>：MySQL <code>creating</code> + Redis 未知。这个状态被 <code>Reconciler</code> 的 <code>ReserveApplied()</code> 判定后修复（redis.go:89）：</p>
+<pre><code class="language-go">// ReserveApplied 让 Reconciler 区分：
+//   - creating 行在 Redis 已接受扣减前留下的（未扣）
+//   - creating 行在 Redis 预扣后 MySQL 预留前留下的（已扣）
+// 它从不变动余额。
+func (s *RedisQuotaStore) ReserveApplied(ctx context.Context, tenantID, reservationID string) (bool, error)
+</code></pre>
+<h2 id="第四步mysql-create-落盘-creating">第四步：MySQL <code>Create</code> —— 落盘 creating</h2>
+<p>阅读 internal/reservation/persistence.go:181-202：</p>
+<pre><code class="language-go">func (r *SQLRepository) Create(ctx context.Context, input CreatePersistentReservation) (PersistentReservation, error) {
+    if input.ID == &quot;&quot; || input.TenantID == &quot;&quot; || input.RequestID == &quot;&quot; || input.Model == &quot;&quot; || input.ReservedUnits == 0 {
+        return PersistentReservation{}, domainError(CodeStateInvalid)
+    }
+    tx, err := r.db.BeginTx(ctx, nil)
+    if err != nil { return PersistentReservation{}, err }
+    defer tx.Rollback()
+    now := r.now().UTC()
+    if _, err := tx.ExecContext(ctx, insertCreatingSQL,
+        input.ID, input.TenantID, input.RequestID, input.Model,
+        input.ReservedUnits, now, now, now); err != nil {
+        return PersistentReservation{}, err
+    }
+    value, err := scanReservation(tx.QueryRowContext(ctx, reservationByRequestSQL, input.TenantID, input.RequestID))
+    if err != nil { return PersistentReservation{}, err }
+    if err := tx.Commit(); err != nil {
+        return PersistentReservation{}, err
+    }
+    return value, nil
+}
+</code></pre>
+<p>配套的 SQL（persistence.go:577）：</p>
+<pre><code class="language-sql">INSERT INTO quota_reservations
+    (reservation_id, tenant_id, request_id, model, state, version,
+     reserved_units, settled_units, released_units, usage_observed,
+     settlement_kind, heartbeat_at, created_at, updated_at)
+VALUES (?, ?, ?, ?, &#39;creating&#39;, 1, ?, 0, 0, FALSE, NULL, ?, ?, ?)
+ON DUPLICATE KEY UPDATE reservation_id = reservation_id
+</code></pre>
+<p>关键设计：</p>
+<h3 id="①-事务包裹begintx-defer-rollback">① 事务包裹（BeginTx + defer Rollback）</h3>
+<p><code>defer tx.Rollback()</code> 是 Go 惯用法：<strong>如果 Commit 已经成功，Rollback 会返回</strong><code>sql.ErrTxDone</code><strong>，被忽略；否则回滚</strong>。</p>
+<h3 id="②-insert-on-duplicate-key-update幂等">② <code>INSERT ... ON DUPLICATE KEY UPDATE</code>（幂等）</h3>
+<p>注释说得很清楚：<strong>&quot;Replaying the same tenant/request pair reads the original row rather than adding a second one&quot;</strong>。</p>
+<p>也就是说，如果同一 <code>tenant_id + request_id</code> 组合重复插入（比如客户端网络抖动后重试），MySQL 不会插入第二行，而是&quot;无操作更新&quot;（把 <code>reservation_id</code> 更新成自己），然后查询把原始行返回。</p>
+<p>⚠️ <strong>但注意</strong>：Coordinator 每次调用都用<strong>新随机</strong><code>reservationID</code> + <code>requestID</code>（见第二步），所以正常路径不会走 ON DUPLICATE 分支。这个幂等主要是防御性设计。</p>
+<h3 id="③-version-1">③ <code>version = 1</code></h3>
+<p><code>version</code> 是这个 Reservation 的<strong>乐观锁版本号</strong>。</p>
+<ul>
+<li>创建时 = 1</li>
+<li>每次 <code>UPDATE ... version = version + 1 WHERE version = ?</code> 前进 1</li>
+</ul>
+<p>后面 <code>MarkReserved</code> 会用 <code>expectedVersion=1</code> 做 CAS，只有匹配才更新，否则报 <code>CodeVersionConflict</code>。</p>
+<h3 id="④-查询用-for-update-吗">④ 查询用 <code>FOR UPDATE</code> 吗？</h3>
+<p>看 <code>reservationByRequestSQL</code>：<strong>没有</strong><code>FOR UPDATE</code>（persistence.go:583）。为什么？</p>
+<p>因为这是<strong>INSERT 后的立即读</strong>，同一事务内不会有并发写入这条记录（要么是我刚插的，要么是别人通过 ON DUPLICATE 命中的）。加了反而浪费锁开销。</p>
+<p>对比 <code>reservationByIDSQL</code>（persistence.go:584）：<strong>有</strong><code>FOR UPDATE</code>——用于 <code>MarkReserved</code> 里读后更新，必须锁。</p>
+<h3 id="⑤-时间戳用-rnowutc">⑤ 时间戳用 <code>r.now().UTC()</code></h3>
+<p><code>r.now</code> 是注入的（persistence.go:172-177）：</p>
+<pre><code class="language-go">func newSQLRepository(db sqlDatabase, now func() time.Time) *SQLRepository {
+    if now == nil { now = time.Now }
+    return &amp;SQLRepository{db: db, now: now}
+}
+</code></pre>
+<p><strong>为什么注入？</strong> 为了单元测试能固定时间。生产环境就是 <code>time.Now</code>。</p>
+<h3 id="create-完成后的数据状态">Create 完成后的数据状态</h3>
+<p>MySQL 表里多了一行：</p>
+<pre><code class="language-text">reservation_id: abc123...
+tenant_id:      tenant-a
+request_id:     req-xyz...
+model:          gpt-4
+state:          creating
+version:        1
+reserved_units: 1000
+settled_units:  0
+released_units: 0
+heartbeat_at:   2026-09-24 10:00:00 UTC
+</code></pre>
+<h2 id="第五步redis-reserve-lua-原子预扣">第五步：Redis <code>Reserve</code> —— Lua 原子预扣</h2>
+<p>阅读 internal/reservation/redis.go:42-59：</p>
+<pre><code class="language-go">func (s *RedisQuotaStore) Reserve(ctx context.Context, tenantID, reservationID string, version, units uint64) (QuotaOperationResult, error) {
+    if s == nil || s.evaluator == nil || tenantID == &quot;&quot; || reservationID == &quot;&quot; || version == 0 {
+        return QuotaOperationResult{}, domainError(CodeStateInvalid)
+    }
+    result, err := s.runKeys(ctx, reserveLua, []string{
+        balanceKey(tenantID),                                    // KEYS[1]
+        operationKey(tenantID, reservationID, version, &quot;reserve&quot;), // KEYS[2]
+        reserveMarkerKey(tenantID, reservationID),                // KEYS[3]
+    }, units)                                                    // ARGV[1]
+    if err != nil {
+        return QuotaOperationResult{}, err
+    }
+    if result.Code == &quot;quota_exhausted&quot; {
+        return result, domainError(&quot;quota_exhausted&quot;)
+    }
+    if result.Code != &quot;reserved&quot; {
+        return QuotaOperationResult{}, fmt.Errorf(&quot;unexpected redis reserve result %q&quot;, result.Code)
+    }
+    return result, nil
+}
+</code></pre>
+<p>三个 Redis key：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>Key 格式</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>KEYS[1] 余额</td>
+<td><code>agentmesh:quota:v1:balance:&lt;tenantID&gt;</code></td>
+<td>租户的可用额度余额</td>
+</tr>
+<tr>
+<td>KEYS[2] 操作结果</td>
+<td><code>agentmesh:quota:v1:operation:&lt;tenantID&gt;:&lt;resID&gt;:&lt;ver&gt;:reserve</code></td>
+<td>本次预扣操作的<strong>幂等结果</strong>（JSON）</td>
+</tr>
+<tr>
+<td>KEYS[3] 预留标记</td>
+<td><code>agentmesh:quota:v1:reservation:&lt;tenantID&gt;:&lt;resID&gt;:reserved</code></td>
+<td>简单标记：这个 reservation 已经扣过钱了</td>
+</tr>
+</tbody></table></div>
+<h3 id="lua-脚本解剖redisgo212-221">Lua 脚本解剖（redis.go:212-221）</h3>
+<pre><code class="language-lua">local prior = redis.call(&#39;GET&#39;, KEYS[2])
+if prior then return cjson.decode(prior) end
+
+local available = tonumber(redis.call(&#39;GET&#39;, KEYS[1]) or &#39;-1&#39;)
+local units = tonumber(ARGV[1])
+
+if not available or available &lt; units then
+    return {&#39;quota_exhausted&#39;, math.max(available or 0, 0), 0}
+end
+
+local remaining = redis.call(&#39;DECRBY&#39;, KEYS[1], units)
+local result = {&#39;reserved&#39;, remaining, 0}
+
+redis.call(&#39;SET&#39;, KEYS[2], cjson.encode(result))
+redis.call(&#39;SET&#39;, KEYS[3], &#39;1&#39;)
+
+return result
+</code></pre>
+<p>一步步看：</p>
+<ol>
+<li><strong>先查幂等结果</strong>：<code>GET KEYS[2]</code>。如果已经有结果（之前跑过一次），直接解码返回。</li>
+<li><strong>查余额</strong>：<code>GET KEYS[1]</code>。如果余额不存在（tenant 从未初始化），视为 -1。</li>
+<li><strong>判断余额是否足够</strong>：不够就返回 <code>quota_exhausted</code> + 当前可用余额 + 0 释放。<strong>注意：不写任何结果到 KEYS[2]</strong>——因为失败不是可重试的成功。</li>
+<li><strong>DECRBY</strong>：原子扣减余额。这一步同时&quot;读&quot;和&quot;写&quot;，Redis 保证原子。</li>
+<li><strong>写幂等结果</strong>：把 <code>{&#39;reserved&#39;, remaining, 0}</code> 编码成 JSON 存 KEYS[2]。</li>
+<li><strong>写预留标记</strong>：KEYS[3] = &#39;1&#39;。这是给 <code>ReserveApplied()</code> 用的&quot;已扣过钱&quot;标志。</li>
+<li><strong>返回结果</strong>。</li>
+</ol>
+<h3 id="为什么用-lua">为什么用 Lua？</h3>
+<p><strong>核心问题</strong>：两个并发请求 A 和 B 同时预扣 1000 单位。租户余额 = 1500。</p>
+<p>如果 Lua 不原子：</p>
+<pre><code class="language-text">A: GET balance → 1500   (够)
+B: GET balance → 1500   (够)  ← 还没扣！
+A: DECRBY 1000 → 500    (扣了)
+B: DECRBY 1000 → -500   (超扣！)
+</code></pre>
+<p>有了 Lua 脚本，Redis <strong>整个脚本作为原子命令</strong>执行，中间不会有其他命令插入。所以：</p>
+<pre><code class="language-text">A: 原子执行 {GET, 判断, DECRBY, SET} → 余额变 500，A 成功
+B: 原子执行 {GET, 判断, 失败} → 余额还是 500，B 收到 quota_exhausted
+</code></pre>
+<h3 id="为什么-keys2-存quot完整结果quot而不是只存-quot1quot">为什么 KEYS[2] 存&quot;完整结果&quot;而不是只存 &quot;1&quot;？</h3>
+<p>因为<strong>重试必须能拿到当时的结果</strong>。</p>
+<p>场景：客户端调 Reserve → Redis 扣成功 → 网络断了没收到响应 → 客户端重试同一次 Reserve（带相同 <code>version + operation=&quot;reserve&quot;</code>）。</p>
+<p>如果没有 KEYS[2] 缓存结果，重试会<strong>再扣一次</strong>！</p>
+<p>有了 KEYS[2]，第一次的响应被缓存下来，重试直接返回缓存的 <code>{&#39;reserved&#39;, remaining, 0}</code>，<strong>不再扣</strong>。</p>
+<h3 id="keys3-reservemarkerkey-干什么用">KEYS[3] <code>reserveMarkerKey</code> 干什么用？</h3>
+<p>给 Reconciler 用的。设想：</p>
+<ul>
+<li>MySQL <code>creating</code> 行在</li>
+<li>Redis 已经扣了（KEYS[3]=1）</li>
+<li>但 MySQL 没能推进到 <code>reserved</code>（进程崩了）</li>
+</ul>
+<p>Reconciler 发现 MySQL 里 <code>creating</code> 卡住 → 调 <code>ReserveApplied(ctx, tenantID, resID)</code> → 读 KEYS[3] → 得到 1 → 知道 Redis 已经扣过 → 走&quot;取消/结算&quot;分支而不是&quot;重新预留&quot;分支。</p>
+<pre><code class="language-text">在 AgentMesh 中，Reconciler 可以理解为“恢复未完成额度 Reservation 的后台修复器”。
+它处理的是这种情况：请求进程中途退出，或 MySQL 与 Redis 之间的一连串操作只完成了一部分，
+导致 Reservation 留在中间状态。Reconciler 根据 MySQL 中保存的状态和 Provider 调用证据，
+判断这笔额度应该结算还是释放，避免它永远悬挂
+对应实现是 [coordinator.go (line 279)]
+(C:/Users/17hwliao/Desktop/Go-Agent-Projects/01-AgentMesh/internal/reservation/coordinator.go:279) 中的 Reconciler。
+它没有自己的定时器；调用方决定何时运行 Reconcile(ctx, before, limit)
+它大致按这个过程工作：
+找出超时未完成的 Reservation
+→ 将其标记为 expired_pending
+→ 查看是否已有 Provider attempt / 已转发输出
+→ 有调用证据：保守地结算预留额度
+→ 没有调用证据：检查 Redis 是否真的预扣过
+    → 预扣过：释放额度
+    → 没预扣：只修正 MySQL 状态
+关键分支在 Reconcile()：
+- 如果发现 Provider attempt 已开始，或已有输出证据，按保守规则把预留额度作为已消耗额度结算，
+避免请求可能已经产生模型费用，却把额度退回。
+- 如果没有 Provider 调用证据，它会先用 ReserveApplied() 检查 Redis 是否已经预扣。
+只有确认预扣发生过，才调用 Cancel() 释放额度；然后把 MySQL 状态标记为 cancelled。
+ClaimExpired() 负责找候选项。
+它通过 MySQL 行锁避免多个并发扫描器同时把同一批 Reservation 领取处理，
+并把符合条件的记录推进到 expired_pending。这样即使修复中途出错，后续仍能再次处理。
+要注意一个容易混淆的地方：仓库里的 [`cmd/usage-reconcile/main.go`]
+(C:/Users/17hwliao/Desktop/Go-Agent-Projects/01-AgentMesh/cmd/usage-reconcile/main.go) 
+目前调用的是 ReconcileUsageLedger()，它把 usage_outbox 投影到 usage_records；
+它不是上面这个 Reconciler.Reconcile() 的启动入口。
+也就是说，同一项目里有两个不同的“reconcile”工作：
+名称	修复对象	作用
+Reconciler.Reconcile()	过期的 Reservation 与 Redis 预扣	恢复未完成的额度状态
+ReconcileUsageLedger()	u这里就是两张 MySQL 表：
+- usage_outbox：先存一份“这次对话最终用了多少额度”的待处理记录。
+- usage_records：最后保存正式用量记录，供查询和统计。
+请求结束时，程序先把 Reservation 的最终状态和待处理记录写进 MySQL。
+之后再把 usage_outbox 里的内容写入 usage_records，并标记已经处理。
+一句话记忆：
+Reconciler 是 Reservation 的“故障恢复判定器”：请求正常结束由 Gateway 结算；
+请求中途异常留下未完成记录时，它根据已持久化证据决定结算还是释放额度。
+它不是实时请求路径的一部分，也不代表任意不确定情况都能安全自动猜测；
+它依赖 attempt、已转发输出和 Redis 预扣标记这些持久化证据。
+</code></pre>
+<p><strong>KEYS[2] 是幂等</strong>（防止同一次调用重放）。<strong>KEYS[3] 是标记</strong>（供跨调用的对账用）。</p>
+<h2 id="第六步mysql-markreserved-条件推进状态">第六步：MySQL <code>MarkReserved</code> —— 条件推进状态</h2>
+<p>阅读 internal/reservation/persistence.go:204-227：</p>
+<pre><code class="language-go">func (r *SQLRepository) MarkReserved(ctx context.Context, tenantID, reservationID string, expectedVersion uint64) (PersistentReservation, error) {
+    tx, err := r.db.BeginTx(ctx, nil)
+    if err != nil { return PersistentReservation{}, err }
+    defer tx.Rollback()
+    now := r.now().UTC()
+
+    result, err := tx.ExecContext(ctx, markReservedSQL,
+        now, now, reservationID, tenantID, Creating, expectedVersion)
+    if err != nil { return PersistentReservation{}, err }
+
+    if err := exactlyOne(result); err != nil {   // 必须恰好改到 1 行
+        return PersistentReservation{}, err
+    }
+
+    value, err := scanReservation(tx.QueryRowContext(ctx, reservationByIDSQL, reservationID, tenantID))
+    if err != nil { return PersistentReservation{}, err }
+
+    if err := tx.Commit(); err != nil {
+        return PersistentReservation{}, err
+    }
+    return value, nil
+}
+</code></pre>
+<p>SQL（persistence.go:586）：</p>
+<pre><code class="language-sql">UPDATE quota_reservations
+SET state = &#39;reserved&#39;,
+    version = version + 1,
+    heartbeat_at = ?,
+    updated_at = ?
+WHERE reservation_id = ?
+  AND tenant_id = ?
+  AND state = ?           -- &#39;creating&#39;
+  AND version = ?         -- expectedVersion
+</code></pre>
+<p>四个 WHERE 条件，<strong>每一个都在保护不同的东西</strong>：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>条件</th>
+<th>保护目的</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>reservation_id = ?</code></td>
+<td>只改这一条</td>
+</tr>
+<tr>
+<td><code>tenant_id = ?</code></td>
+<td>租户隔离——A 租户的代码绝不能改 B 租户的行</td>
+</tr>
+<tr>
+<td><code>state = &#39;creating&#39;</code></td>
+<td>只允许从 creating → reserved，不能从 settled → reserved</td>
+</tr>
+<tr>
+<td><code>version = ?</code></td>
+<td><strong>乐观锁 CAS</strong>——如果其他进程已经改过，我这里 version 已经过期，更新 0 行</td>
+</tr>
+</tbody></table></div>
+<h3 id="exactlyone-的作用persistencego506"><code>exactlyOne</code> 的作用（persistence.go:506）</h3>
+<pre><code class="language-go">func exactlyOne(result sqlResult) error {
+    count, err := result.RowsAffected()
+    if err != nil { return err }
+    if count != 1 {
+        return domainError(CodeVersionConflict)
+    }
+    return nil
+}
+</code></pre>
+<ul>
+<li><strong>改到 1 行</strong> → 成功，CAS 匹配，说明没被别人抢先。</li>
+<li><strong>改到 0 行</strong> → 返回 <code>CodeVersionConflict</code>。可能是：状态不对、版本不对、租户不对、记录不存在。</li>
+<li><strong>改到 &gt;1 行</strong> → 也返回版本冲突（防御性，正常情况下唯一约束保证不会）。</li>
+</ul>
+<h3 id="openmysqlrepository-的-clientfoundrowspersistencego147-170"><code>OpenMySQLRepository</code> 的 <code>ClientFoundRows</code>（persistence.go:147-170）</h3>
+<pre><code class="language-go">func mysqlDSNWithFoundRows(dsn string) (string, error) {
+    config, err := mysql.ParseDSN(dsn)
+    if err != nil { return &quot;&quot;, err }
+    config.ClientFoundRows = true   // ← 关键
+    return config.FormatDSN(), nil
+}
+</code></pre>
+<p>MySQL 默认 <code>RowsAffected()</code> 只在<strong>值真的变了</strong>时返回 1。加了 <code>ClientFoundRows=true</code> 之后，<strong>匹配到但值没变也算 1</strong>。</p>
+<p>为什么需要？看 <code>RecordProgress</code> 的 SQL：</p>
+<pre><code class="language-sql">UPDATE provider_attempts SET
+    forwarded_runes = GREATEST(forwarded_runes, ?),
+    heartbeat_at    = GREATEST(heartbeat_at, ?)
+WHERE ...
+</code></pre>
+<p>用 <code>GREATEST</code> 保证单调递增。如果<strong>重放</strong>一个旧值，SQL 匹配到 1 行但<strong>值没变</strong>。默认行为下 <code>RowsAffected = 0</code>，会被 <code>exactlyOne</code> 误判为版本冲突。加了 <code>ClientFoundRows</code> 就能正确报 1。</p>
+<p>（注：这个开关对 <code>MarkReserved</code> 无影响，因为它必然改 <code>version</code> 和 <code>state</code>——但整个连接都开了这个开关。）</p>
+<h3 id="事务里的-for-update-读">事务里的 <code>FOR UPDATE</code> 读</h3>
+<p><code>reservationByIDSQL</code> 里有 <code>FOR UPDATE</code>（persistence.go:584）：</p>
+<pre><code class="language-sql">SELECT ... FROM quota_reservations
+WHERE reservation_id = ? AND tenant_id = ? FOR UPDATE
+</code></pre>
+<p>原因：<strong>UPDATE 和 SELECT 之间</strong>必须有锁，防止另一事务把 state 又改了。</p>
+<p>流程：</p>
+<ol>
+<li>UPDATE <code>WHERE version=1</code> → version 变 2，state 变 reserved</li>
+<li>SELECT <code>FOR UPDATE</code> 锁住这行 → 读到最新值</li>
+<li>Commit → 释放锁</li>
+</ol>
+<p>如果不加 <code>FOR UPDATE</code>，步骤 2 可能读到<strong>其他事务改了但还没提交</strong>的脏数据（取决于隔离级别），或者读到<strong>旧值</strong>（因为 UPDATE 之后又有人改了）。</p>
+<h2 id="三个测试用例验证的三条规则">三个测试用例验证的三条规则</h2>
+<p>阅读 internal/reservation/redis_test.go：</p>
+<h3 id="测试-1testredisquotastorereserveisoperationidempotent">测试 1：<code>TestRedisQuotaStoreReserveIsOperationIdempotent</code></h3>
+<p><strong>输入</strong>：同一个 tenant + reservationID + version + units，连续调 <code>Reserve</code> 两次。</p>
+<p><strong>观察</strong>：</p>
+<ul>
+<li>第一次：Redis <code>balance</code> 减 1000，<code>operation:...:reserve</code> 存在。</li>
+<li>第二次：Redis <code>balance</code> <strong>不再减</strong>，返回的 <code>Available</code> 与第一次相同。</li>
+</ul>
+<p><strong>保护的规则</strong>：<em>同一 version 的 Reserve 是幂等的</em>。</p>
+<p>如果这条规则破了，客户端一次网络抖动重试就会扣两次钱——这是<strong>最严重的生产事故</strong>。</p>
+<h3 id="测试-2testpredeductorleavescreatingwhenredisreservefails">测试 2：<code>TestPreDeductorLeavesCreatingWhenRedisReserveFails</code></h3>
+<p><strong>输入</strong>：mock 一个 Redis 失败（比如 quota_exhausted），MySQL 一切正常。</p>
+<p><strong>观察</strong>：</p>
+<ul>
+<li><code>records.Create</code> 被调用 1 次，返回 <code>creating</code> 行。</li>
+<li><code>quota.Reserve</code> 被调用 1 次，返回错误。</li>
+<li><code>records.MarkReserved</code> <strong>从未被调用</strong>。</li>
+<li><code>PreDeductor.Begin</code> 返回的 <code>PersistentReservation</code> 是 <code>creating</code> 那行，且带 error。</li>
+</ul>
+<p><strong>保护的规则</strong>：<em>Redis 失败绝不推进 MySQL 状态</em>。</p>
+<p>如果这条规则破了，会出现&quot;MySQL 说已预留，Redis 余额没扣&quot;——账本不一致，长期累积就是白送额度。</p>
+<hr>
+<h2 id="小表三个调用的语义">📊 小表：三个调用的语义</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>调用</th>
+<th>存储</th>
+<th>幂等性</th>
+<th>成功后状态</th>
+<th>失败结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>records.Create</code></td>
+<td>MySQL</td>
+<td>INSERT ... ON DUPLICATE KEY</td>
+<td><code>state=&#39;creating&#39;</code><br>, <code>version=1</code></td>
+<td>不继续，PreDeductor 直接 return error</td>
+</tr>
+<tr>
+<td><code>quota.Reserve</code></td>
+<td>Redis Lua</td>
+<td>同 version 幂等（KEYS[2] 缓存）</td>
+<td>余额 DECRBY units，KEYS[2] 存结果，KEYS[3] 打标记</td>
+<td>MySQL 保持 <code>creating</code><br>，Redis 未知</td>
+</tr>
+<tr>
+<td><code>records.MarkReserved</code></td>
+<td>MySQL 事务</td>
+<td>CAS (state + version)</td>
+<td><code>state=&#39;reserved&#39;</code><br>, <code>version=2</code></td>
+<td>返回 <code>CodeVersionConflict</code><br>或依赖错误，MySQL 保持 <code>creating</code></td>
+</tr>
+</tbody></table></div>
+<h2 id="四个必答问题用自己的话">四个必答问题（用自己的话）</h2>
+<h3 id="q1-为什么先写-creating再去-redis-预扣">Q1. 为什么先写 <code>creating</code>，再去 Redis 预扣？</h3>
+<p>如果反过来（先 Redis 扣钱，再 MySQL 写记录）：</p>
+<ul>
+<li>Redis 扣成功后 MySQL 挂 → <strong>钱扣了但 MySQL 无凭据</strong> → 客户端重试会<strong>再次扣钱</strong>，因为 Redis 那层没记录这次尝试。</li>
+<li>Reconciler 无法从 MySQL 侧发现这个&quot;扣了但没记账&quot;的状态（因为 MySQL 根本没这行）。</li>
+</ul>
+<p>先写 <code>creating</code> 的好处：</p>
+<ul>
+<li><strong>MySQL 是第一手账本</strong>，任何异常都从 MySQL 出发能被发现。</li>
+<li>Redis 挂了 → MySQL 有 <code>creating</code>，重试会走 ON DUPLICATE 拿到同一个 reservationID，用相同 version 再次调 Reserve，幂等保护下不会重复扣。</li>
+<li>Redis 扣成功但 MySQL 推进失败 → MySQL 有 <code>creating</code> 行，<code>ReserveApplied()</code> 能查到 KEYS[3] 标记 → Reconciler 能恢复。</li>
+</ul>
+<p><strong>一句话</strong>：先落持久化凭据，再动账本，让&quot;账本动而未记&quot;永远可发现。</p>
+<h3 id="q2-redis-lua-在并发预扣时保护了什么">Q2. Redis Lua 在并发预扣时保护了什么？</h3>
+<p><strong>Lua 让&quot;读余额 + 判断 + 扣减 + 写结果&quot;变成一条原子命令</strong>。</p>
+<p>如果不用 Lua（用 GET 判断再 DECRBY 两个命令）：</p>
+<pre><code class="language-text">时刻 T1：余额 = 1500，A、B 两个请求同时进来
+A: GET balance → 1500
+B: GET balance → 1500       ← 此时还没扣
+A: DECRBY 1000 → 500
+B: DECRBY 1000 → -500       ← 超扣！
+</code></pre>
+<p>用 Lua：</p>
+<pre><code class="language-text">A: 原子执行完整脚本 → 余额 1500 → 500，A 成功
+B: 原子执行完整脚本 → 余额 500 → 500&lt;1000，B 收到 quota_exhausted
+</code></pre>
+<p><strong>Lua 保护的</strong>：</p>
+<ul>
+<li><strong>一致性</strong>：余额不会超扣。</li>
+<li><strong>原子性</strong>：结果缓存和余额变更不会分离。</li>
+<li><strong>幂等</strong>：KEYS[2] 先查再扣，重放安全。</li>
+</ul>
+<h3 id="q3-redis-成功mysql-更新失败时为什么不能假装整笔回滚了">Q3. Redis 成功、MySQL 更新失败时，为什么不能假装整笔回滚了？</h3>
+<p>因为 <strong>&quot;回滚&quot;意味着把 Redis 的扣减也撤销</strong>。但 Redis 已经是独立存储，<strong>没有跨存储事务</strong>。</p>
+<p>想象一个&quot;回滚函数&quot; <code>Rollback()</code>：</p>
+<ul>
+<li>Redis <code>INCRBY balance units</code>（把钱还回去）</li>
+<li>MySQL 状态回退到不存在</li>
+</ul>
+<p>如果 Rollback 本身也失败（比如 Redis 挂了），你怎么办？继续回滚？那 MySQL 里就永远没有这条记录了，钱到底扣没扣？</p>
+<p><strong>更好的策略</strong>：<strong>不假装回滚，留下</strong><code>creating</code><strong>中间态</strong>。</p>
+<ul>
+<li>MySQL 里那条 <code>creating</code> 行是<strong>唯一的记账锚点</strong>。</li>
+<li>Reconciler 定期扫描 <code>heartbeat_at &lt; now - TTL</code> 的 creating 行。</li>
+<li>用 <code>ReserveApplied()</code> 查 Redis KEYS[3]：</li>
+</ul>
+<p><strong>这就是&quot;至少一次 + 幂等 + 对账&quot;模式的精髓</strong>：不追求完美原子性，而是保证<strong>任何中间态都可发现、可恢复、可幂等重入</strong>。</p>
+<h3 id="q4-coordinatorbegin-返回的-coordinatorsession-后面由谁使用">Q4. <code>Coordinator.Begin()</code> 返回的 <code>coordinatorSession</code> 后面由谁使用？</h3>
+<p><strong>由 Router 层使用</strong>（<code>internal/router</code> 包）。</p>
+<p>具体调用点：</p>
+<ul>
+<li><code>BeforeAttempt(ctx, providerName, request)</code>：Router 每次调 Provider 之前调用，用来在 MySQL 里写 <code>provider_attempts</code> 表（记录&quot;这次要调哪个 provider&quot;），并检查是否超扣。</li>
+<li><code>BeforeEmit</code> <strong>/</strong> <code>AfterEmit</code>：Router 每发一个 chunk 前后调用，累计 rune 计数，定期 flush 到 MySQL。</li>
+<li><code>FinishAttempt(ctx, providerName, outcome)</code>：Router 完成一次 Provider 调用后调用，把结果码写入 <code>provider_attempts</code>。</li>
+<li><code>Complete(ctx, code, cancelled)</code>：<strong>由 Gateway 调用</strong>（<code>handleChat</code> 里的三路收口），最终结算或取消。</li>
+</ul>
+<p>流程：</p>
+<pre><code class="language-text">Gateway.handleChat
+  → reservations.Begin() → 拿到 session    [本节覆盖到此]
+  → streamer.StreamWithAttemptHook(ctx, chat, emit, session)
+      → Router 内部：
+          → session.BeforeAttempt(...)
+          → provider.Call(...)
+          → 每个 chunk: session.BeforeEmit() + emit + session.AfterEmit()
+          → session.FinishAttempt(...)
+  → session.Complete(ctx, code, cancelled) [任务 7+ 覆盖]
+</code></pre>
+<p>所以 <code>coordinatorSession</code> 是<strong>跨层的证据收集器</strong>：Gateway 只负责起头和收尾，中间的 Provider 调用细节全靠 session 记录，最终 <code>Complete()</code> 一次性把账算清</p>
+<p>不看资料，能复述：</p>
+<ul>
+<li><p><strong>两个 ID</strong>：reservationID 和 requestID 都是 32 字符 hex，用 crypto/rand 生成，两个 ID 用于不同维度追踪</p>
+</li>
+<li><p><strong>三步顺序</strong>：MySQL creating → Redis Lua 预扣 → MySQL reserved，顺序不可反</p>
+</li>
+<li><p><strong>每个 SQL UPDATE 都有 4 个 WHERE</strong>：reservation_id + tenant_id + state + version，构成 CAS ( Compare And Swap )</p>
+</li>
+<li><p><strong>Redis 三 key</strong>：</p>
+</li>
+<li><p>balance（余额）</p>
+</li>
+<li><p>operation（幂等结果缓存）</p>
+</li>
+<li><p>eserveMarker（Reconciler 用的已扣标记）</p>
+</li>
+<li><p><strong>Lua 保护的三件事</strong>：原子性、并发一致性、重放幂等</p>
+</li>
+<li><p><code>ClientFoundRows=true</code>：让 <code>GREATEST</code> 语义的更新在值不变时也返回 1 行</p>
+</li>
+<li><p><strong>两种中间失败态</strong>：</p>
+</li>
+<li><p><strong>coordinatorSession 交给 Router</strong>：BeforeAttempt/AfterEmit/FinishAttempt 由 Router 调，Complete 由 Gateway 调</p>
+</li>
+</ul>
+<hr>
+<p>上一篇：<a href="../../blog/agentmesh-handle-chat/index.html">AgentMesh：handleChat 请求处理与响应收口</a></p>
+<p>下一篇：<a href="../../blog/agentmesh-provider-stream-cancellation/index.html">AgentMesh：Provider 调用、Attempt Hook 与取消传播</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

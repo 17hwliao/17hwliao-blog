@@ -1,0 +1,15 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Windows 卸载 MySQL 与清理服务 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Windows 卸载 MySQL 与清理服务</h1><time datetime="2026-03-18T13:55:15.000Z">2026年3月18日</time><p>控制面板删 ;</p>
+<p>删 Program Files / x 86 中 Mysql 文件 ;</p>
+<p>regedit 登记表中 查看 :</p>
+<p>(1) HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\Eventlog\Application\MySQL</p>
+<p>(2) HKEY_LOCAL_MACHINE\SYSTEM\ControlSet002\Services\Eventlog\Application\MySQL</p>
+<p>(3) HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Eventlog\Application\MySQL （如果没有，就不用管）</p>
+<p>C:\ProgramData\MySQL的所有文件</p>
+<p>C:\Documents and Settings\All Users\Application Data\MySQL 有删无不管;</p>
+<p>services.msc 检查服务中有无Mysql ;</p>
+<p>Get-Service -Name &quot;*mysql*&quot; //获取到当前服务中的mysql程序 ;</p>
+<p>C:\Windows\System32\sc.exe delete 运行中的mysql名称</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

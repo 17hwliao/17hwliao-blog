@@ -1,0 +1,32 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GORM：命名约定与连接池 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>GORM：命名约定与连接池</h1><time datetime="2026-07-28T13:07:42.000Z">2026年7月28日</time><p>gorm: 内部实现的 命名策略 :</p>
+<p>转化的规则实现是在内部实现gorm结构体映射的时候自动实现的</p>
+<p>1 : 驼峰转蛇形 : UserProfile --&gt; user_profile</p>
+<p>2 : 自动复数化 : User --&gt; users , Article --&gt; articles ;</p>
+<p>dsn 字段设计 :</p>
+<p>Host (localhost) , User(postgres) , Password(), Name(liuxi) , Port(5432) , SSLMode : disable</p>
+<pre><code class="language-text">db, err := gorm.Open(postgres.Open(dsn), &amp;gorm.Config{
+		Logger: logger.Default.LogMode(logger.Warn),
+	})
+	if err != nil {
+		return nil, nil, fmt.Errorf(&quot;connect to database: %w&quot;, err)
+	}
+</code></pre>
+<pre><code class="language-text">sqlDB, err := db.DB()
+- *gorm.DB 持有 *sql.DB，通过 DB() 方法暴露
+- 后续操作连接池用 *sql.DB
+连接池的配置
+sqlDB.SetMaxIdleConns(5) //空闲最大连接数
+sqlDB.SetMaxOpenConns(20) //最多并发连接,防止DB过载
+sqlDB.SetConnMaxLifetime(time.Hour)  //最长实现1小时之后强制收回, 防止被DB踹下线
+//设置超市测试连接, 失败时关闭连接池 , 在连接失败之后会启动失败 , 最多坚持5秒
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+defer cancel()
+if err := sqlDB.PingContext(ctx); err != nil {
+    _ = sqlDB.Close()
+    return nil, nil, fmt.Errorf(&quot;ping postgres: %w&quot;, err)
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

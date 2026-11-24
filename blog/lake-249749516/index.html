@@ -1,0 +1,75 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 实践：封装、继承与 super · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 实践：封装、继承与 super</h1><time datetime="2025-12-21T09:01:44.000Z">2025年12月21日</time><pre><code class="language-text">package com_java;
+
+import java.util.* ;
+
+public class Java01 {
+    public static void main(String[] args) {
+        Person p = Person.new_i();
+        Student s = new Student();
+        s.setName(&quot;xiao&quot;);
+        s.study();
+        Student student = new Student();
+        Student student2 = new Student();
+        test(student2) ;
+
+    }
+
+}
+</code></pre>
+<pre><code class="language-text">package com_java;
+
+public class Person {
+     String name ;
+     int age;
+
+    public Person(String ahs, int i) {
+        name = ahs;
+        age = i;
+    }
+
+    public Person() {
+        String name ;
+        int age ;
+    }
+
+    public void setName( String name ) {
+        //封装name
+        this. name = name ;
+    }
+    public void setAge(int age) {
+        //封装age
+        this.age = age;
+    }
+    public int getAge() {
+        return age;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public static Person new_i(){
+        //实现封装创建
+        return new Person() ;
+    }
+}
+</code></pre>
+<pre><code class="language-text">package com_java;
+
+public class Student extends Person {
+
+    String name;
+
+    public Student(){
+        super(&quot;ahs&quot; , 11) ;
+    }
+
+    public void study(){
+        System.out.println(super.name + age);
+    }
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

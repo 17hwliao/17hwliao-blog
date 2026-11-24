@@ -1,0 +1,113 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>用 Java 实现顺序表、链表、栈和队列 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>用 Java 实现顺序表、链表、栈和队列</h1><time datetime="2026-01-12T10:17:57.000Z">2026年1月12日</time><p>Java实现数组顺序表:</p>
+<pre><code class="language-text">ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();   //内部实现的链表
+list.add(0 , &quot;A&quot;);          //add( 插入位置 , 数据 )
+list.addFirst(&quot;B&quot;);
+list.addLast(&quot;C&quot;);
+list.contains( Object ) //Boolean型,判断是否包含元素
+toArray() 转化为Object型数组
+System.out.println(list);    //打印出来带[ ]
+</code></pre>
+<pre><code class="language-text">package Today.Study.Study;
+
+import java.util.ArrayList;
+
+public class SequentialList&lt;T&gt; {
+    private int size = 0 ;   //顺序表大小
+
+    private int len = 100 ;         //限制大小
+
+    private Object[] array = new Object[len] ;  
+    //增添元素
+    public void add(T element , int pos){
+        if(pos &lt; 0 || pos &gt; len)
+            throw new IndexOutOfBoundsException(&quot;超出数组范围&quot; + size);   //抛出异常
+        //超出容量限制时设置扩容操作
+        if(size &gt;= len){
+            int Len = len + (len &gt;&gt; 1 ) ;    //扩容1.5 倍
+            Object[] newArray = new Object[Len] ;
+            System.arraycopy(array, 0, newArray, 0, len);
+            array = newArray ;      //JVM的回收机制 , 无需担心
+            len = Len ;
+        }
+        for( int i = size ; i &gt; pos ; i--)
+                array[i] = array[i-1] ;
+            array[pos] = element ;
+            size++ ;
+    }
+    @SuppressWarnings(&quot;unchecked&quot;)     //抑制编译器产生的未检查警告 , 已知有安全问题选择忽视
+    //删除元素 , 返回被删除元素
+    public T remove(int pos){
+        if(pos &lt; 0 || pos &gt; len)
+            throw new IndexOutOfBoundsException(&quot;ws是gay&quot;) ;
+        T result = (T)array[pos] ;
+        for(int i = pos ; i &lt; size ; i++ )
+            array[i] = array[i+1] ;
+        size -- ;
+        return result ;
+    }
+    方法重写 ( Object中的该函数 )
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        for(int i = 0 ; i &lt; size ; i++) builder.append(array[i]).append(&quot; &quot;);
+        return builder.toString();
+    }
+}
+</code></pre>
+<p>Java实现链表 :</p>
+<pre><code class="language-text">List&lt;String&gt; list2 = new LinkedList&lt;&gt;() ;
+list2.add(2 , &quot;A&quot;);  //实现的尾插
+list2.remove(&quot;B&quot;);
+</code></pre>
+<p>add尾插的内部实现 :</p>
+<p>void Linklast( T t ){</p>
+<p>final Node&lt;T&gt; l = last ;</p>
+<p>final Node&lt;T&gt; newcode = new Node&lt;&gt;(前指 , 赋值 , 后指( null ))</p>
+<p>last = newcode ;</p>
+<p>判断是否为空 l = null 头指针指向 first = newcode ; //节点为空时让节点为first 不为空直接 l.next = newcode ;</p>
+<p>}</p>
+<pre><code class="language-text">package Today.Study.Study;
+
+import java.util.ArrayList;
+public class LinkList&lt;T&gt; {
+    private Node&lt;T&gt; head = new Node&lt;T&gt;(null) ;
+
+    private int size = 0 ;
+
+    public void add(T element , int pos){
+        if(pos &lt; 0 || pos &gt; size)
+            throw new IndexOutOfBoundsException(&quot;ws+gay&quot;) ;
+        Node&lt;T&gt; prev = head ;
+        for(int i = 0 ; i &lt; pos ; i ++ )
+            prev = prev.next ;
+        Node&lt;T&gt; node = new Node&lt;&gt;(element) ;
+        node.next = prev.next ;
+        prev.next = node ;
+    }
+    public T remove(int pos){
+        if(pos &lt; 0 || pos &gt; size)
+            throw new IndexOutOfBoundsException(&quot;ws&quot;) ;
+        Node&lt;T&gt; prev = head ;
+        for(int i = 0 ; i &lt; pos ; i ++ )
+            prev = prev.next ;
+        T t = prev.next.element;
+        prev.next = prev.next.next;  //JVM自动回收机制魅力时刻
+        return t ; 
+    }
+
+    private static class Node&lt;T&gt; {      //节点类
+       T element ;                      //节点储存元素
+       Node&lt;T&gt; next;                    //下一个节点的索引
+       Node(T element) {
+           this.element = element;
+       }
+   }
+}
+</code></pre>
+<p>Java实现栈 : 使用单链表实现 , push , pop , isEmpty操作方法都需要自己实现</p>
+<p>Java实现队列 : 使用单链表实现 , push,pop,front ,back 方法需要手动实现</p>
+<p>其他数据结构后期补</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

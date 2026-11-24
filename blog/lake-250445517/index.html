@@ -1,0 +1,90 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 实践：字符串与模式匹配 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 实践：字符串与模式匹配</h1><time datetime="2025-12-25T13:58:23.000Z">2025年12月25日</time><pre><code class="language-text">package Next_day;
+
+public class Main {
+    public static void main(String[]args){
+        String str = &quot;杰哥&quot; + &quot;你干嘛&quot;  ;
+        String str2 = &quot;汉堡&quot; ;
+        String str3 = &quot;坐的&quot; ;
+        String str4 = &quot;行不行&quot; ;
+        String str5 = &quot;   &quot; ;
+
+        System.out.println(str.strip());
+        System.out.println(str2.stripLeading());   //去除前列的空格
+        System.out.println(str3.stripTrailing());  //去除后列的空格
+        System.out.println(str + str2 + str3 + str4);
+
+
+        StringBuilder builder = new StringBuilder() ;
+        builder.append(&quot;AAA&quot;) ;
+        builder.insert(1 , &quot;BBB&quot;) ;
+        builder.delete(2 , 3 ) ;
+        System.out.println(builder.toString());
+
+        String fen = &quot;&quot;&quot;
+                shiqihaowuliao@qq.com, 
+                17hwliao.io
+                相
+                &quot;&quot;&quot; ;
+
+        String str10 = &quot;shiiqhaowuliao@qq.com&quot; ;
+
+        System.out.println(str10.matches(&quot;[A-Za-z0-9]*@[A-zA-z0-9]{1,5}\\.com&quot;));
+
+        System.out.println(test(str10 ,str,89)) ;
+        System.out.println(fen);
+        System.out.println(new Ppint(1 , 2 ));
+        System.out.println(new continuer(1));
+
+
+    }
+
+    public static String test(Object obj , String str , Integer score) {
+        String t = switch (obj) {
+            case String _ -&gt; &quot;String&quot;;
+            case Integer _ -&gt; &quot;Integer&quot;;
+            case Ppint(int x ,int _) -&gt; &quot;坐标是&quot; + x + &quot; , &quot; + &quot;  &quot; ;
+            case continuer(String s ) -&gt; &quot;continue&quot;+ &quot;String&quot; ;
+            case null -&gt; &quot;NULL&quot;;
+            default -&gt; &quot;Other&quot;;
+        };
+        System.out.println(t);
+
+        String type = switch (str) {
+            case String s when s.isEmpty() -&gt; &quot;Empty&quot;;
+            case String s when s.isBlank() -&gt; &quot;Blank&quot;;
+            case String s when s.length() &gt; 2 -&gt; &quot;haohaiyou&quot;;
+            default -&gt; &quot;Other&quot;;
+        };
+
+        if (obj instanceof String) {
+            System.out.println(&quot;String&quot;);
+        } else if (obj instanceof Integer) {
+            System.out.println(&quot;Integer&quot;);
+        } else {
+            System.out.println(&quot;Other&quot;);
+        }
+
+
+        return switch (score) {
+            case Integer c when c &gt;= 90 -&gt; &quot;优秀&quot;;
+            case Integer c when c &gt;= 80 -&gt; &quot;良好&quot;;
+            case Integer c when c &gt;= 70 -&gt; &quot;及格&quot;;
+            default -&gt; &quot;滚蛋&quot;;
+        } ;
+    }
+}
+</code></pre>
+<pre><code class="language-text">package Next_day;
+
+public record Ppint(int x , int y ) {
+}
+</code></pre>
+<pre><code class="language-text">package Next_day;
+
+public record continuer(Object data) {
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

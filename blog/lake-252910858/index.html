@@ -1,0 +1,92 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java List：排序与双向迭代 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java List：排序与双向迭代</h1><time datetime="2026-01-13T04:05:15.000Z">2026年1月13日</time><pre><code class="language-text">package Today;
+
+import java.util.*;
+import java.util.function.UnaryOperator;
+
+public class Main {
+    public static void main(String[] args) {
+       List&lt;String&gt; list1 = new ArrayList&lt;&gt;(Arrays.asList(&quot;ws0&quot; ,&quot;==0&quot;,&quot;gay0&quot;)) ;
+       List&lt;String&gt; list2 = new LinkedList&lt;&gt;(Arrays.asList(&quot;ws1&quot;, &quot;==1&quot;,&quot;gay1&quot;) ) ;
+       list1.addAll(1 , list2) ;
+       String[] string =  list1.toArray(new String[0]);    // //将 list1 转化为类型数组
+       String[] strings = list1.toArray(String[]::new);    //方法引用和上面一个样
+        list1.sort(new Comparator&lt;String&gt;() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        }) ;
+        list1.sort((o1 , o2) -&gt; o2.compareTo(o1));  //通过交换o1 , o2 实现改变排序思路
+        list1.removeIf(str -&gt; str.contains(&quot;a&quot;)) ; //contains() 就是用来 检查一个集合里是否包含某个元素。
+        //Java的 Lambda表达式 会自动推导类型, str就相当于传入的参数
+        list1.replaceAll(new UnaryOperator&lt;String&gt;() {     //实现对每个元素进行操作
+            @Override
+            public String apply(String s) {
+                return &quot;&quot; ;
+            }
+        });
+        list1.replaceAll(str -&gt; str+&quot;:&quot;);
+        System.out.println(Arrays.toString(strings));
+        System.out.println(list1);
+        System.out.println(list1.contains(&quot;gay&quot;));
+        System.out.println(list1.indexOf(&quot;gay&quot;));  //查找元素出现首次下标 , 未出现输出-1 ;
+    }
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+import javax.swing.*;
+import java.util.*;
+
+public class Main{
+
+    public static void main(String[] args) {
+        List &lt;String&gt;list = Arrays.asList(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;,&quot;F&quot;,&quot;G&quot;,&quot;H&quot;,&quot;I&quot;);
+        for (String s : list) {
+            System.out.println(s);
+        }
+        Iterator&lt;String&gt; iterator = list.iterator();   //获取到迭代器
+        while(iterator.hasNext()){
+            String next = iterator.next();
+            System.out.println(next);
+            iterator.remove();
+        }
+        list.forEach(System.out::println);
+        ListIterator&lt;String&gt; iterator1 = list.listIterator();
+        while(iterator1.hasNext()){         //正着来
+            int i = iterator1.nextIndex() ;
+            String next = iterator1.next() ;
+        }
+        while(iterator1.hasPrevious()){     //反着来
+            int i = iterator1.previousIndex() ;
+            String next = iterator1.previous() ;
+            System.out.println(next);
+
+        }
+
+    }
+
+    static class Test implements Iterable&lt;String&gt;{
+        @Override
+        public Iterator&lt;String&gt; iterator() {
+            return new Iterator&lt;String&gt;(){   //生成匿名的Iterator对象
+                @Override
+                public boolean hasNext() {
+                    return true ;
+                }
+
+                @Override
+                public String next(){
+                    return &quot;gay&quot; ;
+                }
+
+            } ;
+        }
+    }
+
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

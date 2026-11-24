@@ -1,0 +1,53 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin：表单参数与文件上传 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin：表单参数与文件上传</h1><time datetime="2026-05-30T01:41:25.000Z">2026年5月30日</time><h2 id="表单参数">表单参数</h2>
+<p>一般就是专指form表单</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">name := c.PostForm(&quot;name&quot;)
+age, ok := c.GetPostForm(&quot;age&quot;)
+fmt.Println(name)
+fmt.Println(age, ok)
+</code></pre>
+<h3 id="文件上传">文件上传</h3>
+<p>fileHeader.Open( ) : 打开上传的文件，返回一个可读的文件流 ;</p>
+<p>Go复制代 码</p>
+<pre><code class="language-text">r.POST(&quot;users&quot;, func(c *gin.Context) {
+  fileHeader, err := c.FormFile(&quot;file&quot;)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(fileHeader.Filename) // 文件名
+  fmt.Println(fileHeader.Size)     // 文件大小，单位是字节
+
+  file, _ := fileHeader.Open()   //实现读取文件
+  byteData, _ := io.ReadAll(file)
+
+  err = os.WriteFile(&quot;xxx.jpg&quot;, byteData, 0666)  //末尾数字参数为读写权限
+  //只针对linux系统使用有效果, windows的权限系统不是使用数字,是列表
+  //windows由系统的默认/继承规则决定。通常是你有完全控制权，其他账户只读。
+  fmt.Println(err)
+})
+</code></pre>
+<p>还有一种简单方式</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">err = c.SaveUploadedFile(fileHeader, &quot;uploads/xxx/yyy/&quot;+fileHeader.Filename)
+fmt.Println(err)
+</code></pre>
+<p>多文件上传</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">r.POST(&quot;users&quot;, func(c *gin.Context) {
+    form, err := c.MultipartForm()
+    if err != nil {
+      fmt.Println(err)
+      return
+    }
+    for key, headers := range form.File {   // key 前端返回的后端key字段
+      for  i, header := range headers {   // i 获取文件索引 (int)
+        c.SaveUploadedFile(header, &quot;uploads/&quot;+header.Filename)
+      }
+    }
+  })
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

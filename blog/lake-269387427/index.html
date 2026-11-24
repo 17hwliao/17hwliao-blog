@@ -1,0 +1,242 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Go 结构体：组合、指针与标签 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Go 结构体：组合、指针与标签</h1><time datetime="2026-05-12T00:14:55.000Z">2026年5月12日</time><p>注意 在 go中 结构体 都不是引用 传递</p>
+<h2 id="结构体定义">结构体定义</h2>
+<p>创建结构体 使用的 函数</p>
+<p>func ( s Student) 函数名 {</p>
+<p>内部使用 s.属性名 实现调用 内部的参数 ;</p>
+<p>}</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">texts := []struct {
+    content string
+    target  string
+}{
+    {&quot;hello, how are you?&quot;, &quot;中文&quot;},
+    {&quot;Eino 是一个强大的 Ai 开发框架&quot;, &quot;English&quot;},
+}
+// 按索引访问
+fmt.Println(texts[0].content)  // hello, how are you?
+fmt.Println(texts[0].target)   // 中文
+// 遍历
+for _, item := range texts {
+    fmt.Println(item.content, &quot;-&gt;&quot;, item.target)
+}
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+// Student 定义结构体
+type Student struct {
+  Name string
+  Age  int
+}
+
+// PrintInfo 给机构体绑定一个方法
+func (s Student) PrintInfo() {
+  fmt.Printf(&quot;name:%s age:%d\n&quot;, s.Name, s.Age)
+}
+
+func main() {
+  s := Student{
+    Name: &quot;枫枫&quot;,
+    Age:  21,
+  }
+  s.Name = &quot;枫枫知道&quot; // 修改值
+  s.PrintInfo()
+}
+</code></pre>
+<h2 id="组合-类似继承-但go中没继承">组合 (类似继承, 但go中没继承)</h2>
+<p><strong>func ( 传入的结构体 ) --&gt; 可以看作为结构体传参的特殊形式 , 可以在方法中实现引用</strong></p>
+<p><strong>内部传入的就是 指针参数 在实现函数调用的时候 直接使用就好</strong></p>
+<p><strong>修改内部的参数 的时候 传回的 引用 为 结构体 引用</strong></p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+type People struct {
+  Time string
+}
+
+func (p People) Info() {
+  fmt.Println(&quot;people &quot;, p.Time)
+}
+
+// Student 定义结构体
+type Student struct {
+  People
+  Name string
+  Age  int
+}
+
+// PrintInfo 给机构体绑定一个方法
+func (s Student) PrintInfo() {
+  fmt.Printf(&quot;name:%s age:%d\n&quot;, s.Name, s.Age)
+}
+
+func main() {
+  p := People{
+    Time: &quot;2023-11-15 14:51&quot;,
+  }
+  s := Student{
+    People: p,
+    Name:   &quot;枫枫&quot;,
+    Age:    21,
+  }
+  s.Name = &quot;枫枫知道&quot; // 修改值
+  s.PrintInfo()
+  s.Info()                   // 可以调用父结构体的方法
+  fmt.Println(s.People.Time) // 调用父结构体的属性
+  fmt.Println(s.Time)        // 也可以这样
+}
+</code></pre>
+<h2 id="结构体指针">结构体指针</h2>
+<p>之前我们了解了值传递和引用传递，如果我想在函数里面或者方法里面修改结构体里面的属性</p>
+<p>只能使用结构体指针或者指针方法</p>
+<p>不传入引用对象 , 方法内部使用 的 还是只拷贝的对象 , 修改的属性还保留 , 传入使用的 以用 后 .</p>
+<p>在 main 中实现 真正的 值传递</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+type Student struct {
+  Name string
+  Age  int
+}
+
+func SetAge(info Student, age int) {
+  info.Age = age
+}
+
+func SetAge1(info *Student, age int) {
+  info.Age = age
+}
+
+func main() {
+  s := Student{
+    Name: &quot;枫枫&quot;,
+    Age:  21,
+  }
+  fmt.Println(s.Age)
+  SetAge(s, 18)
+  fmt.Println(s.Age)
+  SetAge1(&amp;s, 17)
+  fmt.Println(s.Age)
+}
+</code></pre>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import &quot;fmt&quot;
+
+type Student struct {
+  Name string
+  Age  int
+}
+
+func (s Student) SetAge(age int) {
+  s.Age = age
+}
+func (s *Student) SetAge1(age int) {
+  s.Age = age
+}
+
+func main() {
+  s := Student{
+    Name: &quot;枫枫&quot;,
+    Age:  21,
+  }
+  s.SetAge(18)
+  fmt.Println(s.Age)
+  s.SetAge1(18)
+  fmt.Println(s.Age)
+}
+</code></pre>
+<h2 id="结构体tag">结构体tag</h2>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;encoding/json&quot;
+  &quot;fmt&quot;
+)
+
+type Student struct {
+  Name string `json:&quot;name&quot;`
+  Age  int    `json:&quot;age&quot;`
+}
+
+func main() {
+  s := Student{
+    Name: &quot;枫枫&quot;,
+    Age:  21,
+  }
+  byteData, _ := json.Marshal(s)
+  fmt.Println(string(byteData))
+}
+</code></pre>
+<h3 id="json-tag">json tag</h3>
+<ol>
+<li>这个不写json标签转换为json的话，字段名就是属性的名字</li>
+<li>小写的属性也不会转换</li>
+</ol>
+<p>空</p>
+<p>如果再转json的时候，我不希望某个字段被转出来，我可以写一个 -</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;encoding/json&quot;
+  &quot;fmt&quot;
+)
+
+type Student struct {
+  Name     string `json:&quot;name&quot;`
+  Age      int    `json:&quot;age&quot;`
+  Password string `json:&quot;-&quot;`
+}
+
+func main() {
+  s := Student{
+    Name:     &quot;枫枫&quot;,
+    Age:      21,
+    Password: &quot;123456&quot;,
+  }
+  byteData, _ := json.Marshal(s)
+  fmt.Println(string(byteData)) // {&quot;name&quot;:&quot;枫枫&quot;,&quot;age&quot;:21}
+}
+</code></pre>
+<p><strong>json.Marshal() 的作用是将 Go 对象（结构体、切片、map 等）序列化成 JSON 格式的字节切片。</strong></p>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;encoding/json&quot;
+  &quot;fmt&quot;
+)
+
+type Student struct {
+  Name string `json:&quot;name&quot;`
+  Age  int    `json:&quot;age,omitempty&quot;`
+}
+
+func main() {
+  s := Student{
+    Name: &quot;枫枫&quot;,
+    Age:  0, // 空值会被省略
+  }
+  byteData, _ := json.Marshal(s) 
+  fmt.Println(string(byteData)) // {&quot;name&quot;:&quot;枫枫&quot;}
+}
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<p>结构体 <a href="https://mp.weixin.qq.com/s?__biz=Mzg2NTAyNTc5NQ==&amp;mid=2247484449&amp;idx=1&amp;sn=4dc2d55bbdfe20e6b7a68ff711b05fa6&amp;chksm=ce612e4df916a75bbe57d0e1afe9156fcba090410fb4f43fb146bf94b1b0a683fe3381bb5255&amp;scene=27">https://mp.weixin.qq.com/s?__biz=Mzg2NTAyNTc5NQ==&amp;mid=2247484449&amp;idx=1&amp;sn=4dc2d55bbdfe20e6b7a68ff711b05fa6&amp;chksm=ce612e4df916a75bbe57d0e1afe9156fcba090410fb4f43fb146bf94b1b0a683fe3381bb5255&amp;scene=27</a></p>
+<p>go语言结构体 <a href="https://blog.csdn.net/qq_27870421/article/details/118489821">https://blog.csdn.net/qq_27870421/article/details/118489821</a></p>
+<p>结构体嵌套 <a href="https://blog.csdn.net/demored/article/details/124197637">https://blog.csdn.net/demored/article/details/124197637</a></p>
+<p>结构体指针 <a href="https://www.runoob.com/note/67933">https://www.runoob.com/note/67933</a></p>
+<p>结构体tag <a href="https://c.biancheng.net/view/112.html">https://c.biancheng.net/view/112.html</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

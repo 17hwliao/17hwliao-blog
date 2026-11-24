@@ -1,0 +1,63 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java 泛型：类、接口与通配符 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Java 泛型：类、接口与通配符</h1><time datetime="2026-01-03T12:41:55.000Z">2026年1月3日</time><pre><code class="language-text">package Today;
+
+public class Today {
+    public static void main(String[] args) {
+        New_class&lt;Integer&gt; ws0 = new New_class&lt;&gt;(&quot;ws&quot;, 4, 0);
+        New_class&lt;String&gt; ws1 = new New_class&lt;&gt;(&quot;ws&quot; ,2 , &quot;是gay&quot;);
+        New_class&lt;?&gt; ws2 = ws1 ;
+
+    }
+
+    abstract class New&lt;T&gt; {
+        T name ;
+    }
+
+    interface New1&lt;T&gt; {
+        T study(T name) ;
+    }
+
+    record Date&lt;T&gt;(T data){} ;
+
+    static class Test implements New1&lt;String&gt;{
+        @Override
+        public String study(String n) {
+            return &quot;&quot;;
+        }
+
+        static class Test1&lt;T&gt; implements New1&lt;T&gt;{
+            @Override
+            public T study(T name) {
+                return null;
+            }
+        }
+    }
+
+}
+</code></pre>
+<pre><code class="language-text">package Today;
+
+public class New_class&lt;T&gt; {
+    String name ;
+    int date ;
+    T value ;
+
+    New_class(String name , int date , T vlaue){
+        this.name = name;
+        this.date = date;
+        this.value = vlaue;
+        System.out.println(name + date + value);
+    } ;
+
+    public void Score(){
+        System.out.println(&quot;name&quot;+ &quot;是gay&quot; );
+    }
+
+    public T GetValuee(){
+            return value ;
+    }
+}
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

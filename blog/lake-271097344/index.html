@@ -1,0 +1,20 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin：静态文件与路径映射 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin：静态文件与路径映射</h1><time datetime="2026-05-24T03:21:45.000Z">2026年5月24日</time><p><strong>r.Static(&quot;static&quot;, &quot;static&quot;) // 第一个参数是别名，第二个才是实际路径</strong></p>
+<ul>
+<li><strong>第一个参数</strong> <code>relativePath</code>：浏览器访问的 <strong>URL 前缀（路由路径）</strong></li>
+<li><strong>第二个参数</strong> <code>root</code>：服务器本地 <strong>文件夹路径（物理目录）</strong></li>
+<li><strong>前端页面可以使用 relativePath/文件名 实现下载对应文件</strong></li>
+<li><strong>对应服务器实现上传的本地文件 ./root/文件名</strong></li>
+</ul>
+<p><strong>r.StaticFile(&quot;abcd&quot;, &quot;static/abc.txt&quot;)</strong></p>
+<ul>
+<li><strong>直接访问一下的relative 路径就可以直接下载到后面规定的文件信息</strong></li>
+</ul>
+<p>Go复制代码</p>
+<pre><code class="language-text">r.Static(&quot;static&quot;, &quot;static&quot;) // 第一个参数是别名，第二个才是实际路径
+r.StaticFile(&quot;abcd&quot;, &quot;static/abc.txt&quot;)
+</code></pre>
+<p>静态文件的路径，不能再被路由使用了</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

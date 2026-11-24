@@ -1,0 +1,291 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GORM：模型、CRUD 与软删除 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>GORM：模型、CRUD 与软删除</h1><time datetime="2026-06-07T09:31:22.000Z">2026年6月7日</time><h2 id="表结构">表结构</h2>
+<p>在gorm中，使用结构体表示一张表</p>
+<p>例如User表</p>
+<p>通常情况下，我们会使用Model结尾表示它是表的结构体</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type UserModel struct {
+  ID        int64     `gorm:&quot;primaryKey&quot;` // 主键
+  Name      string    `gorm:&quot;not null;unique&quot;` // 不能为空，且唯一 
+  CreatedAt time.Time // 在创建记录时自动设置为当前时间
+}
+</code></pre>
+<p>标签参考这个 <a href="https://gorm.io/zh_CN/docs/models.html#%E5%AD%97%E6%AE%B5%E6%A0%87%E7%AD%BE">https://gorm.io/zh_CN/docs/models.html#字段标签</a></p>
+<p>封装数据库连接 , 使用一个全局的变量使用 var .DB</p>
+<p>使用gorm实现的数据库连接直接连接到 全局变量中去 ;</p>
+<p>GORM 是一个功能强大的 ORM 库，提供了丰富的数据库操作方法。以下是 GORM 提供的主要方法分类：</p>
+<hr>
+<h3 id="一创建数据-create"><strong>一、创建数据 (Create)</strong></h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方法</span></p></td><td><p><span>说明</span></p></td></tr><tr><td><p><code><span>Create(&amp;model)</span></code></p></td><td><p><span>插入单条记录</span></p></td></tr><tr><td><p><code><span>CreateInBatches(models, batchSize)</span></code></p></td><td><p><span>批量插入</span></p></td></tr><tr><td><p><code><span>FirstOrCreate(&amp;dest, conditions)</span></code></p></td><td><p><span>查找或创建</span></p></td></tr><tr><td><p><code><span>CreateWithOption(&amp;model, option)</span></code></p></td><td><p><span>带选项的创建</span></p></td></tr></tbody></table></div>
+
+<hr>
+<h3 id="二查询数据-query"><strong>二、查询数据 (Query)</strong></h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方法</span></p></td><td><p><span>说明</span></p></td></tr><tr><td><p><code><span>First(&amp;dest, conditions)</span></code></p></td><td><p><span>查询第一条记录</span></p></td></tr><tr><td><p><code><span>Last(&amp;dest, conditions)</span></code></p></td><td><p><span>查询最后一条记录</span></p></td></tr><tr><td><p><code><span>Take(&amp;dest)</span></code></p></td><td><p><span>获取任意一条记录</span></p></td></tr><tr><td><p><code><span>Find(&amp;dest, conditions)</span></code></p></td><td><p><span>查询多条记录</span></p></td></tr><tr><td><p><code><span>FindInBatches(&amp;dest, batchSize, fc)</span></code></p></td><td><p><span>分批查询</span></p></td></tr><tr><td><p><code><span>Pluck(column, &amp;dest)</span></code></p></td><td><p><span>查询指定字段</span></p></td></tr><tr><td><p><code><span>Count(&amp;count)</span></code></p></td><td><p><span>统计数量</span></p></td></tr><tr><td><p><code><span>Where(conditions)</span></code></p></td><td><p><span>添加 WHERE 条件</span></p></td></tr><tr><td><p><code><span>Order(column)</span></code></p></td><td><p><span>添加排序</span></p></td></tr><tr><td><p><code><span>Limit(n)</span></code></p></td><td><p><span>限制条数</span></p></td></tr><tr><td><p><code><span>Offset(n)</span></code></p></td><td><p><span>偏移量</span></p></td></tr></tbody></table></div>
+
+<hr>
+<h3 id="三更新数据-update"><strong>三、更新数据 (Update)</strong></h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方法</span></p></td><td><p><span>说明</span></p></td></tr><tr><td><p><code><span>Save(&amp;model)</span></code></p></td><td><p><span>保存（含新增或更新）</span></p></td></tr><tr><td><p><code><span>Update(column, value)</span></code></p></td><td><p><span>更新单个字段</span></p></td></tr><tr><td><p><code><span>Updates(map[string]interface{})</span></code></p></td><td><p><span>更新多个字段</span></p></td></tr><tr><td><p><code><span>UpdateColumn(column, value)</span></code></p></td><td><p><span>直接更新（跳过钩子）</span></p></td></tr><tr><td><p><code><span>UpdateColumns(map[string]interface{})</span></code></p></td><td><p><span>批量直接更新</span></p></td></tr></tbody></table></div>
+
+<hr>
+<h3 id="四删除数据-delete"><strong>四、删除数据 (Delete)</strong></h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方法</span></p></td><td><p><span>说明</span></p></td></tr><tr><td><p><code><span>Delete(&amp;model, conditions)</span></code></p></td><td><p><span>软删除（需要</span><span> </span><code><span>DeletedAt</span></code></p><p><span> </span><span>字段）</span></p></td></tr><tr><td><p><code><span>Unscoped().Delete(&amp;model)</span></code></p></td><td><p><span>物理删除</span></p></td></tr></tbody></table></div>
+
+<hr>
+<h3 id="五关联操作-association"><strong>五、关联操作 (Association)</strong></h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方法</span></p></td><td><p><span>说明</span></p></td></tr><tr><td><p><code><span>Association(column)</span></code></p></td><td><p><span>获取关联</span></p></td></tr><tr><td><p><code><span>Append(models...)</span></code></p></td><td><p><span>添加关联</span></p></td></tr><tr><td><p><code><span>Replace(models...)</span></code></p></td><td><p><span>替换关联</span></p></td></tr><tr><td><p><code><span>Clear()</span></code></p></td><td><p><span>清除关联</span></p></td></tr><tr><td><p><code><span>Delete(models...)</span></code></p></td><td><p><span>删除关联</span></p></td></tr></tbody></table></div>
+
+<hr>
+<h3 id="六事务-transaction"><strong>六、事务 (Transaction)</strong></h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方法</span></p></td><td><p><span>说明</span></p></td></tr><tr><td><p><code><span>Begin()</span></code></p></td><td><p><span>开始事务</span></p></td></tr><tr><td><p><code><span>Commit()</span></code></p></td><td><p><span>提交事务</span></p></td></tr><tr><td><p><code><span>Rollback()</span></code></p></td><td><p><span>回滚事务</span></p></td></tr><tr><td><p><code><span>Transaction(fc)</span></code></p></td><td><p><span>自动事务（推荐）</span></p></td></tr></tbody></table></div>
+
+<hr>
+<h3 id="七数据库迁移-migration"><strong>七、数据库迁移 (Migration)</strong></h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方法</span></p></td><td><p><span>说明</span></p></td></tr><tr><td><p><code><span>AutoMigrate(models...)</span></code></p></td><td><p><span>自动迁移表结构</span></p></td></tr><tr><td><p><code><span>CreateTable(models...)</span></code></p></td><td><p><span>创建表</span></p></td></tr><tr><td><p><code><span>DropTable(models...)</span></code></p></td><td><p><span>删除表</span></p></td></tr><tr><td><p><code><span>Migrator()</span></code></p></td><td><p><span>获取迁移器</span></p></td></tr></tbody></table></div>
+
+<hr>
+<h3 id="八原生-sql"><strong>八、原生 SQL</strong></h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table><tbody><tr><td><p><span>方法</span></p></td><td><p><span>说明</span></p></td></tr><tr><td><p><code><span>Raw(sql, args...)</span></code></p></td><td><p><span>执行原生 SQL 查询</span></p></td></tr><tr><td><p><code><span>Exec(sql, args...)</span></code></p></td><td><p><span>执行原生 SQL 命令</span></p></td></tr><tr><td><p><code><span>Scan(&amp;dest)</span></code></p></td><td><p><span>将结果扫描到结构体</span></p></td></tr></tbody></table></div>
+
+<hr>
+<p>示例代码：</p>
+<pre><code class="language-text">// 查询
+var user UserModel
+Global.DB.Where(&quot;name = ?&quot;, &quot;ws&quot;).First(&amp;user)
+
+// 更新
+Global.DB.Model(&amp;user).Update(&quot;age&quot;, 20)
+
+// 删除
+Global.DB.Delete(&amp;user)
+
+// 事务
+err := Global.DB.Transaction(func(tx *gorm.DB) error {
+    if err := tx.Create(&amp;UserModel{Name: &quot;test&quot;}).Error; err != nil {
+        return err // 回滚
+    }
+    return nil // 提交
+})
+</code></pre>
+<h2 id="自动生成表表的迁移">自动生成表(表的迁移)</h2>
+<p>Go复制代码</p>
+<pre><code class="language-text">package main
+
+import (
+  &quot;fmt&quot;
+  &quot;gorm.io/driver/mysql&quot;
+  &quot;gorm.io/gorm&quot;
+  &quot;time&quot;
+)
+
+type UserModel struct {
+  ID        int64     `gorm:&quot;primaryKey&quot;`      // 主键
+  Name      string    `gorm:&quot;not null;unique&quot;` // 不能为空，且唯一
+  CreatedAt time.Time // 在创建记录时自动设置为当前时间。
+}
+
+func main() {
+  // 连接数据库
+  db, err := gorm.Open(mysql.Open(&quot;root:root@tcp(127.0.0.1:3306)/gorm_new_db?charset=utf8mb4&amp;parseTime=True&amp;loc=Local&quot;), &amp;gorm.Config{})
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  
+  err = db.AutoMigrate(&amp;UserModel{})
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(&quot;生成表结构成功！&quot;)
+}
+</code></pre>
+<p>生成表结构只会新增字段，不会删除字段和更新字段]</p>
+<h2 id="单表操作">单表操作</h2>
+<p>包括增删改查</p>
+<h3 id="插入数据">插入数据</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">// InsertData 插入数据
+func InsertData() {
+  user := UserModel{Name: &quot;张三&quot;}
+  err := DB.Create(&amp;user).Error   //调用内部的Error字段  
+  // 创建成功之后，数据会回填
+  fmt.Println(user, err)
+}
+</code></pre>
+<p>批量插入</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">// InsertData 插入数据
+func InsertData() {
+  var users = []UserModel{
+    {
+      Name: &quot;王五&quot;,
+    },
+    {
+      Name: &quot;李四&quot;,
+    },
+  }
+  err := DB.Create(&amp;users).Error
+  fmt.Println(users, err)
+}
+</code></pre>
+<p>特别注意：Create函数接收的参数是结构体的指针或者是切片</p>
+<p>插入数据的钩子 . 这里使用的钩子函数的函数名需要实现固定, 是底层内部的接口实现的说 ;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">type UserModel struct {
+  ID        int64     `gorm:&quot;primaryKey&quot;`      // 主键
+  Name      string    `gorm:&quot;not null;unique&quot;` // 不能为空，且唯一
+  CreatedAt time.Time // 在创建记录时自动设置为当前时间。
+}
+
+func (u *UserModel) BeforeCreate(tx *gorm.DB) error {
+  fmt.Println(&quot;创建的钩子函数&quot;)
+  u.Name = &quot;枫枫&quot;
+  return nil
+}
+</code></pre>
+<p>如果在插入的钩子函数中，返回错误，则数据不会被插入</p>
+<h3 id="查询数据">查询数据</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">// 查全部
+var users []UserModel
+DB.Find(&amp;users)
+fmt.Println(users)
+
+// 带条件查询
+users = []UserModel{}
+DB.Find(&amp;users, &quot;name = ?&quot;, &quot;张三&quot;)
+fmt.Println(users)
+
+// 获取一条记录
+var user UserModel
+DB.Take(&amp;user)
+fmt.Println(user)
+
+// 如果查不到则会报错
+user = UserModel{}
+err := DB.Take(&amp;user, &quot;id = ?&quot;, 100).Error   //使用Take  First实现使用主键去查数据  
+if err == gorm.ErrRecordNotFound {
+  fmt.Println(&quot;不存在的记录&quot;)
+}
+
+// 如果不想出现错误
+user = UserModel{}
+err = DB.Limit(1).Find(&amp;user, &quot;id = ?&quot;, 100).Error
+fmt.Println(err)
+
+// 打印实际的sql
+DB.Debug().Take(&amp;user, &quot;id = ?&quot;, 1)
+</code></pre>
+<h3 id="更新">更新</h3>
+<p>有很多方法，Save、Update、UpdateColumn、Updates</p>
+<p>不同的方法有不同的区别，如下：</p>
+<ol>
+<li>Save，有主键记录就是更新，并且可以更新零值，否则就是创建</li>
+<li>Update，可以更新零值，必须要有条件</li>
+<li>UpdateColumn，可以更新零值，不会走更新的Hook</li>
+<li>Updates，如果是结构体，则更新非零值，map可以更新零值</li>
+</ol>
+<p>save</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">// 创建
+var user = UserModel{
+  Name: &quot;枫枫1&quot;,
+}
+DB.Save(&amp;user)
+fmt.Println(user)
+
+// 更新
+user = UserModel{
+  ID:        9,
+  Name:      &quot;枫枫2&quot;,
+  CreatedAt: time.Now(),
+}
+DB.Save(&amp;user)
+fmt.Println(user)
+</code></pre>
+<p>更新钩子</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func (u *UserModel) BeforeUpdate(tx *gorm.DB) (err error) {
+  fmt.Println(&quot;更新的钩子函数&quot;)
+  return nil
+}
+</code></pre>
+<p>Update和UpdateColumn</p>
+<p>唯一区别就是会走一个 skiphooks --&gt; true ;</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">DB.Model(&amp;UserModel{}).
+  Where(&quot;id = ?&quot;, 1).
+  Update(&quot;name&quot;, &quot;张三&quot;)  // 走了更新钩子
+
+DB.Model(&amp;UserModel{}).
+  Where(&quot;id = ?&quot;, 1).
+  UpdateColumn(&quot;name&quot;, &quot;张三&quot;)
+</code></pre>
+<p>Updates</p>
+<p><strong>Go复制代码</strong></p>
+<p><strong>user 对象只是数据载体，.Models(&amp;user) 告诉GORM：</strong></p>
+<p><strong>1. 操作哪个表 - 根据结构体名推断表名</strong></p>
+<p><strong>2. 更新哪条记录 - 结合Where条件确定</strong></p>
+<pre><code class="language-text">var user = UserModel{ID: 1}
+
+DB.Model(&amp;user).Updates(UserModel{
+  Name: &quot;张三丰&quot;,
+})
+
+user = UserModel{ID: 2}
+// 不会更新零值
+DB.Model(&amp;user).Updates(UserModel{
+  Name: &quot;&quot;,
+})
+
+user = UserModel{ID: 2}
+// 会更新零值
+DB.Model(&amp;user).Updates(map[string]any{
+  &quot;name&quot;: &quot;&quot;,
+})
+</code></pre>
+<p>Expr</p>
+<p>通常用于获取原字段的数据</p>
+<p>例如年龄加一</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">DB.Model(&amp;UserModel{}).
+  Where(&quot;id = ?&quot;, 1).
+  UpdateColumn(&quot;age&quot;, gorm.Expr(&quot;age + 1&quot;))  //Expr获取原先的字段值 + 实现 ++操作
+</code></pre>
+<h3 id="删除">删除</h3>
+<p>Go复制代码</p>
+<pre><code class="language-text">var user = UserModel{ID: 10}
+DB.Delete(&amp;user)
+
+DB.Delete(&amp;UserModel{}, 9)
+
+// 批量删除
+DB.Delete(&amp;UserModel{}, []int{1, 2, 3})
+</code></pre>
+<p>钩子函数</p>
+<p>Go复制代码</p>
+<pre><code class="language-text">func (u *UserModel) BeforeDelete(tx *gorm.DB) (err error) {
+    fmt.Println(&quot;删除钩子&quot;)
+    return
+}
+</code></pre>
+<h3 id="软删除">软删除</h3>
+<p>软删除 vs 直接删除：</p>
+<p>特性 直接删除 软删除</p>
+<p>数据状态 真正删除 标记删除</p>
+<p>数据恢复 无法恢复 可以恢复</p>
+<p>存储空间 释放空间 不释放空间</p>
+<p>查询性能 更快 稍慢</p>
+<p>如果你的模型包含了 <code>gorm.DeletedAt</code>字段（该字段也被包含在<code>gorm.Model</code>中），那么该模型将会自动获得软删除的能力</p>
+<p>当调用<code>Delete</code>时，GORM并不会从数据库中删除该记录，而是将该记录的<code>DeleteAt</code>设置为当前时间，而后的一般查询方法将无法查找到此条记录。</p>
+<p>查找被删除的记录</p>
+<p>TypeScript复制代码</p>
+<pre><code class="language-text">DB.Unscoped().Find(&amp;users)
+</code></pre>
+<p>永久删除</p>
+<p>TypeScript复制代码</p>
+<pre><code class="language-text">db.Unscoped().Delete(&amp;user)  // 真正删除数据
+</code></pre>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

@@ -1,0 +1,938 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SQL Sentinel：候选索引验证与执行计划对比 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>SQL Sentinel：候选索引验证与执行计划对比</h1><time datetime="2026-10-09T07:24:18.000Z">2026年10月9日</time><p><a href="../../projects/sql-sentinel/index.html#project-articles">SQL Sentinel 项目展示</a> · <a href="../../blog/lake-282383607/index.html">系列目录</a> · 3 / 6</p>
+<p>围绕同一 SQL、相同数据和 MySQL 版本，检查候选索引如何通过影子库门禁进入 EXPLAIN，以及两份计划如何形成可核对的证据。</p>
+<blockquote>
+<p>实现说明与运行记录基于 2026-10-09 更新的原稿。正文中的文件行号、实现状态与验证结果按该历史快照理解。</p>
+</blockquote>
+<h2 id="实现概览">实现概览</h2>
+<ul>
+<li>Prepare、Gate 与实际执行各自承担不同职责。</li>
+<li>优化器的访问路径、排序与覆盖索引变化属于计划证据。</li>
+<li>独立 bench 入口使用自己的固定查询，不应把本例 EXPLAIN 当作实测提速。</li>
+</ul>
+<h2 id="实现细节">实现细节</h2>
+<p><strong>核心问题</strong>：相同数据 + 相同 MySQL 版本下，加了 <code>idx_cand_status_amount</code> 之后，优化器计划变了吗？</p>
+<hr>
+<h2 id="索引验证的范围与证据口径">索引验证的范围与证据口径</h2>
+<ol>
+<li><strong>每个函数都问四件事</strong>：输入是什么、做了什么、结果交给谁、失败后是否继续。</li>
+<li><strong>区分&quot;门禁&quot;和&quot;执行&quot;。</strong> 门禁失败 = 不改数据库就返回；执行失败 = 数据库可能已经被改了。</li>
+<li><strong>区分&quot;计划证据&quot;和&quot;测量证据&quot;。</strong> <code>EXPLAIN</code> 说优化器打算怎么走，<code>bench</code> 说它实际跑多快。</li>
+<li><strong>用真实报告里的数字对表。</strong> 本次记录中项目里有三份真实产物，我会拿真实数值来讲，不举假数字。</li>
+<li><strong>本次记录中只到一个门口停下</strong>：<code>bench</code> 的内部循环。它不在 <code>pipeline.Run</code> 的调用链上。</li>
+</ol>
+<hr>
+<h2 id="验证使用的输入与报告">验证使用的输入与报告</h2>
+<p>先把项目里真实跑出来的关键数字放这儿，后面每一步都要对得上：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MySQL 版本</td>
+<td><code>8.4.11</code></td>
+<td>两侧一致</td>
+</tr>
+<tr>
+<td>数据行数</td>
+<td><code>1,000,000</code></td>
+<td>两侧一致</td>
+</tr>
+<tr>
+<td>快照摘要</td>
+<td><code>5f2ed9465c96fccc45f288e102cffd9c49000f43b03fc12f0c839d1dc1a66fbd</code></td>
+<td>两侧一致</td>
+</tr>
+<tr>
+<td>候选索引</td>
+<td><code>CREATE INDEX idx_cand_status_amount ON orders (status ASC, amount_cents DESC)</code></td>
+<td></td>
+</tr>
+<tr>
+<td>候选静态信号</td>
+<td><code>[]</code><br>（空）</td>
+<td>这条 SQL 没有 select*、没有前置通配 LIKE</td>
+</tr>
+<tr>
+<td>报告等级</td>
+<td><code>L1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>性能声称资格</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+</tbody></table></div>
+<p><strong>这三个&quot;两侧一致&quot;的数字是整场实验的地基。</strong> 版本一致、行数一致、摘要一致，缺一个，后面的计划差异就无法归因于索引。</p>
+<hr>
+<h2 id="一候选验证的两个输入">一、候选验证的两个输入</h2>
+<p>**输入 A ——**<strong>candidate-explain-query.sql</strong></p>
+<pre><code class="language-sql">SELECT id, amount_cents
+FROM orders
+WHERE status = &#39;paid&#39;
+ORDER BY amount_cents DESC
+LIMIT 20;
+</code></pre>
+<p>业务含义：已支付订单里，按金额从大到小取前 20 条。</p>
+<p><strong>注意结构：筛选 1 列（</strong><code>status</code><strong>）+ 排序 1 列（</strong><code>amount_cents</code><strong>）+ 返回 2 列。</strong> 后面判断索引有没有用，全部围绕这三件事。</p>
+<p>**输入 B ——**<strong>candidate-explain-index.json</strong></p>
+<pre><code class="language-json">{
+  &quot;table&quot;: &quot;orders&quot;,
+  &quot;index_name&quot;: &quot;idx_cand_status_amount&quot;,
+  &quot;columns&quot;: [
+    { &quot;name&quot;: &quot;status&quot; },
+    { &quot;name&quot;: &quot;amount_cents&quot;, &quot;direction&quot;: &quot;DESC&quot; }
+  ]
+}
+</code></pre>
+<p>你的讲稿说&quot;<code>status</code> 放前面符合筛选结构，<code>amount_cents</code> 是排序考虑&quot;——<strong>方向对，但要精确一点。</strong> 等下看真实 EXPLAIN 会看到：</p>
+<ul>
+<li><code>used_key_parts: [&quot;status&quot;]</code> —— <strong>只有</strong> <code>status</code> <strong>被用作查找键</strong>，<code>amount_cents</code> 没有参与二级查找；</li>
+<li><code>using_index: true</code> —— 索引是<strong>覆盖索引</strong>，<code>id</code>/<code>status</code>/<code>amount_cents</code> 全在索引里，不用回表；</li>
+<li><code>using_filesort: false</code> —— <strong>额外排序消失了</strong>。</li>
+</ul>
+<p>所以第二列在这里起的作用是两件事：<strong>覆盖</strong>（避免回表）和<strong>索引序天然有序</strong>（<code>status=&#39;paid&#39;</code> 的索引条目本身按 <code>amount_cents DESC</code> 排列，扫一遍就是排好序的，不需要 filesort）。</p>
+<p><strong>不是&quot;第二列也能拿来查&quot;。</strong> 联合索引的列顺序决定查找方式，但排序能力来自&quot;索引里数据的物理排列顺序&quot;。这个区别后面诊断阶段会用到。</p>
+<p><strong>记住：这只是候选。代码不保证优化器用它，也不保证更快。</strong></p>
+<hr>
+<h2 id="二第一步pipelineexplainrunner-是组织者不是执行者">二、第一步：<code>pipelineExplainRunner</code> 是组织者，不是执行者</h2>
+<p>打开 pipeline.go:62。</p>
+<pre><code class="language-go">func pipelineExplainRunner(chunk int) pipeline.ExplainRunner {
+    return func(ctx context.Context, sql string, rawSpec []byte) (shadowgate.Report, []byte, error) {
+        ...
+    }
+}
+</code></pre>
+<p><strong>外层收</strong><code>chunk</code><strong>，返回一个符合</strong><code>pipeline.ExplainRunner</code><strong>签名的回调。</strong> 这就是 S1 讲过的&quot;工厂 + 闭包&quot;手法：</p>
+<pre><code class="language-text">组装阶段（CLI 启动时）：  pipelineExplainRunner(5000)  →  得到一个&quot;怎样执行验证&quot;的函数
+执行阶段（每次请求时）：  把本次 sql + rawSpec 交给这个函数
+</code></pre>
+<p>四个东西先分清：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th></th>
+<th>内容</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>chunk</code></td>
+<td>算数据摘要时每批读多少行（默认 5000）。<strong>不是 RAG 切片大小。</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sql</code></td>
+<td>输入 A</td>
+<td></td>
+</tr>
+<tr>
+<td><code>rawSpec</code></td>
+<td>输入 B 的<strong>原始字节</strong>（不是结构体）</td>
+<td></td>
+</tr>
+<tr>
+<td>返回</td>
+<td><code>(candidate 报告, baseline 原始计划 JSON, error)</code></td>
+<td></td>
+</tr>
+</tbody></table></div>
+<p><strong>返回两个不同形态的东西</strong>，后面各给一个消费者：</p>
+<ul>
+<li><code>shadowgate.Report</code> —— <strong>结构化的</strong>，管线拿去写盘、提取元数据；</li>
+<li><code>[]byte</code> —— <strong>原样的字节</strong>，直接交给 <code>plancompare</code> 解析。</li>
+</ul>
+<p>为什么 baseline 不给结构体？因为 baseline 的计划不需要拆成字段，它是&quot;对照的那一份原始证据&quot;，管线不解释它，只传递它。<strong>信任下一层去解析。</strong></p>
+<p>这个回调的组织顺序：</p>
+<pre><code class="language-text">DecodeStrict → Prepare → openBoth → Gate.Run → baseline EXPLAIN → 返回两侧证据
+</code></pre>
+<p><strong>一句要写下来的话：</strong><code>pipelineExplainRunner</code><strong>不统计性能收益，它负责组织这次双库计划验证。</strong></p>
+<hr>
+<h2 id="三第二步prepare-把输入变成执行材料">三、第二步：<code>Prepare</code> 把输入变成执行材料</h2>
+<p>回调开头（pipeline.go:64）：</p>
+<pre><code class="language-go">spec, err := candidate.DecodeStrict(bytes.NewReader(rawSpec))
+</code></pre>
+<p><strong>注意：这里</strong><code>DecodeStrict</code><strong>是第三次了。</strong> 启动时一次（进程级门禁）、请求进管线一次（其实不在这里，是 <code>PipelineRunner</code> 闭包传进来的原始字节）、这里是请求级。运行期重读重校验，是因为<strong>启动后文件可能被换掉</strong>。</p>
+<p>紧接着（pipeline.go:68）：</p>
+<pre><code class="language-go">prepared, err := shadowgate.Prepare(sql, spec)
+</code></pre>
+<p>打开 gate.go:41。四道检查，<strong>全部在连数据库之前</strong>：</p>
+<h3 id="检查-1sql-准入42-45">检查 1：SQL 准入（:42-45）</h3>
+<pre><code class="language-go">admission := sqladmit.Admit(sql)
+if !admission.Accepted {
+    return Prepared{}, fmt.Errorf(&quot;%w: %s&quot;, ErrSQLRejected, admission.ReasonCode)
+}
+</code></pre>
+<p><strong>&quot;S1 的管线不是已经 Admit 过了吗？&quot;</strong> 已经过过了。<strong>但</strong><code>Prepare</code><strong>自己也是一个可被独立调用的边界</strong>，它不能假设调用方守过。所以每个边界自守一遍。项目里这叫&quot;每个入口都是完整边界&quot;。</p>
+<p>对我们的输入 A，<code>Admit</code> 返回 <code>Accepted: true, Signals: []</code>——真实报告里 <code>sql_input.signals</code> 就是空数组。</p>
+<h3 id="检查-2绑定占位符46-48">检查 2：绑定占位符（:46-48）</h3>
+<pre><code class="language-go">if hasBindPlaceholder(sql) {
+    return Prepared{}, ErrPlaceholderUnsupported
+}
+</code></pre>
+<p>这个入口<strong>只有 SQL 文本，没有对应的绑定参数</strong>。如果 SQL 里有 <code>?</code>，我们无法给出完整、可复现的计划。</p>
+<p>看 hasBindPlaceholder 的写法——<strong>它复用和</strong><code>sqladmit.scan</code><strong>同一套状态机</strong>：单引号、双引号、反引号、行注释、块注释五种状态。</p>
+<ul>
+<li><code>WHERE status = ?</code> → 命中，拒绝；</li>
+<li><code>WHERE note = &#39;?&#39;</code> → 问号在字符串里，<strong>不算</strong>；</li>
+<li><code>-- select ?</code> → 注释里的问号，<strong>不算</strong>。</li>
+</ul>
+<p>注释写得很直白（:274-275）：<em>&quot;A question mark in a literal, quoted identifier or comment is data.&quot;</em></p>
+<p><strong>保姆级理解</strong>：项目里所有&quot;识别 SQL 结构&quot;的地方都不做字符串包含判断，都先过同一个状态机。这是同一套基础设施复用三次（<code>sqladmit.scan</code>、<code>hasBindPlaceholder</code>，还有 S1 里的 forbidden 短语匹配）。</p>
+<h3 id="检查-3表范围49-51">检查 3：表范围（:49-51）</h3>
+<pre><code class="language-go">if spec.Table != &quot;orders&quot; {
+    return Prepared{}, fmt.Errorf(&quot;%w: %q&quot;, ErrUnsupportedTable, spec.Table)
+}
+</code></pre>
+<p><strong>硬编码</strong><code>orders</code><strong>。</strong> 错误信息里写的是 <code>orders-v1 shadow scope</code>——这说明项目明确知道自己验证的是<strong>受控的单一场景</strong>，不是任意数据库任意表。</p>
+<p>这是个诚实的边界声明。项目 README 也写了&quot;当前环境不足以声称读收益&quot;。</p>
+<h3 id="检查-4编译-ddl52-56">检查 4：编译 DDL（:52-56）</h3>
+<pre><code class="language-go">ddl, err := candidate.CompileCreateIndex(spec)
+</code></pre>
+<p>得到：</p>
+<pre><code class="language-sql">CREATE INDEX `idx_cand_status_amount` ON `orders` (`status` ASC, `amount_cents` DESC)
+</code></pre>
+<p><strong>注意</strong><code>status</code><strong>没写</strong><code>direction</code><strong>，编译时补了</strong><code>ASC</code>（<code>CompileCreateIndex</code> 里空方向默认 ASC）。真实报告的 <code>ddl</code> 字段就是这个字符串，一字不差。</p>
+<h3 id="结果prepared">结果：<code>Prepared</code></h3>
+<pre><code class="language-go">Prepared{
+    SQL:        sql,
+    SQLSignals: admission.Signals,
+    Spec:       spec,
+    DDL:        ddl,
+}
+</code></pre>
+<p>四个字段 = <strong>执行材料包</strong>：待分析查询 + 准入信号 + 结构化候选 + 程序生成的 DDL。</p>
+<p><code>Prepared</code><strong>表示材料准备好了，不表示索引已创建。</strong> 注意结构体注释（:31-32）：<em>&quot;It intentionally contains compiled DDL rather than accepting raw DDL.&quot;</em> —— DDL 是<strong>程序生成的</strong>，不是外部传来的。S1 讲过这条设计哲学，这里再次落实。</p>
+<p><strong>失败后是否继续？</strong> 四道检查任一失败都直接 <code>return</code>。关键点：<strong>到这里</strong><code>openBoth</code><strong>还没被调用，所以输入错误不会触碰数据库。</strong> 这也是检查顺序的意义——便宜的、不改状态的前面做。</p>
+<hr>
+<h2 id="四第三步为什么要两个库">四、第三步：为什么要两个库</h2>
+<p>回到回调（pipeline.go:72）：</p>
+<pre><code class="language-go">dbs, closeAll, err := openBoth(ctx)
+defer closeAll()
+</code></pre>
+<p>打开 bench.go:59 的 <code>openBoth</code>：</p>
+<pre><code class="language-go">for _, name := range []string{&quot;baseline&quot;, &quot;candidate&quot;} {
+    db, err := open(ctx, name)
+    if err != nil {
+        closeAll()
+        return nil, func() {}, err
+    }
+    dbs[name] = db
+}
+</code></pre>
+<p><strong>注意两个失败处理细节</strong>：</p>
+<ol>
+<li>任一侧打开失败 → <strong>调用</strong> <code>closeAll()</code> <strong>把已经打开的关掉</strong>。否则 baseline 开了但 candidate 失败，会泄漏连接。</li>
+<li>返回的 <code>closeAll</code> 是一个<strong>已知的空函数</strong> <code>func(){}</code>，避免调用方拿到 nil 函数然后 panic。</li>
+</ol>
+<p><code>defer closeAll()</code> 保证后续无论在哪一步 <code>return</code>，句柄都会释放。</p>
+<p><code>*sql.DB</code><strong>是连接池句柄，不是把数据库装进内存。</strong></p>
+<p>两侧分工：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th></th>
+<th>baseline</th>
+<th>candidate</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>索引方案</td>
+<td>保留原有方案</td>
+<td>原有 + 本次候选</td>
+</tr>
+<tr>
+<td>提供</td>
+<td>对照计划</td>
+<td>实验计划</td>
+</tr>
+<tr>
+<td>收到 DDL</td>
+<td>从不</td>
+<td>可能</td>
+</tr>
+</tbody></table></div>
+<p><strong>baseline 不等于&quot;完全没有索引&quot;</strong> —— 它有主键 <code>id</code>（二级索引和主键的聚集索引天然存在）。它的 <code>access_type: ALL</code> 意思是&quot;没有合适的二级索引可用，所以全表扫&quot;。</p>
+<p><strong>为什么不用一个库，测一次、建索引、再测一次？</strong> 因为建索引会改变数据库状态，反复增删索引会污染实验过程（统计信息、缓冲池、索引文件布局都可能受影响）。分成两侧，两个方案<strong>同时存在</strong>，各自独立。</p>
+<p><strong>一个必须诚实说明的边界</strong>：代码里的&quot;只写 candidate&quot;体现在 <code>Gate.Run</code> 只用 <code>g.Candidate</code> 发 DDL。但<strong>这不等于数据库账号被配成了只读</strong>。包注释说 <em>&quot;It never ... receives a writable baseline connection&quot;</em> —— 这是<strong>调用约定的意图声明</strong>，不是数据库层的强制。要真的强制，得在 MySQL 用户权限上做。</p>
+<hr>
+<h2 id="五第四步gaterun-的门禁顺序">五、第四步：<code>Gate.Run</code> 的门禁顺序</h2>
+<p>gate.go:101。</p>
+<pre><code class="language-go">func (g Gate) Run(ctx context.Context, p Prepared) (Report, error) {
+    if g.Baseline == nil || g.Candidate == nil { ... }
+    version, err := sameServerVersion(ctx, g.Baseline, g.Candidate)
+    gate, err := identicalSnapshots(ctx, g.Baseline, g.Candidate, g.Chunk)
+    if err := requireSchema(ctx, g.Candidate, p.Spec); err != nil { ... }
+    created, err := ensureCandidateIndex(ctx, g.Candidate, p)
+    if _, err := g.Candidate.ExecContext(ctx, &quot;ANALYZE TABLE `orders`&quot;); err != nil { ... }
+    ... EXPLAIN ...
+}
+</code></pre>
+<p><strong>这个顺序是整个 S2 最重要的结构。</strong> 从上到下：</p>
+<pre><code class="language-text">不连库的检查（Prepare 已完成）
+  → 连库但只读的检查：版本
+  → 连库但只读的检查：数据摘要
+  → 连库但只读的检查：表/列存在
+  → ★ 第一个有副作用的操作：CREATE INDEX
+  → ★ 第二个有副作用的操作：ANALYZE TABLE
+  → 只读操作：EXPLAIN
+</code></pre>
+<p><strong>原则：不可逆的操作排最后。</strong> 前三个门禁全部只读，全过了才允许改数据库。</p>
+<h3 id="51-版本gatego149">5.1 版本（gate.go:149）</h3>
+<pre><code class="language-go">var baselineVersion, candidateVersion string
+baseline.QueryRowContext(ctx, &quot;SELECT VERSION()&quot;).Scan(&amp;baselineVersion)
+candidateDB.QueryRowContext(ctx, &quot;SELECT VERSION()&quot;).Scan(&amp;candidateVersion)
+if baselineVersion != candidateVersion {
+    return &quot;&quot;, fmt.Errorf(&quot;%w: baseline=%s candidate=%s&quot;, ...)
+}
+</code></pre>
+<p><strong>字符串精确比较</strong>，两侧都是 <code>8.4.11</code> 才通过。</p>
+<p><strong>为什么查数据库而不看 Docker 镜像配置？</strong> 因为配置说的是&quot;打算跑什么&quot;，<code>SELECT VERSION()</code> 说的是&quot;<strong>现在实际跑的是什么</strong>&quot;。镜像 tag、<code>my.cnf</code> 都没用——运行时现场取证才是证据。这也是整个项目的核心原则：<strong>证据来自运行现场，不来自意图声明。</strong></p>
+<p><strong>注意错误信息里带了两侧版本号。</strong> 失败时你能直接看到 <code>baseline=8.0.36 candidate=8.4.11</code> 这种信息，不用再去连库查。项目的错误信息一贯带足够上下文。</p>
+<p><strong>为什么这个门禁重要？</strong> 优化器是数据库的一部分。版本不同，成本模型、统计信息精度、可选执行路径都可能不同。计划有差异但版本也不同，就<strong>无法把差异归因于索引</strong>。</p>
+<h3 id="52-快照gatego163">5.2 快照（gate.go:163）</h3>
+<pre><code class="language-go">b, err := snapshot.Compute(ctx, baseline, &quot;baseline&quot;, chunk)
+c, err := snapshot.Compute(ctx, candidateDB, &quot;candidate&quot;, chunk)
+if b.Rows != c.Rows || b.Digest != c.Digest {
+    return ..., fmt.Errorf(&quot;%w: baseline rows=%d digest=%s candidate rows=%d digest=%s&quot;, ...)
+}
+</code></pre>
+<p><strong>只比行数为什么不够？</strong> 你的讲稿举的例子对。两侧都是 2 行，但 baseline 两条 <code>paid</code>、candidate 一条 <code>paid</code> 一条 <code>unpaid</code> —— 行数相同，但 <code>WHERE status = &#39;paid&#39;</code> 的选择性完全不同，两侧计划差异就混进了&quot;数据不同&quot;这个变量。</p>
+<p>所以<strong>行数 + 摘要都要比</strong>。</p>
+<p><strong>错误信息里带四样东西</strong>：两侧的行数和两侧完整的 64 位摘要。这样一份失败报告就够了，不用重连数据库复现。</p>
+<h4 id="摘要怎么算的snapshotcomparego33">摘要怎么算的：snapshot/compare.go:33</h4>
+<pre><code class="language-go">const selectChunk = `SELECT id, user_id, status, created_at, amount_cents, note, payload
+FROM orders WHERE id &gt; ? ORDER BY id LIMIT ?`
+</code></pre>
+<p><strong>主键游标分页（keyset pagination），不是 OFFSET。</strong> 代码注释（:10-11）写明了为什么：<em>&quot;OFFSET 在大表上是 O(n²)&quot;</em> —— 每次 <code>OFFSET 500000</code> 都要先扫过前 50 万行再扔掉。</p>
+<p>主循环（:41-50）：</p>
+<pre><code class="language-go">var lastID uint64
+for {
+    n, next, err := scanChunk(ctx, db, h, lastID, chunk)
+    lastID = next
+    if n &lt; chunk { break }     // 这一批不够 chunk 行 = 到表尾了
+}
+</code></pre>
+<p><strong>终止条件：某一批返回的行数少于请求数。</strong> 不用额外查 <code>SELECT COUNT(*)</code>。</p>
+<p><code>scanChunk</code><strong>为什么单独成一个函数？</strong> 注释（:56-58）说得很直白：<em>&quot;单独成函数是为了让 rows.Close 在每块结束时确定发生 —— 连接池只有一条连接，未关闭的 rows 会让下一次查询直接阻塞。&quot;</em></p>
+<p>这是个实战细节。<code>defer rows.Close()</code> 写在<strong>每块</strong>的函数里，而不是外层循环里。如果放在外层，前面某块的 <code>rows</code> 没关闭，下一条查询会卡在连接池上。</p>
+<h4 id="哈希本身snapshotdigestgo">哈希本身：snapshot/digest.go</h4>
+<p>这是整段最容易出错的地方，逐条看规范化逻辑：</p>
+<pre><code class="language-go">const (
+    fieldSep = 0x1f // Unit Separator
+    rowSep   = 0x1e // Record Separator
+    noteNull    = 0x00
+    notePresent = 0x01
+)
+const timeLayout = &quot;2006-01-02T15:04:05.000000Z&quot;
+</code></pre>
+<p><strong>四个规范化的要点，每个都有明确的失败场景：</strong></p>
+<p><strong>① 字段之间加分隔符</strong><code>0x1f</code><strong>。</strong> 否则不同切分会拼出相同字节流：</p>
+<pre><code class="language-text">(user_id=1, note=&quot;23&quot;)   → &quot;123&quot;
+(user_id=12, note=&quot;3&quot;)   → &quot;123&quot;
+</code></pre>
+<p>没有分隔符，这两行哈希相同 → 两侧数据不一致却判定一致。注释（:12-13）写了选择 ASCII 控制符的原因：<code>orders</code> 各列的取值（数字、状态词、十六进制串、<code>note-xxxx</code>）都不可能含这些字节。</p>
+<p><strong>② 时间规范化到微秒 + UTC。</strong></p>
+<pre><code class="language-go">dst = r.CreatedAt.UTC().AppendFormat(dst, timeLayout)
+</code></pre>
+<p><code>DATETIME(6)</code> 精度到微秒。如果格式化成秒，两侧相差几微秒的数据会被判为一致。注释（:22-23）明确写了这个风险。<code>.UTC()</code> 还消除了时区差异。</p>
+<p><strong>③ NULL 和空字符串必须产生不同字节。</strong></p>
+<pre><code class="language-go">if r.Note.Valid {
+    dst = append(dst, notePresent)   // 0x01 + 内容
+} else {
+    dst = append(dst, noteNull)      // 0x00
+}
+</code></pre>
+<p>注释（:50）：<em>&quot;否则 note IS NULL 与 note=&#39;&#39; 会互相冒充。&quot;</em> 在 SQL 语义里 <code>NULL ≠ &#39;&#39;</code>，<code>note IS NULL</code> 和 <code>note = &#39;&#39;</code> 匹配的行集不同。</p>
+<p><strong>④ 字段顺序即字节顺序。</strong><code>Row</code> 结构体的字段顺序就是摘要里的字节顺序，注释（:26）写了：<em>&quot;调换会改变摘要。&quot;</em></p>
+<p><strong>顺序也参与摘要。</strong><code>Hasher.Add</code> 的注释（:74）：<em>&quot;顺序参与摘要，因此调用方必须按主键升序调用。&quot;</em> 这正是 <code>selectChunk</code> 里 <code>ORDER BY id</code> 存在的理由。</p>
+<p><code>Hasher</code><strong>不保留整表。</strong> 只持有一个 <code>sha256.Hash</code> 和一个 512 字节的复用 buffer：</p>
+<pre><code class="language-go">func (h *Hasher) Add(r Row) {
+    h.buf = normalize(h.buf[:0], r)   // 复用 buffer，不累积
+    h.h.Write(h.buf)
+    h.rows++
+}
+</code></pre>
+<p><code>h.buf[:0]</code> 是清空但保留底层数组。<strong>100 万行也不会把整表读进内存。</strong></p>
+<p><strong>结果</strong>：<code>Digest()</code> 返回两侧共同的摘要（measure/gate.go:71），只返回 <code>Baseline</code> 那一份——因为门禁通过后它们必然相等。<code>Report.Snapshot</code> 里记的就是这一份，真实报告里是那个 64 位的 <code>5f2ed946...</code>。</p>
+<p><strong>&quot;快照&quot;这个词要小心理解</strong>：这里主要是<strong>数据一致性检查</strong>，不是跨两个数据库的同一事务时刻快照。代码注释和 README 都用了&quot;数据摘要&quot;的说法。两侧数据是 <code>seed</code> 阶段用相同 <code>(seed, rowIndex)</code> 确定性生成的，不需要 dump/restore。</p>
+<p><strong>门禁顺序的一个问题值得想</strong>：为什么快照检查放在<strong>创建索引之前</strong>？</p>
+<p><code>CREATE INDEX</code> 不会改数据行，所以技术上顺序不影响正确性。但这是防御性的：<strong>先确立&quot;两侧可比&quot;这个前提，再允许任何副作用。</strong> 而且 candidate 侧可能已经有上次运行留下的索引，先确认数据一致，再处理索引。</p>
+<h3 id="53-表列存在gatego182">5.3 表/列存在（gate.go:182）</h3>
+<pre><code class="language-go">SELECT COUNT(*) FROM information_schema.TABLES
+WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?
+</code></pre>
+<p>先确认表存在（<code>tableCount != 1</code> → <code>ErrTableMissing</code>），再逐列确认：</p>
+<pre><code class="language-go">for _, col := range spec.Columns {
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?
+}
+</code></pre>
+<p><strong>为什么这一步不能省？</strong> S1 讲过 <code>candidate.Validate</code> 只证明 <code>status</code>、<code>amount_cents</code> 是<strong>合法标识符</strong>。它不证明当前数据库里有这两列。数据库层的确认是另一回事。</p>
+<p><strong>注意：只查 candidate 侧，不查 baseline 侧。</strong> 因为 DDL 只会在 candidate 上执行；baseline 只做 <code>EXPLAIN</code>，列名拼错会在那里报错。不过实际上 <code>requireSchema</code> 的查询是发给 <code>g.Candidate</code> 的（:113）。</p>
+<p><strong>一个小不一致</strong>：<code>existingIndex</code> 里的查询把表名<strong>硬编码在 SQL 字符串里</strong>（<code>TABLE_NAME = &#39;orders&#39;</code>，gate.go:229），而 <code>requireSchema</code> 用的是 <code>?</code> 绑定。同一个文件里两种风格。功能上没差别（都是常量），但风格不统一。</p>
+<hr>
+<h2 id="执行计划验证阶段小结">执行计划验证阶段小结</h2>
+<p>到这里 <code>Gate.Run</code> 的前三个门禁全部只读。用一张表总结门禁：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>门禁</th>
+<th>代码位置</th>
+<th>读还是写</th>
+<th>失败返回</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SQL 准入</td>
+<td><code>Prepare</code><br>:42</td>
+<td>不连库</td>
+<td><code>ErrSQLRejected</code><br>+ 原因码</td>
+</tr>
+<tr>
+<td>绑定占位符</td>
+<td><code>Prepare</code><br>:46</td>
+<td>不连库</td>
+<td><code>ErrPlaceholderUnsupported</code></td>
+</tr>
+<tr>
+<td>表范围</td>
+<td><code>Prepare</code><br>:49</td>
+<td>不连库</td>
+<td><code>ErrUnsupportedTable</code></td>
+</tr>
+<tr>
+<td>MySQL 版本</td>
+<td>:149</td>
+<td>只读</td>
+<td><code>ErrServerVersionMismatch</code><br>+ 两侧版本</td>
+</tr>
+<tr>
+<td>数据摘要</td>
+<td>:163</td>
+<td>只读（扫全表）</td>
+<td><code>ErrSnapshotMismatch</code><br>+ 两侧行数与摘要</td>
+</tr>
+<tr>
+<td>表/列存在</td>
+<td>:182</td>
+<td>只读</td>
+<td><code>ErrTableMissing</code><br>/ <code>ErrColumnMissing</code></td>
+</tr>
+<tr>
+<td><strong>创建索引</strong></td>
+<td>:209</td>
+<td><strong>写</strong></td>
+<td>见后半段</td>
+</tr>
+<tr>
+<td><strong>ANALYZE</strong></td>
+<td>:120</td>
+<td><strong>写</strong></td>
+<td>见后半段</td>
+</tr>
+</tbody></table></div>
+<p><strong>七个只读门禁全部通过，才允许第一个写操作。</strong></p>
+<hr>
+<h2 id="六第五步已有索引怎么处理">六、第五步：已有索引怎么处理</h2>
+<p>ensureCandidateIndex :209。三个分支，返回 <code>(created bool, err error)</code>：</p>
+<pre><code class="language-go">actual, err := existingIndex(ctx, db, p.Spec.IndexName)
+expected := expectedIndex(p.Spec)
+if len(actual) &gt; 0 {
+    if !sameIndex(actual, expected) {
+        return false, fmt.Errorf(&quot;%w: %s&quot;, ErrIndexDefinitionConflict, p.Spec.IndexName)
+    }
+    return false, nil
+}
+if _, err := db.ExecContext(ctx, p.DDL); err != nil {
+    return false, fmt.Errorf(&quot;create candidate index %q: %w&quot;, p.Spec.IndexName, err)
+}
+return true, nil
+</code></pre>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>当前情况</th>
+<th>行为</th>
+<th><code>created</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>没有同名索引</td>
+<td>执行 DDL</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td>同名且定义一致</td>
+<td>复用，不建</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td>同名但定义不同</td>
+<td>返回冲突错误</td>
+<td>不生成成功报告</td>
+</tr>
+</tbody></table></div>
+<h3 id="61-怎么读已有定义">6.1 怎么读已有定义</h3>
+<p>existingIndex :227：</p>
+<pre><code class="language-go">SELECT COLUMN_NAME, COLLATION FROM information_schema.STATISTICS
+WHERE ... INDEX_NAME = ?
+ORDER BY SEQ_IN_INDEX
+</code></pre>
+<p><code>ORDER BY SEQ_IN_INDEX</code><strong>是这段的灵魂。</strong> 索引的第 1、2、3 列在 <code>STATISTICS</code> 表里是<strong>多行</strong>，每行带一个 <code>SEQ_IN_INDEX</code>。不排序的话，读出来的列顺序是乱的，<code>(status, amount_cents)</code> 可能被读成 <code>(amount_cents, status)</code>。</p>
+<p>方向从 <code>COLLATION</code> 字段读：</p>
+<pre><code class="language-go">var collation sql.NullString
+direction := &quot;ASC&quot;
+if collation.Valid &amp;&amp; collation.String == &quot;D&quot; {
+    direction = &quot;DESC&quot;
+}
+</code></pre>
+<p><strong>MySQL 8.0 的</strong><code>STATISTICS.COLLATION</code><strong>列装的是</strong><code>&#39;A&#39;</code><strong>/</strong><code>&#39;D&#39;</code><strong>/</strong><code>NULL</code><strong>，表示索引列方向，不是字符串的字符校对规则。</strong> 这是 MySQL 文档里最反直觉的字段之一。用 <code>sql.NullString</code> 是因为老版本这个列可为 NULL。</p>
+<h3 id="62-为什么不能只看索引名">6.2 为什么不能只看索引名</h3>
+<pre><code class="language-go">func sameIndex(actual, expected []indexColumn) bool {
+    if len(actual) != len(expected) { return false }
+    for i := range actual {
+        if actual[i] != expected[i] { return false }
+    }
+    return true
+}
+</code></pre>
+<p><strong>逐列比较列名 + 方向</strong>（<code>indexColumn</code> 结构体直接 <code>!=</code>）。</p>
+<p>这两个索引同名但<strong>不是同一个方案</strong>：</p>
+<pre><code class="language-text">(status ASC, amount_cents DESC)
+(amount_cents DESC, status ASC)
+</code></pre>
+<p>只看名字就会误判为&quot;已存在，复用&quot;，然后 EXPLAIN 出的计划会被当成&quot;本次候选的效果&quot;——<strong>其实是错的索引的效果</strong>。</p>
+<p><code>ErrIndexDefinitionConflict</code><strong>是拒绝，不是降级。</strong> 不会试图删掉重建。原因：删除是破坏性操作，可能影响其他依赖它的查询。让上层看到冲突，人来决定。</p>
+<h3 id="63-这个三分支解决了什么问题">6.3 这个三分支解决了什么问题</h3>
+<ul>
+<li><strong>重复运行不重复建索引</strong>（同一候选第二次跑，直接复用）；</li>
+<li><strong>不能用&quot;已存在&quot;偷渡另一个定义</strong>（定义不符就报错）；</li>
+<li><strong>不会偷偷删重建</strong>（避免破坏性操作）。</li>
+</ul>
+<p><strong>用真实报告验证这个分支确实生效了。</strong> 项目里有两份报告：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>报告</th>
+<th><code>candidate_index.created</code></th>
+<th>生成时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>candidate_explain_report.json</code></td>
+<td><code>true</code></td>
+<td>12:38:14</td>
+</tr>
+<tr>
+<td><code>explain_comparison_report.json</code></td>
+<td><code>false</code></td>
+<td>13:12:43</td>
+</tr>
+</tbody></table></div>
+<p><strong>第一份是真的执行了</strong><code>CREATE INDEX</code><strong>，第二份是复用已有的。</strong> 13:12 那次跑的时候，索引已经在 12:38 那次建好了。这就是中间分支的证据。</p>
+<p><strong>一个必须记住的副作用</strong>：创建索引<strong>已经实际改变了 candidate</strong>。如果后面的 <code>ANALYZE</code> 或 <code>EXPLAIN</code> 失败，<strong>索引不会自动撤销</strong>。下一次运行会再次看到&quot;同名索引已存在&quot;，走复用分支。这是有意的——保留证据状态，让人能看到上一次跑了什么。</p>
+<p><strong>这里比较的只是列名、顺序、方向。</strong> 不要笼统说成&quot;检查了所有索引属性&quot;（<code>CARDINALITY</code>、<code>VISIBLE</code>、<code>STATS</code> 都没比）。</p>
+<hr>
+<h2 id="七第六步为什么建完索引还要-analyze-table">七、第六步：为什么建完索引还要 <code>ANALYZE TABLE</code></h2>
+<p>gate.go:120：</p>
+<pre><code class="language-go">if _, err := g.Candidate.ExecContext(ctx, &quot;ANALYZE TABLE `orders`&quot;); err != nil {
+    return Report{}, fmt.Errorf(&quot;analyze candidate table: %w&quot;, err)
+}
+</code></pre>
+<p><strong>三个操作必须分清：</strong></p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>做什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CREATE INDEX</code></td>
+<td>增加访问结构</td>
+</tr>
+<tr>
+<td><code>ANALYZE TABLE</code></td>
+<td>刷新统计信息</td>
+</tr>
+<tr>
+<td><code>EXPLAIN</code></td>
+<td>看优化器打算怎么走</td>
+</tr>
+</tbody></table></div>
+<p><strong>优化器选计划靠成本估计，成本估计靠统计信息。</strong> 刚建好的索引，如果没有统计信息，优化器可能认为它没价值，或者用错误的基数估计。<code>ANALYZE</code> 让 MySQL 重新采集键分布并存入统计。</p>
+<p><strong>特别不要把这两个当成同一件事：</strong></p>
+<pre><code class="language-sql">ANALYZE TABLE orders;              -- 刷新统计信息
+EXPLAIN ANALYZE SELECT ...;        -- 实际执行并带运行期统计的计划
+</code></pre>
+<p><strong>前者是元数据操作，后者会真的执行查询。</strong> 项目里两处都用的是不带 <code>ANALYZE</code> 的 <code>EXPLAIN FORMAT=JSON</code>——<strong>普通 EXPLAIN，不执行查询</strong>。这个区别在安全约束里很重要：只读 SQL 准入保证不写，<code>EXPLAIN</code>（无 <code>ANALYZE</code>）保证不改。</p>
+<p><strong>一个值得注意的不对称</strong>：<code>ANALYZE</code><strong>只在 candidate 侧执行</strong>，baseline 没有。为什么？</p>
+<ul>
+<li>candidate 刚加了新索引，必须重新采集新索引的统计，否则优化器可能不用它；</li>
+<li>baseline 没加索引，它的 <code>ALL</code> 全表扫描估计来自表级统计（行数、选择性 10%），本来就在那儿。</li>
+</ul>
+<p>但这也意味着<strong>两侧的统计采集时机不完全对称</strong>。这是当前实现的现实，不是理论上的最优。</p>
+<hr>
+<h2 id="八第七步取两侧-explain">八、第七步：取两侧 EXPLAIN</h2>
+<h3 id="81-candidate-计划gatego123-129">8.1 candidate 计划（gate.go:123-129）</h3>
+<pre><code class="language-go">var explain string
+if err := g.Candidate.QueryRowContext(ctx, &quot;EXPLAIN FORMAT=JSON &quot;+p.SQL).Scan(&amp;explain); err != nil {
+    return Report{}, fmt.Errorf(&quot;explain admitted SQL: %w&quot;, err)
+}
+if !json.Valid([]byte(explain)) {
+    return Report{}, errors.New(&quot;MySQL returned invalid EXPLAIN JSON&quot;)
+}
+</code></pre>
+<p><code>Scan(&amp;explain)</code> 把数据库返回的<strong>计划文本</strong>放进 Go 字符串。</p>
+<p><strong>这里返回的是计划，不是那 20 条订单。</strong> 真实报告里 <code>explain_json</code> 是一段描述执行计划的 JSON，没有一条 <code>orders</code> 的业务数据。</p>
+<p><strong>多一道</strong><code>json.Valid</code><strong>检查。</strong> 为什么要？因为下一步 <code>json.RawMessage(explain)</code> 只是字节包装，不验证。这里提前拦下&quot;数据库返回了非 JSON&quot;的情况，避免错误延后到写盘阶段才暴露。</p>
+<h3 id="82-组装-report130-139">8.2 组装 <code>Report</code>（:130-139）</h3>
+<pre><code class="language-go">return Report{
+    GeneratedAt:                 time.Now().UTC().Format(time.RFC3339),
+    EvidenceLevel:               &quot;L1&quot;,
+    EligibleForPerformanceClaim: false,
+    MySQLVersion:                version,
+    Snapshot:                    Snapshot{Digest: gate.Digest(), Rows: gate.Rows()},
+    SQL:                         SQLInput{SQL: p.SQL, Signals: p.SQLSignals},
+    Candidate:                   CandidateIndex{... Created: created},
+    ExplainJSON:                 json.RawMessage(explain),
+}, nil
+</code></pre>
+<p><strong>注意</strong><code>EvidenceLevel: &quot;L1&quot;</code><strong>和</strong><code>EligibleForPerformanceClaim: false</code><strong>在这里就写死了。</strong> 和 S1 讲过的管线一致——<strong>结构体注释（:84-85）直接说明原因</strong>：<em>&quot;Report deliberately has no performance verdict. EXPLAIN plus schema is L1 plan evidence, not a benchmark result.&quot;</em></p>
+<p><strong>这个</strong><code>Report</code><strong>里没有 baseline 的 EXPLAIN。</strong> 因为 baseline 的计划在下一步才取。</p>
+<h3 id="83-回到外层取-baseline-计划pipelinego81-85">8.3 回到外层取 baseline 计划（pipeline.go:81-85）</h3>
+<pre><code class="language-go">var baselineExplain string
+if err := dbs[&quot;baseline&quot;].QueryRowContext(ctx, &quot;EXPLAIN FORMAT=JSON &quot;+prepared.SQL).Scan(&amp;baselineExplain); err != nil {
+    return shadowgate.Report{}, nil, fmt.Errorf(&quot;explain baseline SQL: %w&quot;, err)
+}
+return candidateReport, []byte(baselineExplain), nil
+</code></pre>
+<p><strong>所以真实执行顺序是：candidate 计划 → baseline 计划。</strong> 架构图上 baseline 画在左边不代表它先执行。</p>
+<p><strong>注意 baseline 侧没有</strong><code>json.Valid</code><strong>检查。</strong><code>PlanCompare</code> 的 <code>Parse</code> 会验证。这是个轻微的不一致，但下游会兜住。</p>
+<p><strong>注意 baseline 的 EXPLAIN 用的是</strong><code>prepared.SQL</code><strong>，和 candidate 完全相同的字符串</strong>——包含结尾的分号。真实报告里 <code>sql_input.sql</code> 结尾就是 <code>LIMIT 20;\n</code>。MySQL 接受 <code>EXPLAIN</code> 后跟带分号的 SQL。</p>
+<hr>
+<h2 id="九用真实数字看计划变了什么">九、用真实数字看计划变了什么</h2>
+<p>现在打开项目里的 <code>explain_comparison_report.json</code>，两份计划的对照：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>baseline</th>
+<th>candidate</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>access_type</code></td>
+<td><code>ALL</code><br>（全表扫描）</td>
+<td><code>ref</code><br>（索引查找）</td>
+</tr>
+<tr>
+<td><code>key</code></td>
+<td><em>(无)</em></td>
+<td><code>idx_cand_status_amount</code></td>
+</tr>
+<tr>
+<td><code>possible_keys</code></td>
+<td><em>(无)</em></td>
+<td><code>[idx_cand_status_amount]</code></td>
+</tr>
+<tr>
+<td><code>used_key_parts</code></td>
+<td><em>(无)</em></td>
+<td><code>[status]</code></td>
+</tr>
+<tr>
+<td><code>rows_examined_per_scan</code></td>
+<td><code>992595</code></td>
+<td><code>496809</code></td>
+</tr>
+<tr>
+<td><code>rows_produced_per_join</code></td>
+<td><code>99259</code></td>
+<td><code>496809</code></td>
+</tr>
+<tr>
+<td><code>filtered</code></td>
+<td><code>10.00</code></td>
+<td><code>100.00</code></td>
+</tr>
+<tr>
+<td><code>using_index</code></td>
+<td><code>false</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>using_filesort</code></td>
+<td><code>true</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>query_cost</code></td>
+<td><code>100982.00</code></td>
+<td><code>54649.98</code></td>
+</tr>
+<tr>
+<td><code>data_read_per_join</code></td>
+<td><code>131M</code></td>
+<td><code>655M</code></td>
+</tr>
+</tbody></table></div>
+<p><strong>逐条翻译：</strong></p>
+<p><strong>① 访问方式：</strong><code>ALL</code><strong>→</strong><code>ref</code><strong>。</strong> baseline 全表扫 99 万行；candidate 走索引按 <code>status=&#39;paid&#39;</code> 查找。这是访问路径的根本变化。</p>
+<p><strong>②</strong><code>used_key_parts: [&quot;status&quot;]</code><strong>。</strong> 只有 <code>status</code> 参与查找。<code>amount_cents</code><strong>没参与二级查找</strong>——它的作用是覆盖和排序，不是查找。</p>
+<p><strong>③</strong><code>using_index: true</code><strong>。</strong> 覆盖索引。<code>id</code>（主键隐式在二级索引叶子节点里）、<code>status</code>、<code>amount_cents</code> 三列全在索引里，<strong>不用回表</strong>。<code>data_read_per_join</code> 从 <code>131M</code> 变成 <code>655M</code>——这个数字<strong>反而变大</strong>，因为它表示&quot;为了产出这些行，索引里要读的字节数&quot;；索引条目本身要读，但不用再去堆里读整行。这个数字的解读要看上下文，不能单独当好坏指标。</p>
+<p><strong>④</strong><code>using_filesort: false</code><strong>。</strong> baseline 有额外排序，candidate 没有。机制：<code>status=&#39;paid&#39;</code> 的索引条目本身按 <code>amount_cents DESC</code> 排列（因为第二列方向是 DESC），扫描索引就是有序输出，优化器判定不需要 filesort。</p>
+<p><strong>⑤</strong><code>rows_examined_per_scan</code><strong>：</strong><code>992595</code><strong>→</strong><code>496809</code><strong>。</strong> 这是<strong>估计扫描行数</strong>，不是实际行数。</p>
+<p><strong>⑥ 这里有个值得停下来看的矛盾</strong>：baseline 用 <code>filtered: 10.00</code> 估算出 99259 行 <code>paid</code>；candidate 用 <code>filtered: 100.00</code> 估算出 496809 行 <code>paid</code>。<strong>同一个问题&quot;有多少行是 paid&quot;，两侧给出 99259 和 496809 两个差 5 倍的估计。</strong></p>
+<p>原因是估计方法不同：baseline 用表级统计猜&quot;10% 的行是 paid&quot;；candidate 用索引里 <code>status</code> 的实际分布。<strong>索引统计通常更准，但两侧的计划估计口径不同，所以行数不能直接当成&quot;真实 paid 行数&quot;比较。</strong></p>
+<p>这也解释了为什么 <code>rows_examined_per_scan</code> 的比较叫&quot;估计扫描减少&quot;，而不是&quot;实际扫描减少&quot;。</p>
+<p><strong>⑦</strong><code>query_cost</code><strong>：</strong><code>100982.00</code><strong>→</strong><code>54649.98</code><strong>，约 54%。</strong> 但这是优化器的成本模型输出，<strong>不是测量</strong>。</p>
+<h3 id="一个非常重要的诚实观察">一个非常重要的诚实观察</h3>
+<p>项目里有两份报告的 candidate 数字<strong>不一样</strong>：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>报告</th>
+<th><code>rows_examined_per_scan</code></th>
+<th><code>query_cost</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>candidate_explain_report.json</code><br>（12:38）</td>
+<td><code>495956</code></td>
+<td><code>54556.15</code></td>
+</tr>
+<tr>
+<td><code>explain_comparison_report.json</code><br>（13:12）</td>
+<td><code>496809</code></td>
+<td><code>54649.98</code></td>
+</tr>
+</tbody></table></div>
+<p><strong>两次运行、同一份数据、同一个索引，估计值就漂移了。</strong> 这就是为什么单份 EXPLAIN 报告<strong>不能用来声称性能收益</strong>——连优化器的估计数字都不稳定，测量必须靠重复采样。</p>
+<hr>
+<h2 id="十buildreport-提取什么">十、<code>BuildReport</code> 提取什么</h2>
+<p>compare.go:87。</p>
+<pre><code class="language-go">baseline, err := Parse(baselineRaw)
+candidate, err := Parse(candidateRaw)
+</code></pre>
+<p>包注释（:1-3）说明了定位：<em>&quot;extracts a deliberately small, stable view from MySQL EXPLAIN FORMAT=JSON output. The raw plans remain in the report because this package is not a complete MySQL plan AST.&quot;</em></p>
+<p><strong>故意只提取一个小而稳定的视图，原始计划完整保留。</strong> 因为它不是 MySQL 计划 AST 解析器——MySQL 的 EXPLAIN JSON 结构复杂且版本相关，全解析既做不到也不稳定。</p>
+<h3 id="parse-的两个细节comparego116"><code>Parse</code> 的两个细节（compare.go:116）</h3>
+<pre><code class="language-go">dec := json.NewDecoder(bytes.NewReader(raw))
+dec.UseNumber()
+</code></pre>
+<p><code>UseNumber()</code><strong>很重要。</strong> 默认 <code>encoding/json</code> 把所有数字解成 <code>float64</code>，会丢精度。EXPLAIN 里的行数估计可能是大整数，用 <code>float64</code> 会有精度问题。<code>UseNumber</code> 保留原始数字表示。</p>
+<p>后面 <code>int64Field</code>（:177）同时处理 <code>json.Number</code> 和 <code>string</code> 两种形态——因为 MySQL 不同字段可能返回数字或字符串（比如 <code>cost_info</code> 全是字符串，<code>rows_examined_per_scan</code> 是数字）。</p>
+<pre><code class="language-go">var trailing any
+if err := dec.Decode(&amp;trailing); err == nil {
+    return Plan{}, fmt.Errorf(&quot;trailing JSON value&quot;)
+}
+</code></pre>
+<p><strong>又是尾随值检查。</strong> 项目里的严格 JSON 双检模式，第四次出现了。</p>
+<h3 id="walk递归提取132"><code>walk</code>：递归提取（:132）</h3>
+<pre><code class="language-go">func walk(node any, summary *Summary) {
+    switch value := node.(type) {
+    case map[string]any:
+        if filesort, ok := value[&quot;using_filesort&quot;].(bool); ok &amp;&amp; filesort {
+            summary.UsesFilesort = true
+        }
+        if tableName, ok := value[&quot;table_name&quot;].(string); ok {
+            summary.Tables = append(summary.Tables, TableAccess{...})
+        }
+        for _, child := range value { walk(child, summary) }
+    case []any:
+        for _, child := range value { walk(child, summary) }
+    }
+}
+</code></pre>
+<p><strong>递归遍历整棵 JSON 树，不预设结构。</strong> MySQL 计划的结构在不同版本、不同查询形态下差别很大（<code>ordering_operation</code>、<code>nested_loop</code>、<code>materialization</code>...），硬编码路径会碎。递归扫描 + 遇到关键字段就提取，是<strong>对不确定的输入结构的稳健应对</strong>。</p>
+<p>注释（:115）：<em>&quot;Unknown plan nodes are intentionally ignored.&quot;</em> —— 不认识的节点直接忽略，不报错。</p>
+<p><code>using_filesort</code><strong>用 OR 累积</strong>（<code>if ... &amp;&amp; filesort { summary.UsesFilesort = true }</code>）—— 计划里<strong>任何一层</strong>出现 filesort，就认为有 filesort。保守方向：宁可报有，不报没有。</p>
+<p><code>RowsExaminedPerScan</code><strong>是</strong><code>*int64</code><strong>（指针）。</strong> 解析不出来就是 <code>nil</code>，而不是 <code>0</code>。<strong>区分&quot;没有这个字段&quot;和&quot;值是 0&quot;</strong>，这在诊断阶段会用到。</p>
+<h3 id="diff203"><code>Diff</code>（:203）</h3>
+<pre><code class="language-go">BaselineUsesFilesort  bool
+CandidateUsesFilesort bool
+FilesortChanged       bool
+BaselineKeys          []string
+CandidateKeys         []string
+CandidateOnlyKeys     []string
+</code></pre>
+<p><strong>注意</strong><code>CandidateOnlyKeys</code><strong>的含义</strong>：candidate 用了、baseline 没用的索引。</p>
+<p>真实报告的 <code>difference</code>：</p>
+<pre><code class="language-json">{
+  &quot;baseline_uses_filesort&quot;: true,
+  &quot;candidate_uses_filesort&quot;: false,
+  &quot;filesort_changed&quot;: true,
+  &quot;baseline_keys&quot;: [],
+  &quot;candidate_keys&quot;: [&quot;idx_cand_status_amount&quot;],
+  &quot;candidate_only_keys&quot;: [&quot;idx_cand_status_amount&quot;]
+}
+</code></pre>
+<p><strong>三个事实：filesort 消失了、访问索引变了、优化器选了候选索引。</strong></p>
+<p><code>uniqueKeys</code><strong>最后</strong><code>sort.Strings(out)</code><strong>（:237）。</strong> 去重后排序，保证输出顺序稳定。否则 map 遍历顺序随机，报告不可复现。</p>
+<p><strong>注意</strong><code>BuildReport</code><strong>只比较</strong><code>Summary</code><strong>，不比较</strong><code>Raw</code><strong>。</strong><code>Raw</code> 原样保留在报告里供人查。</p>
+<p><code>Report</code><strong>里补的两个哈希</strong>（S1 讲过）：</p>
+<pre><code class="language-go">comparison.InputCandidateExplainSHA256 = digest(candidateBytes)
+comparison.InputBaselineExplainSHA256 = digest(baselineRaw)
+</code></pre>
+<p>对照报告记录了&quot;我基于哪两份计划得出结论&quot;。</p>
+<p><code>BuildReport</code><strong>失败后是否继续？</strong> 返回 <code>error</code>，管线 <code>stop(&quot;plan_compare&quot;, &quot;plan_compare_rejected&quot;, err)</code>。但<strong>前两步的工件已经写盘</strong>。</p>
+<hr>
+<h2 id="十一analyze-是谁在分析">十一、<code>Analyze</code> 是谁在分析</h2>
+<p>diagnosis.go:63。<strong>确定性规则代码，这一步不调用大模型。</strong></p>
+<p>包注释（:1-3）：<em>&quot;It never connects to MySQL and never recommends or applies an index.&quot;</em></p>
+<h3 id="先过三道输入门禁64-76">先过三道输入门禁（:64-76）</h3>
+<pre><code class="language-go">if input.EvidenceLevel != &quot;L1&quot; { return ... ErrEvidenceLevel }
+if input.EligibleForPerformanceClaim { return ... ErrPerformanceEligible }
+if strings.TrimSpace(input.SQL.SQL) == &quot;&quot; || input.Snapshot.Digest == &quot;&quot; {
+    return ... errors.New(&quot;comparison report lacks SQL or snapshot evidence&quot;)
+}
+</code></pre>
+<p><strong>第三道特别值得注意：输入已经</strong><code>EligibleForPerformanceClaim == true</code><strong>就拒绝。</strong> 意思是：诊断不接受&quot;已经声称性能收益&quot;的报告作为输入。防止诊断阶段反过来给已有结论背书。</p>
+<p><code>decodeStrict</code><strong>又是双检</strong>（:98-112）——<code>DisallowUnknownFields</code> + 尾随值。第五次。</p>
+<p><code>Source.SHA256</code><strong>是输入的哈希</strong>（:78-85）：</p>
+<pre><code class="language-go">sum := sha256.Sum256(raw)
+...
+Source: Source{SHA256: hex.EncodeToString(sum[:]), ...}
+</code></pre>
+<p>诊断报告记录了&quot;我基于哪一份对照报告得出假设&quot;。S1 讲过管线传的是磁盘字节而不是内存对象，就是为了这个哈希能对得上。</p>
+<h3 id="三条推导规则derive-115">三条推导规则（derive :115）</h3>
+<pre><code class="language-go">if diff.BaselineUsesFilesort &amp;&amp; !diff.CandidateUsesFilesort {
+    out = append(out, hypothesis(CodeFilesortRemoved, ..., []Fact{
+        {Field: &quot;difference.baseline_uses_filesort&quot;, Value: &quot;true&quot;},
+        {Field: &quot;difference.candidate_uses_filesort&quot;, Value: &quot;false&quot;},
+    }))
+}
+</code></pre>
+<p><strong>每条假设都带着</strong><code>Facts</code>——字段路径 + 值。事后可追溯&quot;为什么提出这个判断&quot;。</p>
+<p>三条：</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="文章表格"><table>
+<thead>
+<tr>
+<th>代码</th>
+<th>触发条件</th>
+<th>真实报告的触发情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>candidate_index_removes_filesort</code></td>
+<td>baseline 有 filesort 且 candidate 没有</td>
+<td>✅ 触发</td>
+</tr>
+<tr>
+<td><code>candidate_index_changes_access_path</code></td>
+<td><code>CandidateOnlyKeys</code><br>非空</td>
+<td>✅ 触发</td>
+</tr>
+<tr>
+<td><code>candidate_index_reduces_estimated_scan</code></td>
+<td>估计扫描可比较且 candidate 更少</td>
+<td>✅ 触发</td>
+</tr>
+</tbody></table></div>
+<p><strong>真实报告里三条全部触发。</strong></p>
+<h3 id="第三条有个保守的门槛">第三条有个保守的门槛</h3>
+<p>comparableEstimatedRows :156：</p>
+<pre><code class="language-go">if len(baseline.Tables) == 0 || len(baseline.Tables) != len(candidate.Tables) {
+    return 0, 0, false
+}
+for i := range baseline.Tables {
+    b, c := baseline.Tables[i], candidate.Tables[i]
+    if b.TableName != c.TableName || b.RowsExaminedPerScan == nil || c.RowsExaminedPerScan == nil {
+        return 0, 0, false
+    }
+}
+</code></pre>
+<p><strong>只在&quot;一一对应的表序列、表名相同、两侧都有估计值&quot;时才比较。</strong> 计划结构形状不同（比如一侧是 <code>nested_loop</code> 另一侧是全表扫）、或者缺字段，就<strong>不出结论</strong>。</p>
+<p>注释（:154-155）：<em>&quot;Unknown or differently shaped plans yield no claim.&quot;</em></p>
+<p><strong>返回</strong><code>bool</code><strong>而不是 panic 或默认值。</strong> 未知形状 = 不出结论。这和前面 <code>RowsExaminedPerScan</code> 用指针是同一个思路：<strong>区分&quot;没有数据&quot;和&quot;数据是 0&quot;。</strong></p>
+<h3 id="每条假设都带着quot下一步要做什么quot">每条假设都带着&quot;下一步要做什么&quot;</h3>
+<pre><code class="language-go">RequiredVerification: []string{
+    &quot;controlled_ab_measurement&quot;,
+    &quot;series_admission&quot;,
+},
+</code></pre>
+<p><strong>机器可读的后续步骤。</strong> 假设不是终点，它明确说&quot;要做受控 A/B 测量 + 系列准入&quot;。</p>
+<h3 id="report-里的-unresolved91-94"><code>Report</code> 里的 <code>Unresolved</code>（:91-94）</h3>
+<pre><code class="language-go">Unresolved: []string{
+    &quot;EXPLAIN differences are plan evidence, not measured latency or write-cost evidence.&quot;,
+    &quot;Each hypothesis requires controlled_ab_measurement and series_admission before a performance claim.&quot;,
+},
+</code></pre>
+<p><strong>报告自己声明&quot;我没有证明什么&quot;。</strong> 这不是文档注释，是 JSON 里的字段，消费者必须读到。</p>
+<p>**<code>Report</code> 注释（:51-52）写得很直白：<em>&quot;Report deliberately does not contain a recommendation.&quot;</em> —— 没有&quot;建议建这个索引&quot;这种字段。只有事实 + 假设 + 待验证项。</p>
+<p><strong>失败后是否继续？</strong><code>Analyze</code> 返回 error → 管线 <code>stop(&quot;diagnosis&quot;, &quot;diagnosis_rejected&quot;, err)</code>。前三份工件已写盘。</p>
+<hr>
+<h2 id="十二把-explain-和-bench-分开">十二、把 EXPLAIN 和 bench 分开</h2>
+<p>这一阶段的实际调用链是：</p>
+<pre><code class="language-text">输入 → 候选索引 → 双侧计划 → 比较 → 诊断
+</code></pre>
+<p>独立的 <code>bench</code> 做的是：</p>
+<pre><code class="language-text">环境检查 → 预热 → 交替采样(B→C→B→C) → 完整消费查询结果 → 统计 → 方向判定 + 证据准入
+</code></pre>
+<p>runner.go:90 的 <code>execOnce</code> 注释写得很清楚：</p>
+<p>必须走 QueryContext 并真正遍历、Scan、检查 rows.Err、关闭 rows：只发出查询而不读取，测到的只是服务端开始响应的时间，而候选索引省掉的 filesort 与随机回表恰恰体现在取回这 20 行的过程中。</p>
+<p><strong>这句话正好解释了本例记录的现象</strong>：<code>using_filesort</code> 从 <code>true</code> 变成 <code>false</code>、<code>using_index: true</code> 避免回表——这些&quot;省下来的工作&quot;发生在<strong>取回结果的过程中</strong>。如果只测&quot;服务端开始响应&quot;的时间，这个收益测不到。</p>
+<p><strong>两个必须分清的调用关系：</strong></p>
+<ol>
+<li><code>pipeline.Run</code> <strong>不调用</strong> <code>bench</code><strong>。</strong> 确认过：<code>internal/pipeline/pipeline.go</code> 的 import 里没有 <code>measure</code>，只有 <code>shadowgate</code>/<code>plancompare</code>/<code>diagnosis</code>/<code>sqladmit</code>。</li>
+<li><code>bench</code> <strong>用的是固定的</strong> <code>DefaultCase()</code><strong>，不是本例 SQL。</strong> runner.go:51：</li>
+</ol>
+<pre><code class="language-go">func DefaultCase() QueryCase {
+    return QueryCase{
+        Name: &quot;hot_user_paid_recent_desc&quot;,
+        SQL:  defaultSQL,
+        Args: []any{caseUserID, caseStatus, caseCreatedAtFrom},
+    }
+}
+</code></pre>
+<p>这是<strong>另一个查询</strong>（三参数的 <code>hot_user_paid_recent_desc</code>），不是本节的 <code>status=&#39;paid&#39; ORDER BY amount_cents DESC LIMIT 20</code>。</p>
+<p><strong>你要把这两条入口读清楚，不要在脑里补出一条不存在的调用。</strong> 本例 SQL 只走过 EXPLAIN 路径，从没被 bench 测量过。</p>
+<p><strong>还有一处架构上的呼应</strong>：<code>shadowgate</code> 的 <code>Gate.Run</code> 和 <code>measure</code> 的门禁用的是<strong>同一套</strong><code>SnapshotGate</code>、<code>ErrSnapshotMismatch</code>、<code>ErrServerVersionMismatch</code>（<code>shadowgate</code> import 了 <code>measure</code>）。意思是：<strong>EXPLAIN 和 bench 都不能跳过环境和数据一致性门禁。</strong> L1 和 L2 共享同一个前提检查。</p>
+<hr>
+<h2 id="执行计划验证的结果与边界">执行计划验证的结果与边界</h2>
+<h3 id="三条机制笔记">三条机制笔记</h3>
+<p><strong>1. 两侧快照不同 → 返回错误，不创建候选索引。</strong></p>
+<ul>
+<li>机制：<code>identicalSnapshots</code> 分别调 <code>snapshot.Compute</code>，比较 <code>Rows</code> 和 <code>Digest</code> 两个值。</li>
+<li>关键：这是<strong>第三个只读门禁</strong>，排在 <code>ensureCandidateIndex</code> 之前。</li>
+<li>证据：失败信息带两侧行数和完整 64 位摘要，如 <code>baseline rows=1000000 digest=... candidate rows=999999 digest=...</code>。</li>
+<li>代码：gate.go:163、snapshot/compare.go:33。</li>
+<li>摘要为什么可靠：字段间加 <code>0x1f</code> 分隔、时间规范化到微秒 UTC、NULL 和空串用 <code>0x00</code>/<code>0x01</code> 区分、按主键升序、游标分页避免 O(n²)。</li>
+</ul>
+<p><strong>2. 索引同名但列序/方向不同 → 拒绝复用。</strong></p>
+<ul>
+<li>机制：<code>existingIndex</code> 从 <code>information_schema.STATISTICS</code> 按 <code>SEQ_IN_INDEX</code> 读出实际列序和 <code>COLLATION</code>（<code>&#39;D&#39;</code> = DESC）；<code>expectedIndex</code> 从候选 spec 构造期望；<code>sameIndex</code> 逐列比较列名 + 方向。</li>
+<li>关键：三分支是<strong>建 / 复用 / 拒绝</strong>，没有&quot;删了重建&quot;这个分支。</li>
+<li>证据：项目里两份报告的 <code>candidate_index.created</code> 分别是 <code>true</code> 和 <code>false</code>，证明建和复用两个分支都真实执行过。</li>
+<li>代码：gate.go:209。</li>
+<li>副作用：<code>CREATE INDEX</code> 一旦执行就不撤销；后续步骤失败，索引留在 candidate 上，下次走复用分支。</li>
+</ul>
+<p><strong>3. 计划变化 → 生成诊断假设，不自动声明性能收益。</strong></p>
+<ul>
+<li>机制：<code>BuildReport</code> 提取 <code>access_type</code>/<code>key</code>/<code>rows_examined_per_scan</code>/<code>using_index</code>/<code>using_filesort</code> 五个字段；<code>Diff</code> 算出 <code>filesort_changed</code> 和 <code>candidate_only_keys</code>；<code>derive</code> 生成三条假设，每条带 <code>Facts</code>（字段路径 + 值）和 <code>RequiredVerification</code>（<code>controlled_ab_measurement</code>、<code>series_admission</code>）。</li>
+<li>关键：<code>Analyze</code> <strong>拒绝</strong> <code>EligibleForPerformanceClaim == true</code> 的输入；<code>Report.Unresolved</code> 显式声明未证明的部分；<code>Report</code> 结构里<strong>没有 recommendation 字段</strong>。</li>
+<li>证据：两份 candidate 报告的 <code>rows_examined_per_scan</code> 分别是 <code>495956</code> 和 <code>496809</code>——同一份数据、同一个索引，估计值就漂移了。单份 EXPLAIN 连优化器自己的估计都不稳定。</li>
+<li>代码：compare.go:87、diagnosis.go:63。</li>
+</ul>
+<hr>
+<h3 id="候选索引验证链路小结">候选索引验证链路小结</h3>
+<p>SQL Sentinel 把原有方案和候选方案放在 baseline、candidate 两个独立数据库里，避免增删索引反复污染实验过程。</p>
+<p>输入先过四道不连库的检查——SQL 准入、绑定占位符、表范围、DDL 编译——然后连两个库，过三道只读门禁：MySQL 版本字符串精确一致、两侧数据行数和按主键升序算出的 SHA-256 摘要都一致、候选引用的表和列在当前库里真实存在。七个只读检查全过，才允许第一个写操作。</p>
+<p>接着只在 candidate 上处理候选索引：同名索引不存在就执行编译好的 DDL，存在且列名与方向逐列匹配就复用，存在但定义不同就直接拒绝，不会删了重建。之后 <code>ANALYZE TABLE</code> 刷新统计，让优化器有依据评估新索引，然后分别取两侧 <code>EXPLAIN FORMAT=JSON</code>——只取计划，不执行查询。</p>
+<p>代码从两份计划里递归提取五个字段并算出差异，再由确定性规则生成带事实引用的诊断假设，每条假设都声明&quot;还需要受控测量和系列准入才能声称性能收益&quot;。整个报告固定为 L1、不可声称性能收益，并且显式列出未证明的内容。</p>
+<p>计划的改善只提供验证方向。要声称性能收益，必须走独立的 bench 入口做重复采样和证据准入——而 <code>pipeline.Run</code> 并不调用 bench，bench 用的是自己的固定查询样例，不是本例 SQL。</p>
+<hr>
+<p><strong>S2 完成。</strong> 下一任务 S3 如果要走，建议方向有两个：<code>bench</code> 的交替采样与 MAD 噪声标定（对应 <code>internal/measure</code>），或 <code>shadowgate</code> 与 <code>measure</code> 共享门禁的具体边界（<code>SnapshotGate</code> 的复用点）。</p>
+<hr>
+<p>上一篇：<a href="../../blog/sql-sentinel-input-admission/index.html">SQL Sentinel：SQL 输入接入与准入校验</a></p>
+<p>下一篇：<a href="../../blog/sql-sentinel-model-rag/index.html">SQL Sentinel：受限模型提案与 RAG 检索</a></p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>

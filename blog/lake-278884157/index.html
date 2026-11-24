@@ -1,0 +1,25 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gin：路由注册与中间件 · 17hwliao</title><link rel="stylesheet" href="../../viewer.css"><link rel="icon" href="../../favicon.png"></head><body>
+    <header class="site-header"><a class="brand" href="../../index.html"><img src="../../favicon.png" width="28" height="28" alt="">17hwliao</a>
+    <nav aria-label="主导航"><a href="../../blog/index.html">文章</a><a href="../../projects/index.html">项目</a><a href="../../pictures/index.html">相册</a><a href="../../about/index.html">关于</a></nav></header>
+    <main><article class="prose"><a href="../../blog/index.html">← 文章归档</a><h1>Gin：路由注册与中间件</h1><time datetime="2026-07-24T09:25:24.000Z">2026年7月24日</time><p>创建路由 :</p>
+<p>在 main 中创建 一个实例对象 :</p>
+<p>func New(healthHandler *handler.HealthHandler) *gin.Engine {</p>
+<p>r := gin.New()</p>
+<p>// 创建一个空白的 Engine（路由引擎）</p>
+<p>// 对比：gin.Default() 会自动加 Logger 和 Recovery 中间件</p>
+<p>后使用了自己写的Zap日志 , 就不用加 Logger ; l</p>
+<p>// 这里用 gin.New() 是手动加中间件，更可控</p>
+<p>r.Use(gin.Logger(), gin.Recovery())</p>
+<p>// 注册两个中间件，每个请求进来前都会执行它们：</p>
+<p>// gin.Logger()：打印请求日志，比如 &quot;GET /health 200 0.1ms&quot;</p>
+<p>// gin.Recovery()：捕获 panic，防止一个请求 panic 导致整个服务挂掉</p>
+<p>r.GET(&quot;/health&quot;, healthHandler.Check) 注册路由 , 路由 ( 访问地址, func(c *gin Context){实际内容})</p>
+<p>// 注册路由：当收到 GET /health 请求时，调用 healthHandler.Check 处理</p>
+<p>// 参数1：请求路径（支持 :id、*name 等路由参数）</p>
+<p>// 参数2：处理函数，签名必须是 func(*gin.Context)</p>
+<p>// 底层：把 &quot;/health&quot; + &quot;GET&quot; 作为 key，Check 作为 value 存到路由表</p>
+<p>return r</p>
+<p>// 返回注册好路由的 Engine，main.go 拿到后调用 r.Run() 启动服务 }</p>
+<p>使用中间件的时候 , 一定要使用路由. next() 实现将控制权转到下一个中间件;</p>
+<p>内部实现的 Logger , Recovery 就可以不使用了</p>
+</article></main><footer><span>17hwliao 的个人博客</span><a href="https://17hwliao.vercel.app">访问完整博客 ↗</a></footer></body></html>
