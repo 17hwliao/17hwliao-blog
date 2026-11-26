@@ -12,7 +12,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useBlogIndex, type BlogIndexItem } from '@/hooks/use-blog-index'
 import { useCategories } from '@/hooks/use-categories'
-import { useReadArticles } from '@/hooks/use-read-articles'
 import { isPrivateKeyBusy, useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import { cn } from '@/lib/utils'
@@ -26,7 +25,6 @@ type DisplayMode = 'day' | 'week' | 'month' | 'year' | 'category'
 export default function BlogPage() {
 	const { items, loading, error, retry } = useBlogIndex()
 	const { categories: categoriesFromServer, loading: categoriesLoading, error: categoriesError, retry: retryCategories } = useCategories()
-	const { isRead } = useReadArticles()
 	const { isAuth, importPrivateKey, keyStatus } = useAuthStore()
 	const importing = isPrivateKeyBusy(keyStatus)
 	const { siteContent } = useConfigStore()
@@ -344,7 +342,7 @@ export default function BlogPage() {
 				}}
 			/>
 
-			<header className='archive-intro'>
+			<header data-ui-surface='hero' className='archive-intro'>
 				<div>
 					<p className='eyebrow'>THE ARCHIVE</p>
 					<h1>写下的片段</h1>
@@ -386,7 +384,7 @@ export default function BlogPage() {
 					</p>
 				)}
 				{groupKeys.length > 0 && (
-					<div className='archive-controls'>
+					<div data-ui-surface='well' className='archive-controls'>
 						<div className='archive-grouping'>
 							<span className='archive-control-label'>分组方式</span>
 							<div className='archive-mode-switch' role='group' aria-label='文章分组方式'>
@@ -478,7 +476,7 @@ export default function BlogPage() {
 							const headingId = `archive-heading-${displayMode}-${index}`
 
 							return (
-								<section onMouseLeave={cancelCoverPreview} key={groupKey} aria-labelledby={headingId} className='archive-group'>
+								<section onMouseLeave={cancelCoverPreview} key={groupKey} aria-labelledby={headingId} data-ui-surface='panel' className='archive-group'>
 									<div className='archive-group-heading'>
 										<h2 id={headingId} tabIndex={-1}>
 											<button
@@ -512,8 +510,8 @@ export default function BlogPage() {
 														className={cn(
 															'rounded-lg border px-3 py-1 text-xs transition-colors',
 															groupAllSelected
-																? 'border-brand/40 bg-brand/10 text-brand hover:bg-brand/20'
-																: 'text-secondary hover:border-brand/40 hover:text-brand border-transparent bg-white/60 hover:bg-white/80'
+																? 'border-brand/40 ui-accent-soft ui-accent hover:bg-brand/20'
+																: 'text-secondary hover:border-brand/40 ui-hover-accent border-transparent ui-soft-fill ui-hover-fill'
 														)}>
 														{groupAllSelected ? '取消全选' : '全选该分组'}
 													</motion.button>
@@ -523,7 +521,6 @@ export default function BlogPage() {
 									<div id={contentId} hidden={!expanded} className='archive-group-articles'>
 										{expanded &&
 											group.items.map(it => {
-												const hasRead = isRead(it.slug)
 												const isSelected = selectedSlugs.has(it.slug)
 												return (
 													<Link
@@ -537,7 +534,7 @@ export default function BlogPage() {
 															editMode
 																? cn(
 																		'rounded-lg border px-3',
-																		isSelected ? 'border-brand/60 bg-brand/5' : 'hover:border-brand/40 border-transparent hover:bg-white/60'
+																		isSelected ? 'border-brand/60 ui-accent-soft' : 'hover:border-brand/40 border-transparent ui-hover-fill'
 																	)
 																: 'cursor-pointer'
 														)}>
@@ -555,9 +552,8 @@ export default function BlogPage() {
 														</time>
 														<div className='archive-article-copy'>
 															<span className='archive-article-title'>{it.title || it.slug}</span>
-															{(hasRead || it.tags?.length > 0) && (
+															{it.tags?.length > 0 && (
 																<span className='archive-article-meta'>
-																	{hasRead && <span className='archive-read-mark'>已阅读</span>}
 																	{(it.tags || []).map(tag => (
 																		<span key={tag}>#{tag}</span>
 																	))}
@@ -585,7 +581,7 @@ export default function BlogPage() {
 								whileTap={{ scale: 0.95 }}
 								onClick={() => setCategoryModalOpen(true)}
 								disabled={saving}
-								className='rounded-xl border bg-white/60 px-4 py-2 text-sm transition-colors hover:bg-white/80'>
+								className='rounded-xl border ui-soft-fill px-4 py-2 text-sm transition-colors ui-hover-fill'>
 								分类
 							</motion.button>
 						)}
@@ -594,14 +590,14 @@ export default function BlogPage() {
 							whileTap={{ scale: 0.95 }}
 							onClick={handleCancel}
 							disabled={saving}
-							className='rounded-xl border bg-white/60 px-6 py-2 text-sm'>
+							className='rounded-xl border ui-soft-fill px-6 py-2 text-sm'>
 							取消
 						</motion.button>
 						<motion.button
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={selectedCount === editableItems.length ? handleDeselectAll : handleSelectAll}
-							className='rounded-xl border bg-white/60 px-4 py-2 text-sm transition-colors hover:bg-white/80'>
+							className='rounded-xl border ui-soft-fill px-4 py-2 text-sm transition-colors ui-hover-fill'>
 							{selectedCount === editableItems.length ? '取消全选' : '全选'}
 						</motion.button>
 						<motion.button
@@ -627,7 +623,7 @@ export default function BlogPage() {
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={toggleEditMode}
-							className='bg-card rounded-xl border px-6 py-2 text-sm backdrop-blur-sm transition-colors hover:bg-white/80'>
+							className='bg-card rounded-xl border px-6 py-2 text-sm backdrop-blur-sm transition-colors ui-hover-fill'>
 							编辑
 						</motion.button>
 					)

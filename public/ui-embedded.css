@@ -1,0 +1,38 @@
+html,
+body {
+	color: var(--ui-text);
+	background: var(--color-bg);
+}
+#controls,
+#error,
+#bubble {
+	color: var(--ui-text);
+	background: var(--ui-panel);
+	border-color: var(--ui-border);
+	border-radius: var(--ui-radius);
+	box-shadow: var(--ui-shadow);
+}
+button,
+select {
+	color: var(--ui-text);
+	background: var(--ui-well);
+	border-color: var(--ui-border);
+	border-radius: var(--ui-control-radius);
+}
+button:hover {
+	border-color: var(--primary-500);
+	background: var(--ui-raised);
+}
+#loading,
+.credit {
+	color: var(--ui-muted);
+}
+html[data-bento-style='glass'] #controls {
+	backdrop-filter: blur(20px);
+}
+html[data-bento-style='neon'] #controls {
+	box-shadow: 0 0 22px color-mix(in srgb, var(--primary-500) 18%, transparent);
+}
+html[data-bento-style='paper'] #controls {
+	border-top-width: 2px;
+}

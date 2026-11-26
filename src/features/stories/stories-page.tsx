@@ -1,162 +1,132 @@
 'use client'
-
-import { useState } from 'react'
-import { ArrowLeft, ArrowRight, Music2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowLeft, ArrowRight, X } from 'lucide-react'
 import { PageIntro } from '@/components/page-intro'
-import tracks from '@/config/music.json'
-import { requestMusic } from '@/features/music/events'
+import { DialogModal } from '@/components/dialog-modal'
 import { stories } from './model'
+import '@/styles/album.css'
 
-function StoryImage({ src, alt, ...props }: { src: string; alt: string; className?: string; loading?: 'lazy' | 'eager' }) {
+function PreviewImage({ src, alt }: { src: string; alt: string }) {
 	const [failed, setFailed] = useState(false)
+	const [loaded, setLoaded] = useState(false)
 	const [attempt, setAttempt] = useState(0)
-	return failed ? (
-		<div className='story-image-error' role='alert'>
-			<p>这张照片暂时没能加载。</p>
-			<button
-				className='button-light'
-				onClick={() => {
-					setAttempt(value => value + 1)
-					setFailed(false)
-				}}>
-				重新加载
-			</button>
+	return (
+		<div className='album-image-stage'>
+			{!failed && !loaded && (
+				<span role='status' className='album-loading'>
+					正在加载照片…
+				</span>
+			)}
+			{failed ? (
+				<div role='alert'>
+					<p>这张照片暂时没能加载。</p>
+					<button
+						type='button'
+						className='button-light'
+						onClick={() => {
+							setAttempt(x => x + 1)
+							setFailed(false)
+						}}>
+						重新加载
+					</button>
+				</div>
+			) : (
+				<img key={attempt} src={src} alt={alt} draggable={false} onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />
+			)}
 		</div>
-	) : (
-		<img key={attempt} src={src} alt={alt} onError={() => setFailed(true)} {...props} />
 	)
 }
-
 export function StoriesPage() {
 	const [selected, setSelected] = useState(stories[0].id)
-	const [chapter, setChapter] = useState(0)
-	const [musicRequested, setMusicRequested] = useState(false)
+	const [photo, setPhoto] = useState<number | null>(null)
 	const story = stories.find(item => item.id === selected)!
-	const current = story.chapters[chapter]
-	const track = tracks.find(track => track.id === story.mood)
+	const current = photo === null ? null : story.chapters[photo]
+	const move = (step: number) => setPhoto(value => (value === null ? null : (value + step + story.chapters.length) % story.chapters.length))
+	useEffect(() => {
+		if (photo === null) return
+		window.dispatchEvent(new CustomEvent('zenbot:panel', { detail: 'album' }))
+		const key = (event: KeyboardEvent) => {
+			if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+			event.preventDefault()
+			setPhoto(value => (value === null ? null : (value + (event.key === 'ArrowLeft' ? -1 : 1) + story.chapters.length) % story.chapters.length))
+		}
+		window.addEventListener('keydown', key)
+		return () => window.removeEventListener('keydown', key)
+	}, [photo === null, story.chapters.length])
+	useEffect(() => {
+		if (photo === null || !story.chapters.length) return
+		const previews = [-1, 1].map(step => {
+			const image = new Image()
+			image.src = story.chapters[(photo + step + story.chapters.length) % story.chapters.length].url
+			return image
+		})
+		return () => {
+			previews.forEach(image => {
+				image.src = ''
+			})
+		}
+	}, [photo, story])
 	return (
-		<div className='discovery-page stories-page'>
-			<PageIntro
-				label='STORIES IN FRAMES'
-				title='把一些日常，翻成故事。'
-				description='照片旁边，留一点文字。按主题重新翻看这些真实片段，说明沿用原来的记录；这里的章节顺序不代表拍摄时间。'
-			/>
-			<div className='feature-heading'>
-				<h2>挑一本，慢慢翻。</h2>
-			</div>
-			<div className='story-shelves'>
-				{stories.map((item, index) => (
+		<div className='album-page'>
+			<PageIntro label='MOMENTS IN FRAMES' title='日常相册' description='一些想留下的画面。点开一张，慢慢看。' />
+			<div className='album-tabs' role='group' aria-label='选择相册'>
+				{stories.map(item => (
 					<button
-						className='story-cover'
-						aria-pressed={selected === item.id}
 						key={item.id}
+						type='button'
+						aria-pressed={selected === item.id}
 						onClick={() => {
 							setSelected(item.id)
-							setChapter(0)
-							setMusicRequested(false)
+							setPhoto(null)
 						}}>
-						<span className='story-cover-stack' aria-hidden='true'>
-							{item.chapters
-								.slice(0, 3)
-								.reverse()
-								.map((image, imageIndex) => (
-									<img
-										src={image.url}
-										alt=''
-										key={image.id}
-										loading='lazy'
-										style={{ transform: `translate(${(imageIndex - 1) * 15}px, ${Math.abs(imageIndex - 1) * 5}px) rotate(${(imageIndex - 1) * 9}deg)` }}
-									/>
-								))}
-						</span>
-						<span className='eyebrow'>
-							STORY 0{index + 1} / {item.chapters.length} 张
-						</span>
-						<strong>{item.title}</strong>
-						<span>{item.subtitle}</span>
+						{item.title}
+						<span>{item.chapters.length}</span>
 					</button>
 				))}
 			</div>
-			<section
-				className='story-reader'
-				aria-labelledby='story-title'
-				onKeyDown={event => {
-					if (event.target instanceof HTMLSelectElement || event.ctrlKey || event.metaKey || event.altKey) return
-					if (event.key === 'ArrowRight') {
-						event.preventDefault()
-						setChapter(value => Math.min(story.chapters.length - 1, value + 1))
-					}
-					if (event.key === 'ArrowLeft') {
-						event.preventDefault()
-						setChapter(value => Math.max(0, value - 1))
-					}
-				}}>
-				<header className='feature-heading'>
-					<div>
-						<p className='eyebrow'>A CHAPTER OF EVERYDAY LIFE</p>
-						<h2 id='story-title'>{story.title}</h2>
-					</div>
-					{track && (
-						<button
-							className='button-light'
-							onClick={() => {
-								requestMusic(track.id)
-								setMusicRequested(true)
-							}}>
-							<Music2 size={15} />
-							{track.label} · {track.title}
-						</button>
-					)}
-				</header>
-				{musicRequested && (
-					<p className='muted' role='status'>
-						已请求页头播放器播放或暂停，声音状态请查看音乐面板。切换章节不会自动播放音乐。
-					</p>
-				)}
-				{story.missing.length > 0 && (
-					<p role='alert' className='feature-error'>
-						部分照片已不在当前相册中，正在展示仍可用的章节。
-					</p>
-				)}
-				{current ? (
-					<div className='story-spread'>
-						<figure className='story-frame'>
-							<StoryImage key={current.id} src={current.url} alt={current.description || `${story.title} · 第 ${chapter + 1} 张`} />
-						</figure>
-						<div className='story-narrative'>
-							<span className='story-chapter-number'>
-								{String(chapter + 1).padStart(2, '0')}
-								<small> / {String(story.chapters.length).padStart(2, '0')}</small>
-							</span>
-							<p key={current.id} className='story-caption'>
-								{current.description || '这一张，没有留下文字。就安静地看看。'}
-							</p>
-							<p className='eyebrow'>原相册记录</p>
-							<div className='story-chapter-controls'>
-								<button className='button-light' disabled={chapter === 0} onClick={() => setChapter(value => value - 1)}>
-									<ArrowLeft size={15} />
-									上一张
-								</button>
-								<button className='button-dark' disabled={chapter === story.chapters.length - 1} onClick={() => setChapter(value => value + 1)}>
-									下一张
-									<ArrowRight size={15} />
-								</button>
+			<p className='album-description'>{story.subtitle}</p>
+			<div className='album-grid'>
+				{story.chapters.map((image, index) => (
+					<button
+						className='album-photo'
+						data-ui-surface='panel'
+						type='button'
+						key={image.id}
+						aria-label={`放大照片 ${index + 1}：${image.description || story.title}`}
+						onClick={() => setPhoto(index)}>
+						<img src={image.url} alt={image.description || `${story.title} · ${index + 1}`} loading='lazy' draggable={false} />
+						<span className='album-photo-index'>{String(index + 1).padStart(2, '0')}</span>
+					</button>
+				))}
+			</div>
+			{!story.chapters.length && <p className='feature-empty'>这本相册还没有照片。</p>}
+			<DialogModal open={photo !== null} onClose={() => setPhoto(null)} className='album-lightbox' ariaLabel='相册大图预览'>
+				{current && (
+					<div className='album-viewer'>
+						<header className='album-viewer-header'>
+							<div>
+								<strong>{story.title}</strong>
+								<span>
+									{(photo ?? 0) + 1} / {story.chapters.length}
+								</span>
 							</div>
-							<p className='muted'>也可以使用 ← → 翻页。音乐由你点击后播放。</p>
-						</div>
+							<button type='button' className='icon-button' aria-label='关闭照片预览' onClick={() => setPhoto(null)}>
+								<X size={20} />
+							</button>
+						</header>
+						<PreviewImage key={current.id} src={current.url} alt={current.description || story.title} />
+						<footer className='album-viewer-footer'>
+							<button type='button' className='icon-button' aria-label='上一张照片' onClick={() => move(-1)}>
+								<ArrowLeft size={20} />
+							</button>
+							<p aria-live='polite'>{current.description || '这一刻，没有留下文字。'}</p>
+							<button type='button' className='icon-button' aria-label='下一张照片' onClick={() => move(1)}>
+								<ArrowRight size={20} />
+							</button>
+						</footer>
 					</div>
-				) : (
-					<p className='feature-empty'>这本故事集还没有可用的照片。</p>
 				)}
-				<div className='story-thumbnails' aria-label='跳转到指定照片'>
-					{story.chapters.map((image, index) => (
-						<button key={image.id} aria-label={`查看第 ${index + 1} 张`} aria-pressed={chapter === index} onClick={() => setChapter(index)}>
-							<img src={image.url} alt='' loading='lazy' />
-							<span>{String(index + 1).padStart(2, '0')}</span>
-						</button>
-					))}
-				</div>
-			</section>
+			</DialogModal>
 		</div>
 	)
 }

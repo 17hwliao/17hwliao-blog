@@ -20,7 +20,7 @@ export function MetaSection({ delay = 0 }: MetaSectionProps) {
 	const categoryOptions = [{ value: '', label: '未分类' }, ...categories.map(cat => ({ value: cat, label: cat }))]
 
 	return (
-		<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay }} className='card relative'>
+		<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay }} data-ui-surface='panel' className='card relative'>
 			<h2 className='text-sm'>元信息</h2>
 
 			<div className='mt-3 space-y-2'>
@@ -52,9 +52,9 @@ export function MetaSection({ delay = 0 }: MetaSectionProps) {
 						id='hidden-check'
 						checked={form.hidden || false}
 						onChange={e => updateForm({ hidden: e.target.checked })}
-						className='h-4 w-4 rounded border-gray-300'
+						className='h-4 w-4 rounded ui-edge'
 					/>
-					<label htmlFor='hidden-check' className='cursor-pointer text-sm text-gray-600 select-none'>
+					<label htmlFor='hidden-check' className='cursor-pointer text-sm ui-muted select-none'>
 						从公开列表隐藏（直链和仓库内容仍公开）
 					</label>
 				</div>

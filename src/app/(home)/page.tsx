@@ -1,273 +1,349 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowDown, ArrowRight, ArrowUpRight, Github, Mail, Rss } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { ArrowUpRight, Mail, MessageSquareHeart, Rss, UserRound } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { useConfigStore } from './stores/config-store'
-import { useBlogIndex, type BlogIndexItem } from '@/hooks/use-blog-index'
-import { articleHref, projects, readingRoutes } from '@/features/discovery/catalog'
-import { HomeReading } from '@/features/reading/home-reading'
+import { useBlogIndex } from '@/hooks/use-blog-index'
+import { articleHref } from '@/features/discovery/catalog'
 import { ContributionWidget } from '@/features/github/contribution-widget'
 import { projectShowcases } from '@/content/project-showcases'
 import { authorAvatar } from '@/config/brand-assets'
-import { HomeCompanionMark } from '@/features/assistant/home-companion-mark'
+import { useAppearance } from '@/features/appearance/theme'
+import { BENTO_ACCENTS, BENTO_STYLES } from '@/features/appearance/theme-model'
+import { BentoCard } from '@/features/bento/bento-card'
+import { MiniWireframeGlobe, ParquetWaveGrid, RippleTrailGrid, WavePatternGrid } from '@/features/bento/bento-backgrounds'
+import { TimeZoneBentoCard } from '@/features/bento/timezone-card'
+import { ZenbotTurntable } from '@/features/zenbot/zenbot-turntable'
+import { PixelGithubIcon, PixelHeartButton, PixelLaughIcon } from '@/features/zenbot/pixel-icons'
 import styles from './home.module.css'
 
-const routes = ['agent', 'go', 'data'].flatMap(id => {
-	const route = readingRoutes.find(item => item.id === id)
-	return route ? [route] : []
-})
-const selectedProjects = ['zenix', 'table-card', 'sql-sentinel', 'agentmesh'].flatMap(slug => {
-	const project = projects.find(item => item.slug === slug)
-	return project ? [project] : []
-})
+const STACK_GROUPS = [
+	{
+		group: '后端与系统 · BACKEND',
+		items: ['Go', 'Java', 'TypeScript', 'SQL', 'gRPC / tRPC', 'Concurrency']
+	},
+	{
+		group: '智能体工程 · AGENT',
+		items: ['LLM Gateway', 'MCP / Skill', 'RAG & Wiki', 'Tool Safety', 'Workflow', 'Pocket Pet']
+	},
+	{
+		group: '数据与中间件 · DATA',
+		items: ['MySQL', 'Redis', 'Kafka', 'Outbox 幂等', 'Execution Plan']
+	},
+	{
+		group: '前端与桌面 · CLIENT',
+		items: ['Next.js 16', 'React 19', 'Tailwind CSS 4', 'Electron', 'WebGL Rig']
+	}
+]
 
-function ArticleDate({ article }: { article: BlogIndexItem }) {
-	const date = new Date(article.date)
-	if (Number.isNaN(date.getTime())) return null
-	return (
-		<time dateTime={article.date}>{date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Shanghai' })}</time>
-	)
-}
-
-function SelectedProjects() {
-	return (
-		<section className={styles.projects} aria-labelledby='home-projects-title'>
-			<div className={styles.sectionHeading} data-home-reveal>
-				<div>
-					<p className={styles.label}>SELECTED PROJECTS</p>
-					<h2 id='home-projects-title'>做过的项目</h2>
-				</div>
-				<Link className={styles.quietLink} href='/projects'>
-					所有项目 <ArrowUpRight size={16} aria-hidden='true' />
-				</Link>
-			</div>
-			<div className={styles.projectList} data-home-reveal>
-				{selectedProjects.map(project => {
-					const showcase = projectShowcases[project.slug]
-					const shot = showcase?.shots[0]
-					return (
-						<Link href={project.url} key={project.slug} className={styles.project}>
-							{shot && (
-								<div className={styles.projectCover}>
-									<img src={shot.src} alt={shot.alt} width={720} height={450} loading='lazy' />
-								</div>
-							)}
-							<div className={styles.projectCopy}>
-								<div className={styles.projectTop}>
-									<img src={project.image} alt='' width={36} height={36} loading='lazy' />
-									<span>{project.kind}</span>
-									<ArrowUpRight size={17} aria-hidden='true' />
-								</div>
-								<h3>{project.name}</h3>
-								<p>{showcase?.summary || project.description}</p>
-							</div>
-						</Link>
-					)
-				})}
-			</div>
-		</section>
-	)
-}
+const marqueeShots = Object.entries(projectShowcases).flatMap(([slug, showcase]) =>
+	showcase.shots.slice(0, 2).map(shot => ({
+		id: `${slug}-${shot.src}`,
+		src: shot.src,
+		alt: shot.alt
+	}))
+)
 
 export default function Home() {
 	const { siteContent } = useConfigStore()
-	const { items, loading, error, retry } = useBlogIndex()
-	const recent = items.slice(0, 5)
+	const appearance = useAppearance()
+	const { items } = useBlogIndex()
+	const latestPost = items[0]
+	const totalArticles = items.length || 224
 	const github = siteContent.socialButtons.find(button => button.id === 'github' && button.value.trim())
 	const email = siteContent.socialButtons.find(button => button.type === 'email' && button.value.trim())
-	const journal = useRef<HTMLDivElement>(null)
+	const gridRef = useRef<HTMLDivElement>(null)
+	const [easterEggTip, setEasterEggTip] = useState(false)
+	const row1 = marqueeShots.slice(0, Math.ceil(marqueeShots.length / 2))
+	const row2 = marqueeShots.slice(Math.ceil(marqueeShots.length / 2))
+	const summonZenbot = () => {
+		window.dispatchEvent(new Event('zenix.companion.recall'))
+		setEasterEggTip(true)
+	}
+	useEffect(() => {
+		if (!easterEggTip) return
+		const timer = setTimeout(() => setEasterEggTip(false), 2400)
+		return () => clearTimeout(timer)
+	}, [easterEggTip])
 
 	useEffect(() => {
-		const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
-		if (motionPreference.matches || !window.IntersectionObserver || !Element.prototype.animate) return
-
-		const active = new Set<Animation>()
-		const observer = new IntersectionObserver(entries => {
-			for (const entry of entries) {
-				if (!entry.isIntersecting) continue
-				observer.unobserve(entry.target)
-				if (motionPreference.matches || entry.target.contains(document.activeElement)) continue
-
-				const animation = entry.target.animate(
-					[{ opacity: 0.88, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
-					{ duration: 380, easing: 'cubic-bezier(.2,.65,.3,1)' }
-				)
-				active.add(animation)
-				void animation.finished.then(() => active.delete(animation), () => active.delete(animation))
-			}
-		}, { rootMargin: '0px 0px -24px 0px' })
-		journal.current?.querySelectorAll('[data-home-reveal]').forEach(element => observer.observe(element))
-
-		const stop = () => {
-			observer.disconnect()
-			active.forEach(animation => animation.cancel())
-			active.clear()
+		const animations: Animation[] = []
+		const run = () => {
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+			animations.forEach(animation => animation.cancel())
+			animations.length = 0
+			document.querySelectorAll<HTMLElement>('.bento-card').forEach((card, index) => {
+				animations.push(card.animate({ opacity: [0, 1], translate: ['0 8px', '0 0'] }, { duration: 400, delay: index * 35, easing: 'ease-out' }))
+			})
 		}
-		const onPreferenceChange = () => { if (motionPreference.matches) stop() }
-		motionPreference.addEventListener('change', onPreferenceChange)
+		window.addEventListener('grid:reveal-start', run)
+		if (document.documentElement.classList.contains('grid-revealed')) run()
 		return () => {
-			motionPreference.removeEventListener('change', onPreferenceChange)
-			stop()
+			window.removeEventListener('grid:reveal-start', run)
+			animations.forEach(animation => animation.cancel())
 		}
 	}, [])
 
 	return (
-		<div ref={journal} className={styles.journal}>
-			<section className={styles.intro} aria-labelledby='journal-title'>
-				<div className={styles.introCopy} data-home-reveal>
-					<p className={styles.kicker}>
-						<span className={styles.dot} aria-hidden='true' />
-						一个人的学习与实践 <span className={styles.english}>A PERSONAL JOURNAL</span>
-					</p>
-					<h1 id='journal-title'>
-						<span className={styles.greeting}>你好，我是</span>{' '}
-						<span className={styles.username}>{siteContent.meta.username}</span>
-					</h1>
-					<p className={styles.introDescription}>{siteContent.meta.description}</p>
-					<div className={styles.heroActions}>
-						<Link href='/projects' className='button-dark'>查看项目 <ArrowRight size={16} aria-hidden='true' /></Link>
-						<a href='#journal-reading' className={styles.downLink}>往下读 <ArrowDown size={16} aria-hidden='true' /></a>
+		<div className={styles.bentoPage}>
+			{/* ====================================================================
+			    Top Bento Portfolio Grid (1:1 Ladvace/astro-bento-portfolio structure
+			    intelligently mapped to 17hwliao-blog + Zenbot 360° Turntable)
+			   ==================================================================== */}
+			<section ref={gridRef} className={styles.bentoGrid} aria-label='个人主页 Bento 概览'>
+				{/* 1. Intro Card (col-span-3 row-span-4) + Rotating Zenbot Turntable */}
+				<BentoCard className={styles.cellIntro}>
+					<div className={styles.introInner}>
+						<div className={styles.introCopy}>
+							<div>
+								<div className={styles.welcomeRow}>
+									<img src={authorAvatar} alt={`${siteContent.meta.username} 头像`} width={28} height={28} className={styles.miniAvatar} />
+									<span className={styles.welcomeTag}>WELCOME · PERSONAL JOURNAL & LAB</span>
+								</div>
+								<h1 className={styles.heroTitle}>
+									你好，我是 <span>{siteContent.meta.username}</span>
+								</h1>
+								<p className={styles.heroLead}>
+									专注 <strong>Go / Java 后端系统</strong> 与 <strong>Agent 工程实践</strong>，喜欢把架构权衡、源码剖析和踩坑复盘写成清晰的长期笔记。
+								</p>
+								<p className={styles.heroSub}>
+									这里收纳了 <strong>{totalArticles} 篇技术文章</strong>、5 个完整开源工程与日常工具实验。右侧的 <strong>Zenbot</strong>{' '}
+									可以拖动旋转，想找内容时，也可以点右下角找她聊聊。
+								</p>
+							</div>
+
+							<div className={styles.introButtons}>
+								{github && (
+									<a href={github.value} target='_blank' rel='noreferrer' className={styles.bentoActionBtn} aria-label='GitHub 主页' title='GitHub'>
+										<PixelGithubIcon className='h-4 w-4' />
+										<span>GitHub</span>
+									</a>
+								)}
+								<Link href='/about' className={styles.bentoActionBtn} title='关于博主'>
+									<UserRound size={15} />
+									<span>关于我</span>
+								</Link>
+								{email && (
+									<a href={`mailto:${email.value}`} className={styles.bentoActionBtn} title='发送邮件'>
+										<Mail size={15} />
+										<span>写邮件</span>
+									</a>
+								)}
+								<div className={styles.easterWrap}>
+									<button type='button' className={`${styles.bentoActionBtn} ${styles.zenbotCallBtn}`} onClick={summonZenbot} aria-label='召唤 Zenbot 导览'>
+										<PixelLaughIcon className='h-4 w-4' />
+										<span>召唤 Zenbot</span>
+									</button>
+									{easterEggTip && <span className={styles.easterBubble}>嗨！Zenbot 已在下方就位～</span>}
+								</div>
+							</div>
+						</div>
+
+						<ZenbotTurntable />
 					</div>
-				</div>
-				<aside className={styles.author} aria-label='认识作者'>
-					<div className={styles.identity}>
-						<img src={authorAvatar} alt={`${siteContent.meta.username} 的头像`} width={60} height={60} />
-						<div>
-							<p>{siteContent.meta.username}</p>
-							<span className={styles.profileRole}>后端开发 · 个人成长记录</span>
+				</BentoCard>
+
+				{/* 2. Stack & Learning Card (col-span-1 row-span-6) */}
+				<BentoCard title='Stack & Focus · 技术栈' className={styles.cellStack}>
+					<div className={styles.stackWrap}>
+						{STACK_GROUPS.map(({ group, items: chips }) => (
+							<div key={group} className={styles.stackGroup}>
+								<span className={styles.stackLabel}>{group}</span>
+								<div className={styles.chipList}>
+									{chips.map(chip => (
+										<span key={chip} className={styles.chip}>
+											{chip}
+										</span>
+									))}
+								</div>
+							</div>
+						))}
+						<div className={styles.stackFooter}>
+							<Link href='/blog' className={styles.inlineAccentLink}>
+								查看全部文章 <ArrowUpRight size={14} />
+							</Link>
 						</div>
 					</div>
-					<p className={styles.motto}>或许不必太复杂。</p>
-					<dl className={styles.profileFacts}>
-						<div><dt>学过</dt><dd>Go · Java</dd></div>
-						<div><dt>在学</dt><dd>Agent 工程</dd></div>
-						<div><dt>团队</dt><dd><a href='https://github.com/lec-org' target='_blank' rel='noreferrer'>lec-org <ArrowUpRight size={13} aria-hidden='true' /></a></dd></div>
-						<div><dt>QQ</dt><dd>3594513696</dd></div>
-					</dl>
-					<div className={styles.authorLinks}>
-						<Link href='/about'>
-							更多关于我 <ArrowUpRight size={15} aria-hidden='true' />
-						</Link>
-						{github && (
-							<a href={github.value} target='_blank' rel='noreferrer'>
-								GitHub <Github size={15} aria-hidden='true' />
-								<span className='sr-only'>（新窗口打开）</span>
-							</a>
-						)}
-						{email && <a href={`mailto:${email.value}`}>写封邮件 <Mail size={15} aria-hidden='true' /></a>}
+				</BentoCard>
+
+				{/* 3. Contacts & Neighbors Card (col-span-1 row-span-4) */}
+				<BentoCard className={styles.cellContacts}>
+					<div className={styles.contactsWrap}>
+						<div>
+							<span className={styles.cardKicker}>LET&apos;S CONNECT</span>
+							<h2 className={styles.cardHeading}>保持交流与连接</h2>
+						</div>
+
+						<address className={styles.contactAddress}>
+							<span className={styles.metaTitle}>联系方式</span>
+							<a href={`mailto:${email?.value || 'shiqihaowuliao@qq.com'}`}>{email?.value || 'shiqihaowuliao@qq.com'}</a>
+							<p>QQ · 3594513696</p>
+							<p>
+								团队 ·{' '}
+								<a href='https://github.com/lec-org' target='_blank' rel='noreferrer'>
+									lec-org ↗
+								</a>
+							</p>
+						</address>
+
+						<div className={styles.socialSection}>
+							<span className={styles.metaTitle}>站点角落</span>
+							<ul className={styles.socialList}>
+								<li>
+									<Link href='/bloggers'>收藏的邻站博客</Link>
+								</li>
+								<li>
+									<Link href='/pictures'>日常相册</Link>
+								</li>
+								<li>
+									<Link href='/rss.xml'>
+										RSS 订阅源 <Rss size={12} />
+									</Link>
+								</li>
+							</ul>
+						</div>
 					</div>
-					<HomeCompanionMark />
-				</aside>
+				</BentoCard>
+
+				{/* 4. Live Dual TimeZone Card (col-span-1 row-span-2) */}
+				<TimeZoneBentoCard className={styles.cellTimezone} />
+
+				{/* 5. Selected Projects Marquee Card (mapped from DesignWorksCard, col-span-1 row-span-2) */}
+				<BentoCard
+					href='/projects'
+					arrowCorner
+					className={styles.cellMarquee}
+					background={
+						<div className={styles.marqueeBg} aria-hidden='true'>
+							<div className={styles.marqueeFadeLeft} />
+							<div className={styles.marqueeFadeRight} />
+							<div className={styles.marqueeRowLeft}>
+								{[...row1, ...row1].map((shot, idx) => (
+									<img key={`r1-${shot.id}-${idx}`} src={shot.src} alt='' loading='lazy' />
+								))}
+							</div>
+							<div className={styles.marqueeRowRight}>
+								{[...row2, ...row2].map((shot, idx) => (
+									<img key={`r2-${shot.id}-${idx}`} src={shot.src} alt='' loading='lazy' />
+								))}
+							</div>
+						</div>
+					}>
+					<div className={styles.overlayCardContent}>
+						<span className={styles.cardKicker}>SELECTED WORKS</span>
+						<h2 className={styles.cardHeading}>实战工程集</h2>
+						<p className={styles.overlaySub}>AgentMesh · SQL Sentinel · Zenix · TableCard</p>
+					</div>
+				</BentoCard>
+
+				{/* 6. Now Status Card (col-span-1 row-span-1) */}
+				<BentoCard className={styles.cellNow}>
+					<div className={styles.nowWrap}>
+						<div className={styles.nowHeader}>
+							<div className={styles.nowTitleGroup}>
+								<h2>Now · 近况</h2>
+								<span className={styles.nowBadge}>持续更新</span>
+							</div>
+							<span className={styles.pulseDot} aria-hidden='true' />
+						</div>
+						<p className={styles.nowText}>
+							{latestPost ? (
+								<>
+									最新写下：
+									<Link href={articleHref(latestPost.slug)}>《{latestPost.title || latestPost.slug}》</Link>
+								</>
+							) : (
+								'正在探索 Agent 网关、知识库与 Zenbot 袖珍伴侣'
+							)}
+						</p>
+					</div>
+				</BentoCard>
+
+				{/* 7. Toolbox & Lab Ripple Card (mapped from Playground, col-span-1 row-span-1) */}
+				<BentoCard href='/share' arrowCorner className={styles.cellPlayground} background={<RippleTrailGrid />}>
+					<div className={styles.compactFeature}>
+						<span className={styles.cardKicker}>TOOLBOX & LAB</span>
+						<h2 className={styles.cardHeading}>工具箱与实验</h2>
+						<span className={styles.microHint}>WebP 转换 · 图标库 · 实用收藏</span>
+					</div>
+				</BentoCard>
+
+				{/* 8. Guestbook Parquet Card (col-span-1 row-span-1) */}
+				<BentoCard href='/guestbook' arrowCorner className={styles.cellGuestbook} background={<ParquetWaveGrid />}>
+					<div className={styles.compactFeature}>
+						<span className={styles.cardKicker}>GUESTBOOK</span>
+						<h2 className={styles.cardHeading}>
+							留言板 <MessageSquareHeart size={16} className={styles.inlineIcon} />
+						</h2>
+						<span className={styles.microHint}>踩一脚 · 留张便签与红心</span>
+					</div>
+				</BentoCard>
+
+				{/* 9. Blog entry; project navigation stays in the Selected Works card. */}
+				<BentoCard href='/blog' arrowCorner className={styles.cellBlog} background={<WavePatternGrid variant='radial' />}>
+					<div className={styles.blogCopy}>
+						<span className={styles.cardKicker}>{totalArticles} POSTS</span>
+						<h2>博客</h2>
+					</div>
+				</BentoCard>
+
+				{/* 10. Knowledge Globe Card (mapped from Globe / Travel, col-span-1 row-span-1) */}
+				<BentoCard href='/stw' arrowCorner className={styles.cellGlobe}>
+					<div className={styles.globeRow}>
+						<MiniWireframeGlobe size={52} />
+						<div className={styles.globeCopy}>
+							<span className={styles.cardKicker}>STW</span>
+							<h2>Stop the World</h2>
+						</div>
+					</div>
+				</BentoCard>
+
+				{/* 11. Theme & Style Switcher Card (col-span-1 row-span-1) */}
+				<BentoCard className={styles.cellTheme}>
+					<div className={styles.themeCardWrap}>
+						<div className={styles.swatchRow} role='group' aria-label='快速切换强调色'>
+							{BENTO_ACCENTS.map(item => (
+								<button
+									key={item.id}
+									type='button'
+									className={'bento-swatch' + (appearance?.accent === item.id ? ' is-active' : '')}
+									style={{ '--swatch-color': item.color } as React.CSSProperties}
+									aria-label={item.label}
+									title={item.label}
+									onClick={() => appearance?.chooseAccent(item.id)}
+								/>
+							))}
+						</div>
+						<div className={styles.stylePillsRow} role='group' aria-label='快速切换 UI 材质'>
+							{BENTO_STYLES.map(item => (
+								<button
+									key={item.id}
+									type='button'
+									className={styles.styleMiniPill + (appearance?.style === item.id && appearance?.borderMode !== 'custom' ? ` ${styles.isActive}` : '')}
+									onClick={() => appearance?.chooseStyle(item.id)}>
+									{item.english}
+								</button>
+							))}
+						</div>
+					</div>
+				</BentoCard>
 			</section>
 
-			<div className={styles.readingGrid}>
-				<section id='journal-reading' className={styles.recent} aria-labelledby='recent-writing-title'>
-					<div className={styles.sectionHeading} data-home-reveal>
-						<div>
-							<p className={styles.label}>LATEST NOTES</p>
-							<h2 id='recent-writing-title'>近来写下的</h2>
-						</div>
-						<Link href='/blog' className={styles.quietLink}>
-							文章归档 <ArrowUpRight size={16} aria-hidden='true' />
-						</Link>
-					</div>
-					{error && (
-						<div className={styles.feedStatus} role='alert'>
-							<p>文章列表暂时未能加载{recent.length ? '，以下保留上次读取的内容' : ''}。</p>
-							<button type='button' onClick={() => void retry()}>
-								重新加载 <ArrowRight size={14} aria-hidden='true' />
-							</button>
-						</div>
-					)}
-					{loading && !recent.length && (
-						<p className={styles.feedStatus} role='status'>
-							正在读取文章…
-						</p>
-					)}
-					{!loading && !error && !recent.length && (
-						<p className={styles.feedStatus}>
-							这里还没有文章。也可以到<Link href='/blog'>文章归档</Link>看看。
-						</p>
-					)}
-					<div className={styles.articleList}>
-						{recent.map(article => (
-							<article key={article.slug} className={styles.article}>
-								<div className={styles.articleMeta}>
-									<ArticleDate article={article} />
-									{article.category && <span>{article.category}</span>}
-								</div>
-								<Link href={articleHref(article.slug)} className={styles.articleLink}>
-									<div>
-										<h3>{article.title || article.slug}</h3>
-										{article.summary && <p>{article.summary}</p>}
-										{article.tags?.length > 0 && <p className={styles.articleTags}>{article.tags.slice(0, 3).map(tag => <span key={tag}>#{tag}</span>)}</p>}
-									</div>
-									<ArrowUpRight size={19} aria-hidden='true' />
-								</Link>
-							</article>
-						))}
-					</div>
-				</section>
-
-				<aside className={styles.margin} aria-labelledby='reading-paths-title' data-home-reveal>
-					<p className={styles.label}>READ ALONG</p>
-					<h2 id='reading-paths-title'>学习路线</h2>
-					<p className={styles.marginIntro}>按主题整理的笔记和实践。</p>
-					<ol className={styles.routes}>
-						{routes.map((route, index) => (
-							<li key={route.id}>
-								<Link href={`/knowledge?route=${route.id}#routes-title`}>
-									<span className={styles.routeNumber} aria-hidden='true'>
-										0{index + 1}
-									</span>
-									<div>
-										<h3>{route.title}</h3>
-										<p>{route.detail}</p>
-									</div>
-									<ArrowUpRight size={16} aria-hidden='true' />
-								</Link>
-							</li>
-						))}
-					</ol>
-					<Link className={styles.quietLink} href='/knowledge'>
-						展开知识地图 <ArrowRight size={16} aria-hidden='true' />
-					</Link>
-					<div className={styles.marginNote}>
-						<p>我把实现过程和遇到的问题记下来，方便以后回头看。</p>
-						<Link href='/about'>
-							关于这个小站 <ArrowUpRight size={14} aria-hidden='true' />
-						</Link>
-					</div>
-				</aside>
-			</div>
-
-			<SelectedProjects />
-			<HomeReading />
-			<div className={styles.contributions}>
+			<div className={`bento-card ${styles.contribWrap}`}>
 				<ContributionWidget />
 			</div>
 
-			<section className={styles.postscript} aria-label='代码之外'>
-				<div>
-					<span className={styles.label}>P.S.</span>
-					<p>代码之外，也有日常。</p>
+			<footer className={`bento-card ${styles.craftFooter}`} aria-label='小站署名'>
+				<div className={styles.craftWrap}>
+					<p>
+						© {new Date().getFullYear()} · Crafted with <PixelHeartButton size={19} /> by{' '}
+						<Link href='/about' className={styles.craftAuthor}>
+							{siteContent.meta.username}
+						</Link>
+					</p>
 				</div>
-				<nav aria-label='继续逛逛'>
-					<Link href='/pictures'>
-						相册故事 <ArrowUpRight size={15} aria-hidden='true' />
-					</Link>
-					<Link href='/share'>
-						值得分享 <ArrowUpRight size={15} aria-hidden='true' />
-					</Link>
-					<Link href='/reading'>
-						阅读工作台 <ArrowUpRight size={15} aria-hidden='true' />
-					</Link>
-					<Link href='/rss.xml'>
-						<Rss size={15} aria-hidden='true' /> RSS
-					</Link>
-				</nav>
-			</section>
+			</footer>
 		</div>
 	)
 }

@@ -7,7 +7,7 @@ export function ProjectRow({ project, index }: { project: Project; index: number
 	const showcase = project.slug ? projectShowcases[project.slug] : undefined
 	const preview = showcase?.type === 'contribution' ? '/images/projects/showcase/tool-safety-overview.svg' : showcase?.shots[0]?.src
 	return (
-		<article className='project-row'>
+		<article data-ui-surface='panel' className='project-row'>
 			<Link href={project.url} className='project-row-logo' aria-label={`查看 ${project.name}`}>
 				<img src={project.image} alt={`${project.name} logo`} width={80} height={80} />
 			</Link>

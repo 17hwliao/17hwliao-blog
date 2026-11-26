@@ -1,0 +1,22 @@
+{
+  "source": "characters/unitychan",
+  "files": [
+    {
+      "file": "preview/index.html",
+      "sha256": "99c65466028de6cd5b237ef43f6c3b2a256f0471daef2f6c929606e8de8df953"
+    },
+    {
+      "file": "preview/native-model.mjs",
+      "sha256": "9cf0808b96a5f68d9e781582292272f7adf7305f45e6100832d11094f349acfd"
+    },
+    {
+      "file": "runtime/page-context.mjs",
+      "sha256": "b3c3c9779ecf32668f9247c4ac60125e4d6c8debb53bb39b7afd393dad731381"
+    },
+    {
+      "file": "preview/style.css",
+      "sha256": "49abe95ebb4d5235b99f05dafaba461af541cb26518604c0fedd6e873d77a29b"
+    }
+  ],
+  "sharedState": "public/tsuyukusa-021/runtime/character-state.mjs"
+}

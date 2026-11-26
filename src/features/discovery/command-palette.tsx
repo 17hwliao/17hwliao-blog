@@ -1,23 +1,27 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { ArrowUpRight, Search, X } from 'lucide-react'
 import { DialogModal } from '@/components/dialog-modal'
 import { articles, articleHref, normalize, projects, searchArticles } from './catalog'
 import tracks from '@/config/music.json'
+import { navigateWithTransition } from '@/components/reference-experience'
 import { requestMusic } from '@/features/music/events'
 
 type CommandItem = { id: string; label: string; detail: string; href?: string; trackId?: string }
 const pages = [
 	['/', '首页', '回到小站'],
 	['/assistant', '聊聊小站', '和看板娘选择话题，了解项目与页面入口'],
-	['/knowledge', '知识地图与阅读路线', '从主题开始探索'],
-	['/reading', '阅读工作台', '书签、进度与摘录'],
-	['/pictures', '相册故事集', '按章节看照片'],
+	['/stw', 'STW · Stop the World', '拖动旋转与缩放像素地球仪'],
+	['/pictures', '日常相册', '照片网格与覆盖大图预览'],
 	['/blog', '全部文章', '文章归档'],
 	['/projects', '全部项目', '项目与 README'],
-	['/share', '分享', '值得分享的东西'],
+	['/share', '分享与工具箱', 'WebP、SVG、时钟与值得分享的东西'],
+	['/image-toolbox', 'WebP 图片工具', 'PNG JPG HEIC 转换、压缩与下载'],
+	['/svgs', 'SVG 图标库', '搜索并浏览 SVG 图标'],
+	['/clock', '专注时钟', '番茄钟、倒计时与秒表'],
+	['/bloggers', '邻站博客', '收藏的博客与朋友'],
 	['/about', '关于', '认识 17hwliao']
 ].map(([href, label, detail]) => ({ id: href, href, label, detail }))
 
@@ -38,8 +42,7 @@ export function commandResults(query: string): CommandItem[] {
 	].slice(0, 45)
 }
 
-export function CommandPalette() {
-	const router = useRouter()
+export function CommandPalette({ hideTrigger = false }: { hideTrigger?: boolean }) {
 	const pathname = usePathname()
 	const [open, setOpen] = useState(false)
 	const [query, setQuery] = useState('')
@@ -61,28 +64,42 @@ export function CommandPalette() {
 		return () => window.removeEventListener('keydown', key)
 	}, [])
 	useEffect(() => {
+		if (open) window.dispatchEvent(new CustomEvent('zenbot:panel', { detail: 'search' }))
+	}, [open])
+	useEffect(() => {
+		const show = () => {
+			setQuery('')
+			setActive(0)
+			setOpen(true)
+		}
+		window.addEventListener('zenbot:search', show)
+		return () => window.removeEventListener('zenbot:search', show)
+	}, [])
+	useEffect(() => {
 		resultRefs.current[active]?.scrollIntoView({ block: 'nearest' })
 	}, [active])
 	const run = (item: CommandItem) => {
 		close()
 		if (item.trackId) requestMusic(item.trackId)
-		else if (item.href) router.push(item.href)
+		else if (item.href) navigateWithTransition(item.href)
 	}
 	return (
 		<>
-			<button
-				className='icon-button command-trigger'
-				onClick={() => {
-					setOpen(true)
-					setQuery('')
-					setActive(0)
-				}}
-				aria-label='搜索与命令面板，Ctrl 或 Command 加 K'
-				aria-keyshortcuts='Control+K Meta+K'
-				title='搜索与导航 · Ctrl + K'>
-				<Search size={18} />
-				<kbd>Ctrl + K</kbd>
-			</button>
+			{!hideTrigger && (
+				<button
+					className='icon-button command-trigger'
+					onClick={() => {
+						setOpen(true)
+						setQuery('')
+						setActive(0)
+					}}
+					aria-label='搜索与命令面板，Ctrl 或 Command 加 K'
+					aria-keyshortcuts='Control+K Meta+K'
+					title='搜索与导航 · Ctrl + K'>
+					<Search size={18} />
+					<kbd>Ctrl + K</kbd>
+				</button>
+			)}
 			<DialogModal open={open} onClose={close} className='command-surface' ariaLabel='全站搜索与命令面板'>
 				<div className='command-input-row'>
 					<Search size={19} />

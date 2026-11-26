@@ -13,7 +13,7 @@ export function ProjectAdvantages({ advantages }: { advantages: ProjectAdvantage
 			</div>
 			<ol>
 				{advantages.map((item, index) => (
-					<li key={item.title}>
+					<li data-ui-surface='panel' key={item.title}>
 						<div className='advantage-value'>
 							<span>{String(index + 1).padStart(2, '0')}</span>
 							<h3>{item.title}</h3>

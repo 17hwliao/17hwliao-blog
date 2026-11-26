@@ -1,0 +1,6 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src 'self'; img-src 'self' data: blob:; style-src 'self'; object-src 'none'; base-uri 'none'">
+<title>Live2D 本地人物预览</title><link rel="stylesheet" href="./style.css"></head>
+<body><div id="stage"><canvas id="model" aria-label="Live2D 人物，可点击和轻轻拖动"></canvas><div id="bubble" role="status" aria-live="polite" hidden></div><p id="loading" role="status">正在载入人物…</p><div id="error" role="alert" hidden><p id="error-text"></p><button id="retry">重新载入</button></div></div>
+<aside id="controls" hidden><span id="phase">待机</span><div id="motion-controls"></div><label>表情<select id="expression"><option value="">选择表情…</option></select></label><button id="reset">恢复待机</button><button id="pause">暂停</button><span class="credit">模型：tsuyukusa-live2d · 本地预览</span></aside>
+<script src="/live2d/tsuyukusa-021/vendor/pixi-6.5.10.min.js"></script><script src="/live2d/tsuyukusa-021/vendor/live2dcubismcore.min.js"></script><script src="/live2d/tsuyukusa-021/vendor/cubism4-0.4.0.min.js"></script><script type="module" src="./native-model.mjs"></script></body></html>

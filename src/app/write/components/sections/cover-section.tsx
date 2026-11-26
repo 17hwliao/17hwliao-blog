@@ -79,7 +79,7 @@ export function CoverSection({ delay = 0 }: CoverSectionProps) {
 	}
 
 	return (
-		<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay }} className='card relative'>
+		<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay }} data-ui-surface='panel' className='card relative'>
 			<h2 className='text-sm'>封面</h2>
 			<input ref={fileInputRef} type='file' accept='image/*' className='hidden' onChange={handleFileChange} />
 			<div
@@ -91,7 +91,7 @@ export function CoverSection({ delay = 0 }: CoverSectionProps) {
 				{!!coverPreviewUrl ? (
 					<img src={coverPreviewUrl} alt='cover preview' className='h-full w-full rounded-2xl object-cover' />
 				) : (
-					<div className='grid h-full w-full cursor-pointer place-items-center transition-colors hover:bg-white/60' onClick={handleClickUpload}>
+					<div className='grid h-full w-full cursor-pointer place-items-center transition-colors ui-hover-fill' onClick={handleClickUpload}>
 						<span className='text-3xl leading-none text-neutral-400'>+</span>
 					</div>
 				)}

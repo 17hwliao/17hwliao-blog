@@ -3,29 +3,30 @@ const assert = require('node:assert/strict')
 const vm = require('node:vm')
 const { loadSource } = require('./helpers/load-source.cjs')
 
-test('appearance bootstraps saved theme before rendering, or follows OS when storage is denied or invalid', () => {
-	const { themeBootstrap } = loadSource()('src/features/appearance/theme-model.ts')
-	for (const [stored, osDark, denied, expected] of [
-		['dark', false, false, 'dark'],
-		['light', true, false, 'light'],
-		['system', true, false, 'dark'],
-		[null, false, false, 'light'],
-		['invalid', true, false, 'dark'],
-		['dark', false, true, 'light']
-	]) {
-		const dataset = {}
-		vm.runInNewContext(themeBootstrap, {
-			document: { documentElement: { dataset } },
-			localStorage: {
-				getItem() {
-					if (denied) throw new Error('denied')
-					return stored
-				}
-			},
-			matchMedia: () => ({ matches: osDark })
-		})
-		assert.equal(dataset.theme, expected)
-		assert.equal(dataset.themePreference, !denied && ['light', 'dark'].includes(stored) ? stored : 'system')
+test('entry appearance is always dark, red, Neon and nine-slice despite cached choices, light OS or blocked storage', () => {
+	const { themeBootstrap, parseTheme, themeKey, bentoAccentKey } = loadSource()('src/features/appearance/theme-model.ts')
+	assert.equal(parseTheme('system'), 'system') // Manual session switching still supports the system option.
+	for (const stored of ['dark', 'light', 'system', null, 'invalid']) {
+		for (const osDark of [true, false]) {
+			for (const denied of [true, false]) {
+				const dataset = {}
+				vm.runInNewContext(themeBootstrap, {
+					document: { documentElement: { dataset } },
+					localStorage: {
+						getItem(key) {
+							if (denied) throw new Error('denied')
+							return key === themeKey ? stored : key === bentoAccentKey ? 'cyan' : null
+						}
+					},
+					matchMedia: () => ({ matches: osDark })
+				})
+				assert.equal(dataset.theme, 'dark')
+				assert.equal(dataset.themePreference, 'dark')
+				assert.equal(dataset.bentoAccent, 'red')
+				assert.equal(dataset.bentoStyle, 'neon')
+				assert.equal(dataset.bentoBorder, 'custom')
+			}
+		}
 	}
 })
 

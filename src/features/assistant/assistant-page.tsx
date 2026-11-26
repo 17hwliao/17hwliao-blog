@@ -7,7 +7,7 @@ import { CharacterCompanion, SourceLink, desktopBridge, type CharacterEvent, typ
 import { characterCue, characterMotions } from './performance'
 
 type Message = { id: number; question: string; answer?: Answer; state: 'pending' | 'complete' | 'stopped' | 'failed' | 'incomplete' }
-const suggestions = ['博客有哪些功能？', '如何导出阅读记录？', '怎么使用知识地图？', '如何打开搜索？']
+const suggestions = ['博客有哪些功能？', '怎么旋转 STW 地球？', '怎么查看相册大图？', '如何打开搜索？']
 
 function AnswerView({ answer }: { answer: Answer }) {
 	return (
@@ -266,7 +266,7 @@ export function AssistantPage() {
 						<div className='agent-welcome'>
 							<h2>想了解小站的哪一面？</h2>
 							<p>
-								可以问我有哪些功能、怎么使用阅读工作台，
+								可以问我有哪些功能、怎么使用 STW 地球仪，
 								<br className='agent-desktop-break' />
 								或是去哪里看一组照片。
 							</p>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { BentoCard } from '@/features/bento/bento-card'
 import { PageIntro } from '@/components/page-intro'
 import { ContentEmpty } from '@/components/content-empty'
 
@@ -29,6 +30,19 @@ export default function GridView({ shares, isEditMode = false, onUpdate, onDelet
 	return (
 		<div className='collection-page'>
 			<PageIntro label='CURATED FINDS' title='值得分享' description='好用的工具、有趣的网站，以及偶然遇见的灵感。' />
+			<section className='toolbox-grid' aria-label='小站工具与实验'>
+				{[
+					{ href: '/image-toolbox', title: 'WebP 图片工具', description: '转换图片，调整质量与体积。' },
+					{ href: '/svgs', title: 'SVG 图标库', description: '搜索并浏览 SVG 图标。' },
+					{ href: '/clock', title: '专注时钟', description: '倒计时、秒表与分段计时。' }
+				].map(tool => (
+					<BentoCard key={tool.href} href={tool.href} arrowCorner>
+						<h2>{tool.title}</h2>
+						<p>{tool.description}</p>
+					</BentoCard>
+				))}
+			</section>
+			<h2 className='resource-heading'>收藏的资源</h2>
 			{shares.length > 0 && (
 				<div className='mb-8 space-y-4'>
 					<input
@@ -36,14 +50,15 @@ export default function GridView({ shares, isEditMode = false, onUpdate, onDelet
 						placeholder='搜索资源...'
 						value={searchTerm}
 						onChange={e => setSearchTerm(e.target.value)}
-						className='focus:ring-brand mx-auto block w-full max-w-md rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:outline-none'
+						className='focus:ring-brand ui-edge mx-auto block w-full max-w-md rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none'
 					/>
 
-					<div className='flex flex-wrap justify-center gap-2'>
+					<div className='resource-filters flex flex-wrap gap-2'>
 						<button
 							onClick={() => setSelectedTag('all')}
+							aria-pressed={selectedTag === 'all'}
 							className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-								selectedTag === 'all' ? 'bg-brand text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+								selectedTag === 'all' ? 'ui-primary' : 'ui-soft-fill ui-body-copy ui-hover-fill'
 							}`}>
 							全部
 						</button>
@@ -51,8 +66,9 @@ export default function GridView({ shares, isEditMode = false, onUpdate, onDelet
 							<button
 								key={tag}
 								onClick={() => setSelectedTag(tag)}
+								aria-pressed={selectedTag === tag}
 								className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-									selectedTag === tag ? 'bg-brand text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+									selectedTag === tag ? 'ui-primary' : 'ui-soft-fill ui-body-copy ui-hover-fill'
 								}`}>
 								{tag}
 							</button>
@@ -61,14 +77,14 @@ export default function GridView({ shares, isEditMode = false, onUpdate, onDelet
 				</div>
 			)}
 
-			<div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
+			<div className='resource-grid grid grid-cols-1 gap-3 sm:grid-cols-2'>
 				{filteredShares.map(share => (
 					<ShareCard key={share.url} share={share} isEditMode={isEditMode} onUpdate={onUpdate} onDelete={() => onDelete?.(share)} />
 				))}
 			</div>
 
 			{filteredShares.length === 0 && (
-				<div className='mt-12 text-center text-gray-500'>
+				<div className='ui-muted mt-12 text-center'>
 					<ContentEmpty
 						title={shares.length === 0 ? '好东西，慢慢收集。' : '没有找到匹配内容'}
 						description={shares.length === 0 ? '点击上方「编辑」，收藏第一个值得分享的链接。' : '换一个关键词或分类再看看。'}

@@ -1,0 +1,77 @@
+.reference-page[data-page='stw'] .site-main {
+	position: relative;
+	max-width: none;
+	padding: 0;
+}
+.reference-page[data-page='stw'] .reference-back {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	z-index: 2;
+	margin: 0;
+}
+.stw-page {
+	position: relative;
+	min-height: 100dvh;
+	padding-top: 86px;
+}
+.stw-heading {
+	position: absolute;
+	top: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	text-align: center;
+}
+.stw-heading h1 {
+	font-size: 24px;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	margin: 0;
+}
+.stw-heading p {
+	font-size: 12px;
+	letter-spacing: 0.1em;
+	color: var(--color-secondary);
+	margin: 4px 0 0;
+}
+.stw-globe {
+	position: relative;
+	width: 100%;
+}
+.stw-map {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: max(440px, calc(100dvh - 140px));
+}
+.stw-instructions {
+	margin: 12px 60px 28px;
+	text-align: center;
+	font-size: 13px;
+	color: var(--color-secondary);
+}
+.stw-error {
+	position: absolute;
+	top: 40%;
+	width: 100%;
+	text-align: center;
+	background: var(--color-bg);
+	padding: 24px;
+}
+.stw-error button {
+	margin-top: 12px;
+}
+@media (max-width: 480px) {
+	.stw-map {
+		height: max(420px, calc(100dvh - 180px));
+	}
+	.stw-instructions {
+		font-size: 11px;
+	}
+}
+
+/* Keep canvas sizing stable while its old canvas is replaced on resize. */
+html:has(.stw-page) {
+	scrollbar-gutter: stable;
+}

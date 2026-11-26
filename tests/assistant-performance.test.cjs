@@ -6,8 +6,8 @@ const { characterCue, decodePerformance } = loadSource()('src/features/assistant
 const performance = { version: 1, motion: 'wave', expression: 'happy', bubble: { kind: 'answer', paragraph: 0 }, intensity: 'soft', source: 'model' }
 const answer = {
 	mode: 'adk-rag',
-	paragraphs: [{ text: '阅读工作台可以导出记录。', sources: ['reading'] }],
-	sources: [{ id: 'reading', title: '阅读工作台', path: '/reading', text: '说明', audience: 'reader' }],
+	paragraphs: [{ text: 'STW 可以拖动地球。', sources: ['stw'] }],
+	sources: [{ id: 'stw', title: 'STW · Stop the World', path: '/stw', text: '说明', audience: 'reader' }],
 	performance
 }
 test('validated answer derives the bubble from its own paragraph, not model-supplied free text', () => {

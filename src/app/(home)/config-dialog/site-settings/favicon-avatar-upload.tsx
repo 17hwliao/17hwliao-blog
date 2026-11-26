@@ -56,7 +56,7 @@ export function FaviconAvatarUpload({ faviconItem, setFaviconItem, avatarItem, s
 					type='button'
 					aria-label='更换站点图标'
 					onClick={() => faviconInputRef.current?.click()}
-					className='group relative h-20 w-20 cursor-pointer overflow-hidden rounded-lg border bg-white/60'>
+					className='group relative h-20 w-20 cursor-pointer overflow-hidden rounded-lg border ui-soft-fill'>
 					{faviconItem?.type === 'file' ? (
 						<img src={faviconItem.previewUrl} alt='favicon preview' className='h-full w-full object-cover' />
 					) : (
@@ -75,7 +75,7 @@ export function FaviconAvatarUpload({ faviconItem, setFaviconItem, avatarItem, s
 					type='button'
 					aria-label='更换头像'
 					onClick={() => avatarInputRef.current?.click()}
-					className='group relative h-20 w-20 cursor-pointer overflow-hidden rounded-full border bg-white/60'>
+					className='group relative h-20 w-20 cursor-pointer overflow-hidden rounded-full border ui-soft-fill'>
 					{avatarItem?.type === 'file' ? (
 						<img src={avatarItem.previewUrl} alt='avatar preview' className='h-full w-full object-cover' />
 					) : (

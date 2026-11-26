@@ -16,7 +16,7 @@ test('agent proxy forwards only its session cookie, preserves SSE and scopes ref
 			Cookie: `blog_guide_sid=${sid}; github-token=must-not-forward`,
 			Authorization: 'must-not-forward'
 		},
-		body: '{"message":"阅读工作台"}'
+		body: '{"message":"STW · Stop the World"}'
 	})
 	const result = await proxyAgent(
 		request,
@@ -27,7 +27,7 @@ test('agent proxy forwards only its session cookie, preserves SSE and scopes ref
 			assert.equal(options.headers.get('cookie'), `blog_guide_sid=${sid}`)
 			assert.equal(options.headers.get('authorization'), null)
 			assert.equal(options.headers.get('origin'), null)
-			assert.equal(new TextDecoder().decode(options.body), '{"message":"阅读工作台"}')
+			assert.equal(new TextDecoder().decode(options.body), '{"message":"STW · Stop the World"}')
 			return new Response('event: done\ndata: {"status":"complete"}\n\n', {
 				headers: { 'Content-Type': 'text/event-stream', 'Set-Cookie': `blog_guide_sid=${sid}; Path=/; HttpOnly; Max-Age=1800` }
 			})
@@ -152,10 +152,10 @@ test('SSE parser preserves Chinese across byte boundaries and handles CRLF frame
 test('client only accepts source paths and citations supplied in the answer', () => {
 	const answer = {
 		mode: 'adk-rag',
-		paragraphs: [{ text: '使用阅读工作台。', sources: ['reading'] }],
-		sources: [{ id: 'reading', title: '阅读工作台', path: '/reading', text: '说明', audience: 'reader' }]
+		paragraphs: [{ text: '打开 STW。', sources: ['stw'] }],
+		sources: [{ id: 'stw', title: 'STW · Stop the World', path: '/stw', text: '说明', audience: 'reader' }]
 	}
-	assert.equal(decodeAnswer(answer).sources[0].path, '/reading')
+	assert.equal(decodeAnswer(answer).sources[0].path, '/stw')
 	assert.throws(() => decodeAnswer({ ...answer, paragraphs: [{ text: '编造来源', sources: ['invented'] }] }), /引用无效/)
 	assert.throws(() => decodeAnswer({ ...answer, sources: [{ ...answer.sources[0], path: '//attacker.example' }] }), /格式异常/)
 })

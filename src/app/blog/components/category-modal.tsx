@@ -75,7 +75,7 @@ export function CategoryModal({
 		<DialogModal open={open} onClose={onClose} className='card w-[720px] max-w-[90vw] rounded-2xl p-6'>
 			<div className='mb-4 flex items-center justify-between'>
 				<div className='text-lg font-semibold'>文章分类</div>
-				<button onClick={onClose} className='text-secondary hover:text-brand text-sm'>
+				<button onClick={onClose} className='text-secondary ui-hover-accent text-sm'>
 					关闭
 				</button>
 			</div>
@@ -91,7 +91,7 @@ export function CategoryModal({
 						新增分类
 					</button>
 				</div>
-				<div className='flex flex-wrap gap-2 rounded-lg bg-white/60 p-3 text-sm'>
+				<div className='flex flex-wrap gap-2 rounded-lg ui-soft-fill p-3 text-sm'>
 					{categoryList.length === 0 ? (
 						<span className='text-secondary'>暂无分类</span>
 					) : (
@@ -103,14 +103,14 @@ export function CategoryModal({
 								onDragOver={handleDragOver(index)}
 								onDrop={handleDrop(index)}
 								onDragEnd={handleDragEnd}
-								className={`bg-brand/10 flex cursor-move items-center gap-2 rounded-full border py-1 pr-1.5 pl-3 ${
+								className={`ui-accent-soft flex cursor-move items-center gap-2 rounded-full border py-1 pr-1.5 pl-3 ${
 									draggingIndex === index ? 'ring-brand/60 opacity-60 ring-1' : ''
 								}`}>
 								<span className='select-none'>{cat}</span>
 								<button
 									type='button'
 									onClick={() => onRemoveCategory(cat)}
-									className='text-secondary hover:text-brand inline-flex h-4 w-4 items-center justify-center'
+									className='text-secondary ui-hover-accent inline-flex h-4 w-4 items-center justify-center'
 									aria-label='Remove category'>
 									<X className='h-3 w-3' />
 								</button>
@@ -118,9 +118,9 @@ export function CategoryModal({
 						))
 					)}
 				</div>
-				<div className='max-h-[360px] space-y-2 overflow-y-auto rounded-xl bg-white/60 p-3'>
+				<div className='max-h-[360px] space-y-2 overflow-y-auto rounded-xl ui-soft-fill p-3'>
 					{editableItems.map(item => (
-						<div key={item.slug} className='flex flex-col gap-2 rounded-lg border bg-white/80 px-3 py-2 sm:flex-row sm:items-center sm:justify-between'>
+						<div key={item.slug} className='flex flex-col gap-2 rounded-lg border ui-soft-fill px-3 py-2 sm:flex-row sm:items-center sm:justify-between'>
 							<div className='text-sm font-medium'>
 								{item.title || item.slug}
 								<span className='text-secondary ml-2 text-xs'>{dayjs(item.date).format('YYYY-MM-DD')}</span>

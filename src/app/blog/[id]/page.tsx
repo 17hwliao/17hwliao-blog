@@ -6,7 +6,6 @@ import dayjs from 'dayjs'
 import { motion } from 'motion/react'
 import { BlogPreview } from '@/components/blog-preview'
 import { loadBlog, type BlogConfig } from '@/lib/load-blog'
-import { useReadArticles } from '@/hooks/use-read-articles'
 import LiquidGrass from '@/components/liquid-grass'
 import { PageActions } from '@/components/page-actions'
 
@@ -14,7 +13,6 @@ export default function Page() {
 	const params = useParams() as { id?: string | string[] }
 	const slug = Array.isArray(params?.id) ? params.id[0] : params?.id || ''
 	const router = useRouter()
-	const { markAsRead } = useReadArticles()
 
 	const [blog, setBlog] = useState<{ config: BlogConfig; markdown: string; cover?: string } | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -31,7 +29,6 @@ export default function Page() {
 				if (!cancelled) {
 					setBlog(blogData)
 					setError(null)
-					markAsRead(slug)
 				}
 			} catch (e: any) {
 				if (!cancelled) setError(e?.message || '加载失败')
@@ -43,7 +40,7 @@ export default function Page() {
 		return () => {
 			cancelled = true
 		}
-	}, [slug, markAsRead])
+	}, [slug])
 
 	const title = useMemo(() => (blog?.config.title ? blog.config.title : slug), [blog?.config.title, slug])
 	const date = useMemo(() => dayjs(blog?.config.date).format('YYYY年 M月 D日'), [blog?.config.date])
@@ -72,7 +69,6 @@ export default function Page() {
 	return (
 		<>
 			<BlogPreview
-				readingTools
 				markdown={blog.markdown}
 				title={title}
 				tags={tags}

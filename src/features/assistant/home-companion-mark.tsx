@@ -1,34 +1,27 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
-import { companionCharacters, defaultCompanionCharacter, isCompanionCharacter, readCompanionCharacter, type CompanionCharacter } from './companion-characters'
-
-function recall(character?: CompanionCharacter) {
-	window.dispatchEvent(new CustomEvent('zenix.companion.recall', { detail: character }))
-}
+import { play, ZENBOT_CHIRP } from '@/lib/sound'
+import { ZENBOT_FALLBACK_STAND } from '@/features/zenbot/runtime'
 
 export function HomeCompanionMark() {
-	const [selected, setSelected] = useState<CompanionCharacter>(defaultCompanionCharacter)
-	useEffect(() => { setSelected(readCompanionCharacter()) }, [])
+	const summon = () => {
+		play(ZENBOT_CHIRP)
+		window.dispatchEvent(new Event('zenix.companion.open'))
+	}
+
 	return (
 		<div className='home-companion-mark'>
-			<button type='button' className='home-companion-recall' onClick={() => recall()}>
-				<img src='/xingyin/mark.webp' alt='' width={34} height={34} />
-				<span><strong>小站看板娘</strong><small>打个招呼</small></span>
+			<button type='button' className='home-companion-recall' onClick={summon}>
+				<img src={ZENBOT_FALLBACK_STAND} alt='' width={36} height={36} />
+				<span>
+					<strong>Zenbot · 袖珍向导</strong>
+					<small>点我打开预设问答导览</small>
+				</span>
 			</button>
-			<label className='home-companion-skin' title='切换看板娘皮肤'>
-				<Sparkles size={16} aria-hidden='true' />
-				<span className='sr-only'>切换看板娘皮肤</span>
-				<select value={selected} onChange={event => {
-					const next = event.currentTarget.value
-					if (!isCompanionCharacter(next)) return
-					setSelected(next)
-					recall(next)
-				}}>
-					{Object.entries(companionCharacters).map(([id, scene]) => <option key={id} value={id}>{scene.title}</option>)}
-				</select>
-			</label>
+			<button type='button' className='home-companion-skin' title='召唤 Zenbot 互动' aria-label='召唤 Zenbot 互动' onClick={summon}>
+				<Sparkles size={15} aria-hidden='true' />
+			</button>
 		</div>
 	)
 }

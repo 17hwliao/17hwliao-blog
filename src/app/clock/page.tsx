@@ -1,5 +1,7 @@
 'use client'
 
+import { PageIntro } from '@/components/page-intro'
+
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
 import { Play, Pause, RotateCcw } from 'lucide-react'
@@ -133,10 +135,11 @@ export default function ClockPage() {
 	const canStart = mode === 'timer' ? timerTime > 0 || timerInput.hours > 0 || timerInput.minutes > 0 || timerInput.seconds > 0 : true
 
 	return (
-		<div className='flex flex-col items-center px-6 pt-32 pb-12'>
-			<motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className='w-full max-w-[600px] space-y-8'>
+		<div className='clock-page flex flex-col items-center py-8'>
+			<PageIntro label='TIME & FOCUS' title='专注时钟' description='用秒表记录片段，或设一个倒计时。' />
+			<motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className='clock-workspace w-full space-y-6'>
 				{/* Mode Selector */}
-				<div className='card relative flex gap-4 rounded-xl p-2'>
+				<div data-ui-surface='panel' className='card relative flex gap-4 rounded-xl p-2'>
 					<motion.button
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
@@ -151,7 +154,7 @@ export default function ClockPage() {
 						}}
 						className={cn(
 							`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition-all`,
-							mode === 'stopwatch' ? 'bg-brand text-white shadow-sm' : 'text-secondary hover:text-brand'
+							mode === 'stopwatch' ? 'ui-primary shadow-sm' : 'text-secondary ui-hover-accent'
 						)}>
 						秒表
 					</motion.button>
@@ -169,21 +172,21 @@ export default function ClockPage() {
 						}}
 						className={cn(
 							`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition-all`,
-							mode === 'timer' ? 'bg-brand text-white shadow-sm' : 'text-secondary hover:text-brand'
+							mode === 'timer' ? 'ui-primary shadow-sm' : 'text-secondary ui-hover-accent'
 						)}>
 						计时器
 					</motion.button>
 				</div>
 
-				<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className='card relative p-4'>
-					<div className='bg-secondary/20 flex items-center justify-center rounded-4xl p-8'>
+				<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} data-ui-surface='panel' className='card relative p-4'>
+					<div className='clock-face'>
 						<TimeDisplay time={displayTime} key={mode} />
 					</div>
 				</motion.div>
 
 				{/* Timer Input (only for timer mode when not running) */}
 				{mode === 'timer' && !isRunning && timerTime === 0 && (
-					<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className='card relative space-y-4'>
+					<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} data-ui-surface='panel' className='card relative space-y-4'>
 						<div className='flex items-center justify-center gap-4'>
 							<div className='flex flex-col items-center gap-2'>
 								<label className='text-secondary text-xs'>时</label>
@@ -193,7 +196,7 @@ export default function ClockPage() {
 									max='23'
 									value={timerInput.hours}
 									onChange={e => setTimerInput({ ...timerInput, hours: Math.max(0, Math.min(23, parseInt(e.target.value) || 0)) })}
-									className='no-spinner w-20 rounded-xl border bg-white/60 px-4 py-3 text-center text-2xl font-bold backdrop-blur-sm focus:bg-white/80'
+									className='no-spinner w-20 rounded-xl border ui-soft-fill px-4 py-3 text-center text-2xl font-bold backdrop-blur-sm '
 								/>
 							</div>
 							<div className='text-secondary mt-8 text-2xl font-bold'>:</div>
@@ -205,7 +208,7 @@ export default function ClockPage() {
 									max='59'
 									value={timerInput.minutes}
 									onChange={e => setTimerInput({ ...timerInput, minutes: Math.max(0, Math.min(59, parseInt(e.target.value) || 0)) })}
-									className='no-spinner w-20 rounded-xl border bg-white/60 px-4 py-3 text-center text-2xl font-bold backdrop-blur-sm focus:bg-white/80'
+									className='no-spinner w-20 rounded-xl border ui-soft-fill px-4 py-3 text-center text-2xl font-bold backdrop-blur-sm '
 								/>
 							</div>
 							<div className='text-secondary mt-8 text-2xl font-bold'>:</div>
@@ -217,7 +220,7 @@ export default function ClockPage() {
 									max='59'
 									value={timerInput.seconds}
 									onChange={e => setTimerInput({ ...timerInput, seconds: Math.max(0, Math.min(59, parseInt(e.target.value) || 0)) })}
-									className='no-spinner w-20 rounded-xl border bg-white/60 px-4 py-3 text-center text-2xl font-bold backdrop-blur-sm focus:bg-white/80'
+									className='no-spinner w-20 rounded-xl border ui-soft-fill px-4 py-3 text-center text-2xl font-bold backdrop-blur-sm '
 								/>
 							</div>
 						</div>
@@ -232,26 +235,27 @@ export default function ClockPage() {
 							whileTap={{ scale: 0.95 }}
 							onClick={handleLap}
 							disabled={!isRunning}
-							className='flex h-16 w-16 items-center justify-center rounded-full border bg-white/60 text-sm font-medium backdrop-blur-sm transition-all hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-50'>
+							className='flex h-16 w-16 items-center justify-center rounded-full border ui-soft-fill text-sm font-medium backdrop-blur-sm transition-all ui-hover-fill disabled:cursor-not-allowed disabled:opacity-50'>
 							计次
 						</motion.button>
 					)}
 					<motion.button
 						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
+						aria-label={isRunning ? '暂停计时' : '开始计时'}
 						onClick={handleStartPause}
 						disabled={!canStart}
-						className={`flex h-20 w-20 items-center justify-center rounded-full text-white shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
-							isRunning ? 'bg-brand-secondary hover:bg-brand-secondary/80' : 'bg-brand hover:bg-brand/80'
+						className={`flex h-20 w-20 items-center justify-center rounded-full shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
+							isRunning ? 'ui-secondary' : 'ui-primary'
 						}`}>
 						{isRunning ? <Pause className='h-8 w-8' /> : <Play className='h-8 w-8' />}
 					</motion.button>
 					<motion.button
 						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
-						onClick={handleReset}
+						aria-label='重置计时' onClick={handleReset}
 						disabled={isRunning && mode === 'stopwatch'}
-						className='flex h-16 w-16 items-center justify-center rounded-full border bg-white/60 backdrop-blur-sm transition-all hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-50'>
+						className='flex h-16 w-16 items-center justify-center rounded-full border ui-soft-fill backdrop-blur-sm transition-all ui-hover-fill disabled:cursor-not-allowed disabled:opacity-50'>
 						<RotateCcw className='h-5 w-5' />
 					</motion.button>
 				</div>
@@ -294,7 +298,7 @@ function TimeDisplay({ time }: TimeDisplayProps) {
 	const millisecondsStr = milliseconds.toString().padStart(2, '0')
 
 	return (
-		<div className='flex items-center justify-center gap-1.5'>
+		<div className='clock-value flex items-center justify-center gap-1.5'>
 			{hours > 0 && (
 				<>
 					<SevenSegmentDigit value={parseInt(hoursStr[0])} />

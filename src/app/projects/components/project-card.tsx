@@ -57,12 +57,12 @@ export function ProjectCard({ project, isEditMode = false, onUpdate, onDelete }:
 		<motion.div
 			initial={{ opacity: 0, scale: 0.9 }}
 			{...(maxSM ? { animate: { opacity: 1, scale: 1 } } : { whileInView: { opacity: 1, scale: 1 } })}
-			className='card relative flex flex-col gap-4'>
+			data-ui-surface='panel' className='card relative flex flex-col gap-4'>
 			{isEditMode && (
 				<div className='absolute top-3 right-3 z-10 flex gap-2'>
 					{isEditing ? (
 						<>
-							<button onClick={handleCancel} className='rounded-lg px-2 py-1.5 text-xs text-gray-400 transition-colors hover:text-gray-600'>
+							<button onClick={handleCancel} className='rounded-lg px-2 py-1.5 text-xs ui-muted transition-colors hover:text-gray-600'>
 								取消
 							</button>
 							<button onClick={() => setIsEditing(false)} className='rounded-lg px-2 py-1.5 text-xs text-blue-400 transition-colors hover:text-blue-600'>

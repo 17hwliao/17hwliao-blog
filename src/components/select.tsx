@@ -127,17 +127,17 @@ export function Select({ value, onChange, options, className, disabled }: Select
 					<AnimatePresence>
 						{open && (
 							<motion.div
+								data-ui-surface='raised'
+								className='ui-select-menu fixed z-50 border'
 								ref={dropdownRef}
 								initial={{ opacity: 0, y: -8, scale: 0.95 }}
 								animate={{ opacity: 1, y: 0, scale: 1 }}
 								exit={{ opacity: 0, y: -8, scale: 0.95 }}
 								transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-								className='bg-card/95 fixed z-50 rounded-xl border backdrop-blur-xl'
 								style={{
 									top: `${position.top}px`,
 									left: `${position.left}px`,
-									width: `${position.width}px`,
-									boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+									width: `${position.width}px`
 								}}>
 								<div className='scrollbar-none max-h-64 overflow-y-auto p-1.5'>
 									{options.map(option => {
@@ -150,7 +150,7 @@ export function Select({ value, onChange, options, className, disabled }: Select
 												className={cn(
 													'w-full rounded-lg px-3 py-2 text-left text-xs transition-all',
 													'active:scale-[0.98]',
-													isSelected ? 'bg-brand/10 text-brand font-medium' : 'hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
+													isSelected ? 'ui-accent-soft ui-accent font-medium' : 'ui-hover-fill'
 												)}>
 												{option.label}
 											</button>

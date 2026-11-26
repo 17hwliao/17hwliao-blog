@@ -8,6 +8,7 @@ import { WriteEditor } from '../components/editor'
 import { WriteSidebar } from '../components/sidebar'
 import { WriteActions } from '../components/actions'
 import { WritePreview } from '../components/preview'
+import { PageIntro } from '@/components/page-intro'
 
 export default function EditBlogPage() {
 	const params = useParams() as { slug?: string }
@@ -24,7 +25,7 @@ export default function EditBlogPage() {
 	}
 	if (error)
 		return (
-			<div role='alert' className='feed-status'>
+			<div role='alert' data-ui-surface='well' className='feed-status ui-surface-pad'>
 				{error}
 				<button className='button-light' onClick={() => void retry()}>
 					重新加载
@@ -40,6 +41,7 @@ export default function EditBlogPage() {
 		<WritePreview form={form} coverPreviewUrl={coverPreviewUrl} onClose={closePreview} slug={slug} />
 	) : (
 		<>
+			<PageIntro label='EDIT A NOTE' title='编辑文章' description='修改内容，预览后保存。' />
 			<div className='write-layout'>
 				<WriteEditor />
 				<WriteSidebar />

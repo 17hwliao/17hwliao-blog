@@ -1,14 +1,18 @@
 'use client'
 
+import '@/features/appearance/ui-theme.css'
+
 import { type PropsWithChildren, useEffect, Suspense } from 'react'
 import { FloatingCompanion } from '@/features/assistant/floating-companion'
-import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { MotionConfig } from 'motion/react'
 import { SiteToaster } from '@/components/site-toaster'
 import { useCenterInit } from '@/hooks/use-center'
 import { useSizeInit } from '@/hooks/use-size'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
-import { SiteHeader } from '@/components/site-header'
+import { ContentProtection } from '@/components/content-protection'
+import { ReferenceBackLink, ReferenceExperience } from '@/components/reference-experience'
+import { CommandPalette } from '@/features/discovery/command-palette'
 import ConfigDialog from '@/app/(home)/config-dialog'
 import { AppearanceProvider } from '@/features/appearance/theme'
 import { useVisualViewport } from '@/features/appearance/use-visual-viewport'
@@ -18,11 +22,14 @@ export default function Layout({ children }: PropsWithChildren) {
 	useVisualViewport()
 	useSizeInit()
 	const { siteContent, configDialogOpen, setConfigDialogOpen } = useConfigStore()
+	const pathname = usePathname()
+	const isHome = pathname === '/'
 	useEffect(() => {
 		document.title = siteContent.meta.title
 		const handleKey = (event: KeyboardEvent) => {
-			if ((event.ctrlKey || event.metaKey) && event.key === ',' && window.location.pathname === '/') {
+			if ((event.ctrlKey || event.metaKey) && ((event.code === 'Comma' && event.shiftKey) || (event.key === ',' && window.location.pathname === '/'))) {
 				event.preventDefault()
+				window.dispatchEvent(new CustomEvent('zenbot:panel', { detail: 'settings' }))
 				setConfigDialogOpen(true)
 			}
 		}
@@ -32,48 +39,22 @@ export default function Layout({ children }: PropsWithChildren) {
 	return (
 		<AppearanceProvider>
 			<MotionConfig reducedMotion='user'>
-				<div className='site-shell'>
+				<div className={'site-shell' + (isHome ? ' is-home' : ' reference-page')} data-page={pathname.split('/')[1] || 'home'}>
 					<a href='#main-content' className='skip-link'>
 						跳转到正文
 					</a>
-					<SiteHeader />
-					<div id='page-actions' className='page-actions' />
-					<main id='main-content' className='site-main' tabIndex={-1}>
+					<ContentProtection />
+					<ReferenceExperience />
+					<CommandPalette hideTrigger />
+					<main id='main-content' className='site-main ui-page' tabIndex={-1}>
+						{!isHome && <ReferenceBackLink />}
 						{children}
 					</main>
-					<footer className='site-footer'>
-						<p>
-							© {new Date().getFullYear()} {siteContent.meta.title}
-							<span className='footer-divider'>/</span>记录，连接每一个日常。
-						</p>
-						<div>
-							{siteContent.socialButtons
-								.filter(button => button.value.trim())
-								.sort((a, b) => a.order - b.order)
-								.map(button => (
-									<a
-										key={button.id}
-										href={button.type === 'email' ? `mailto:${button.value}` : button.value}
-										target={button.type === 'email' ? undefined : '_blank'}
-										rel='noreferrer'>
-										{button.label || (button.type === 'email' ? '邮箱' : button.type === 'github' ? 'GitHub' : '链接')}
-									</a>
-								))}
-							<Link href='/rss.xml'>RSS</Link>
-							<Link href='/knowledge'>知识地图</Link>
-							<Link href='/reading'>阅读工作台</Link>
-							<Link href='/about'>关于</Link>
-							<button type='button' onClick={() => window.dispatchEvent(new Event('zenix.companion.open'))}>聊聊小站</button>
-							{siteContent.beian.text && (
-								<a href={siteContent.beian.link || 'https://beian.miit.gov.cn/'} target='_blank' rel='noreferrer'>
-									{siteContent.beian.text}
-								</a>
-							)}
-						</div>
-					</footer>
 					<ConfigDialog open={configDialogOpen} onClose={() => setConfigDialogOpen(false)} />
 					<SiteToaster />
-					<Suspense fallback={null}><FloatingCompanion /></Suspense>
+					<Suspense fallback={null}>
+						<FloatingCompanion />
+					</Suspense>
 				</div>
 			</MotionConfig>
 		</AppearanceProvider>

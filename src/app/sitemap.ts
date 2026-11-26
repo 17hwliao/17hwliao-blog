@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	return [
 		...staticEntries,
 		...postEntries,
-		...['/projects', '/knowledge', '/pictures'].map(route => ({ url: `${baseUrl}${route}`, changeFrequency: 'weekly' as const })),
+		...['/projects', '/stw', '/pictures'].map(route => ({ url: `${baseUrl}${route}`, changeFrequency: 'weekly' as const })),
 		...projectEntries
 	]
 }

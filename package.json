@@ -19,6 +19,9 @@
 		"@opennextjs/cloudflare": "^1.14.4",
 		"@types/jsrsasign": "^10.5.15",
 		"clsx": "^2.1.1",
+		"d3-drag": "^3.0.1",
+		"d3-geo": "^3.1.2",
+		"d3-selection": "^3.0.1",
 		"dayjs": "^1.11.18",
 		"html-react-parser": "^5.2.8",
 		"jsrsasign": "^11.1.0",
@@ -38,8 +41,13 @@
 		"zustand": "^5.0.8"
 	},
 	"devDependencies": {
+		"@napi-rs/canvas": "^1.2.1",
 		"@svgr/webpack": "^8.1.0",
 		"@tailwindcss/postcss": "^4",
+		"@types/d3-drag": "^3.0.7",
+		"@types/d3-geo": "^3.1.1",
+		"@types/d3-selection": "^3.0.13",
+		"@types/geojson": "^7946.0.16",
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",

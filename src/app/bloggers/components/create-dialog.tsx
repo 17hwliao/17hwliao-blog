@@ -64,7 +64,7 @@ export default function CreateDialog({ blogger, onClose, onSave }: CreateDialogP
 	}
 
 	return (
-		<DialogModal open onClose={onClose} className='card w-sm'>
+		<DialogModal open onClose={onClose} data-ui-surface='panel' className='card w-sm'>
 			{/* 卡片样式的内容 */}
 			<div>
 				<div className='mb-4 flex items-center gap-4'>
@@ -77,8 +77,8 @@ export default function CreateDialog({ blogger, onClose, onSave }: CreateDialogP
 								</div>
 							</>
 						) : (
-							<div className='flex h-16 w-16 items-center justify-center rounded-full bg-gray-200'>
-								<Plus className='h-6 w-6 text-gray-500' />
+							<div className='flex h-16 w-16 items-center justify-center rounded-full ui-soft-fill'>
+								<Plus className='h-6 w-6 ui-muted' />
 							</div>
 						)}
 					</div>
@@ -122,7 +122,7 @@ export default function CreateDialog({ blogger, onClose, onSave }: CreateDialogP
 
 			{/* 操作按钮 */}
 			<div className='mt-6 flex gap-3'>
-				<button onClick={onClose} className='flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm transition-colors hover:bg-gray-50'>
+				<button onClick={onClose} className='flex-1 rounded-lg border ui-edge ui-soft-fill px-4 py-2 text-sm transition-colors ui-hover-fill'>
 					取消
 				</button>
 				<button onClick={handleSubmit} className='brand-btn flex-1 justify-center px-4'>

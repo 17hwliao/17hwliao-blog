@@ -50,7 +50,7 @@ export default function Page() {
 								{loading ? (
 									<div className='text-secondary text-center'>预览渲染中...</div>
 								) : (
-									<div className='about-copy'>
+									<div data-ui-surface='panel' className='about-copy'>
 										<div className='prose prose-sm max-w-none'>{content}</div>
 									</div>
 								)}
@@ -86,7 +86,7 @@ export default function Page() {
 						)
 					) : (
 						<>
-							<div className='about-heading mb-8'>
+							<div data-ui-surface='hero' className='about-heading mb-8'>
 								<h1 className='mb-4 text-4xl font-bold'>{data.title}</h1>
 								<p className='about-subtitle'>{data.description}</p>
 								<div className='about-author'>
@@ -98,7 +98,7 @@ export default function Page() {
 							{loading ? (
 								<div className='text-secondary text-center'>加载中...</div>
 							) : (
-								<div className='about-copy'>
+								<div data-ui-surface='panel' className='about-copy'>
 									<div className='prose prose-sm max-w-none'>{content}</div>
 								</div>
 							)}
@@ -117,7 +117,7 @@ export default function Page() {
 				onCancel={handleCancel}
 				onSave={() => handleSaveClick(persist)}
 				className='fixed top-4 right-6 z-10'
-				editButtonClassName='bg-white/60'
+				editButtonClassName='ui-soft-fill'
 				extraEditActions={
 					<EditToolbarActionButton onClick={() => setIsPreviewMode(prev => !prev)} label={isPreviewMode ? '继续编辑' : '预览'} disabled={isSaving} />
 				}

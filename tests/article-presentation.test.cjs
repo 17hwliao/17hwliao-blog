@@ -58,7 +58,7 @@ test('real renderer and sanitizer provide a language header for fenced and raw p
 	assert.match(html, /--shiki-dark/)
 	const raw = renderToStaticMarkup(parseMarkdownHtml('<pre><code class="language-python">print(&quot;ok&quot;)</code></pre>'))
 	assert.match(raw, /data-language="python"/)
-	assert.match(raw, /Copy code/)
+	assert.doesNotMatch(raw, /Copy code|code-block-copy-btn/)
 })
 
 test('all article titles match their detail configuration and remain unique while preserving the 204 imported articles', () => {

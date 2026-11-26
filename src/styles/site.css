@@ -680,15 +680,40 @@ button:disabled {
 	align-items: flex-start;
 	gap: 10px;
 }
-.private-key-message > svg { flex: 0 0 auto; margin-top: 2px; }
-.private-key-message > div { min-width: 0; }
-.private-key-message strong { display: block; font-weight: 600; }
-.private-key-filename { display: block; overflow-wrap: anywhere; color: var(--color-secondary); }
-.private-key-message p { margin: 4px 0 0; overflow-wrap: anywhere; }
-.private-key-feedback > button { margin-top: 12px; }
-.private-key-config { margin: 10px 0 0; color: var(--color-secondary); overflow-wrap: anywhere; }
-.private-key-feedback[data-phase='error'] { border-color: #a34a38; }
-.private-key-feedback[data-phase='error'] .private-key-message > svg { color: #a34a38; }
+.private-key-message > svg {
+	flex: 0 0 auto;
+	margin-top: 2px;
+}
+.private-key-message > div {
+	min-width: 0;
+}
+.private-key-message strong {
+	display: block;
+	font-weight: 600;
+}
+.private-key-filename {
+	display: block;
+	overflow-wrap: anywhere;
+	color: var(--color-secondary);
+}
+.private-key-message p {
+	margin: 4px 0 0;
+	overflow-wrap: anywhere;
+}
+.private-key-feedback > button {
+	margin-top: 12px;
+}
+.private-key-config {
+	margin: 10px 0 0;
+	color: var(--color-secondary);
+	overflow-wrap: anywhere;
+}
+.private-key-feedback[data-phase='error'] {
+	border-color: #a34a38;
+}
+.private-key-feedback[data-phase='error'] .private-key-message > svg {
+	color: #a34a38;
+}
 .dialog-frame {
 	padding: 24px;
 	border: 0;
@@ -896,13 +921,13 @@ button:disabled {
 .about-author img {
 	border-radius: 50%;
 }
-.reading-layout {
+.article-layout {
 	display: flex;
 	align-items: flex-start;
 	gap: 40px;
 	padding-block: 40px 64px;
 }
-.reading-article {
+.article-body {
 	min-width: 0;
 	flex: 1;
 }
@@ -919,7 +944,7 @@ button:disabled {
 	color: var(--color-secondary);
 	overflow-wrap: anywhere;
 }
-.reading-article h1 {
+.article-body h1 {
 	font-size: 32px;
 	line-height: 1.5;
 	font-weight: 500;
@@ -952,9 +977,6 @@ button:disabled {
 }
 .prose a {
 	color: #456359;
-}
-.prose .code-block-copy-btn {
-	opacity: 1;
 }
 @media (max-width: 1000px) {
 	.header-inner {
@@ -1217,7 +1239,9 @@ button:disabled {
 	}
 	.site-nav a,
 	.site-footer a {
-		transition: color 180ms ease, background-color 180ms ease;
+		transition:
+			color 180ms ease,
+			background-color 180ms ease;
 	}
 	.button-dark,
 	.button-light,

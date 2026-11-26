@@ -45,7 +45,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 				<ArrowLeft size={15} />
 				全部项目
 			</Link>
-			<header className='project-detail-heading'>
+			<header data-ui-surface='hero' className='project-detail-heading'>
 				<div className='project-detail-logo'>
 					<img src={project.image} alt={`${project.name} logo`} width={72} height={72} />
 				</div>
@@ -56,10 +56,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 				</div>
 			</header>
 			{showcase && (
-				<div className='project-showcase-intro'>
+				<div data-ui-surface='panel' className='project-showcase-intro'>
 					<h2>{showcase.headline}</h2>
 					<p>{showcase.intro}</p>
-					<div className='project-work-scope'>
+					<div data-ui-surface='panel' className='project-work-scope'>
 						<h3>我的工作与记录</h3>
 						<p>{showcase.work}</p>
 					</div>
@@ -102,7 +102,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 				<ProjectGallery key={project.slug} name={project.name} shots={showcase.shots} journeys={showcase.journeys} />
 			) : null}
 			{showcase?.type !== 'contribution' && (
-				<details className='project-flow-details'>
+				<details data-ui-surface='panel' className='project-flow-details'>
 					<summary>
 						展开流程讲解<span>从界面，继续看到实现路径</span>
 					</summary>

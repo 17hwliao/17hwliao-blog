@@ -13,7 +13,7 @@ export function ProjectArticles({ series }: { series: (typeof seriesData)[number
 				<Link href={`/blog/${series.articles[0].slug}`} className='text-link'>从总览开始 <ArrowUpRight size={15} /></Link>
 			</div>
 			<p className='project-articles-description'>{series.description}</p>
-			<ol className='project-article-list'>
+			<ol data-ui-surface='panel' className='project-article-list'>
 				{series.articles.map(article => (
 					<li key={article.slug}>
 						<Link href={`/blog/${article.slug}`}>

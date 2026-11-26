@@ -159,7 +159,7 @@ export function ProjectGallery({ name, shots, journeys = [] }: { name: string; s
 					))}
 				</div>
 			)}
-			<figure id='project-selected-picture' className='gallery-selected-picture'>
+			<figure id='project-selected-picture' data-ui-surface='panel' className='gallery-selected-picture'>
 				<figcaption id={`shot-${shot.id}`} className='gallery-caption' aria-live='polite'>
 					<div>
 						{shotJourney && (

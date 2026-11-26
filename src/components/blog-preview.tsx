@@ -7,8 +7,6 @@ import { useSize } from '@/hooks/use-size'
 import { BlogSidebar } from '@/components/blog-sidebar'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import type { BlogSource } from '@/app/blog/types'
-import { useRef } from 'react'
-import { ReadingTools } from '@/features/reading/reading-tools'
 
 type BlogPreviewProps = {
 	markdown: string
@@ -21,35 +19,21 @@ type BlogPreviewProps = {
 	createdAt?: string
 	contentUpdatedAt?: string | null
 	source?: BlogSource
-	readingTools?: boolean
 }
 
-export function BlogPreview({
-	markdown,
-	title,
-	tags,
-	date,
-	summary,
-	cover,
-	slug,
-	createdAt,
-	contentUpdatedAt,
-	source,
-	readingTools = false
-}: BlogPreviewProps) {
+export function BlogPreview({ markdown, title, tags, date, summary, cover, slug, createdAt, contentUpdatedAt, source }: BlogPreviewProps) {
 	const { maxSM: isMobile } = useSize()
 	const { content, toc, loading } = useMarkdownRender(markdown)
 	const { siteContent } = useConfigStore()
 	const summaryInContent = siteContent.summaryInContent ?? false
-	const contentRef = useRef<HTMLDivElement>(null)
 
 	if (loading) {
 		return <div className='text-secondary flex h-full items-center justify-center text-sm'>渲染中...</div>
 	}
 
 	return (
-		<div className='reading-layout'>
-			<motion.article initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: INIT_DELAY }} className='reading-article'>
+		<div className='article-layout'>
+			<motion.article initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: INIT_DELAY }} data-ui-surface='panel' className='article-body'>
 				<div>
 					<h1 className='text-center text-2xl font-semibold'>{title}</h1>
 
@@ -81,17 +65,16 @@ export function BlogPreview({
 
 					{summary && summaryInContent && <div className='text-secondary mt-6 cursor-text text-center text-sm'>“{summary}”</div>}
 
-					{slug && readingTools ? (
-						<ReadingTools key={slug} slug={slug} title={title} contentRef={contentRef} toc={toc}>
-							{content}
-						</ReadingTools>
-					) : (
-						<div className='prose mt-6 max-w-none cursor-text'>{content}</div>
-					)}
+					<div className='prose mt-6 max-w-none'>{content}</div>
 				</div>
 			</motion.article>
 
-			{!isMobile && <BlogSidebar cover={cover} summary={summary} toc={toc} slug={slug} />}
+			{!isMobile && (
+				<details data-ui-surface='panel' className='article-extras'>
+					<summary>文章信息与互动</summary>
+					<BlogSidebar cover={cover} summary={summary} toc={toc} slug={slug} />
+				</details>
+			)}
 		</div>
 	)
 }

@@ -5,7 +5,7 @@ import { LoaderCircle, Music2, Pause, Play, X } from 'lucide-react'
 import tracks from '@/config/music.json'
 import { musicRequestEvent } from '@/features/music/events'
 
-export function HeaderMusic() {
+export function HeaderMusic({ dock = false }: { dock?: boolean }) {
 	const audioRef = useRef<HTMLAudioElement>(null)
 	const triggerRef = useRef<HTMLButtonElement>(null)
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -45,6 +45,16 @@ export function HeaderMusic() {
 		},
 		[]
 	)
+	useEffect(() => {
+		const other = (event: Event) => {
+			if ((event as CustomEvent<string>).detail !== 'music') setOpen(false)
+		}
+		window.addEventListener('zenbot:panel', other)
+		return () => window.removeEventListener('zenbot:panel', other)
+	}, [])
+	useEffect(() => {
+		if (open) window.dispatchEvent(new CustomEvent('zenbot:panel', { detail: 'music' }))
+	}, [open])
 	const playTrack = async (track: (typeof tracks)[number]) => {
 		const audio = audioRef.current
 		if (!audio) return
@@ -87,10 +97,10 @@ export function HeaderMusic() {
 		return () => window.removeEventListener(musicRequestEvent, handle)
 	}, [])
 	return (
-		<div className='header-music' ref={containerRef}>
+		<div className={'header-music' + (dock ? ' dock-music' : '')} ref={containerRef}>
 			<button
 				ref={triggerRef}
-				className='icon-button music-trigger'
+				className={dock ? 'bento-dock-btn bento-dock-single music-trigger' : 'icon-button music-trigger'}
 				aria-label={open ? '收起音乐面板' : playing ? `打开音乐面板，正在播放${selected?.title}` : '打开音乐面板'}
 				aria-expanded={open}
 				aria-controls='music-panel'
@@ -100,7 +110,7 @@ export function HeaderMusic() {
 				<span className='music-trigger-dot' data-playing={playing} />
 			</button>
 			{open && (
-				<section id='music-panel' className='music-panel' aria-label='音乐播放'>
+				<section id='music-panel' data-ui-surface='raised' className='music-panel' aria-label='音乐播放'>
 					<div className='music-panel-heading'>
 						<span className='eyebrow'>A SONG FOR THE MOOD</span>
 						<button className='icon-button' aria-label='关闭音乐面板' onClick={close}>

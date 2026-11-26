@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src 'self'; img-src 'self' data: blob:; style-src 'self'; object-src 'none'; base-uri 'none'">
+<title>Unity-Chan · Live2D 动作预览</title><link rel="stylesheet" href="./style.css"></head>
+<body><div id="stage"><canvas id="model" aria-label="Unity-Chan，可点击和轻轻拖动"></canvas><div id="bubble" role="status" aria-live="polite" hidden></div><p id="loading" role="status">正在载入 Unity-Chan…</p><div id="error" role="alert" hidden><p id="error-text"></p><button id="retry">重新载入</button></div></div>
+<aside id="controls" hidden><span id="phase">待机</span><div id="motion-controls"></div><label>参数表情<select id="expression"><option value="">选择表情…</option></select></label><button id="reset">恢复待机</button><button id="pause">暂停</button><a class="credit" href="https://github.com/imuncle/live2d/tree/master/model/unitychan" target="_blank" rel="noopener noreferrer">Unity-Chan · 资源来源</a></aside>
+<script src="/live2d/unitychan/vendor/pixi-6.5.10.min.js"></script><script src="/live2d/unitychan/vendor/live2d.min.js"></script><script src="/live2d/unitychan/vendor/cubism2-0.4.0.min.js"></script><script type="module" src="./native-model.mjs"></script></body></html>

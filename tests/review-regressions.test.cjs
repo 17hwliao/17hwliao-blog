@@ -41,7 +41,8 @@ test('real math and highlighted code survive the shared HTML-to-React boundary',
 	assert.match(output, /class="katex"/)
 	assert.match(output, /<math/)
 	assert.match(output, /<table/)
-	assert.match(output, /code-block-copy-btn/)
+	assert.match(output, /code-block-header/)
+	assert.doesNotMatch(output, /code-block-copy-btn/)
 	assert.equal((output.match(/<pre/g) || []).length, 1)
 })
 

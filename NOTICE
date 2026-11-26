@@ -23,3 +23,13 @@ AI-generated. Zenix names and character markings are retained. Artwork
 continues to follow the content-asset terms described above; the GPL source
 license applies to the blog code. The seven original costume atlases and
 their SHA-256 checksums are listed in public/xingyin/asset-sources.json.
+
+The Bento page transitions, Back button frame, hover sound, and GitHub star
+hint (including pixel SVG artwork) are adapted from Ladvace/astro-bento-portfolio
+(commit 3d8b200b0ad54678ac6993b7010c5b5f285c2ad9). Copyright (c) 2024
+Gianmarco Cavallo and others. MIT notice: LICENSES/astro-bento-portfolio-MIT.txt.
+
+The STW Globe renderer, world geometry and motion gate are adapted from the same
+astro-bento-portfolio commit, src/components/Globe.tsx, src/lib/world.json and
+src/lib/motion-gate.ts. The Solid lifecycle is adapted to React; visited-country
+claims are omitted. The MIT notice above also applies to these portions.

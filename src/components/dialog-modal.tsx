@@ -66,7 +66,7 @@ export function DialogModal({
 			onClick={event => {
 				if (!disableCloseOnOverlay && event.target === event.currentTarget) onClose()
 			}}>
-			<div className={cn('dialog-surface', className)} style={{ position: 'relative' }}>
+			<div data-ui-surface='raised' className={cn('dialog-surface', className)} style={{ position: 'relative' }}>
 				{open && children}
 			</div>
 		</dialog>,

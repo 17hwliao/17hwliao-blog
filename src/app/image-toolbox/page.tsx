@@ -1,5 +1,7 @@
 'use client'
 
+import { PageIntro } from '@/components/page-intro'
+
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
 import { motion } from 'motion/react'
 import { ANIMATION_DELAY, INIT_DELAY } from '@/consts'
@@ -297,15 +299,7 @@ export default function Page() {
 	return (
 		<div className='relative px-6 pt-32 pb-12 text-sm max-sm:pt-28'>
 			<div className='mx-auto flex max-w-3xl flex-col gap-6'>
-				<motion.div
-					initial={{ opacity: 0, scale: 0.9 }}
-					animate={{ opacity: 1, scale: 1 }}
-					transition={{ delay: INIT_DELAY }}
-					className='space-y-2 text-center'>
-					<p className='text-secondary text-xs tracking-[0.2em] uppercase'>Image Toolbox</p>
-					<h1 className='text-2xl font-semibold'>PNG / JPG 转 WEBP</h1>
-					<p className='text-secondary'>选择图片 → 调整质量 → 一键转换下载</p>
-				</motion.div>
+				<PageIntro label='IMAGE TOOLBOX' title='WebP 图片工具' description='选择图片、调整质量，转换后下载。' />
 
 				<motion.label
 					initial={{ opacity: 0, scale: 0.9 }}
@@ -315,11 +309,11 @@ export default function Page() {
 					onDragOver={handleDragOver}
 					onDragLeave={handleDragLeave}
 					onDrop={handleDrop}
-					className={`group hover:border-brand/20 card relative flex cursor-pointer flex-col items-center justify-center gap-3 text-center transition-colors hover:bg-white/80 ${
-						isDragging ? 'border-brand bg-white' : ''
+					data-ui-surface='panel' data-dragging={isDragging} className={`image-upload-zone group hover:border-brand/20 card relative flex cursor-pointer flex-col items-center justify-center gap-3 text-center transition-colors ui-hover-fill ${
+						isDragging ? 'border-brand ui-soft-fill' : ''
 					}`}>
 					<input type='file' accept='image/*' multiple className='hidden' onChange={event => handleFiles(event.target.files)} />
-					<div className='bg-brand/10 text-brand/60 group-hover:bg-brand/10 flex h-20 w-20 items-center justify-center rounded-full text-3xl transition'>
+					<div className='ui-accent-soft ui-muted group-hover:bg-brand/10 flex h-20 w-20 items-center justify-center rounded-full text-3xl transition'>
 						📷
 					</div>
 					<div>
@@ -329,17 +323,17 @@ export default function Page() {
 				</motion.label>
 
 				{hasImages && (
-					<motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className='card relative'>
-						<div className='text-secondary flex items-center justify-between border-b border-slate-200 pb-3 text-xs tracking-[0.2em] uppercase'>
+					<motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} data-ui-surface='panel' className='card relative'>
+						<div className='text-secondary flex items-center justify-between border-b ui-edge pb-3 text-xs tracking-[0.2em] uppercase'>
 							<span>已选择 {images.length} 张图片</span>
 							<span>{totalSize}</span>
 						</div>
-						<ul className='divide-y divide-slate-200'>
+						<ul className='divide-y ui-dividers'>
 							{images.map((item, index) => {
 								const { file, preview, converted, converting } = item
 								return (
 									<li key={`${file.name}-${index}`} className='flex items-center gap-4 py-3'>
-										<div className='h-12 w-12 overflow-hidden rounded-xl border border-slate-200 bg-slate-50'>
+										<div className='h-12 w-12 overflow-hidden rounded-xl border ui-edge ui-soft-fill'>
 											<img src={preview} alt={file.name} className='h-full w-full object-cover' />
 										</div>
 										<div className='flex flex-1 flex-col'>
@@ -360,12 +354,12 @@ export default function Page() {
 												<>
 													<button
 														onClick={() => handleCompareImage(index)}
-														className='border-brand text-brand hover:bg-brand/10 rounded-full border px-3 py-1 font-semibold transition'>
+														className='border-brand ui-accent hover:bg-brand/10 rounded-full border px-3 py-1 font-semibold transition'>
 														对比
 													</button>
 													<button
 														onClick={() => handleDownloadImage(index)}
-														className='border-brand text-brand hover:bg-brand/10 rounded-full border px-3 py-1 font-semibold transition'>
+														className='border-brand ui-accent hover:bg-brand/10 rounded-full border px-3 py-1 font-semibold transition'>
 														下载
 													</button>
 												</>
@@ -387,7 +381,7 @@ export default function Page() {
 					initial={{ opacity: 0, scale: 0.9 }}
 					animate={{ opacity: 1, scale: 1 }}
 					transition={{ delay: INIT_DELAY + 2 * ANIMATION_DELAY }}
-					className='card relative'>
+					data-ui-surface='panel' className='card relative'>
 					<div className='flex flex-wrap items-center gap-4'>
 						<div className='flex-1 space-y-4'>
 							<div>
@@ -404,7 +398,7 @@ export default function Page() {
 									/>
 									<span className='w-12 text-right text-sm font-medium'>{Math.round(quality * 100)}%</span>
 								</div>
-								<p className='text-xs text-slate-500'>使用 canvas.toDataURL('image/webp', {quality.toFixed(2)})</p>
+								<p className='text-xs ui-muted'>数值越高，画面越清晰，文件通常也越大。</p>
 							</div>
 							<div className='flex items-center gap-3'>
 								<div className='flex items-center gap-2'>
@@ -413,7 +407,7 @@ export default function Page() {
 										id='limit-max-width'
 										checked={limitMaxWidth}
 										onChange={event => setLimitMaxWidth(event.target.checked)}
-										className='h-4 w-4 rounded border-slate-300'
+										className='h-4 w-4 rounded ui-edge'
 									/>
 									<label htmlFor='limit-max-width' className='text-secondary cursor-pointer text-xs tracking-[0.2em] uppercase'>
 										限制最大宽度
@@ -428,9 +422,9 @@ export default function Page() {
 											step={100}
 											value={maxWidth}
 											onChange={event => setMaxWidth(Math.max(100, parseInt(event.target.value) || 1200))}
-											className='w-24 rounded border border-slate-200 px-2 py-1 text-sm'
+											className='w-24 rounded border ui-edge px-2 py-1 text-sm'
 										/>
-										<span className='text-xs text-slate-500'>px</span>
+										<span className='text-xs ui-muted'>px</span>
 									</div>
 								)}
 							</div>
@@ -439,13 +433,13 @@ export default function Page() {
 							<button
 								onClick={handleConvertAll}
 								disabled={!hasConvertible || batchConverting}
-								className='rounded-full border border-slate-200 px-4 py-2 font-medium transition disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300'>
+								className='rounded-full border ui-edge px-4 py-2 font-medium transition disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300'>
 								{batchConverting ? '全部转换中…' : '全部转换'}
 							</button>
 							<button
 								onClick={handleDownloadAll}
 								disabled={!hasConverted}
-								className='border-brand text-brand rounded-full border px-4 py-2 font-semibold transition disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300'>
+								className='border-brand ui-accent rounded-full border px-4 py-2 font-semibold transition disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300'>
 								全部下载
 							</button>
 						</div>
@@ -459,13 +453,13 @@ export default function Page() {
 						<div className='flex flex-col items-end p-4'>
 							<div>
 								<div className='text-secondary text-center text-sm font-medium'>原图 ({formatBytes(images[compareIndex].file.size)})</div>
-								<img src={images[compareIndex].preview} alt='Original' className='mt-3 max-h-[90vh] rounded-xl bg-slate-100' />
+								<img src={images[compareIndex].preview} alt='Original' className='mt-3 max-h-[90vh] rounded-xl ui-soft-fill' />
 							</div>
 						</div>
 						<div className='flex flex-col items-start p-4'>
 							<div>
 								<div className='text-secondary text-center text-sm font-medium'>WEBP ({formatBytes(images[compareIndex].converted!.size)})</div>
-								<img src={images[compareIndex].converted!.url} alt='Converted' className='mt-3 max-h-[90vh] rounded-xl bg-slate-100' />
+								<img src={images[compareIndex].converted!.url} alt='Converted' className='mt-3 max-h-[90vh] rounded-xl ui-soft-fill' />
 							</div>
 						</div>
 					</div>

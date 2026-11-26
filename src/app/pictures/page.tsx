@@ -1,7 +1,7 @@
-import { StoriesPage } from '@/features/stories/stories-page'
+import PicturesPage from './pictures-page'
 
-export const metadata = { title: '相册故事集 · 17hwliao' }
+export const metadata = { title: '日常相册 · 17hwliao' }
 
 export default function Page() {
-	return <StoriesPage />
+	return <PicturesPage />
 }

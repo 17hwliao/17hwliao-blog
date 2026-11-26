@@ -33,7 +33,7 @@ export default function MediaUploadDialog({
 	const isCircle = shape === 'circle'
 	const previewClass = cn('h-full w-full object-cover', isCircle ? 'rounded-full' : 'rounded-xl')
 	const boxClass = cn(
-		'mx-auto flex h-32 w-32 cursor-pointer items-center justify-center border border-gray-300 bg-secondary/10 transition-colors hover:bg-gray-200',
+		'mx-auto flex h-32 w-32 cursor-pointer items-center justify-center border ui-edge bg-secondary/10 transition-colors ui-hover-fill',
 		isCircle ? 'rounded-full' : 'rounded-xl'
 	)
 
@@ -105,10 +105,10 @@ export default function MediaUploadDialog({
 
 				<div className='relative'>
 					<div className='absolute inset-0 flex items-center'>
-						<div className='w-full border-t border-gray-300'></div>
+						<div className='w-full border-t ui-edge'></div>
 					</div>
 					<div className='relative flex justify-center text-sm'>
-						<span className='text-secondary rounded-lg bg-white px-4 py-1'>或</span>
+						<span className='text-secondary rounded-lg ui-soft-fill px-4 py-1'>或</span>
 					</div>
 				</div>
 
@@ -125,7 +125,7 @@ export default function MediaUploadDialog({
 							}
 						}}
 						placeholder={urlPlaceholder}
-						className='focus:ring-brand w-full rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 focus:ring-2 focus:outline-none'
+						className='focus:ring-brand w-full rounded-lg border ui-edge ui-soft-fill px-4 py-2 focus:ring-2 focus:outline-none'
 					/>
 				</div>
 
@@ -136,7 +136,7 @@ export default function MediaUploadDialog({
 					<button
 						type='button'
 						onClick={handleClose}
-						className='flex-1 rounded-lg border border-gray-300 bg-white px-6 py-2.5 transition-colors hover:bg-gray-50'>
+						className='flex-1 rounded-lg border ui-edge ui-soft-fill px-6 py-2.5 transition-colors ui-hover-fill'>
 						取消
 					</button>
 				</div>

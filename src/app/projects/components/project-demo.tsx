@@ -284,7 +284,7 @@ export function ProjectDemo({ slug, name, logo }: { slug: string; name: string; 
 	}
 	const current = step >= 0 ? demo.steps[step] : null
 	return (
-		<section className='project-demo' style={{ '--demo-accent': demo.accent } as React.CSSProperties} aria-label={`${name} 交互流程演示`}>
+		<section data-ui-surface='panel' className='project-demo' style={{ '--demo-accent': demo.accent } as React.CSSProperties} aria-label={`${name} 交互流程演示`}>
 			<div className='demo-window-bar'>
 				<span>
 					<i />

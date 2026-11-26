@@ -16,7 +16,8 @@ const homeHref = '/'
 const links = [
 	['/blog', '文章'],
 	['/projects', '项目'],
-	['/knowledge', '知识'],
+	['/stw', 'STW'],
+	['/guestbook', '留言'],
 	['/share', '分享'],
 	['/pictures', '相册'],
 	['/bloggers', '收藏'],
@@ -62,7 +63,7 @@ export function SiteHeader() {
 					</button>
 				</div>
 			</div>
-			<DialogModal open={menuOpen} onClose={() => setMenuOpen(false)} ariaLabel='导航菜单' className='mobile-navigation reader-drawer'>
+			<DialogModal open={menuOpen} onClose={() => setMenuOpen(false)} ariaLabel='导航菜单' className='mobile-navigation'>
 				<div className='drawer-heading'>
 					<div>
 						<p className='eyebrow'>FIND YOUR NEXT READ</p>
@@ -73,7 +74,7 @@ export function SiteHeader() {
 					</button>
 				</div>
 				<nav aria-label='手机主导航'>
-					{[[homeHref, '首页 · 个人介绍'], ...links, ['/reading', '阅读工作台']].map(([href, label]) => (
+					{[[homeHref, '首页 · 个人介绍'], ...links].map(([href, label]) => (
 						<Link
 							key={href}
 							href={href}

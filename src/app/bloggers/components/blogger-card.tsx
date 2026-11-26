@@ -50,12 +50,12 @@ export function BloggerCard({ blogger, isEditMode = false, onUpdate, onDelete }:
 		<motion.div
 			initial={{ opacity: 0, scale: 0.6 }}
 			{...(maxSM ? { animate: { opacity: 1, scale: 1 } } : { whileInView: { opacity: 1, scale: 1 } })}
-			className='card relative block overflow-hidden'>
+			data-ui-surface='panel' className='card relative block overflow-hidden'>
 			{isEditMode && (
 				<div className='absolute top-3 right-3 z-10 flex gap-2'>
 					{isEditing ? (
 						<>
-							<button onClick={handleCancel} className='rounded-lg px-2 py-1.5 text-xs text-gray-400 transition-colors hover:text-gray-600'>
+							<button onClick={handleCancel} className='rounded-lg px-2 py-1.5 text-xs ui-muted transition-colors hover:text-gray-600'>
 								取消
 							</button>
 							<button onClick={() => setIsEditing(false)} className='rounded-lg px-2 py-1.5 text-xs text-blue-400 transition-colors hover:text-blue-600'>
@@ -111,7 +111,7 @@ export function BloggerCard({ blogger, isEditMode = false, onUpdate, onDelete }:
 								href={localBlogger.url}
 								target='_blank'
 								rel='noopener noreferrer'
-								className='text-secondary hover:text-brand mt-1 block max-w-[200px] truncate text-xs hover:underline'>
+								className='text-secondary ui-hover-accent mt-1 block max-w-[200px] truncate text-xs hover:underline'>
 								{localBlogger.url}
 							</a>
 						)}
@@ -132,7 +132,7 @@ export function BloggerCard({ blogger, isEditMode = false, onUpdate, onDelete }:
 								type='button'
 								onClick={() => handleFieldChange('status', status)}
 								className={`rounded-full px-3 py-1 text-xs transition-colors ${
-									(localBlogger.status ?? 'recent') === status ? 'bg-brand text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+									(localBlogger.status ?? 'recent') === status ? 'ui-primary' : 'ui-soft-fill ui-muted ui-hover-fill'
 								}`}>
 								{status === 'recent' ? '近期更新' : '长期失联'}
 							</button>
@@ -151,7 +151,7 @@ export function BloggerCard({ blogger, isEditMode = false, onUpdate, onDelete }:
 						}
 					}}
 					className={cn(
-						'mt-3 text-sm leading-relaxed text-gray-600 transition-all duration-300 focus:outline-none',
+						'mt-3 text-sm leading-relaxed ui-muted transition-all duration-300 focus:outline-none',
 						canEdit ? 'cursor-text' : 'cursor-pointer',
 						!canEdit && (expanded ? 'line-clamp-none' : 'line-clamp-3')
 					)}>

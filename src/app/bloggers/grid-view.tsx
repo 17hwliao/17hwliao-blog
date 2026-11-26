@@ -46,21 +46,21 @@ export default function GridView({ bloggers, isEditMode = false, onUpdate, onDel
 						placeholder='搜索博主...'
 						value={searchTerm}
 						onChange={e => setSearchTerm(e.target.value)}
-						className='focus:ring-brand mx-auto block w-full max-w-md rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:outline-none'
+						className='focus:ring-brand mx-auto block w-full max-w-md rounded-lg border ui-edge px-4 py-2 focus:ring-2 focus:outline-none'
 					/>
 
 					<div className='flex flex-wrap justify-center gap-2'>
 						<button
 							onClick={() => setSelectedCategory('recent')}
 							className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-								selectedCategory === 'recent' ? 'bg-brand text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+								selectedCategory === 'recent' ? 'ui-primary' : 'ui-soft-fill ui-body-copy ui-hover-fill'
 							}`}>
 							近期更新
 						</button>
 						<button
 							onClick={() => setSelectedCategory('disconnected')}
 							className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-								selectedCategory === 'disconnected' ? 'bg-brand text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+								selectedCategory === 'disconnected' ? 'ui-primary' : 'ui-soft-fill ui-body-copy ui-hover-fill'
 							}`}>
 							长期失联
 						</button>
@@ -68,14 +68,14 @@ export default function GridView({ bloggers, isEditMode = false, onUpdate, onDel
 				</div>
 			)}
 
-			<div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
+			<div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
 				{filteredBloggers.map(blogger => (
 					<BloggerCard key={blogger.url} blogger={blogger} isEditMode={isEditMode} onUpdate={onUpdate} onDelete={() => onDelete?.(blogger)} />
 				))}
 			</div>
 
 			{filteredBloggers.length === 0 && (
-				<div className='mt-12 text-center text-gray-500'>
+				<div className='mt-12 text-center ui-muted'>
 					<ContentEmpty
 						title={bloggers.length === 0 ? '下一位有趣的邻居。' : '没有找到匹配内容'}
 						description={bloggers.length === 0 ? '点击上方「编辑」，添加你喜欢阅读的博客。' : '换一个关键词或分类再看看。'}
