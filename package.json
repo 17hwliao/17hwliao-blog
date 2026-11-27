@@ -9,6 +9,7 @@
 		"dev": "next dev --turbopack -p 2025",
 		"svg": "node scripts/gen-svgs-index.js",
 		"build": "next build",
+		"build:pages": "node scripts/build-github-pages.mjs",
 		"start": "next start",
 		"build:cf": "opennextjs-cloudflare build",
 		"preview": "opennextjs-cloudflare preview",

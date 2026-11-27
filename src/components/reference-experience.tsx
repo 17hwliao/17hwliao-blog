@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { CARD_HOVER, play } from '@/lib/sound'
 import { BUTTON_FRAME } from '@/lib/reference-button-frame'
 import { GithubStarHint } from './github-star-hint'
+import { appPath } from '@/lib/base-path'
 
 export function navigateWithTransition(href: string) {
 	window.dispatchEvent(new CustomEvent('bento:navigate', { detail: href }))
@@ -157,14 +158,14 @@ export function ReferenceExperience() {
 			}
 			if (target.pathname + target.search === location.pathname + location.search) return
 			navigating = true
-			router.prefetch(target.pathname + target.search)
+			router.prefetch(appPath(target.pathname) + target.search)
 			window.dispatchEvent(new CustomEvent('zenbot:panel', { detail: 'navigation' }))
 			const covered = await cover()
 			if (!covered || disposed) return
 			watchdog = setTimeout(() => {
 				void reveal()
 			}, 12000)
-			router.push(target.pathname + target.search + target.hash)
+			router.push(appPath(target.pathname) + target.search + target.hash)
 			// Query-only navigation has no pathname commit.
 			if (target.pathname === location.pathname) void reveal()
 		}

@@ -6,6 +6,18 @@
 
 源码仓库：[17hwliao/17hwliao-blog](https://github.com/17hwliao/17hwliao-blog)。
 
+正式站点：[17hwliao.vercel.app](https://17hwliao.vercel.app/)。
+
+静态站点：[GitHub Pages](https://17hwliao.github.io/17hwliao-blog/)，由 `gh-pages` 分支发布。
+
+### GitHub Pages 静态构建
+
+使用 Node.js 22.18 或更新版本运行 `npm run build:pages`。脚本在被 Git 忽略的 `.local-preview` 目录内单独构建，不改变当前 Next.js 开发服务。实际输出位置记录在 `.local-preview/pages-output.json`。
+
+静态版沿用当前 Bento 页面、文章、散落相册、人物与主题交互，并适配 `/17hwliao-blog/` 子路径。文章和编辑页均预生成；GitHub 保存仍需要使用自己的凭据。贡献表使用构建快照，日期范围显示在表中；网络不可用时，仅允许复用最近七天内通过校验的真实缓存，不生成虚构贡献。静态站没有 `/api` 服务，服务端功能使用正式站点。
+
+将输出目录的内容发布到现有 `gh-pages` 分支根目录，保留 `.nojekyll`；不要上传 `.env`、私钥、源码构建目录或 `node_modules`。源码继续保留在 `main`。
+
 ## 内容与界面
 
 - 黑白简约首页、文章归档、分类、关于页和 RSS。
