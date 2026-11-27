@@ -1,0 +1,21 @@
+{
+  "title": "AgentMesh：handleChat 请求处理与响应收口",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "AgentMesh"
+  ],
+  "date": "2026-09-21T16:59:56.000Z",
+  "summary": "进入 handleChat，按顺序拆解方法与请求体校验、路由、额度预留、SSE 写出以及执行结束后的结算收口。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 6,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "fi8gsvnb15sagwkv",
+    "sourceUpdatedAt": "2026-09-21T16:59:56.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "source": "characters/tsuyukusa-021",
+  "files": [
+    {
+      "file": "preview/index.html",
+      "sha256": "62d8a6f91bcc6da5950e5ee31c76e5bfc56bd2e9a32264ee51e96f3c2637ea15"
+    },
+    {
+      "file": "preview/native-model.mjs",
+      "sha256": "fc3ed689c7fa8f190284562b156a1591b7d021964a2193fbae3108265a0f3f68"
+    },
+    {
+      "file": "preview/style.css",
+      "sha256": "49abe95ebb4d5235b99f05dafaba461af541cb26518604c0fedd6e873d77a29b"
+    },
+    {
+      "file": "runtime/character-state.mjs",
+      "sha256": "ca1b8c0fd3f5e9ac9b046f79d85115a07429496fe429ae612698bb018880762b"
+    }
+  ]
+}

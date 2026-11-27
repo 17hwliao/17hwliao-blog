@@ -1,0 +1,21 @@
+{
+  "title": "AgentMesh：模型调用与用量处理的整体链路",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "AgentMesh"
+  ],
+  "date": "2026-09-14T16:00:03.000Z",
+  "summary": "从聊天主链、用量异步链和向量化入口建立完整地图，并区分 AgentMesh 与 SQL Sentinel 的职责。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 2,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "xc9cfwe2plvrghz4",
+    "sourceUpdatedAt": "2026-09-14T16:00:03.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

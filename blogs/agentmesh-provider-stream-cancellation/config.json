@@ -1,0 +1,21 @@
+{
+  "title": "AgentMesh：Provider 调用、Attempt Hook 与取消传播",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "AgentMesh"
+  ],
+  "date": "2026-09-26T12:43:42.000Z",
+  "summary": "以一次 Provider attempt 为单位追踪调用前记录、逐块回调、输出与结束处理，说明 fallback 和客户端取消如何作用于流式链路。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 8,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "kleti24hw6waagg6",
+    "sourceUpdatedAt": "2026-09-26T12:43:42.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

@@ -1,0 +1,419 @@
+{
+  "version": 2,
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "status": "articulated-face-and-arms-preview-not-cubism-rig",
+  "layers": [
+    {
+      "id": "Tail",
+      "name": "尾巴",
+      "file": "Tail.png",
+      "visible": true,
+      "bounds": [
+        158,
+        849,
+        609,
+        474
+      ]
+    },
+    {
+      "id": "HairBack",
+      "name": "后发",
+      "file": "HairBack.png",
+      "visible": true,
+      "bounds": [
+        338,
+        41,
+        469,
+        691
+      ]
+    },
+    {
+      "id": "EarR",
+      "name": "右猫耳（画面左）",
+      "file": "EarR.png",
+      "visible": true,
+      "bounds": [
+        378,
+        23,
+        121,
+        330
+      ]
+    },
+    {
+      "id": "EarL",
+      "name": "左猫耳（画面右）",
+      "file": "EarL.png",
+      "visible": true,
+      "bounds": [
+        511,
+        23,
+        133,
+        398
+      ]
+    },
+    {
+      "id": "HandR",
+      "name": "右手掌与手指",
+      "file": "HandR.png",
+      "visible": true,
+      "bounds": [
+        117,
+        724,
+        131,
+        154
+      ]
+    },
+    {
+      "id": "ForearmR",
+      "name": "右前臂",
+      "file": "ForearmR.png",
+      "visible": true,
+      "bounds": [
+        157,
+        621,
+        141,
+        161
+      ]
+    },
+    {
+      "id": "UpperArmR",
+      "name": "右上臂",
+      "file": "UpperArmR.png",
+      "visible": true,
+      "bounds": [
+        218,
+        490,
+        145,
+        156
+      ]
+    },
+    {
+      "id": "HandL",
+      "name": "左手掌与手指",
+      "file": "HandL.png",
+      "visible": true,
+      "bounds": [
+        761,
+        732,
+        140,
+        147
+      ]
+    },
+    {
+      "id": "ForearmL",
+      "name": "左前臂",
+      "file": "ForearmL.png",
+      "visible": true,
+      "bounds": [
+        718,
+        614,
+        147,
+        174
+      ]
+    },
+    {
+      "id": "UpperArmL",
+      "name": "左上臂",
+      "file": "UpperArmL.png",
+      "visible": true,
+      "bounds": [
+        660,
+        490,
+        150,
+        159
+      ]
+    },
+    {
+      "id": "BodyCore",
+      "name": "衣服、躯干与双腿",
+      "file": "BodyCore.png",
+      "visible": true,
+      "bounds": [
+        108,
+        272,
+        843,
+        1264
+      ]
+    },
+    {
+      "id": "FaceBase",
+      "name": "头部皮肤与颈部补绘",
+      "file": "FaceBase.png",
+      "visible": true,
+      "bounds": [
+        417,
+        72,
+        191,
+        248
+      ]
+    },
+    {
+      "id": "BlushR",
+      "name": "右脸红",
+      "file": "BlushR.png",
+      "visible": false,
+      "bounds": [
+        430,
+        185,
+        69,
+        82
+      ]
+    },
+    {
+      "id": "BlushL",
+      "name": "左脸红",
+      "file": "BlushL.png",
+      "visible": false,
+      "bounds": [
+        516,
+        185,
+        75,
+        105
+      ]
+    },
+    {
+      "id": "EyeWhiteR",
+      "name": "右眼白",
+      "file": "EyeWhiteR.png",
+      "visible": true,
+      "bounds": [
+        428,
+        120,
+        75,
+        120
+      ]
+    },
+    {
+      "id": "IrisR",
+      "name": "右虹膜与瞳孔",
+      "file": "IrisR.png",
+      "visible": true,
+      "bounds": [
+        424,
+        146,
+        60,
+        81
+      ]
+    },
+    {
+      "id": "LashR",
+      "name": "右睫毛",
+      "file": "LashR.png",
+      "visible": true,
+      "bounds": [
+        424,
+        141,
+        83,
+        122
+      ]
+    },
+    {
+      "id": "ClosedEyeR",
+      "name": "右闭眼",
+      "file": "ClosedEyeR.png",
+      "visible": false,
+      "bounds": [
+        417,
+        139,
+        86,
+        121
+      ]
+    },
+    {
+      "id": "BrowR",
+      "name": "右眉毛",
+      "file": "BrowR.png",
+      "visible": true,
+      "bounds": [
+        421,
+        123,
+        80,
+        114
+      ]
+    },
+    {
+      "id": "EyeWhiteL",
+      "name": "左眼白",
+      "file": "EyeWhiteL.png",
+      "visible": true,
+      "bounds": [
+        505,
+        141,
+        90,
+        107
+      ]
+    },
+    {
+      "id": "IrisL",
+      "name": "左虹膜与瞳孔",
+      "file": "IrisL.png",
+      "visible": true,
+      "bounds": [
+        521,
+        141,
+        49,
+        93
+      ]
+    },
+    {
+      "id": "LashL",
+      "name": "左睫毛",
+      "file": "LashL.png",
+      "visible": true,
+      "bounds": [
+        505,
+        141,
+        89,
+        121
+      ]
+    },
+    {
+      "id": "ClosedEyeL",
+      "name": "左闭眼",
+      "file": "ClosedEyeL.png",
+      "visible": false,
+      "bounds": [
+        506,
+        138,
+        79,
+        122
+      ]
+    },
+    {
+      "id": "BrowL",
+      "name": "左眉毛",
+      "file": "BrowL.png",
+      "visible": true,
+      "bounds": [
+        512,
+        123,
+        72,
+        101
+      ]
+    },
+    {
+      "id": "Mouth",
+      "name": "闭嘴微笑",
+      "file": "Mouth.png",
+      "visible": true,
+      "bounds": [
+        470,
+        202,
+        68,
+        103
+      ]
+    },
+    {
+      "id": "MouthOpen",
+      "name": "张嘴含口腔牙齿舌头",
+      "file": "MouthOpen.png",
+      "visible": false,
+      "bounds": [
+        470,
+        201,
+        76,
+        108
+      ]
+    },
+    {
+      "id": "MouthO",
+      "name": "惊讶嘴型",
+      "file": "MouthO.png",
+      "visible": false,
+      "bounds": [
+        472,
+        202,
+        73,
+        109
+      ]
+    },
+    {
+      "id": "MouthPout",
+      "name": "嘟嘴",
+      "file": "MouthPout.png",
+      "visible": false,
+      "bounds": [
+        459,
+        180,
+        98,
+        146
+      ]
+    },
+    {
+      "id": "HairFront",
+      "name": "前发与两侧发束",
+      "file": "HairFront.png",
+      "visible": true,
+      "bounds": [
+        307,
+        48,
+        413,
+        612
+      ]
+    },
+    {
+      "id": "ClipZ",
+      "name": "同发色 Z 发夹",
+      "file": "ClipZ.png",
+      "visible": true,
+      "bounds": [
+        365,
+        123,
+        247,
+        500
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "file": "tail.png",
+      "sha256": "6771986bb248b61fdd50a08732f3ba5ba829f1b0734de62a50f6ce38405fc1a1"
+    },
+    {
+      "file": "hair-back.png",
+      "sha256": "d816f401ed14b0b4fb78eb90115fc60f705dfa6964bf3021396d3e2f8ce5e0c8"
+    },
+    {
+      "file": "ears.png",
+      "sha256": "382164db95bcc3a0d3bf3184c9132430392a4bfba093ce026b6cae577fc6dee5"
+    },
+    {
+      "file": "arm-atlas-clean.png",
+      "sha256": "fa762c3011ad0c18c23020097295c1a8ed8d3574d092d6960b4c8326f22731dc"
+    },
+    {
+      "file": "body-core.png",
+      "sha256": "27648f901fdd18867a852cc7fb966fe6101c48cfe3c06c177c71137529ddfc41"
+    },
+    {
+      "file": "head-base.png",
+      "sha256": "9469f173c57cdb766a3ec92e11b1bbb31b3bcb337322ca33823117be221caeee"
+    },
+    {
+      "file": "face-atlas.png",
+      "sha256": "c2e3c20e8cf91d3fbde042df5de675e153969be3182b4327125bcad375ee8e9c"
+    },
+    {
+      "file": "hair-front.png",
+      "sha256": "c02710ccc80cc0781dc16508b94ef0aa1bc56dabd6b1c6e03f1c5a17ec09bdb6"
+    },
+    {
+      "file": "clip-z.png",
+      "sha256": "d7353a40a53202c8d5a3118946a64e4d906a2f66afb56b2815292adcf4b7142c"
+    }
+  ],
+  "psd": {
+    "bytes": 6947055,
+    "sha256": "af5fd6d5f055c63a80d79ecced695c63ff8663bc0f2418e2c77bdf2d08670961",
+    "readback": "all layer RGBA and IDs match"
+  },
+  "remaining": [
+    "精细手指与分开的口腔牙舌层",
+    "双腿和衣服隐藏区域补绘",
+    "头发束及颈部接缝精修",
+    "Cubism ArtMesh/变形器和物理调校"
+  ]
+}

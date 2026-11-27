@@ -1,0 +1,21 @@
+{
+  "title": "AgentMesh：服务启动与依赖组装",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "AgentMesh"
+  ],
+  "date": "2026-09-21T14:18:04.000Z",
+  "summary": "从 main.go 梳理监听配置、限流运行时、Provider、认证与租户路由的组装过程，解释接口依赖如何进入 Gateway。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 5,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "guwezpl2dhi65vpb",
+    "sourceUpdatedAt": "2026-09-21T14:18:04.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

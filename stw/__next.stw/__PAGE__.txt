@@ -1,0 +1,7 @@
+1:"$Sreact.fragment"
+2:I[96277,["/17hwliao-blog/_next/static/chunks/71f2caa7feab596e.js","/17hwliao-blog/_next/static/chunks/ef34402fbd348cad.js","/17hwliao-blog/_next/static/chunks/414299adf94ab258.js","/17hwliao-blog/_next/static/chunks/0d3cd9d1e31d8d1d.js","/17hwliao-blog/_next/static/chunks/8d006c132431ffce.js","/17hwliao-blog/_next/static/chunks/49727a7e2d98cf28.js","/17hwliao-blog/_next/static/chunks/109a96cbe209dc67.js","/17hwliao-blog/_next/static/chunks/0ce1688862f2897b.js"],"default"]
+3:I[419427,["/17hwliao-blog/_next/static/chunks/c54280ba3bdb7995.js","/17hwliao-blog/_next/static/chunks/1e693b86e695f581.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+:HL["/17hwliao-blog/_next/static/chunks/7ed3042eb55540a4.css","style"]
+0:{"buildId":"hWscgmpVO3hlF--XMzwXs","rsc":["$","$1","c",{"children":[["$","section",null,{"className":"stw-page","children":[["$","header",null,{"className":"stw-heading","children":[["$","h1",null,{"children":"STW"}],["$","p",null,{"children":"Stop the World"}]]}],["$","$L2",null,{"enableHover":true}]]}],[["$","link","0",{"rel":"stylesheet","href":"/17hwliao-blog/_next/static/chunks/7ed3042eb55540a4.css","precedence":"next"}],["$","script","script-0",{"src":"/17hwliao-blog/_next/static/chunks/0ce1688862f2897b.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
+5:null

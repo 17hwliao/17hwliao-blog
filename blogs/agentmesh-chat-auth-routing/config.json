@@ -1,0 +1,21 @@
+{
+  "title": "AgentMesh：聊天请求的认证、路由与流式响应",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "AgentMesh"
+  ],
+  "date": "2026-09-15T02:23:36.000Z",
+  "summary": "沿一次聊天请求追踪认证、租户识别、令牌桶限流、模型路由与 SSE 返回，说明首块前 fallback 和取消传播的边界。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 3,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "xeqdvwh5se4x1x9g",
+    "sourceUpdatedAt": "2026-09-15T02:23:36.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

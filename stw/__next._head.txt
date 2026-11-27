@@ -1,0 +1,7 @@
+1:"$Sreact.fragment"
+2:I[419427,["/17hwliao-blog/_next/static/chunks/c54280ba3bdb7995.js","/17hwliao-blog/_next/static/chunks/1e693b86e695f581.js"],"ViewportBoundary"]
+4:I[419427,["/17hwliao-blog/_next/static/chunks/c54280ba3bdb7995.js","/17hwliao-blog/_next/static/chunks/1e693b86e695f581.js"],"MetadataBoundary"]
+5:"$Sreact.suspense"
+0:{"buildId":"hWscgmpVO3hlF--XMzwXs","rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":"$@3"}],["$","div",null,{"hidden":true,"children":["$","$L4",null,{"children":["$","$5",null,{"name":"Next.Metadata","children":"$@6"}]}]}],null]}],"loading":null,"isPartial":false}
+3:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#0e1116"}]]
+6:[["$","title","0",{"children":"STW · Stop the World · 17hwliao"}],["$","meta","1",{"name":"description","content":"我学过 Go 和 Java，现在在学习 Agent 相关知识，也在做后端项目。\n这里记录我学过什么、做过什么，以及一路上的尝试和复盘。"}],["$","meta","2",{"name":"author","content":"17hwliao"}],["$","meta","3",{"name":"creator","content":"17hwliao"}],["$","meta","4",{"property":"og:title","content":"17hwliao"}],["$","meta","5",{"property":"og:description","content":"我学过 Go 和 Java，现在在学习 Agent 相关知识，也在做后端项目。\n这里记录我学过什么、做过什么，以及一路上的尝试和复盘。"}],["$","meta","6",{"name":"twitter:card","content":"summary"}],["$","meta","7",{"name":"twitter:title","content":"17hwliao"}],["$","meta","8",{"name":"twitter:description","content":"我学过 Go 和 Java，现在在学习 Agent 相关知识，也在做后端项目。\n这里记录我学过什么、做过什么，以及一路上的尝试和复盘。"}]]

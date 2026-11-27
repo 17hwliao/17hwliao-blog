@@ -1,0 +1,21 @@
+{
+  "title": "AgentMesh：项目介绍与一致性追问",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "AgentMesh"
+  ],
+  "date": "2026-10-06T08:32:35.000Z",
+  "summary": "用问答形式串联模型网关的核心链路，并回答 Redis 成功而 MySQL 失败时的一致性追问，便于从实现事实组织项目表达。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "agentmesh",
+    "order": 12,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "wi1164orun2g15li",
+    "sourceUpdatedAt": "2026-10-06T08:32:35.000Z",
+    "editedAt": "2026-11-04"
+  }
+}

@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'">
+<title>Zenix 人物桌面预览</title><link rel="stylesheet" href="./pet.css"></head>
+<body><canvas id="pet" aria-label="Zenix 猫娘。点击头、耳朵、手、身体、脚或尾巴体验不同反应；拖动人物会害羞晃动，右键打开菜单。"></canvas>
+<div id="error" role="alert" hidden></div>
+<div id="speech" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+<aside id="browser-tools" hidden><span id="state">正在载入人物…</span><button id="hello">打招呼</button><button id="wave">挥手</button><button id="stretch">伸懒腰</button><button id="wink">眨眼</button><button id="talk">说话</button><button id="pause">暂停</button><select id="motion-select" aria-label="选择动作演练"><option value="">更多动作…</option></select><a href="./layers.html?version=3">分层工作台</a></aside>
+<script type="module" src="./pet.mjs"></script></body></html>

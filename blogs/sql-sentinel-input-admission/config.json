@@ -1,0 +1,21 @@
+{
+  "title": "SQL Sentinel：SQL 输入接入与准入校验",
+  "tags": [
+    "Goland",
+    "Agent项目",
+    "SQL Sentinel"
+  ],
+  "date": "2026-10-09T03:24:13.000Z",
+  "summary": "从 CLI 与 Webhook 两种输入出发，追踪签名验证、SQL 提取、候选结构校验及管线调用，划清输入检查与数据库验证的边界。",
+  "category": "Goland",
+  "updatedAt": "2026-11-04T08:39:39.607Z",
+  "contentUpdatedAt": "2026-11-04T08:39:39.607Z",
+  "projectArticle": {
+    "project": "sql-sentinel",
+    "order": 2,
+    "material": "面试准备.lakebook / 项目复盘",
+    "sourceSlug": "txude0gol5kg56is",
+    "sourceUpdatedAt": "2026-10-09T03:24:13.000Z",
+    "editedAt": "2026-11-04"
+  }
+}
