@@ -1,5 +1,23 @@
 [
   {
+    "slug": "go-gmp-scheduler",
+    "title": "GMP 调度器",
+    "tags": [
+      "Go",
+      "GMP",
+      "Goroutine",
+      "并发"
+    ],
+    "date": "2026-11-27T12:40:47.356Z",
+    "createdAt": "2026-11-27T12:40:47.356Z",
+    "updatedAt": "2026-11-27T12:40:47.356Z",
+    "contentUpdatedAt": "2026-11-27T12:40:47.356Z",
+    "firstPublishedAt": "2026-11-27T12:40:47.356Z",
+    "publishedAt": "2026-11-27T12:40:47.356Z",
+    "summary": "从单进程、线程与协程的演进出发，梳理 Go GMP 模型、工作窃取与线程移交，并结合 trace、schedtrace 和 11 个典型场景理解调度全过程。",
+    "category": "Goland"
+  },
+  {
     "slug": "go-gc-tricolor-marking",
     "title": "三色标记",
     "tags": [

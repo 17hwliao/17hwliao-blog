@@ -9,8 +9,16 @@
 		<language>zh-CN</language>
 		<docs>https://www.rssboard.org/rss-specification</docs>
 		<ttl>60</ttl>
-		<lastBuildDate>Fri, 27 Nov 2026 11:03:32 GMT</lastBuildDate>
+		<lastBuildDate>Fri, 27 Nov 2026 13:15:36 GMT</lastBuildDate>
 		<item>
+			<title>GMP 调度器</title>
+			<link>https://17hwliao.github.io/17hwliao-blog/blog/go-gmp-scheduler</link>
+			<guid isPermaLink="false">https://17hwliao.github.io/17hwliao-blog/blog/go-gmp-scheduler</guid>
+			<description><![CDATA[从单进程、线程与协程的演进出发，梳理 Go GMP 模型、工作窃取与线程移交，并结合 trace、schedtrace 和 11 个典型场景理解调度全过程。]]></description>
+			<pubDate>Fri, 27 Nov 2026 12:40:47 GMT</pubDate>
+			<category>Go</category><category>GMP</category><category>Goroutine</category><category>并发</category>
+			
+		</item><item>
 			<title>三色标记</title>
 			<link>https://17hwliao.github.io/17hwliao-blog/blog/go-gc-tricolor-marking</link>
 			<guid isPermaLink="false">https://17hwliao.github.io/17hwliao-blog/blog/go-gc-tricolor-marking</guid>
