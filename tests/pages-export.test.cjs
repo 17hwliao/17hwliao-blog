@@ -2,6 +2,30 @@ const { test } = require('node:test')
 const assert = require('node:assert/strict')
 const { loadSource } = require('./helpers/load-source.cjs')
 
+test('Pages publishes tracked public files and excludes local-only and untracked material', async () => {
+	const fs = require('node:fs'), os = require('node:os'), path = require('node:path')
+	const { execFileSync } = require('node:child_process')
+	const { copyTrackedPublic } = await import('../scripts/pages-paths.mjs')
+	const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'pages-export-'))
+	const root = path.join(temp, 'repo'), output = path.join(temp, 'out')
+	try {
+		fs.mkdirSync(path.join(root, 'public/local-model'), { recursive: true })
+		fs.writeFileSync(path.join(root, '.gitignore'), '/public/local-model/\n')
+		fs.writeFileSync(path.join(root, 'public/avatar.png'), 'tracked image')
+		fs.writeFileSync(path.join(root, 'public/local-model/model.bin'), 'local-only model')
+		fs.writeFileSync(path.join(root, 'public/private.pem'), 'untracked material')
+		execFileSync('git', ['init', '-q'], { cwd: root })
+		execFileSync('git', ['add', '.gitignore', 'public/avatar.png'], { cwd: root })
+		assert.deepEqual(copyTrackedPublic(root, output), ['public/avatar.png'])
+		assert.equal(fs.readFileSync(path.join(output, 'public/avatar.png'), 'utf8'), 'tracked image')
+		assert.equal(fs.existsSync(path.join(output, 'public/local-model')), false)
+		assert.equal(fs.existsSync(path.join(output, 'public/private.pem')), false)
+	} finally {
+		if (path.dirname(path.resolve(temp)) !== path.resolve(os.tmpdir()) || !path.basename(temp).startsWith('pages-export-')) throw Error('Unexpected fixture path')
+		fs.rmSync(temp, { recursive: true, force: true })
+	}
+})
+
 test('transition router removes the Pages prefix exactly once, at a path boundary', () => {
 	const { appPath } = loadSource()('src/lib/base-path.ts')
 	assert.equal(appPath('/17hwliao-blog/blog/', '/17hwliao-blog'), '/blog/')

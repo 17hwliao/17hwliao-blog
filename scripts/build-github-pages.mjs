@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
-import { prefixPublicAssets, redirectDocument } from './pages-paths.mjs'
+import { copyTrackedPublic, prefixPublicAssets, redirectDocument } from './pages-paths.mjs'
 import { parseContributions, contributionSource } from '../src/features/github/contributions.ts'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
@@ -24,9 +24,10 @@ const assetRoots = fs.readdirSync(path.join(root, 'public'), { withFileTypes: tr
 const textTypes = new Set(['.ts', '.tsx', '.js', '.mjs', '.json', '.css', '.md', '.html', '.svg', '.txt', '.xml'])
 
 // Build a separate copy: the live development checkout and its server stay intact.
-for (const name of ['src', 'public', 'package.json', 'pnpm-lock.yaml', 'tsconfig.json', 'global.d.ts', 'postcss.config.mjs']) {
+for (const name of ['src', 'package.json', 'pnpm-lock.yaml', 'tsconfig.json', 'global.d.ts', 'postcss.config.mjs']) {
 	if (fs.existsSync(path.join(root, name))) fs.cpSync(path.join(root, name), path.join(workspace, name), { recursive: true })
 }
+copyTrackedPublic(root, workspace)
 function rewriteTree(directory) {
 	for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
 		const filename = path.join(directory, entry.name)
@@ -53,10 +54,6 @@ write('next.config.mjs', `export default {
  images:{unoptimized:true},devIndicators:false,reactCompiler:true,
  turbopack:{root:${JSON.stringify(root)},rules:{'*.svg':{loaders:['@svgr/webpack'],as:'*.js'}}}
 }\n`)
-// Reuse the native, already bundled viewer instead of a CDN-only model loader.
-const live2d = path.join(workspace, 'src/app/live2d/page.tsx')
-fs.writeFileSync(live2d, fs.readFileSync(live2d, 'utf8').replace("process.env.NODE_ENV === 'development' &&", 'true &&'))
-
 const snapshotFile = 'public/data/github-contributions.json'
 let contributions
 try {
