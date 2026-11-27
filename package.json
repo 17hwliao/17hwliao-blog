@@ -10,6 +10,7 @@
 		"svg": "node scripts/gen-svgs-index.js",
 		"build": "next build",
 		"build:pages": "node scripts/build-github-pages.mjs",
+		"publish:pages": "node scripts/publish-github-pages.mjs",
 		"start": "next start",
 		"build:cf": "opennextjs-cloudflare build",
 		"preview": "opennextjs-cloudflare preview",

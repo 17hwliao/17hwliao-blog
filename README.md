@@ -74,6 +74,18 @@ pnpm build
 
 更多说明见 [本地开发文档](LOCAL_DEVELOPMENT.md)。
 
+### 同步 GitHub Pages 静态站
+
+文章与配图提交并推送到 `main` 后，在干净的工作区执行：
+
+```sh
+npm run publish:pages
+```
+
+命令会在隔离目录导出完整静态站，检查文章页面和本地配图，再向已有 `gh-pages` 分支追加一次提交。源代码工作区不会切换分支。相同源提交已同步时会直接跳过；构建失败或远端分支同时发生更新时停止发布，不强制覆盖。
+
+静态站地址：[17hwliao.github.io/17hwliao-blog](https://17hwliao.github.io/17hwliao-blog/)。该命令按需运行，不会在每次推送 `main` 时自动执行。
+
 ### GitHub 保存与站点地址
 
 本地浏览、写作预览不需要私钥。`src/config/github.json` 保存本博客的公开默认配置：仓库 `17hwliao/17hwliao-blog`、分支 `main`、GitHub App ID `5475190`；Vercel 未设置同名环境变量时也能使用这些配置。私钥由页面文件选择入口使用，不放入源码或部署环境。
